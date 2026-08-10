@@ -116,7 +116,7 @@ export default function PromptPipeline() {
                 {s}
               </span>
               {i < STAGES.length - 1 && (
-                <span className="relative block h-px w-4 bg-white/12 sm:w-7" aria-hidden>
+                <span className="relative block h-px w-4 bg-hairline sm:w-7" aria-hidden>
                   <span
                     className="absolute inset-y-0 left-0 bg-aurora-indigo transition-all duration-500"
                     style={{ width: on ? "100%" : "0%" }}

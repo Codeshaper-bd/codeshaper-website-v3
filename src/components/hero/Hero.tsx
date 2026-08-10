@@ -6,9 +6,9 @@ import { ArrowRight } from "lucide-react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Magnetic from "@/components/system/Magnetic";
-import HeroVideo from "./HeroVideo";
+import HeroMesh from "./HeroMesh";
 import WordMorph from "./WordMorph";
-import VideoType from "./VideoType";
+import MeshType from "./MeshType";
 import PromptPipeline from "./PromptPipeline";
 import { usePrefersReducedMotion, useMotionAllowed } from "@/lib/motion";
 
@@ -30,7 +30,7 @@ gsap.registerPlugin(ScrollTrigger);
  * leaving the hero feels like a camera pull-back rather than a cut.
  * Reduced motion: static poster, no canvas, no scrub, plain fades.
  */
-const HEADLINE_WORDS = ["We", "build", "AI-first", "software."];
+const HEADLINE_WORDS = ["Build", "&", "scale", "digital", "products", "—", "predictably."];
 const SCRAMBLE_WORD_INDEX = 2;
 const GLYPHS = "!<>-_\\/[]{}—=+*^?#";
 
@@ -178,12 +178,12 @@ export default function Hero() {
   return (
     <section
       ref={sectionRef}
-      className="relative flex min-h-svh flex-col items-center justify-center overflow-hidden bg-canvas"
+      className="theme-light relative flex min-h-svh flex-col items-center justify-center overflow-hidden bg-canvas"
     >
-      {/* 2 — aurora video, pushed right back: ambient depth only, so the mesh
-             is unmistakably the subject */}
-      <div ref={videoRef} className="absolute inset-[-4%] mix-blend-screen opacity-40">
-        <HeroVideo />
+      {/* 2 — animated gradient mesh: ambient depth only, full opacity (no
+             screen-blend trick — that only makes sense lightening a dark base) */}
+      <div ref={videoRef} className="absolute inset-[-4%]">
+        <HeroMesh />
       </div>
 
 
@@ -195,7 +195,7 @@ export default function Hero() {
         className="hero-mark pointer-events-none absolute left-1/2 top-1/2 h-[min(72vh,640px)] w-[min(72vh,640px)]"
         style={{
           background:
-            "radial-gradient(closest-side, rgba(91,95,239,0.16), rgba(139,95,224,0.06) 55%, transparent 72%)",
+            "radial-gradient(closest-side, rgba(102,126,234,0.14), rgba(20,184,166,0.05) 55%, transparent 72%)",
         }}
       />
 
@@ -205,14 +205,14 @@ export default function Hero() {
         className="absolute left-1/2 top-1/2 h-[62vh] w-[min(96vw,1040px)] -translate-x-1/2 -translate-y-1/2"
         style={{
           background:
-            "radial-gradient(52% 46% at 50% 48%, rgba(10,10,15,0.72) 0%, rgba(10,10,15,0.38) 60%, transparent 100%)",
+            "radial-gradient(52% 46% at 50% 48%, rgba(255,255,255,0.75) 0%, rgba(255,255,255,0.4) 60%, transparent 100%)",
         }}
       />
 
       {/* hex texture */}
       <div
         aria-hidden
-        className="absolute inset-0 text-white opacity-[0.025]"
+        className="absolute inset-0 text-ink opacity-[0.03]"
         style={{ backgroundImage: "url(/media/hex-pattern-tile.svg)", backgroundSize: "112px 194px" }}
       />
 
@@ -226,7 +226,7 @@ export default function Hero() {
           style={seq(headlineIn)}
         >
           <span className="h-1.5 w-1.5 rounded-full bg-aurora-amber dot-pulse" />
-          AI-first product studio
+          Product design · Engineering · AI automation
         </p>
 
         {/* ── Signature band: ~11k particles spell what the studio does —
@@ -235,14 +235,14 @@ export default function Hero() {
         <div className="relative mx-auto mb-1 h-[22vh] max-h-[196px] min-h-[120px] w-full max-w-5xl">
           {/* particle dust behind the type — same palette, low presence */}
           <WordMorph className="absolute inset-0 h-full w-full opacity-30" />
-          {/* the aurora film, playing inside the letterforms */}
-          <VideoType className="absolute inset-0 h-full w-full" />
+          {/* the gradient mesh, playing inside the letterforms */}
+          <MeshType className="absolute inset-0 h-full w-full" />
         </div>
 
         {/* PLACEHOLDER H1 — flag for approval */}
         <h1
           className="font-display text-[26px] font-bold leading-[1.1] tracking-tight text-ink sm:text-[32px] lg:text-[38px]"
-          aria-label="We build AI-first software."
+          aria-label="Build & scale digital products — predictably."
         >
           {HEADLINE_WORDS.map((w, i) => (
             <span
@@ -275,9 +275,9 @@ export default function Hero() {
           className="mx-auto mt-7 max-w-2xl font-body text-base leading-relaxed text-ink-dim sm:text-lg"
           style={seq(restIn)}
         >
-          Product design, engineering, and commerce — built with AI agents and
-          automation in the workflow, shipped in weekly increments you can watch
-          happen.
+          We design, build, and automate digital products for teams across the
+          USA, Canada, and Europe — with weekly visibility and a clean handover
+          every time.
         </p>
 
         {/* live prompt → pipeline: what an AI-first studio actually does */}
@@ -292,7 +292,7 @@ export default function Hero() {
           <Magnetic>
             <Link
               href="/contact"
-              className="inline-flex items-center gap-2 rounded-full border border-aurora-indigo/70 bg-aurora-indigo/10 px-8 py-4 font-display text-sm font-medium text-ink shadow-[0_0_30px_rgba(91,95,239,0.45)] backdrop-blur-sm transition-[background-color,box-shadow,transform] duration-300 hover:scale-[1.02] hover:bg-aurora-indigo hover:shadow-[0_0_60px_rgba(91,95,239,0.7)]"
+              className="inline-flex items-center gap-2 rounded-full bg-aurora-indigo px-8 py-4 font-display text-sm font-medium text-white transition-[background-color,transform] duration-300 hover:scale-[1.02] hover:bg-aurora-violet"
             >
               Book a Call
               <ArrowRight size={15} strokeWidth={1.75} />
@@ -318,7 +318,7 @@ export default function Hero() {
 
       {/* proof bar — PLACEHOLDER numbers */}
       <div
-        className="absolute inset-x-0 bottom-0 z-10 border-t border-hairline bg-[rgba(10,10,15,0.6)] backdrop-blur-md"
+        className="absolute inset-x-0 bottom-0 z-10 border-t border-hairline bg-white/70 backdrop-blur-md"
         style={seq(restIn, 240)}
       >
         <dl className="mx-auto flex max-w-7xl flex-wrap items-center justify-center gap-x-10 gap-y-3 px-6 py-4 lg:justify-between lg:px-10">
