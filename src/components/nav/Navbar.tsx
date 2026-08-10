@@ -49,12 +49,10 @@ export default function Navbar() {
         className={`nav-scrim fixed inset-0 z-30 ${megaOpen ? "opacity-100" : "pointer-events-none opacity-0"}`}
       />
 
-      <header className="fixed inset-x-0 top-0 z-50">
+      <header className="theme-light fixed inset-x-0 top-0 z-50 font-satoshi">
         <div
-          className={`transition-[background-color,border-color,backdrop-filter] duration-[250ms] ${
-            scrolled || openValue || mobileOpen
-              ? "border-b border-hairline bg-[rgba(10,10,15,0.85)] backdrop-blur-xl"
-              : "border-b border-transparent bg-transparent"
+          className={`border-b border-hairline bg-canvas/95 backdrop-blur-xl transition-shadow duration-[250ms] ${
+            scrolled || openValue || mobileOpen ? "shadow-[0_1px_0_rgba(11,15,25,0.04)]" : ""
           }`}
         >
           <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6 lg:px-10">
@@ -68,9 +66,8 @@ export default function Navbar() {
                 />
                 <defs>
                   <linearGradient id="logoGrad" x1="0" y1="0" x2="1" y2="1">
-                    <stop offset="0%" stopColor="#5B5FEF" />
-                    <stop offset="60%" stopColor="#8B5FE0" />
-                    <stop offset="100%" stopColor="#F2A65A" />
+                    <stop offset="0%" stopColor="#667EEA" />
+                    <stop offset="100%" stopColor="#14B8A6" />
                   </linearGradient>
                 </defs>
               </svg>
@@ -127,7 +124,7 @@ export default function Navbar() {
               <Magnetic>
                 <Link
                   href="/contact"
-                  className="hidden rounded-full border border-aurora-indigo/70 bg-aurora-indigo/5 px-5 py-2 font-display text-sm font-medium text-ink shadow-[0_0_18px_rgba(91,95,239,0.32)] transition-[background-color,box-shadow,transform] duration-300 hover:scale-[1.02] hover:bg-aurora-indigo hover:shadow-[0_0_34px_rgba(91,95,239,0.6)] sm:inline-block"
+                  className="hidden rounded-full bg-aurora-indigo px-5 py-2 font-display text-sm font-medium text-white transition-[background-color,transform] duration-300 hover:scale-[1.02] hover:bg-aurora-violet sm:inline-block"
                 >
                   Book a Call
                 </Link>
@@ -174,7 +171,7 @@ function DropdownItem({
           className="transition-transform duration-200 group-data-[state=open]:rotate-180"
         />
       </Nav.Trigger>
-      <Nav.Content className="dropdown-panel absolute left-1/2 top-full z-40 mt-3 w-[300px] -translate-x-1/2 rounded-xl border border-hairline bg-[rgb(11,11,16)] p-2 shadow-[0_20px_60px_rgba(0,0,0,0.55)]">
+      <Nav.Content className="dropdown-panel absolute left-1/2 top-full z-40 mt-3 w-[300px] -translate-x-1/2 rounded-xl border border-hairline bg-white p-2 shadow-[0_20px_48px_rgba(11,15,25,0.14)]">
         <ul>
           {menu.links.slice(0, 8).map((l) => (
             <li key={l.href}>

@@ -179,8 +179,8 @@ body {
 /* Dropdown surface: same material language, smaller */
 .dropdown-panel {
   background:
-    radial-gradient(120% 140% at 20% 0%, rgba(91, 95, 239, 0.12), transparent 60%),
-    rgb(11, 11, 16) !important;
+    radial-gradient(120% 140% at 20% 0%, rgba(102, 126, 234, 0.06), transparent 60%),
+    #ffffff !important;
 }
 .dropdown-panel::before {
   content: "";
@@ -188,7 +188,7 @@ body {
   inset-inline: 12px;
   top: 0;
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(91, 95, 239, 0.6), transparent);
+  background: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.4), transparent);
 }
 
 /* Menu rows: a soft gradient sweep appears under the pointer */
@@ -229,7 +229,7 @@ body {
 /* Scrim: explicit rgba (not a color-mix/oklab-derived utility — those can
    rasterize as transparent in some engines). */
 .nav-scrim {
-  background: rgba(0, 0, 0, 0.55);
+  background: rgba(11, 15, 25, 0.12);
   will-change: opacity;
   transition: opacity 150ms ease;
 }
