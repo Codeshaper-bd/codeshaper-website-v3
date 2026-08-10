@@ -729,7 +729,7 @@ Create `src/components/hero/MeshType.tsx`:
 ```tsx
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { usePrefersReducedMotion } from "@/lib/motion";
 import { drawGradientMesh } from "./gradientMesh";
 
@@ -752,7 +752,6 @@ const FADE = 900;
 export default function MeshType({ className = "" }: { className?: string }) {
   const reduced = usePrefersReducedMotion();
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [, setTick] = useState(0);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -860,7 +859,6 @@ export default function MeshType({ className = "" }: { className?: string }) {
     window.addEventListener("scroll", onScroll, { passive: true });
     const io = new IntersectionObserver(([e]) => (e.isIntersecting ? start() : stop()), { threshold: 0 });
     io.observe(canvas);
-    setTick((t) => t + 1); // silence unused-setter lint; no re-render needed
 
     return () => {
       io.disconnect();
