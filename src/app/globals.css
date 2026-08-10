@@ -168,11 +168,11 @@ body {
      regression). Over a #0A0A0F page the 2% is invisible anyway. The gradient
      wash on top gives the panel depth without risking bleed-through. */
   background:
-    radial-gradient(120% 140% at 12% 0%, rgba(91, 95, 239, 0.10), transparent 55%),
-    radial-gradient(90% 120% at 88% 10%, rgba(242, 166, 90, 0.06), transparent 60%),
-    rgb(11, 11, 16);
+    radial-gradient(120% 140% at 12% 0%, rgba(102, 126, 234, 0.05), transparent 55%),
+    radial-gradient(90% 120% at 88% 10%, rgba(20, 184, 166, 0.04), transparent 60%),
+    #ffffff;
   border-bottom: 1px solid var(--color-hairline);
-  box-shadow: 0 32px 80px rgba(0, 0, 0, 0.55);
+  box-shadow: 0 24px 64px rgba(11, 15, 25, 0.1);
   will-change: transform, opacity;
 }
 
@@ -452,9 +452,8 @@ form[data-show-errors="true"] :invalid {
   background: linear-gradient(
     90deg,
     transparent,
-    rgba(91, 95, 239, 0.5) 25%,
-    rgba(139, 95, 224, 0.5) 55%,
-    rgba(242, 166, 90, 0.35) 80%,
+    rgba(102, 126, 234, 0.55) 35%,
+    rgba(20, 184, 166, 0.45) 70%,
     transparent
   );
 }

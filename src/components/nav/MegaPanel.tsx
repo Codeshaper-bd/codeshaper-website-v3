@@ -57,7 +57,7 @@ export default function MegaPanel() {
                           className="ai-col-wash pointer-events-none absolute inset-0 rounded-lg opacity-[0.10]"
                           style={{
                             background:
-                              "radial-gradient(120% 100% at 0% 50%, #5B5FEF 0%, #8B5FE0 55%, #F2A65A 100%)",
+                              "radial-gradient(120% 100% at 0% 50%, #667EEA 0%, #44549B 60%, #14B8A6 100%)",
                           }}
                         />
                       )}
