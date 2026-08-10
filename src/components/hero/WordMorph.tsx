@@ -123,15 +123,14 @@ void main() {
   float d = length(uv);
   float a = smoothstep(0.5, 0.0, d);
 
-  vec3 indigo = vec3(0.357, 0.373, 0.937);
-  vec3 violet = vec3(0.545, 0.373, 0.878);
-  vec3 amber  = vec3(0.949, 0.651, 0.353);
+  vec3 indigo = vec3(0.400, 0.494, 0.918);     // #667EEA
+  vec3 teal   = vec3(0.078, 0.722, 0.651);     // #14B8A6
+  vec3 deep   = vec3(0.267, 0.329, 0.608);     // #44549B
 
-  vec3 col = mix(indigo, violet, fract(v_seed * 2.7));
-  // particles glow amber while they're in flight — the "shaping" moment,
-  // and wheel energy pushes the whole field warmer
-  col = mix(col, amber, min(1.0, v_transit * 0.75 + u_energy * 0.35));
-  col = mix(col, vec3(1.0), v_transit * 0.25);
+  vec3 col = mix(indigo, teal, fract(v_seed * 2.7));
+  // particles shift toward deep indigo while in flight — the "shaping" moment,
+  // and wheel energy pushes the whole field toward that denser tone
+  col = mix(col, deep, min(1.0, v_transit * 0.75 + u_energy * 0.35));
   // depth cue: far slices cool toward indigo
   col = mix(col * 0.72, col, v_depth + 0.5);
 
@@ -284,7 +283,7 @@ export default function WordMorph({ className = "" }: { className?: string }) {
         const U = (n: string) => gl.getUniformLocation(prog, n);
         gl.disable(gl.DEPTH_TEST);
         gl.enable(gl.BLEND);
-        gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
+        gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
         let dpr = 1;
         const resize = () => {
