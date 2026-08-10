@@ -28,9 +28,50 @@
   /* ── Typography: Geom (headings) · Manrope (body) ── */
   --font-display: var(--font-geom), ui-sans-serif, system-ui, sans-serif;
   --font-body: var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
+  --font-satoshi: var(--font-satoshi), ui-sans-serif, system-ui, sans-serif;
 
   --ease-mechanical: cubic-bezier(0.65, 0, 0.35, 1);
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ── Light theme scope (Navbar + Hero, pass 1) ──────────────
+   Redefines the SAME custom-property names the dark theme uses, so every
+   existing `bg-canvas` / `text-ink` / `text-aurora-indigo` utility already
+   in Navbar/MegaPanel/MobileMenu/Hero resolves to light values here without
+   per-component className changes. Do NOT move these values to :root — they
+   are only correct for this subtree; every other section still needs the
+   dark originals.
+
+   Within this scope, --color-aurora-violet is repurposed to hold the "deep
+   indigo" hover/secondary shade and --color-aurora-amber is repurposed to
+   hold the teal secondary accent (both from the v2 brand reference) rather
+   than their dark-theme meanings. The class names stay "aurora-*" to avoid
+   a site-wide token rename in this pass; a later cleanup could rename them
+   to brand-neutral names once every section has migrated. */
+.theme-light {
+  --color-canvas: #ffffff;
+  --color-canvas-raised: #f7f8fb;
+  --color-panel: #ffffff;
+  --color-ink: #0b0f19;
+  --color-ink-dim: #6b7280;
+  --color-ink-faint: #9ca3af;
+  --color-hairline: #e5e7eb;
+  --color-hairline-strong: #d1d5db;
+  --color-menu-label: #6b7280;
+
+  --color-aurora-indigo: #667eea; /* primary brand */
+  --color-aurora-violet: #44549b; /* repurposed: deep indigo (hover/secondary) */
+  --color-aurora-amber: #14b8a6;  /* repurposed: teal (secondary accent) */
+}
+
+/* .glass is shared with Locations.tsx / AiSpotlight.tsx / WorkspaceScene.tsx,
+   which stay dark this round — override rather than edit the base rule. */
+.theme-light .glass {
+  background: rgba(255, 255, 255, 0.85);
+  border-color: rgba(11, 15, 25, 0.08);
+  box-shadow:
+    0 0 0 1px rgba(102, 126, 234, 0.08),
+    0 8px 32px rgba(11, 15, 25, 0.1);
 }
 
 /* ── Base ────────────────────────────────────────────────── */

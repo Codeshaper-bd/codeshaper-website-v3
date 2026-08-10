@@ -31,6 +31,19 @@ const manrope = localFont({
   adjustFontFallback: "Arial",
 });
 
+const satoshi = localFont({
+  src: [
+    { path: "../fonts/satoshi-latin-400-normal.woff2", weight: "400", style: "normal" },
+    { path: "../fonts/satoshi-latin-500-normal.woff2", weight: "500", style: "normal" },
+    { path: "../fonts/satoshi-latin-700-normal.woff2", weight: "700", style: "normal" },
+  ],
+  display: "swap",
+  variable: "--font-satoshi",
+  preload: true,
+  fallback: ["ui-sans-serif", "system-ui", "sans-serif"],
+  adjustFontFallback: "Arial",
+});
+
 // SEO decision (Pass 1 §2): visible H1 stays short/human; keyword line lives here.
 export const metadata: Metadata = {
   title:
@@ -43,7 +56,7 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${geom.variable} ${manrope.variable}`}>
+    <html lang="en" className={`${geom.variable} ${manrope.variable} ${satoshi.variable}`}>
       <body>{children}</body>
     </html>
   );
