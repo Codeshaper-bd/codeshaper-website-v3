@@ -113,7 +113,7 @@ export default function MeshType({ className = "" }: { className?: string }) {
       }
 
       ctx.globalCompositeOperation = "source-over";
-      raf = requestAnimationFrame(draw);
+      if (!reduced) raf = requestAnimationFrame(draw);
     };
 
     const start = () => {
