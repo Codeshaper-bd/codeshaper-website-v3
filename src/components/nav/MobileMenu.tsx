@@ -86,7 +86,7 @@ export default function MobileMenu({ open, onClose }: { open: boolean; onClose: 
           <div
             className="aspect-[16/9] w-full"
             aria-hidden
-            style={{ background: "linear-gradient(135deg, #232350 0%, #4a3a8e 45%, #96604a 100%)" }}
+            style={{ background: "linear-gradient(135deg, #667EEA 0%, #44549B 55%, #14B8A6 100%)" }}
           />
           <div className="p-5">
             <p className="menu-section-label font-body">
@@ -136,7 +136,7 @@ export default function MobileMenu({ open, onClose }: { open: boolean; onClose: 
           <Link
             href="/contact"
             onClick={onClose}
-            className="inline-block rounded-full border border-aurora-indigo/70 bg-aurora-indigo/5 px-6 py-3 font-display text-sm font-medium text-ink shadow-[0_0_18px_rgba(91,95,239,0.32)]"
+            className="inline-block rounded-full bg-aurora-indigo px-6 py-3 font-display text-sm font-medium text-white"
           >
             Book a Call
           </Link>
