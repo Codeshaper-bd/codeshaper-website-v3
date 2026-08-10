@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="112" height="194" viewBox="0 0 112 194">
+  <!-- Tileable hexagon line pattern — Codeshaper background texture.
+       Tile: two offset hex rows; stroke uses currentColor so CSS controls tint. -->
+  <g fill="none" stroke="currentColor" stroke-width="1" opacity="0.5">
+    <path d="M56 0 L112 32.33 L112 97 L56 129.33 L0 97 L0 32.33 Z"/>
+    <path d="M56 129.33 L112 161.66 L112 194 M0 161.66 L56 129.33 M0 161.66 L0 194 M112 161.66 L112 194"/>
+    <path d="M-56 129.33 L0 161.66 M112 161.66 L168 129.33"/>
+  </g>
+</svg>

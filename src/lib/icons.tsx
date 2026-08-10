@@ -1,0 +1,115 @@
+import {
+  PenTool,
+  Code2,
+  Globe,
+  ShoppingBag,
+  Sparkles,
+  Building2,
+  ShoppingCart,
+  Home,
+  Truck,
+  Plane,
+  Briefcase,
+  Landmark,
+  Shirt,
+  Route,
+  Handshake,
+  PackageCheck,
+  Newspaper,
+  BookOpen,
+  Mail,
+  Info,
+  Users,
+  MessageSquare,
+  LayoutDashboard,
+  Compass,
+  Component,
+  TrendingUp,
+  Monitor,
+  Smartphone,
+  Layers,
+  RefreshCw,
+  Plug,
+  FileText,
+  Wand2,
+  LifeBuoy,
+  Store,
+  Package,
+  Puzzle,
+  Brain,
+  Bot,
+  Workflow,
+  type LucideIcon,
+} from "lucide-react";
+
+/**
+ * Single Lucide icon registry so every icon in the nav renders from the same
+ * library at a consistent stroke. Keys match the `icon` fields in
+ * lib/navigation.ts and SERVICE_ICONS below.
+ */
+export const ICONS: Record<string, LucideIcon> = {
+  "pen-tool": PenTool,
+  "code-2": Code2,
+  globe: Globe,
+  "shopping-bag": ShoppingBag,
+  sparkles: Sparkles,
+  "building-2": Building2,
+  "shopping-cart": ShoppingCart,
+  home: Home,
+  truck: Truck,
+  plane: Plane,
+  briefcase: Briefcase,
+  landmark: Landmark,
+  shirt: Shirt,
+  route: Route,
+  handshake: Handshake,
+  "package-check": PackageCheck,
+  newspaper: Newspaper,
+  "book-open": BookOpen,
+  mail: Mail,
+  info: Info,
+  users: Users,
+  "message-square": MessageSquare,
+  // sub-service icons (mega menu detail cards)
+  "layout-dashboard": LayoutDashboard,
+  compass: Compass,
+  component: Component,
+  "trending-up": TrendingUp,
+  monitor: Monitor,
+  smartphone: Smartphone,
+  layers: Layers,
+  "refresh-cw": RefreshCw,
+  plug: Plug,
+  "file-text": FileText,
+  "wand-2": Wand2,
+  "life-buoy": LifeBuoy,
+  store: Store,
+  package: Package,
+  puzzle: Puzzle,
+  brain: Brain,
+  bot: Bot,
+  workflow: Workflow,
+};
+
+/** Service column → Lucide icon (Step 3 mapping). */
+export const SERVICE_ICONS: Record<string, string> = {
+  design: "pen-tool",
+  engineering: "code-2",
+  websites: "globe",
+  commerce: "shopping-bag",
+  ai: "sparkles",
+};
+
+export function Icon({
+  name,
+  size = 16,
+  className = "",
+}: {
+  name: string;
+  size?: number;
+  className?: string;
+}) {
+  const Cmp = ICONS[name];
+  if (!Cmp) return null;
+  return <Cmp size={size} strokeWidth={1.5} className={className} aria-hidden />;
+}

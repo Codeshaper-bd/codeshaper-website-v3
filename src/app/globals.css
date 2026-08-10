@@ -1,0 +1,527 @@
+@import "tailwindcss";
+
+@theme {
+  /* ── Color system (exact hex per spec §2) ─────────────── */
+  --color-canvas: #0a0a0f;            /* ink (dark surface) */
+  --color-canvas-raised: #13131a;     /* ink elevated (dark cards/panels) */
+  --color-panel: #0b0b10;             /* mega menu panel base */
+  --color-light-surface: #f5f4f2;     /* off-white (light surface) */
+  --color-light-raised: #ffffff;      /* light elevated (light cards) */
+
+  --color-ink: #f5f4f2;               /* text on dark, primary */
+  /* secondary text lifted from #9C9CA8 → #ADADB8 (≈8.4:1 on #0A0A0F) so menu
+     links and body copy stay comfortably readable, not just AA-passing */
+  --color-ink-dim: #adadb8;
+  --color-ink-faint: #8f8f9c;         /* decorative numerals/eyebrows (~6.2:1 ✓) */
+  --color-light-ink: #12121a;         /* text on light, primary */
+  --color-light-dim: #5b5b66;         /* text on light, secondary */
+  --color-menu-label: #6d6d7d;        /* section labels inside dark menus */
+
+  --color-aurora-indigo: #5b5fef;
+  --color-aurora-violet: #8b5fe0;
+  --color-aurora-amber: #f2a65a;
+
+  --color-hairline: rgba(255, 255, 255, 0.08);       /* 1px, dark surfaces */
+  --color-hairline-strong: rgba(255, 255, 255, 0.16);
+  --color-hairline-light: rgba(0, 0, 0, 0.08);       /* 1px, light surfaces */
+
+  /* ── Typography: Geom (headings) · Manrope (body) ── */
+  --font-display: var(--font-geom), ui-sans-serif, system-ui, sans-serif;
+  --font-body: var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
+
+  --ease-mechanical: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ── Base ────────────────────────────────────────────────── */
+html {
+  scroll-behavior: auto; /* Lenis owns scrolling */
+}
+
+body {
+  background: var(--color-canvas);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: clip;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--color-aurora-violet) 40%, transparent);
+  color: var(--color-ink);
+}
+
+/* Hide native cursor only when custom cursor is active (fine pointers only) */
+[data-custom-cursor="true"],
+[data-custom-cursor="true"] * {
+  cursor: none !important;
+}
+
+@media (prefers-reduced-motion: reduce), (pointer: coarse) {
+  [data-custom-cursor="true"],
+  [data-custom-cursor="true"] * {
+    cursor: auto !important;
+  }
+}
+
+/* ── Surfaces & elevation (v3 §4) ────────────────────────── */
+.panel {
+  border: 1px solid var(--color-hairline);
+  background: var(--color-canvas-raised);
+}
+
+.panel-light {
+  border: 1px solid var(--color-hairline-light);
+  background: var(--color-light-raised);
+}
+
+/* Light-surface card: exact §4 shadow recipe */
+.card-light {
+  background: var(--color-light-raised);
+  border: 1px solid var(--color-hairline-light);
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.04),
+    0 8px 24px rgba(0, 0, 0, 0.06);
+  transition: box-shadow 300ms ease, transform 300ms ease;
+}
+
+.card-light:hover {
+  box-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.05),
+    0 14px 36px rgba(0, 0, 0, 0.1);
+}
+
+/* Dark-surface card: shadows don't read on dark — 12% border + soft aurora glow */
+.card-dark {
+  background: var(--color-canvas-raised);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow:
+    0 0 0 1px rgba(91, 95, 239, 0.06),
+    0 0 40px rgba(139, 95, 224, 0.1);
+  transition: box-shadow 300ms ease;
+}
+
+.card-dark:hover {
+  box-shadow:
+    0 0 0 1px rgba(91, 95, 239, 0.12),
+    0 0 56px rgba(139, 95, 224, 0.18);
+}
+
+/* Glass — decorative blur over a solid base + dark-card elevation */
+.glass {
+  background: rgba(19, 19, 26, 0.92);
+  backdrop-filter: blur(20px) saturate(1.3);
+  -webkit-backdrop-filter: blur(20px) saturate(1.3);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow:
+    0 0 0 1px rgba(91, 95, 239, 0.06),
+    0 0 48px rgba(139, 95, 224, 0.12);
+}
+
+/* Mega menu panel: fully opaque solid — content behind must NEVER be legible.
+   No backdrop-filter: on an opaque surface it adds nothing and some
+   renderers composite it incorrectly (backdrop bleed artifact). */
+.mega-panel {
+  /* Fully opaque base: a translucent surface + backdrop-filter composites
+     incorrectly on some engines and page text reads through (an earlier
+     regression). Over a #0A0A0F page the 2% is invisible anyway. The gradient
+     wash on top gives the panel depth without risking bleed-through. */
+  background:
+    radial-gradient(120% 140% at 12% 0%, rgba(91, 95, 239, 0.10), transparent 55%),
+    radial-gradient(90% 120% at 88% 10%, rgba(242, 166, 90, 0.06), transparent 60%),
+    rgb(11, 11, 16);
+  border-bottom: 1px solid var(--color-hairline);
+  box-shadow: 0 32px 80px rgba(0, 0, 0, 0.55);
+  will-change: transform, opacity;
+}
+
+/* Dropdown surface: same material language, smaller */
+.dropdown-panel {
+  background:
+    radial-gradient(120% 140% at 20% 0%, rgba(91, 95, 239, 0.12), transparent 60%),
+    rgb(11, 11, 16) !important;
+}
+.dropdown-panel::before {
+  content: "";
+  position: absolute;
+  inset-inline: 12px;
+  top: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(91, 95, 239, 0.6), transparent);
+}
+
+/* Menu rows: a soft gradient sweep appears under the pointer */
+.menu-row {
+  position: relative;
+  isolation: isolate;
+}
+.menu-row::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  z-index: -1;
+  opacity: 0;
+  background: linear-gradient(
+    90deg,
+    rgba(91, 95, 239, 0.16),
+    rgba(139, 95, 224, 0.10) 55%,
+    transparent
+  );
+  transition: opacity 220ms ease;
+}
+.menu-row:hover::after,
+.menu-row[data-on="true"]::after {
+  opacity: 1;
+}
+
+/* Icon tiles: gradient-lit when active */
+.icon-tile {
+  transition: background 260ms ease, border-color 260ms ease, box-shadow 260ms ease;
+}
+.icon-tile[data-on="true"] {
+  background: linear-gradient(140deg, rgba(91, 95, 239, 0.28), rgba(139, 95, 224, 0.16));
+  border-color: rgba(91, 95, 239, 0.55);
+  box-shadow: 0 0 20px rgba(91, 95, 239, 0.28);
+}
+
+/* Scrim: explicit rgba (not a color-mix/oklab-derived utility — those can
+   rasterize as transparent in some engines). */
+.nav-scrim {
+  background: rgba(0, 0, 0, 0.55);
+  will-change: opacity;
+  transition: opacity 150ms ease;
+}
+
+/* ── Marquee ─────────────────────────────────────────────── */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+.marquee-track {
+  animation: marquee 36s linear infinite;
+  will-change: transform;
+}
+
+.marquee-track:hover,
+.marquee-paused .marquee-track {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track {
+    animation: none;
+  }
+}
+
+/* ── Aurora drift (CSS fallback + backdrop layers) ───────── */
+@keyframes aurora-drift-a {
+  0%, 100% { transform: translate(-6%, -4%) scale(1); }
+  50% { transform: translate(8%, 6%) scale(1.15); }
+}
+@keyframes aurora-drift-b {
+  0%, 100% { transform: translate(6%, 5%) scale(1.1); }
+  50% { transform: translate(-7%, -6%) scale(0.95); }
+}
+
+.aurora-fallback-a { animation: aurora-drift-a 18s ease-in-out infinite; }
+.aurora-fallback-b { animation: aurora-drift-b 22s ease-in-out infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .aurora-fallback-a,
+  .aurora-fallback-b { animation: none; }
+}
+
+/* ── Focus visibility ────────────────────────────────────── */
+:focus-visible {
+  outline: 2px solid var(--color-aurora-violet);
+  outline-offset: 3px;
+}
+
+/* ════════ PASS 2 — motion layer ════════ */
+
+/* Custom cursor suspension over text fields (native caret returns) */
+[data-cursor-suspend],
+[data-cursor-suspend] * {
+  cursor: auto !important;
+}
+
+/* Mega menu panel entrance: translateY(-8px→0) + fade, 200ms; columns
+   stagger 40ms after the panel lands. Radix drives data-state. */
+@keyframes menu-panel-in {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes menu-col-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.mega-panel[data-state="open"] {
+  animation: menu-panel-in 200ms ease both;
+}
+
+.mega-panel[data-state="open"] .menu-col {
+  animation: menu-col-in 300ms ease both;
+}
+.mega-panel[data-state="open"] .menu-col:nth-child(1) { animation-delay: 200ms; }
+.mega-panel[data-state="open"] .menu-col:nth-child(2) { animation-delay: 240ms; }
+.mega-panel[data-state="open"] .menu-col:nth-child(3) { animation-delay: 280ms; }
+.mega-panel[data-state="open"] .menu-col:nth-child(4) { animation-delay: 320ms; }
+.mega-panel[data-state="open"] .menu-col:nth-child(5) { animation-delay: 360ms; }
+.mega-panel[data-state="open"] .menu-col:nth-child(6) { animation-delay: 400ms; }
+
+/* Menu link hover: arrow slides in from the left, text nudges 2px right */
+.menu-link {
+  position: relative;
+  transition: transform 200ms ease, color 200ms ease;
+}
+.menu-link::before {
+  content: "→";
+  position: absolute;
+  left: -0.9em;
+  opacity: 0;
+  transform: translateX(-6px);
+  transition: opacity 200ms ease, transform 200ms ease;
+}
+.menu-link:hover {
+  transform: translateX(2px);
+}
+.menu-link:hover::before {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* AI column aurora wash intensifies on hover (8% → 12%) */
+.ai-col-wash {
+  transition: opacity 300ms ease;
+}
+.menu-col:hover .ai-col-wash {
+  opacity: 0.12 !important;
+}
+
+/* Delivery card connector: draws in (scaleX) once the card has revealed */
+.connector-line {
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 600ms cubic-bezier(0.16, 1, 0.3, 1) 250ms;
+}
+[data-shown="true"] .connector-line {
+  transform: scaleX(1);
+}
+
+/* Card lift hovers (transform-only) */
+.lift-sm { transition: transform 300ms ease, box-shadow 300ms ease; }
+.lift-sm:hover { transform: translateY(-2px); }
+.lift-md { transition: transform 300ms ease, box-shadow 300ms ease; }
+.lift-md:hover { transform: translateY(-4px); }
+
+/* Locations: horizon glow pulse (~10s) + staggered dot pulses */
+@keyframes horizon-pulse {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 1; }
+}
+.horizon-pulse { animation: horizon-pulse 10s ease-in-out infinite; }
+
+@keyframes dot-pulse {
+  0%, 100% { opacity: 0.7; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.35); }
+}
+.dot-pulse { animation: dot-pulse 3.2s ease-in-out infinite; }
+
+/* Location card hover: glass brightens, city name → amber */
+.loc-card { transition: background-color 300ms ease; }
+.loc-card:hover { background: rgba(30, 30, 40, 0.94); }
+.loc-card .loc-city { transition: color 300ms ease; }
+.loc-card:hover .loc-city { color: var(--color-aurora-amber); }
+
+/* Form invalid shake (±4px, ~300ms) */
+@keyframes shake-x {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  50% { transform: translateX(4px); }
+  75% { transform: translateX(-4px); }
+}
+.shake { animation: shake-x 300ms ease; }
+
+/* Form fields only paint red once a submit attempt has failed — an empty
+   required <select> is :invalid from first paint (no :placeholder-shown
+   equivalent for <select>), so gating on data-show-errors keeps untouched
+   dropdowns looking normal instead of permanently "broken". */
+form[data-show-errors="true"] :invalid {
+  border-color: rgba(248, 113, 113, 0.6);
+}
+
+/* Chat typing indicator */
+@keyframes typing-dot {
+  0%, 60%, 100% { opacity: 0.25; transform: translateY(0); }
+  30% { opacity: 1; transform: translateY(-3px); }
+}
+.typing-dot { animation: typing-dot 1s ease-in-out infinite; }
+.typing-dot:nth-child(2) { animation-delay: 150ms; }
+.typing-dot:nth-child(3) { animation-delay: 300ms; }
+
+/* Hero core glow: sits under the particle mark, drifts with the pointer.
+   GSAP writes rotate/scale/opacity on scroll; the pointer offset rides on
+   custom properties so the two never fight over `transform`. */
+.hero-mark {
+  translate: calc(-50% + var(--tx, 0px)) calc(-50% + var(--ty, 0px));
+  filter: blur(2px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-mark {
+    translate: -50% -50%;
+  }
+}
+
+/* Hero workspace scene layers: promoted for smooth per-layer parallax */
+.scene-layer {
+  will-change: transform, opacity;
+  transform-style: preserve-3d;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scene-layer {
+    transform: none !important;
+    opacity: 1 !important;
+  }
+}
+
+/* ── Menu typography & polish ─────────────────────────────
+   Menus use the body face at a slightly larger size with tightened tracking;
+   labels get a brighter grey than the old #5B5B66, which was near-invisible
+   on the panel surface. */
+.menu-section-label {
+  color: #7c7c8c;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+/* Mega panel edge: a hairline of aurora light so the panel feels lit, not flat */
+.mega-panel::before {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(91, 95, 239, 0.5) 25%,
+    rgba(139, 95, 224, 0.5) 55%,
+    rgba(242, 166, 90, 0.35) 80%,
+    transparent
+  );
+}
+.mega-panel {
+  position: relative;
+}
+
+/* Compact dropdowns (non-Services): small anchored panel, same enter motion
+   as the mega panel but no column stagger. */
+.dropdown-panel[data-state="open"] {
+  animation: menu-panel-in 180ms ease both;
+}
+.dropdown-panel[data-state="closed"] {
+  animation: menu-fade-out 120ms ease both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dropdown-panel[data-state="open"],
+  .dropdown-panel[data-state="closed"] {
+    animation: none;
+  }
+}
+
+/* Mega menu detail pane: links fade/slide in when the active pillar changes */
+@keyframes detail-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.detail-links > li {
+  animation: detail-in 260ms ease both;
+}
+.detail-links > li:nth-child(2) { animation-delay: 30ms; }
+.detail-links > li:nth-child(3) { animation-delay: 60ms; }
+.detail-links > li:nth-child(4) { animation-delay: 90ms; }
+.detail-links > li:nth-child(5) { animation-delay: 120ms; }
+.detail-links > li:nth-child(6) { animation-delay: 150ms; }
+
+@media (prefers-reduced-motion: reduce) {
+  .detail-links > li { animation: none; }
+}
+
+/* Hero scroll cue: dot travels down the 1px line, looping */
+@keyframes scroll-cue {
+  0% { transform: translate(-50%, -8px); opacity: 0; }
+  25% { opacity: 1; }
+  75% { opacity: 1; }
+  100% { transform: translate(-50%, 56px); opacity: 0; }
+}
+.scroll-cue-dot { animation: scroll-cue 2.4s ease-in-out infinite; }
+
+/* Nav link underline: 2px, scales in from left */
+.nav-underline {
+  position: relative;
+}
+.nav-underline::after {
+  content: "";
+  position: absolute;
+  left: 0.75rem;
+  right: 0.75rem;
+  bottom: 0.25rem;
+  height: 2px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 200ms ease;
+}
+.nav-underline:hover::after,
+.nav-underline[data-state="open"]::after {
+  transform: scaleX(1);
+}
+
+/* Mega menu exit: fast single fade, no stagger (enter rules are above) */
+.mega-panel[data-state="closed"] {
+  animation: menu-fade-out 120ms ease both;
+}
+@keyframes menu-fade-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+/* Industries chip pop */
+@keyframes chip-pop {
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1); }
+}
+[data-shown="true"] .chip-pop { animation: chip-pop 400ms cubic-bezier(0.16, 1, 0.3, 1) both; }
+[data-shown="true"] .chip-pop:nth-child(2) { animation-delay: 80ms; }
+[data-shown="true"] .chip-pop:nth-child(3) { animation-delay: 160ms; }
+
+/* Reduced motion: kill every Pass 2 loop/animation, keep content visible */
+@media (prefers-reduced-motion: reduce) {
+  .horizon-pulse,
+  .dot-pulse,
+  .typing-dot,
+  .scroll-cue-dot,
+  .shake,
+  .menu-col,
+  .mega-panel[data-state="open"],
+  [data-shown="true"] .chip-pop {
+    animation: none !important;
+  }
+  .connector-line {
+    transform: scaleX(1);
+    transition: none;
+  }
+  .lift-sm:hover,
+  .lift-md:hover,
+  .menu-link:hover {
+    transform: none;
+  }
+}
