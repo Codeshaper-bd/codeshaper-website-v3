@@ -15,7 +15,12 @@ import Magnetic from "@/components/system/Magnetic";
  * Header.
  *
  * Menu shapes (deliberately different):
- *  · Services  → full-width MEGA panel rendered in the shared Radix viewport
+ *  · Services, Industries → full-width MEGA panel. Each Nav.Content
+ *    self-positions as a fixed floating card — deliberately NOT using a
+ *    shared Radix Viewport, since NavigationMenu.Viewport is a Root-wide
+ *    singleton that portals ALL Content through one surface once present,
+ *    which would also swallow the compact dropdowns below and break their
+ *    own trigger-anchored positioning.
  *  · Everything else → compact dropdown anchored under its own trigger
  *    (rendered inside the Item, so it positions itself and stays small)
  *
@@ -86,7 +91,7 @@ export default function Navbar() {
                     </Nav.Link>
                   </Nav.Item>
 
-                  {/* Services + Industries — MEGA (share the floating viewport) */}
+                  {/* Services + Industries — MEGA, each a self-positioned floating card */}
                   <Nav.Item value="services">
                     <Nav.Trigger className={triggerCls}>
                       Services
@@ -96,7 +101,10 @@ export default function Navbar() {
                         className="transition-transform duration-200 group-data-[state=open]:rotate-180"
                       />
                     </Nav.Trigger>
-                    <Nav.Content>
+                    <Nav.Content
+                      className="mega-panel fixed left-1/2 top-[74px] z-40 w-[min(calc(100vw-48px),1180px)] -translate-x-1/2 data-[state=closed]:hidden"
+                      style={{ position: "fixed" }}
+                    >
                       <MegaPanel />
                     </Nav.Content>
                   </Nav.Item>
@@ -110,7 +118,10 @@ export default function Navbar() {
                         className="transition-transform duration-200 group-data-[state=open]:rotate-180"
                       />
                     </Nav.Trigger>
-                    <Nav.Content>
+                    <Nav.Content
+                      className="mega-panel fixed left-1/2 top-[74px] z-40 w-[min(calc(100vw-48px),1180px)] -translate-x-1/2 data-[state=closed]:hidden"
+                      style={{ position: "fixed" }}
+                    >
                       <IndustriesMegaPanel />
                     </Nav.Content>
                   </Nav.Item>
@@ -128,14 +139,6 @@ export default function Navbar() {
                   ))}
                 </Nav.List>
 
-                {/* Shared floating viewport = the mega panel surface (Services +
-                    Industries). Compact dropdowns render inside their own Item. */}
-                <div
-                  className="fixed left-1/2 top-[74px] z-40 w-[min(calc(100vw-48px),1180px)] -translate-x-1/2"
-                  style={{ pointerEvents: megaOpen ? "auto" : "none" }}
-                >
-                  <Nav.Viewport className="mega-panel data-[state=closed]:hidden" />
-                </div>
               </Nav.Root>
             </div>
 
@@ -201,7 +204,7 @@ function DropdownItem({
           className="transition-transform duration-200 group-data-[state=open]:rotate-180"
         />
       </Nav.Trigger>
-      <Nav.Content className="dropdown-panel mx-auto my-5 w-[300px] rounded-xl border border-hairline bg-white p-2 shadow-[0_20px_48px_rgba(11,15,25,0.14)]">
+      <Nav.Content className="dropdown-panel absolute left-1/2 top-full z-40 mt-3 w-[300px] -translate-x-1/2 rounded-xl border border-hairline bg-white p-2 shadow-[0_20px_48px_rgba(11,15,25,0.14)]">
         <ul>
           {menu.links.map((l, i) => (
             <li key={l.href}>
