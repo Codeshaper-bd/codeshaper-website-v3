@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { SERVICE_COLUMNS, SIMPLE_MENUS } from "@/lib/navigation";
+import { SERVICE_COLUMNS, SIMPLE_MENUS, INDUSTRIES, ENGAGEMENT_MODELS } from "@/lib/navigation";
 
 /**
  * 4.11 Footer — DARK, flat, quiet. 5 aligned columns
@@ -8,8 +8,6 @@ import { SERVICE_COLUMNS, SIMPLE_MENUS } from "@/lib/navigation";
  */
 const CITY_NAMES = ["[City 1]", "[City 2]", "[City 3]", "[City 4]", "[City 5]"]; // PLACEHOLDER
 
-const industries = SIMPLE_MENUS.find((m) => m.id === "industries")!;
-const howWeWork = SIMPLE_MENUS.find((m) => m.id === "how-we-work")!;
 const insights = SIMPLE_MENUS.find((m) => m.id === "insights")!;
 const company = SIMPLE_MENUS.find((m) => m.id === "company")!;
 
@@ -61,7 +59,7 @@ export default function Footer() {
           <div>
             <p className={colHead}>Industries</p>
             <ul className="space-y-2.5">
-              {industries.links.map((l) => (
+              {INDUSTRIES.map((l) => (
                 <li key={l.href}>
                   <Link href={l.href} className={colLink}>{l.label}</Link>
                 </li>
@@ -72,11 +70,11 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* How We Work */}
+          {/* How We Engage */}
           <div>
-            <p className={colHead}>How We Work</p>
+            <p className={colHead}>How We Engage</p>
             <ul className="space-y-2.5">
-              {howWeWork.links.map((l) => (
+              {ENGAGEMENT_MODELS.map((l) => (
                 <li key={l.href}>
                   <Link href={l.href} className={colLink}>{l.label}</Link>
                 </li>
