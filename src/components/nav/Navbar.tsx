@@ -7,6 +7,7 @@ import { ChevronDown } from "lucide-react";
 import { SIMPLE_MENUS } from "@/lib/navigation";
 import { Icon } from "@/lib/icons";
 import MegaPanel from "./MegaPanel";
+import IndustriesMegaPanel from "./IndustriesMegaPanel";
 import MobileMenu from "./MobileMenu";
 import Magnetic from "@/components/system/Magnetic";
 
@@ -39,7 +40,7 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const megaOpen = openValue === "services";
+  const megaOpen = openValue === "services" || openValue === "industries";
 
   return (
     <>
@@ -77,7 +78,15 @@ export default function Navbar() {
             <div ref={rootRef} className="ml-auto mr-6 hidden lg:block">
               <Nav.Root value={openValue} onValueChange={setOpenValue} className="relative">
                 <Nav.List className="flex items-center gap-1">
-                  {/* Services — MEGA (uses the shared full-width viewport) */}
+                  <Nav.Item>
+                    <Nav.Link asChild>
+                      <Link href="/" className={triggerCls}>
+                        Home
+                      </Link>
+                    </Nav.Link>
+                  </Nav.Item>
+
+                  {/* Services + Industries — MEGA (share the floating viewport) */}
                   <Nav.Item value="services">
                     <Nav.Trigger className={triggerCls}>
                       Services
@@ -92,35 +101,51 @@ export default function Navbar() {
                     </Nav.Content>
                   </Nav.Item>
 
-                  {SIMPLE_MENUS.slice(0, 2).map((m) => (
-                    <DropdownItem key={m.id} menu={m} />
-                  ))}
+                  <Nav.Item value="industries">
+                    <Nav.Trigger className={triggerCls}>
+                      Industries
+                      <ChevronDown
+                        size={13}
+                        strokeWidth={1.75}
+                        className="transition-transform duration-200 group-data-[state=open]:rotate-180"
+                      />
+                    </Nav.Trigger>
+                    <Nav.Content>
+                      <IndustriesMegaPanel />
+                    </Nav.Content>
+                  </Nav.Item>
 
                   <Nav.Item>
                     <Nav.Link asChild>
                       <Link href="/work" className={triggerCls}>
-                        Work
+                        Success Stories
                       </Link>
                     </Nav.Link>
                   </Nav.Item>
 
-                  {SIMPLE_MENUS.slice(2).map((m) => (
+                  {SIMPLE_MENUS.map((m) => (
                     <DropdownItem key={m.id} menu={m} />
                   ))}
                 </Nav.List>
 
-                {/* Shared viewport = the mega panel surface. Compact dropdowns
-                    render inside their own Item, so this only shows for Services. */}
+                {/* Shared floating viewport = the mega panel surface (Services +
+                    Industries). Compact dropdowns render inside their own Item. */}
                 <div
-                  className="fixed inset-x-0 top-16 z-40"
+                  className="fixed left-1/2 top-[74px] z-40 w-[min(calc(100vw-48px),1180px)] -translate-x-1/2"
                   style={{ pointerEvents: megaOpen ? "auto" : "none" }}
                 >
-                  <Nav.Viewport className="mega-panel w-full data-[state=closed]:hidden" />
+                  <Nav.Viewport className="mega-panel data-[state=closed]:hidden" />
                 </div>
               </Nav.Root>
             </div>
 
             <div className="flex items-center gap-3">
+              <Link
+                href="/work"
+                className="hidden rounded-full border border-aurora-indigo/25 px-5 py-2 font-display text-sm font-medium text-ink-dim transition-colors duration-300 hover:border-aurora-indigo/45 hover:text-ink sm:inline-block"
+              >
+                View Work
+              </Link>
               <Magnetic>
                 <Link
                   href="/contact"
@@ -159,7 +184,12 @@ export default function Navbar() {
 function DropdownItem({
   menu,
 }: {
-  menu: { id: string; label: string; links: { label: string; href: string; icon: string }[] };
+  menu: {
+    id: string;
+    label: string;
+    dividerAfterIndex?: number;
+    links: { label: string; href: string; icon: string }[];
+  };
 }) {
   return (
     <Nav.Item value={menu.id} className="relative">
@@ -171,9 +201,9 @@ function DropdownItem({
           className="transition-transform duration-200 group-data-[state=open]:rotate-180"
         />
       </Nav.Trigger>
-      <Nav.Content className="dropdown-panel absolute left-1/2 top-full z-40 mt-3 w-[300px] -translate-x-1/2 rounded-xl border border-hairline bg-white p-2 shadow-[0_20px_48px_rgba(11,15,25,0.14)]">
+      <Nav.Content className="dropdown-panel mx-auto my-5 w-[300px] rounded-xl border border-hairline bg-white p-2 shadow-[0_20px_48px_rgba(11,15,25,0.14)]">
         <ul>
-          {menu.links.slice(0, 8).map((l) => (
+          {menu.links.map((l, i) => (
             <li key={l.href}>
               <Nav.Link asChild>
                 <Link
@@ -186,6 +216,7 @@ function DropdownItem({
                   {l.label}
                 </Link>
               </Nav.Link>
+              {menu.dividerAfterIndex === i && <div className="my-1.5 h-px bg-hairline" aria-hidden />}
             </li>
           ))}
         </ul>
