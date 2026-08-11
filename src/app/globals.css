@@ -246,10 +246,6 @@ body {
 .icon-tile {
   transition: background 260ms ease, border-color 260ms ease, box-shadow 260ms ease;
 }
-.icon-tile[data-on="true"] {
-  background: linear-gradient(140deg, rgba(102, 126, 234, 0.18), rgba(20, 184, 166, 0.10));
-  border-color: rgba(102, 126, 234, 0.55);
-}
 
 /* ── Mega menu row/tile/card system ──────────────────────────
    Shared by EngageCard, MegaPanel (Services), and IndustriesMegaPanel —
@@ -447,14 +443,6 @@ body {
   transform: translateX(0);
 }
 
-/* AI column aurora wash intensifies on hover (8% → 12%) */
-.ai-col-wash {
-  transition: opacity 300ms ease;
-}
-.menu-col:hover .ai-col-wash {
-  opacity: 0.12 !important;
-}
-
 /* Delivery card connector: draws in (scaleX) once the card has revealed */
 .connector-line {
   transform: scaleX(0);
@@ -588,24 +576,6 @@ form[data-show-errors="true"] :invalid {
   .dropdown-panel[data-state="closed"] {
     animation: none;
   }
-}
-
-/* Mega menu detail pane: links fade/slide in when the active pillar changes */
-@keyframes detail-in {
-  from { opacity: 0; transform: translateY(4px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-.detail-links > li {
-  animation: detail-in 260ms ease both;
-}
-.detail-links > li:nth-child(2) { animation-delay: 30ms; }
-.detail-links > li:nth-child(3) { animation-delay: 60ms; }
-.detail-links > li:nth-child(4) { animation-delay: 90ms; }
-.detail-links > li:nth-child(5) { animation-delay: 120ms; }
-.detail-links > li:nth-child(6) { animation-delay: 150ms; }
-
-@media (prefers-reduced-motion: reduce) {
-  .detail-links > li { animation: none; }
 }
 
 /* Hero scroll cue: dot travels down the 1px line, looping */
