@@ -59,6 +59,9 @@
   --color-panel: #ffffff;
   --color-ink: #0b0f19;
   --color-ink-dim: #6b7280;
+  /* A tone between ink and ink-dim, used by a couple of mega-menu labels
+     in the reference (10.31:1 on white — safely passes). */
+  --color-ink-mid: #374151;
   /* Was #9ca3af (2.54:1 on white — fails WCAG AA). Converged with ink-dim's
      value (4.83:1 ✓) rather than inventing a third grey that might still
      fail; see final-review fix pass. */
@@ -184,16 +187,18 @@ body {
    No backdrop-filter: on an opaque surface it adds nothing and some
    renderers composite it incorrectly (backdrop bleed artifact). */
 .mega-panel {
-  /* Fully opaque base: a translucent surface + backdrop-filter composites
-     incorrectly on some engines and page text reads through (an earlier
-     regression). Over a #0A0A0F page the 2% is invisible anyway. The gradient
-     wash on top gives the panel depth without risking bleed-through. */
+  /* Floating rounded card (mega menu rebuild) — was an edge-to-edge panel;
+     now centered below the bar with its own border + shadow + radius,
+     matching the v2 reference. overflow:hidden clips the ::before
+     top-hairline (below) to the rounded corners for free. */
   background:
     radial-gradient(120% 140% at 12% 0%, rgba(102, 126, 234, 0.05), transparent 55%),
     radial-gradient(90% 120% at 88% 10%, rgba(20, 184, 166, 0.04), transparent 60%),
     #ffffff;
-  border-bottom: 1px solid var(--color-hairline);
-  box-shadow: 0 24px 64px rgba(11, 15, 25, 0.1);
+  border: 1px solid var(--color-hairline);
+  border-radius: 24px;
+  box-shadow: 0 24px 70px rgba(11, 15, 25, 0.12), 0 4px 14px rgba(11, 15, 25, 0.05);
+  overflow: hidden;
   will-change: transform, opacity;
 }
 
@@ -244,6 +249,86 @@ body {
 .icon-tile[data-on="true"] {
   background: linear-gradient(140deg, rgba(102, 126, 234, 0.18), rgba(20, 184, 166, 0.10));
   border-color: rgba(102, 126, 234, 0.55);
+}
+
+/* ── Mega menu row/tile/card system ──────────────────────────
+   Shared by EngageCard, MegaPanel (Services), and IndustriesMegaPanel —
+   the three "always-visible list" row types the v2 reference calls
+   .mega-em-row / .mega-svc / .mega-ind, unified here since they render
+   identically. Text-color rule: hover text uses aurora-violet, never bare
+   aurora-indigo (3.66:1, fails 4.5:1 for normal text — see Global
+   Constraints). Icon/arrow glyphs stay indigo (non-text UI, 3:1 minimum). */
+.mega-col-label {
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--color-aurora-violet);
+}
+
+.mega-row {
+  border: 1px solid transparent;
+  transition: background 180ms ease, border-color 180ms ease;
+}
+.mega-row:hover {
+  background: rgba(102, 126, 234, 0.06);
+  border-color: rgba(102, 126, 234, 0.12);
+}
+.mega-row:hover .mega-row-name {
+  color: var(--color-aurora-violet);
+}
+.mega-row:hover .mega-svc-arrow {
+  transform: translateX(4px);
+  color: var(--color-aurora-indigo);
+}
+
+.mega-icon-tile {
+  background: linear-gradient(180deg, #ffffff 0%, var(--color-canvas-raised) 100%);
+  border: 1px solid rgba(102, 126, 234, 0.18);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 10px 22px rgba(102, 126, 234, 0.08);
+  transition: transform 180ms ease, background 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
+}
+.mega-row:hover .mega-icon-tile {
+  transform: translateY(-1px);
+  background: rgba(102, 126, 234, 0.1);
+  border-color: rgba(102, 126, 234, 0.28);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.85), 0 12px 26px rgba(102, 126, 234, 0.12);
+}
+
+.mega-feature-card {
+  background:
+    radial-gradient(circle at 86% 10%, rgba(102, 126, 234, 0.2), transparent 32%),
+    linear-gradient(145deg, #0b0f19 0%, #171a2c 55%, #20264b 100%);
+  border: 1px solid rgba(102, 126, 234, 0.18);
+  transition: transform 200ms ease, box-shadow 200ms ease;
+}
+.mega-feature-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 18px 48px rgba(11, 15, 25, 0.18);
+}
+
+.mega-chip {
+  border: 1px solid var(--color-hairline);
+  background: #ffffff;
+  color: var(--color-ink-dim);
+  transition: background 180ms ease, color 180ms ease, border-color 180ms ease;
+}
+.mega-chip:hover {
+  background: rgba(102, 126, 234, 0.08);
+  color: var(--color-aurora-violet);
+  border-color: rgba(102, 126, 234, 0.24);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mega-row,
+  .mega-icon-tile,
+  .mega-feature-card,
+  .mega-chip {
+    transition: none;
+  }
+  .mega-feature-card:hover {
+    transform: none;
+  }
 }
 
 /* Scrim: explicit rgba (not a color-mix/oklab-derived utility — those can
@@ -332,6 +417,14 @@ body {
 .mega-panel[data-state="open"] .menu-col:nth-child(4) { animation-delay: 320ms; }
 .mega-panel[data-state="open"] .menu-col:nth-child(5) { animation-delay: 360ms; }
 .mega-panel[data-state="open"] .menu-col:nth-child(6) { animation-delay: 400ms; }
+
+@media (prefers-reduced-motion: reduce) {
+  .mega-panel[data-state="open"],
+  .mega-panel[data-state="closed"],
+  .mega-panel[data-state="open"] .menu-col {
+    animation: none;
+  }
+}
 
 /* Menu link hover: arrow slides in from the left, text nudges 2px right */
 .menu-link {
