@@ -272,7 +272,7 @@ export default function Hero() {
         </h1>
 
         <p
-          className="mx-auto mt-7 max-w-2xl font-body text-base leading-relaxed text-ink-dim sm:text-lg"
+          className="mx-auto mt-7 max-w-2xl font-satoshi text-base leading-relaxed text-ink-dim sm:text-lg"
           style={seq(restIn)}
         >
           We design, build, and automate digital products for teams across the
@@ -292,7 +292,7 @@ export default function Hero() {
           <Magnetic>
             <Link
               href="/contact"
-              className="inline-flex items-center gap-2 rounded-full bg-aurora-indigo px-8 py-4 font-display text-sm font-medium text-white transition-[background-color,transform] duration-300 hover:scale-[1.02] hover:bg-aurora-violet"
+              className="inline-flex items-center gap-2 rounded-full bg-aurora-violet px-8 py-4 font-display text-sm font-medium text-white transition-[background-color,transform] duration-300 hover:scale-[1.02] hover:bg-aurora-violet-dark"
             >
               Book a Call
               <ArrowRight size={15} strokeWidth={1.75} />
@@ -340,7 +340,7 @@ export default function Hero() {
           className="pointer-events-none absolute bottom-24 left-1/2 hidden -translate-x-1/2 flex-col items-center gap-2 transition-opacity duration-500 lg:flex"
           style={{ opacity: scrolled ? 0 : 1 }}
         >
-          <span className="relative block h-12 w-px overflow-hidden bg-white/15">
+          <span className="relative block h-12 w-px overflow-hidden bg-hairline">
             <span className="scroll-cue-dot absolute left-1/2 top-0 block h-1.5 w-1.5 -translate-x-1/2 rounded-full bg-aurora-violet" />
           </span>
         </div>

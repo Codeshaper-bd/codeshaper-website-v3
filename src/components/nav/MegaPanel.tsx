@@ -78,7 +78,7 @@ export default function MegaPanel() {
                             {col.title}
                           </span>
                           {col.flagship && (
-                            <span className="shrink-0 rounded-full border border-hairline px-1.5 py-px font-body text-[10px] leading-tight text-aurora-amber">
+                            <span className="shrink-0 rounded-full border border-hairline px-1.5 py-px font-body text-[10px] leading-tight text-aurora-amber-dark">
                               New
                             </span>
                           )}
@@ -122,7 +122,7 @@ export default function MegaPanel() {
                   <Nav.Link asChild>
                     <Link
                       href={l.href}
-                      className="menu-row group/l flex h-full items-start gap-3 rounded-xl border border-transparent px-3 py-3 transition-colors duration-200 hover:border-white/[0.08]"
+                      className="menu-row group/l flex h-full items-start gap-3 rounded-xl border border-transparent px-3 py-3 transition-colors duration-200 hover:border-hairline-strong"
                     >
                       <span className="icon-tile mt-px flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-hairline bg-canvas-raised text-aurora-indigo group-hover/l:border-aurora-indigo/45">
                         <Icon name={l.icon} size={15} />
@@ -138,7 +138,7 @@ export default function MegaPanel() {
                             className="shrink-0 -translate-x-1 text-aurora-indigo opacity-0 transition-all duration-200 group-hover/l:translate-x-0 group-hover/l:opacity-100"
                           />
                         </span>
-                        <span className="mt-0.5 block font-body text-[11.5px] leading-snug text-ink-faint">
+                        <span className="mt-0.5 block font-satoshi text-[11.5px] leading-snug text-ink-faint">
                           {l.desc}
                         </span>
                       </span>
@@ -150,7 +150,7 @@ export default function MegaPanel() {
             <Nav.Link asChild>
               <Link
                 href={active.href}
-                className="group/all mt-4 inline-flex w-fit items-center gap-1.5 font-body text-[13px] font-medium text-aurora-indigo transition-colors hover:text-ink"
+                className="group/all mt-4 inline-flex w-fit items-center gap-1.5 font-body text-[13px] font-medium text-aurora-violet transition-colors hover:text-ink"
               >
                 View all {active.title}
                 <ArrowRight
@@ -166,7 +166,7 @@ export default function MegaPanel() {
           <Nav.Link asChild>
             <Link
               href="/work"
-              className="glass group block self-start overflow-hidden rounded-xl transition-[transform,border-color] duration-300 hover:-translate-y-0.5 hover:border-white/25"
+              className="glass group block self-start overflow-hidden rounded-xl transition-[transform,border-color] duration-300 hover:-translate-y-0.5"
             >
               <div className="relative aspect-[16/9] w-full overflow-hidden" aria-hidden>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -186,7 +186,7 @@ export default function MegaPanel() {
                 <p className="mt-2 font-body text-[13.5px] leading-relaxed text-ink-dim">
                   faster order flow after a commerce rebuild
                 </p>
-                <span className="mt-4 inline-flex items-center gap-1.5 font-body text-[13px] text-aurora-indigo">
+                <span className="mt-4 inline-flex items-center gap-1.5 font-body text-[13px] text-aurora-violet">
                   Read the story
                   <ArrowRight
                     size={14}

@@ -283,7 +283,7 @@ export default function WordMorph({ className = "" }: { className?: string }) {
         const U = (n: string) => gl.getUniformLocation(prog, n);
         gl.disable(gl.DEPTH_TEST);
         gl.enable(gl.BLEND);
-        gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+        gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
 
         let dpr = 1;
         const resize = () => {

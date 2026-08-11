@@ -44,7 +44,7 @@ export default function MobileMenu({ open, onClose }: { open: boolean; onClose: 
                       <span className="mr-2 text-sm text-light-dim">{col.number}</span>
                       {col.title}
                       {col.flagship && (
-                        <span className="ml-2 rounded-full border border-hairline px-1.5 py-px font-body text-[10px] text-aurora-amber">
+                        <span className="ml-2 rounded-full border border-hairline px-1.5 py-px font-body text-[10px] text-aurora-amber-dark">
                           New
                         </span>
                       )}
@@ -96,7 +96,7 @@ export default function MobileMenu({ open, onClose }: { open: boolean; onClose: 
             <p className="mt-2 font-body text-[13px] leading-relaxed text-ink-dim">
               faster order flow after a commerce rebuild
             </p>
-            <span className="mt-4 inline-flex items-center gap-1.5 font-body text-[13px] text-aurora-indigo">
+            <span className="mt-4 inline-flex items-center gap-1.5 font-body text-[13px] text-aurora-violet">
               Read the story
               <ArrowRight size={14} strokeWidth={1.75} />
             </span>
@@ -136,7 +136,7 @@ export default function MobileMenu({ open, onClose }: { open: boolean; onClose: 
           <Link
             href="/contact"
             onClick={onClose}
-            className="inline-block rounded-full bg-aurora-indigo px-6 py-3 font-display text-sm font-medium text-white"
+            className="inline-block rounded-full bg-aurora-violet px-6 py-3 font-display text-sm font-medium text-white transition-colors duration-300 hover:bg-aurora-violet-dark"
           >
             Book a Call
           </Link>

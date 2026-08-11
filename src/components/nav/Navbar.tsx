@@ -18,10 +18,10 @@ import Magnetic from "@/components/system/Magnetic";
  *  · Everything else → compact dropdown anchored under its own trigger
  *    (rendered inside the Item, so it positions itself and stays small)
  *
- * Bar: transparent over the hero → rgba(10,10,15,0.85) + blur + hairline after
+ * Bar: light from first paint (white/95 + blur), gains a hairline shadow after
  * 80px (250ms). Links get a 2px underline scaling in from the left; the open
- * item stays highlighted. "Book a Call" is indigo-outlined, fills on hover,
- * magnetic on desktop. Scrim only appears for the mega panel.
+ * item stays highlighted. "Book a Call" is a solid flat pill, darkens on
+ * hover, magnetic on desktop. Scrim only appears for the mega panel.
  */
 const triggerCls =
   "nav-underline group flex select-none items-center gap-1 rounded px-3 py-2 font-body text-sm font-medium text-ink-dim outline-none transition-colors hover:text-ink focus-visible:text-ink data-[state=open]:text-ink";
@@ -124,7 +124,7 @@ export default function Navbar() {
               <Magnetic>
                 <Link
                   href="/contact"
-                  className="hidden rounded-full bg-aurora-indigo px-5 py-2 font-display text-sm font-medium text-white transition-[background-color,transform] duration-300 hover:scale-[1.02] hover:bg-aurora-violet sm:inline-block"
+                  className="hidden rounded-full bg-aurora-violet px-5 py-2 font-display text-sm font-medium text-white transition-[background-color,transform] duration-300 hover:scale-[1.02] hover:bg-aurora-violet-dark sm:inline-block"
                 >
                   Book a Call
                 </Link>
