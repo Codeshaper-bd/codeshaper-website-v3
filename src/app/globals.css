@@ -318,11 +318,14 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .mega-row,
   .mega-icon-tile,
+  .mega-svc-arrow,
   .mega-feature-card,
   .mega-chip {
     transition: none;
   }
-  .mega-feature-card:hover {
+  .mega-feature-card:hover,
+  .mega-row:hover .mega-icon-tile,
+  .mega-row:hover .mega-svc-arrow {
     transform: none;
   }
 }
