@@ -57,8 +57,10 @@ export default function Navbar() {
 
       <header className="theme-light fixed inset-x-0 top-0 z-50 font-satoshi">
         <div
-          className={`border-b border-hairline bg-canvas/95 backdrop-blur-xl transition-shadow duration-[250ms] ${
-            scrolled || openValue || mobileOpen ? "shadow-[0_1px_0_rgba(11,15,25,0.04)]" : ""
+          className={`border-b transition-[background-color,border-color,box-shadow] duration-[250ms] ${
+            scrolled || openValue || mobileOpen
+              ? "border-hairline bg-canvas/95 shadow-[0_1px_0_rgba(11,15,25,0.04)] backdrop-blur-xl"
+              : "border-transparent bg-transparent shadow-none backdrop-blur-none"
           }`}
         >
           <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6 lg:px-10">
