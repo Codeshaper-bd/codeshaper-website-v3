@@ -10,7 +10,8 @@ import HeroMesh from "./HeroMesh";
 import WordMorph from "./WordMorph";
 import MeshType from "./MeshType";
 import PromptPipeline from "./PromptPipeline";
-import { usePrefersReducedMotion, useMotionAllowed } from "@/lib/motion";
+import { usePrefersReducedMotion, useMotionAllowed, seqStyle as seq } from "@/lib/motion";
+import WorkspaceScene from "./WorkspaceScene";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -169,12 +170,6 @@ export default function Hero() {
     };
   }, [interactive]);
 
-  const seq = (on: boolean, delay = 0): React.CSSProperties => ({
-    opacity: on ? 1 : 0,
-    transform: on ? "translateY(0)" : "translateY(18px)",
-    transition: `opacity 600ms ease ${delay}ms, transform 600ms cubic-bezier(0.16,1,0.3,1) ${delay}ms`,
-  });
-
   return (
     <section
       ref={sectionRef}
@@ -215,6 +210,9 @@ export default function Hero() {
         className="absolute inset-0 text-ink opacity-[0.03]"
         style={{ backgroundImage: "url(/media/hex-pattern-tile.svg)", backgroundSize: "112px 194px" }}
       />
+
+      {/* product-card scene: floats around the copy, desktop only */}
+      <WorkspaceScene restIn={restIn} />
 
       {/* 5 — copy */}
       <div

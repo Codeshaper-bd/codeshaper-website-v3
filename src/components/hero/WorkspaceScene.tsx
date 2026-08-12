@@ -1,21 +1,25 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Sparkles, TrendingUp, Check, GitBranch } from "lucide-react";
-import { usePrefersReducedMotion } from "@/lib/motion";
+import { usePrefersReducedMotion, seqStyle } from "@/lib/motion";
 
 /**
- * Hero workspace scene — drawn entirely in code (no image/video dependency).
+ * Hero product-card scene — drawn entirely in code (no image/video dependency).
  *
- * Three product surfaces float at different depths and animate themselves, so
- * the hero reads unmistakably as a software studio: a code editor that types
- * itself, an analytics card whose bars grow, and an AI agent card where a
- * human question is answered by an agent. Small satellite chips (CI passing,
- * branch) fill the negative space.
+ * Three product surfaces float around the hero's centered copy and animate
+ * themselves, so the hero reads unmistakably as a software studio: a code
+ * editor that types itself, an analytics card whose bars grow, and an AI
+ * agent card where a human question is answered by an agent. Small satellite
+ * chips (CI passing, branch) fill the negative space.
  *
- * Each layer carries a `data-depth` used by the parent for mouse parallax and
- * scroll separation. Reduced motion: everything renders in its final state,
- * nothing loops.
+ * Positioned directly within Hero.tsx's <section> (no bounded host box) —
+ * each layer is `hidden lg:block` and carries a `data-depth` that Hero.tsx's
+ * pointer-tilt effect reads to drive per-layer parallax. Entrance uses the
+ * same seqStyle() fade/rise every other hero element uses, staggered per
+ * card. Reduced motion: everything renders in its final state, no loops, no
+ * parallax (Hero.tsx's parallax effect is itself gated off by
+ * useMotionAllowed()).
  */
 
 const CODE_LINES: { indent: number; tokens: [string, string][] }[] = [
@@ -144,16 +148,24 @@ function AgentCard({ step }: { step: number }) {
   );
 }
 
-export default function WorkspaceScene() {
+export default function WorkspaceScene({ restIn }: { restIn: boolean }) {
   const reduced = usePrefersReducedMotion();
   const totalChars = CODE_LINES.reduce((n, l) => n + l.tokens.map((t) => t[0]).join("").length, 0);
   const [typed, setTyped] = useState(reduced ? totalChars : 0);
   const [progress, setProgress] = useState(reduced ? 1 : 0);
   const [step, setStep] = useState(reduced ? 3 : 0);
-  const hostRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (reduced) return;
+    if (reduced) {
+      // usePrefersReducedMotion is SSR-safe and starts false, then flips
+      // true post-mount — by then the useState initializers above have
+      // already committed to their empty/zero starting values, so this
+      // syncs them to their final "everything already happened" state.
+      setTyped(totalChars);
+      setProgress(1);
+      setStep(3);
+      return;
+    }
     let raf = 0;
     const t0 = performance.now();
     const timers: ReturnType<typeof setTimeout>[] = [];
@@ -179,37 +191,48 @@ export default function WorkspaceScene() {
   }, [reduced, totalChars]);
 
   return (
-    <div ref={hostRef} className="relative mx-auto h-[420px] w-full max-w-[720px] lg:h-[460px]">
-      {/* back: metric card */}
+    <div aria-hidden className="pointer-events-none absolute inset-0 z-[5] hidden lg:block">
+      {/* satellite chip: CI passing */}
       <div
-        data-depth="0.35"
-        className="scene-layer absolute right-0 top-2 hidden lg:block"
-        style={{ transform: "translateZ(0)" }}
+        data-depth="0.2"
+        className="scene-layer absolute left-[3%] top-[10%] xl:left-[6%] xl:top-[8%]"
+        style={seqStyle(restIn, 200)}
       >
-        <div className="rotate-[3deg]">
-          <MetricCard progress={progress} />
-        </div>
-      </div>
-
-      {/* satellite chips */}
-      <div data-depth="0.2" className="scene-layer absolute left-2 top-0 hidden lg:block">
         <span className="glass flex items-center gap-2 rounded-full px-3 py-1.5 font-body text-[11.5px] text-ink-dim">
-          <Check size={12} strokeWidth={2} className="text-aurora-violet" />
+          <Check size={12} strokeWidth={2} className="text-aurora-indigo" />
           CI passing
         </span>
       </div>
-      <div data-depth="0.28" className="scene-layer absolute bottom-6 right-10 hidden lg:block">
+
+      {/* satellite chip: release branch — sits in the open gap between the
+          metric card and the agent card so it doesn't tuck behind either */}
+      <div
+        data-depth="0.28"
+        className="scene-layer absolute top-[40%] right-[3%] xl:top-[40%] xl:right-[6%]"
+        style={seqStyle(restIn, 360)}
+      >
         <span className="glass flex items-center gap-2 rounded-full px-3 py-1.5 font-body text-[11.5px] text-ink-dim">
           <GitBranch size={12} strokeWidth={2} className="text-aurora-amber" />
           release/2.4
         </span>
       </div>
 
+      {/* back: metric card */}
+      <div
+        data-depth="0.35"
+        className="scene-layer absolute right-[1%] top-[11%] xl:right-[5%] xl:top-[9%]"
+        style={seqStyle(restIn, 240)}
+      >
+        <div className="rotate-[3deg]">
+          <MetricCard progress={progress} />
+        </div>
+      </div>
+
       {/* mid: code editor */}
       <div
         data-depth="0.6"
-        className="scene-layer absolute left-0 top-16 lg:top-14"
-        style={{ transform: "translateZ(0)" }}
+        className="scene-layer absolute left-[1%] top-[23%] xl:left-[4%] xl:top-[23%]"
+        style={seqStyle(restIn, 160)}
       >
         <div className="-rotate-[2deg]">
           <CodeCard typed={typed} />
@@ -217,7 +240,11 @@ export default function WorkspaceScene() {
       </div>
 
       {/* front: agent card */}
-      <div data-depth="1" className="scene-layer absolute bottom-0 right-0 lg:bottom-4 lg:right-6">
+      <div
+        data-depth="1"
+        className="scene-layer absolute bottom-[13%] right-[1%] xl:bottom-[11%] xl:right-[4%]"
+        style={seqStyle(restIn, 320)}
+      >
         <div className="rotate-[1.5deg]">
           <AgentCard step={step} />
         </div>
