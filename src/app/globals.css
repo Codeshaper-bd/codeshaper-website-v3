@@ -521,10 +521,17 @@ form[data-show-errors="true"] :invalid {
   }
 }
 
-/* Hero workspace scene layers: promoted for smooth per-layer parallax */
+/* Hero workspace scene layers: promoted for smooth per-layer parallax.
+   translate (not transform) so it composes independently of the rotate
+   applied by each card's own inner wrapper div. Defaults to 0px 0px when
+   unset — Hero.tsx's pointer-tilt effect only ever sets these custom
+   properties when useMotionAllowed() is true, so reduced-motion and
+   coarse-pointer users never receive a non-zero value in the first
+   place; no separate reduced-motion override is needed here. */
 .scene-layer {
   will-change: transform, opacity;
   transform-style: preserve-3d;
+  translate: var(--tx, 0px) var(--ty, 0px);
 }
 
 @media (prefers-reduced-motion: reduce) {

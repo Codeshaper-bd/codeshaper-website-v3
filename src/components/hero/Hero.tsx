@@ -143,10 +143,11 @@ export default function Hero() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // pointer tilt on the mark (desktop only)
+  // pointer tilt on the mark + product-card scene layers (desktop only)
   useEffect(() => {
     if (!interactive || !sectionRef.current) return;
     const section = sectionRef.current;
+    const layers = Array.from(section.querySelectorAll<HTMLElement>(".scene-layer"));
     let raf = 0, mx = 0, my = 0, cx = 0, cy = 0;
     const onMove = (e: MouseEvent) => {
       const r = section.getBoundingClientRect();
@@ -159,6 +160,11 @@ export default function Hero() {
       if (markRef.current) {
         markRef.current.style.setProperty("--tx", `${cx * 26}px`);
         markRef.current.style.setProperty("--ty", `${cy * 18}px`);
+      }
+      for (const layer of layers) {
+        const depth = parseFloat(layer.dataset.depth ?? "1");
+        layer.style.setProperty("--tx", `${cx * 26 * depth}px`);
+        layer.style.setProperty("--ty", `${cy * 18 * depth}px`);
       }
       raf = requestAnimationFrame(tick);
     };
