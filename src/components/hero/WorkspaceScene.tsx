@@ -28,11 +28,11 @@ const CODE_LINES: { indent: number; tokens: [string, string][] }[] = [
 ];
 
 const TOKEN_COLOR: Record<string, string> = {
-  kw: "text-[#8B5FE0]",
-  fn: "text-[#F5F4F2]",
-  op: "text-[#5B5B66]",
-  prop: "text-[#5B5FEF]",
-  str: "text-[#F2A65A]",
+  kw: "text-aurora-violet",
+  fn: "text-ink",
+  op: "text-ink-faint",
+  prop: "text-aurora-violet",
+  str: "text-aurora-amber-dark",
 };
 
 function CodeCard({ typed }: { typed: number }) {
@@ -40,9 +40,9 @@ function CodeCard({ typed }: { typed: number }) {
   return (
     <div className="glass w-[380px] max-w-[86vw] overflow-hidden rounded-xl">
       <div className="flex items-center gap-2 border-b border-hairline px-4 py-2.5">
-        <span className="h-2.5 w-2.5 rounded-full bg-[#F2A65A]/70" />
-        <span className="h-2.5 w-2.5 rounded-full bg-[#5B5FEF]/70" />
-        <span className="h-2.5 w-2.5 rounded-full bg-white/15" />
+        <span className="h-2.5 w-2.5 rounded-full border border-hairline bg-aurora-amber/70" />
+        <span className="h-2.5 w-2.5 rounded-full border border-hairline bg-aurora-violet/70" />
+        <span className="h-2.5 w-2.5 rounded-full border border-hairline bg-ink-faint/20" />
         <span className="ml-2 font-body text-[11px] text-ink-faint">agent.ts</span>
       </div>
       <pre className="px-4 py-3.5 font-mono text-[12.5px] leading-[1.7]">
@@ -98,8 +98,8 @@ function MetricCard({ progress }: { progress: number }) {
               height: `${h * progress}%`,
               background:
                 i === bars.length - 1
-                  ? "linear-gradient(180deg,#F2A65A,#8B5FE0)"
-                  : "linear-gradient(180deg,#5B5FEF,#3a3a72)",
+                  ? "linear-gradient(180deg, var(--color-aurora-amber), var(--color-aurora-violet))"
+                  : "linear-gradient(180deg, var(--color-aurora-indigo), var(--color-aurora-violet-dark))",
               transition: "height 600ms cubic-bezier(0.16,1,0.3,1)",
             }}
           />
@@ -194,7 +194,7 @@ export default function WorkspaceScene() {
       {/* satellite chips */}
       <div data-depth="0.2" className="scene-layer absolute left-2 top-0 hidden lg:block">
         <span className="glass flex items-center gap-2 rounded-full px-3 py-1.5 font-body text-[11.5px] text-ink-dim">
-          <Check size={12} strokeWidth={2} className="text-[#5B5FEF]" />
+          <Check size={12} strokeWidth={2} className="text-aurora-violet" />
           CI passing
         </span>
       </div>
