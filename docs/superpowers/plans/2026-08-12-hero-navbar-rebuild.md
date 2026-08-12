@@ -451,7 +451,7 @@ export default function WorkspaceScene() {
       {/* satellite chips */}
       <div data-depth="0.2" className="scene-layer absolute left-2 top-0 hidden lg:block">
         <span className="glass flex items-center gap-2 rounded-full px-3 py-1.5 font-body text-[11.5px] text-ink-dim">
-          <Check size={12} strokeWidth={2} className="text-[#5B5FEF]" />
+          <Check size={12} strokeWidth={2} className="text-aurora-violet" />
           CI passing
         </span>
       </div>
