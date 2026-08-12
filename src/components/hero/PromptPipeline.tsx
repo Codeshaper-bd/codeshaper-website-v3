@@ -31,7 +31,15 @@ export default function PromptPipeline() {
   const raf = useRef(0);
 
   useEffect(() => {
-    if (reduced) return;
+    if (reduced) {
+      // usePrefersReducedMotion is SSR-safe and starts false, then flips
+      // true post-mount — by then the useState initializers above have
+      // already committed to their empty/stuck starting values, so this
+      // syncs them to their final "everything already happened" state.
+      setTyped(PROMPTS[promptIdx].length);
+      setStage(STAGES.length);
+      return;
+    }
     let cancelled = false;
     const CYCLE = 7600;
 

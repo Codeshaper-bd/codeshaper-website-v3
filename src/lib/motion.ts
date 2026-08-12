@@ -28,6 +28,19 @@ export function useFinePointer(): boolean {
   return fine;
 }
 
+/** True at ≥1024px viewport width only (no pointer-type check). SSR-safe. */
+export function useIsDesktopWidth(): boolean {
+  const [desktop, setDesktop] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 1024px)");
+    setDesktop(mq.matches);
+    const onChange = (e: MediaQueryListEvent) => setDesktop(e.matches);
+    mq.addEventListener("change", onChange);
+    return () => mq.removeEventListener("change", onChange);
+  }, []);
+  return desktop;
+}
+
 /** Combined guard: cursor-follow / parallax layers should run only when this is true. */
 export function useMotionAllowed(): boolean {
   const reduced = usePrefersReducedMotion();

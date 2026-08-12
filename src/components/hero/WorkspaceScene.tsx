@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Sparkles, TrendingUp, Check, GitBranch } from "lucide-react";
-import { usePrefersReducedMotion, seqStyle } from "@/lib/motion";
+import { usePrefersReducedMotion, useIsDesktopWidth, seqStyle } from "@/lib/motion";
 
 /**
  * Hero product-card scene — drawn entirely in code (no image/video dependency).
@@ -150,6 +150,8 @@ function AgentCard({ step }: { step: number }) {
 
 export default function WorkspaceScene({ restIn }: { restIn: boolean }) {
   const reduced = usePrefersReducedMotion();
+  const desktop = useIsDesktopWidth();
+  const rootRef = useRef<HTMLDivElement>(null);
   const totalChars = CODE_LINES.reduce((n, l) => n + l.tokens.map((t) => t[0]).join("").length, 0);
   const [typed, setTyped] = useState(reduced ? totalChars : 0);
   const [progress, setProgress] = useState(reduced ? 1 : 0);
@@ -166,32 +168,65 @@ export default function WorkspaceScene({ restIn }: { restIn: boolean }) {
       setStep(3);
       return;
     }
+    // Below lg the scene never mounts (see the early `return null` below),
+    // so there's no root element to observe and nothing to animate.
+    if (!desktop) return;
+    const root = rootRef.current;
+    if (!root) return;
+
     let raf = 0;
-    const t0 = performance.now();
-    const timers: ReturnType<typeof setTimeout>[] = [];
+    let timers: ReturnType<typeof setTimeout>[] = [];
+    let running = false;
 
-    // typing loop (restarts so the scene always feels live)
-    const tick = (now: number) => {
-      const elapsed = (now - t0) / 1000;
-      const cycle = elapsed % 9;
-      setTyped(cycle < 6 ? Math.floor((cycle / 6) * totalChars) : totalChars);
-      raf = requestAnimationFrame(tick);
-    };
-    raf = requestAnimationFrame(tick);
-
-    timers.push(setTimeout(() => setProgress(1), 900));
-    timers.push(setTimeout(() => setStep(1), 1300));
-    timers.push(setTimeout(() => setStep(2), 2100));
-    timers.push(setTimeout(() => setStep(3), 3400));
-
-    return () => {
+    const stop = () => {
+      running = false;
       cancelAnimationFrame(raf);
       timers.forEach(clearTimeout);
+      timers = [];
     };
-  }, [reduced, totalChars]);
+
+    // typing loop (restarts so the scene always feels live) — start() is
+    // re-entered every time the scene scrolls back into view, capturing a
+    // fresh t0 so the elapsed-time math never resumes from a stale clock.
+    const start = () => {
+      if (running) return;
+      running = true;
+      const t0 = performance.now();
+
+      const tick = (now: number) => {
+        const elapsed = (now - t0) / 1000;
+        const cycle = elapsed % 9;
+        setTyped(cycle < 6 ? Math.floor((cycle / 6) * totalChars) : totalChars);
+        raf = requestAnimationFrame(tick);
+      };
+      raf = requestAnimationFrame(tick);
+
+      timers.push(setTimeout(() => setProgress(1), 900));
+      timers.push(setTimeout(() => setStep(1), 1300));
+      timers.push(setTimeout(() => setStep(2), 2100));
+      timers.push(setTimeout(() => setStep(3), 3400));
+    };
+
+    const io = new IntersectionObserver(([e]) => (e.isIntersecting ? start() : stop()), { threshold: 0 });
+    io.observe(root);
+
+    return () => {
+      io.disconnect();
+      stop();
+    };
+  }, [reduced, desktop, totalChars]);
+
+  // Below lg the scene's wrapper is CSS-hidden (`hidden lg:block`) anyway —
+  // bail out before mounting so no rAF/timer loop ever runs on mobile/tablet,
+  // where it would drive React state for a scene nobody can see.
+  if (!desktop) return null;
 
   return (
-    <div aria-hidden className="pointer-events-none absolute inset-0 z-[5] hidden lg:block">
+    <div
+      ref={rootRef}
+      aria-hidden
+      className="pointer-events-none absolute inset-0 z-[5] hidden lg:block"
+    >
       {/* satellite chip: CI passing */}
       <div
         data-depth="0.2"
