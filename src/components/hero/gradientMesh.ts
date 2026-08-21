@@ -14,14 +14,14 @@ export type MeshBlob = {
 };
 
 export const MESH_BLOBS: MeshBlob[] = [
-  { x: 0.26, y: 0.3, r: 0.58, color: "rgba(102,126,234,0.55)", speed: 0.00009, phase: 0, amp: 0.09 },
-  { x: 0.74, y: 0.42, r: 0.5, color: "rgba(20,184,166,0.4)", speed: 0.00007, phase: 2.1, amp: 0.11 },
-  { x: 0.48, y: 0.7, r: 0.64, color: "rgba(68,84,155,0.32)", speed: 0.00006, phase: 4.4, amp: 0.08 },
+  { x: 0.26, y: 0.3, r: 0.58, color: "rgba(212,212,216,0.5)", speed: 0.00009, phase: 0, amp: 0.09 },
+  { x: 0.74, y: 0.42, r: 0.5, color: "rgba(228,228,231,0.4)", speed: 0.00007, phase: 2.1, amp: 0.11 },
+  { x: 0.48, y: 0.7, r: 0.64, color: "rgba(161,161,170,0.3)", speed: 0.00006, phase: 4.4, amp: 0.08 },
 ];
 
 /**
  * Paints a soft, slowly-drifting multi-blob radial-gradient mesh onto `ctx`
- * — a white base with indigo/teal/deep-indigo blobs. Pure function: same
+ * — a white base with neutral Zinc-gray blobs. Pure function: same
  * (width, height, elapsedMs) always produces the same frame. Used
  * identically by the full-bleed hero background (HeroMesh) and the
  * video-masked type (MeshType) so both read as one visual system.
