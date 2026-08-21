@@ -57,7 +57,7 @@ export default function Navbar() {
 
       <header className="theme-light fixed inset-x-0 top-0 z-50 p-4 font-urbanist sm:p-5">
         <div
-          className={`mx-auto max-w-[1180px] rounded-full border border-hairline bg-[#edecec]/95 backdrop-blur-xl transition-shadow duration-[250ms] ${
+          className={`mx-auto max-w-[1180px] rounded-full border border-hairline bg-white/95 backdrop-blur-xl transition-shadow duration-[250ms] ${
             scrolled || openValue || mobileOpen ? "shadow-[0_8px_30px_rgba(11,15,25,0.10)]" : "shadow-none"
           }`}
         >

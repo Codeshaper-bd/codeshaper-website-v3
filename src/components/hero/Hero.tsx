@@ -84,6 +84,20 @@ export default function Hero() {
     return () => ctx.revert();
   }, [reduced]);
 
+  // continuous headline shimmer: a light sweep across the gradient-clipped
+  // text, independent of and starting after the word-by-word entrance above
+  useEffect(() => {
+    if (reduced || !headlineRef.current) return;
+    const ctx = gsap.context(() => {
+      gsap.fromTo(
+        headlineRef.current,
+        { backgroundPosition: "150% 0" },
+        { backgroundPosition: "-150% 0", duration: 5, repeat: -1, ease: "none", delay: 2 }
+      );
+    });
+    return () => ctx.revert();
+  }, [reduced]);
+
   // center the mark via GSAP (not CSS) so it composes with the scroll-scrub's
   // rotate/scale and the pointer-parallax below in one GSAP-owned transform.
   // Must run before any other effect creates a gsap.context() touching this
@@ -199,7 +213,14 @@ export default function Hero() {
             within the site's monochrome palette; the video element itself
             carries a slow continuous GSAP zoom (Ken Burns), independent of
             the wrapper's own scroll-scrub scale below. */}
-        <div ref={meshRef} className="absolute inset-[-4%]">
+        <div
+          ref={meshRef}
+          className="absolute inset-[-4%]"
+          style={{
+            WebkitMaskImage: "linear-gradient(to bottom, transparent 0%, black 22%, black 100%)",
+            maskImage: "linear-gradient(to bottom, transparent 0%, black 22%, black 100%)",
+          }}
+        >
           <video
             ref={videoElRef}
             autoPlay
@@ -219,14 +240,6 @@ export default function Hero() {
             style={{
               background:
                 "radial-gradient(120% 100% at 50% 38%, transparent 38%, rgba(9,9,11,0.1) 100%)",
-            }}
-          />
-          {/* top fade: keeps the video quiet behind the floating navbar */}
-          <div
-            aria-hidden
-            className="absolute inset-x-0 top-0 h-[34%]"
-            style={{
-              background: "linear-gradient(to bottom, rgba(255,255,255,0.9), transparent)",
             }}
           />
         </div>
@@ -278,7 +291,15 @@ export default function Hero() {
 
           <h1
             ref={headlineRef}
-            className="font-urbanist text-[28px] font-bold leading-[1.15] tracking-tight text-ink sm:text-[36px] lg:text-[44px]"
+            className="font-urbanist text-[32px] font-bold leading-[1.12] tracking-tight sm:text-[44px] lg:text-[56px]"
+            style={{
+              backgroundImage:
+                "linear-gradient(100deg, var(--color-ink) 45%, rgba(9,9,11,0.4) 50%, var(--color-ink) 55%)",
+              backgroundSize: "250% 100%",
+              WebkitBackgroundClip: "text",
+              backgroundClip: "text",
+              color: "transparent",
+            }}
           >
             {TITLE_WORDS.map((word, i) => (
               <span
@@ -295,7 +316,7 @@ export default function Hero() {
 
           <p
             ref={subRef}
-            className="mx-auto mt-7 max-w-2xl font-urbanist text-base leading-relaxed text-ink-dim sm:text-lg"
+            className="mx-auto mt-7 max-w-2xl font-urbanist text-lg leading-relaxed text-ink-dim sm:text-xl"
           >
             {SUBTITLE}
           </p>
