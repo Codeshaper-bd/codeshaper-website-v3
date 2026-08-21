@@ -7,6 +7,8 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Magnetic from "@/components/system/Magnetic";
 import HeroMesh from "./HeroMesh";
+import HeroRings from "./HeroRings";
+import WorkspaceScene from "./WorkspaceScene";
 import { usePrefersReducedMotion, useMotionAllowed } from "@/lib/motion";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -136,10 +138,11 @@ export default function Hero() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // pointer parallax across three background depth layers (desktop only)
+  // pointer parallax across background depth layers + the tech cluster (desktop only)
   useEffect(() => {
     if (!interactive || !sectionRef.current) return;
     const section = sectionRef.current;
+    const cluster = section.querySelector<HTMLElement>('[data-parallax="cluster"]');
 
     const setMeshX = gsap.quickTo(meshRef.current, "x", { duration: 1.2, ease: "power3.out" });
     const setMeshY = gsap.quickTo(meshRef.current, "y", { duration: 1.2, ease: "power3.out" });
@@ -147,6 +150,12 @@ export default function Hero() {
     const setMarkY = gsap.quickTo(markRef.current, "y", { duration: 0.9, ease: "power3.out" });
     const setHexX = gsap.quickTo(hexRef.current, "x", { duration: 1.4, ease: "power3.out" });
     const setHexY = gsap.quickTo(hexRef.current, "y", { duration: 1.4, ease: "power3.out" });
+    const setClusterX = cluster
+      ? gsap.quickTo(cluster, "x", { duration: 1.0, ease: "power3.out" })
+      : null;
+    const setClusterY = cluster
+      ? gsap.quickTo(cluster, "y", { duration: 1.0, ease: "power3.out" })
+      : null;
 
     const onMove = (e: MouseEvent) => {
       const r = section.getBoundingClientRect();
@@ -158,6 +167,8 @@ export default function Hero() {
       setMarkY(my * 24);
       setHexX(mx * 6);
       setHexY(my * 4);
+      setClusterX?.(mx * 18);
+      setClusterY?.(my * 14);
     };
     window.addEventListener("mousemove", onMove, { passive: true });
     return () => window.removeEventListener("mousemove", onMove);
@@ -172,6 +183,12 @@ export default function Hero() {
       <div ref={meshRef} className="absolute inset-[-4%]">
         <HeroMesh />
       </div>
+
+      {/* decorative concentric rings — bottom-left, GSAP breathing pulse */}
+      <HeroRings />
+
+      {/* tech-badge cluster — hugs the headline's corner, GSAP idle motion */}
+      <WorkspaceScene />
 
       {/* 3 — radial glow "mark": pointer-parallax layer 2 + scroll rotate/scale/fade */}
       <div
@@ -242,17 +259,10 @@ export default function Hero() {
 
           <Link
             href="/services"
-            className="group inline-flex items-center gap-2 py-4 font-urbanist text-sm font-medium text-ink-dim transition-colors hover:text-ink"
+            className="inline-flex items-center gap-2 rounded-full border border-hairline-strong bg-white px-8 py-4 font-urbanist text-sm font-medium text-ink transition-[border-color,transform] duration-300 hover:scale-[1.02] hover:border-ink/40"
           >
-            <span className="relative">
-              Explore Services
-              <span className="absolute -bottom-1 left-0 h-px w-full origin-left scale-x-0 bg-ink transition-transform duration-200 group-hover:scale-x-100" />
-            </span>
-            <ArrowRight
-              size={15}
-              strokeWidth={1.75}
-              className="-translate-x-1 opacity-0 transition-all duration-200 group-hover:translate-x-0 group-hover:opacity-100"
-            />
+            Explore Services
+            <ArrowRight size={15} strokeWidth={1.75} />
           </Link>
         </div>
       </div>
