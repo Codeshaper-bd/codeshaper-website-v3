@@ -59,6 +59,7 @@ export default function Hero() {
   const sectionRef = useRef<HTMLElement>(null);
   const copyRef = useRef<HTMLDivElement>(null);
   const meshRef = useRef<HTMLDivElement>(null);
+  const videoElRef = useRef<HTMLVideoElement>(null);
   const markRef = useRef<HTMLDivElement>(null);
   const hexRef = useRef<HTMLDivElement>(null);
   const badgeRef = useRef<HTMLParagraphElement>(null);
@@ -70,10 +71,26 @@ export default function Hero() {
 
   // respect reduced motion: pause the background video's own loop, not just our GSAP tweens
   useEffect(() => {
-    const video = meshRef.current?.querySelector("video");
+    const video = videoElRef.current;
     if (!video) return;
     if (reduced) video.pause();
     else video.play().catch(() => {});
+  }, [reduced]);
+
+  // slow continuous "Ken Burns" zoom on the video itself — independent of the
+  // wrapper's own scroll-scrub scale, so the two never contend for one property
+  useEffect(() => {
+    if (reduced || !videoElRef.current) return;
+    const ctx = gsap.context(() => {
+      gsap.to(videoElRef.current, {
+        scale: 1.06,
+        duration: 18,
+        repeat: -1,
+        yoyo: true,
+        ease: "sine.inOut",
+      });
+    });
+    return () => ctx.revert();
   }, [reduced]);
 
   // center the mark via GSAP (not CSS) so it composes with the scroll-scrub's
@@ -197,19 +214,32 @@ export default function Hero() {
         className="theme-light relative flex min-h-[calc(100svh-24px)] flex-col items-center justify-center overflow-hidden rounded-[32px] bg-canvas sm:min-h-[calc(100svh-32px)]"
       >
         {/* 2 — AI-themed background video: ambient depth, pointer-parallax layer 1.
-            Grayscale-filtered to stay within the site's monochrome palette
-            regardless of the source clip's native color. */}
+            Pre-desaturated at encode time (not just a CSS filter) so it stays
+            within the site's monochrome palette; the video element itself
+            carries a slow continuous GSAP zoom (Ken Burns), independent of
+            the wrapper's own scroll-scrub scale below. */}
         <div ref={meshRef} className="absolute inset-[-4%]">
           <video
+            ref={videoElRef}
             autoPlay
             muted
             loop
             playsInline
-            className="h-full w-full object-cover opacity-[0.22] grayscale"
+            className="h-full w-full object-cover opacity-[0.32] grayscale"
             aria-hidden
           >
-            <source src="/media/hero-ai-plexus.mp4" type="video/mp4" />
+            <source src="/media/hero-ai-neural.mp4" type="video/mp4" />
+            <source src="/media/hero-ai-neural.webm" type="video/webm" />
           </video>
+          {/* soft vignette: adds depth without breaking the monochrome palette */}
+          <div
+            aria-hidden
+            className="absolute inset-0"
+            style={{
+              background:
+                "radial-gradient(120% 100% at 50% 38%, transparent 38%, rgba(9,9,11,0.1) 100%)",
+            }}
+          />
         </div>
 
         {/* decorative concentric rings — bottom-left, GSAP breathing pulse */}
