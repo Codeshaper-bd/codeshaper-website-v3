@@ -30,10 +30,9 @@ gsap.registerPlugin(ScrollTrigger);
  *   6. hex texture — GSAP pointer-parallax (subtlest layer)
  *   7. copy scrim (keeps headline legible over the video)
  *   8. copy: eyebrow, headline, subhead, CTAs
- *   9. proof bar
  *
  * Every animated property here is GSAP-owned: a single entrance timeline
- * (badge → headline → subhead → CTAs → proof bar), gsap.quickTo() driving
+ * (badge → headline → subhead → CTAs), gsap.quickTo() driving
  * the background layers' pointer-parallax, and the existing ScrollTrigger
  * scrub for the scroll pull-back. Reduced motion: everything renders in
  * its final state immediately, no timeline, no parallax loop, no scroll
@@ -44,14 +43,6 @@ const EYEBROW = "AI Automation · Digital Products · Scalable Platforms";
 const TITLE = "From AI automation to scalable digital products, we build the future.";
 const SUBTITLE =
   "We design and engineer AI solutions, digital products, and scalable platforms that transform the way businesses operate and grow.";
-
-/* PLACEHOLDER numbers — flag for approval */
-const STATS = [
-  { value: "2021", label: "Founded" },
-  { value: "20+", label: "Specialists" },
-  { value: "300+", label: "Projects shipped" },
-  { value: "~1 wk", label: "To kickoff" },
-];
 
 export default function Hero() {
   const reduced = usePrefersReducedMotion();
@@ -66,7 +57,6 @@ export default function Hero() {
   const headlineRef = useRef<HTMLHeadingElement>(null);
   const subRef = useRef<HTMLParagraphElement>(null);
   const ctaRef = useRef<HTMLDivElement>(null);
-  const proofRef = useRef<HTMLDivElement>(null);
   const [scrolled, setScrolled] = useState(false);
 
   // respect reduced motion: pause the background video's own loop, not just our GSAP tweens
@@ -104,16 +94,10 @@ export default function Hero() {
     if (markRef.current) gsap.set(markRef.current, { xPercent: -50, yPercent: -50 });
   }, []);
 
-  // entrance choreography — one GSAP timeline, badge through proof bar
+  // entrance choreography — one GSAP timeline, badge through CTAs
   useEffect(() => {
     if (!sectionRef.current) return;
-    const targets = [
-      badgeRef.current,
-      headlineRef.current,
-      subRef.current,
-      ctaRef.current,
-      proofRef.current,
-    ];
+    const targets = [badgeRef.current, headlineRef.current, subRef.current, ctaRef.current];
     if (reduced) {
       gsap.set(targets, { opacity: 1, y: 0 });
       return;
@@ -124,8 +108,7 @@ export default function Hero() {
         .from(badgeRef.current, { opacity: 0, y: 18, duration: 0.6 })
         .from(headlineRef.current, { opacity: 0, y: 26, duration: 0.8 }, "-=0.35")
         .from(subRef.current, { opacity: 0, y: 18, duration: 0.6 }, "-=0.5")
-        .from(ctaRef.current, { opacity: 0, y: 16, duration: 0.55 }, "-=0.4")
-        .from(proofRef.current, { opacity: 0, y: 12, duration: 0.5 }, "-=0.3");
+        .from(ctaRef.current, { opacity: 0, y: 16, duration: 0.55 }, "-=0.4");
     }, sectionRef);
     return () => ctx.revert();
   }, [reduced]);
@@ -208,7 +191,7 @@ export default function Hero() {
   }, [interactive]);
 
   return (
-    <div className="bg-canvas p-3 sm:p-4">
+    <div className="bg-[#edecec] p-3 sm:p-4">
       <section
         ref={sectionRef}
         className="theme-light relative flex min-h-[calc(100svh-24px)] flex-col items-center justify-center overflow-hidden rounded-[32px] bg-canvas sm:min-h-[calc(100svh-32px)]"
@@ -280,7 +263,7 @@ export default function Hero() {
         {/* 6 — copy */}
         <div
           ref={copyRef}
-          className="relative z-10 mx-auto w-full max-w-4xl px-6 pb-24 pt-24 text-center lg:px-10"
+          className="relative z-10 mx-auto w-full max-w-4xl px-6 py-24 text-center lg:px-10"
         >
           <p
             ref={badgeRef}
@@ -325,28 +308,10 @@ export default function Hero() {
           </div>
         </div>
 
-        {/* 7 — proof bar — PLACEHOLDER numbers */}
-        <div
-          ref={proofRef}
-          className="absolute inset-x-0 bottom-0 z-10 border-t border-hairline bg-white/70 backdrop-blur-md"
-        >
-          <dl className="mx-auto flex max-w-7xl flex-wrap items-center justify-center gap-x-10 gap-y-3 px-6 py-4 lg:justify-between lg:px-10">
-            {STATS.map((s) => (
-              <div key={s.label} className="flex items-baseline gap-2">
-                <dd className="font-urbanist text-lg font-bold tracking-tight text-ink">{s.value}</dd>
-                <dt className="font-urbanist text-[13px] text-ink-faint">{s.label}</dt>
-              </div>
-            ))}
-            <p className="font-urbanist text-[13px] tracking-wide text-ink-faint">
-              USA&ensp;•&ensp;Canada&ensp;•&ensp;Europe
-            </p>
-          </dl>
-        </div>
-
         {!reduced && (
           <div
             aria-hidden
-            className="pointer-events-none absolute bottom-24 left-1/2 hidden -translate-x-1/2 flex-col items-center gap-2 transition-opacity duration-500 lg:flex"
+            className="pointer-events-none absolute bottom-10 left-1/2 hidden -translate-x-1/2 flex-col items-center gap-2 transition-opacity duration-500 lg:flex"
             style={{ opacity: scrolled ? 0 : 1 }}
           >
             <span className="relative block h-12 w-px overflow-hidden bg-hairline">
