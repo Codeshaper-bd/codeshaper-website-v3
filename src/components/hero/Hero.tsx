@@ -7,33 +7,33 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Magnetic from "@/components/system/Magnetic";
 import HeroMesh from "./HeroMesh";
-import WordMorph from "./WordMorph";
-import MeshType from "./MeshType";
-import PromptPipeline from "./PromptPipeline";
-import { usePrefersReducedMotion, useMotionAllowed, seqStyle as seq } from "@/lib/motion";
-import WorkspaceScene from "./WorkspaceScene";
+import { usePrefersReducedMotion, useMotionAllowed } from "@/lib/motion";
 
 gsap.registerPlugin(ScrollTrigger);
 
 /**
- * Hero — "the mark assembles".
+ * Hero — minimal, centered, GSAP-driven.
  *
  * Layer stack (back → front):
- *   1. #0A0A0F base
- *   2. generated aurora video, full-bleed, screen-blended so it reads as light
- *   3. WebGL particle field (26k pts) that assembles into the Codeshaper
- *      hexagon, repels the pointer, and disperses as you scroll away
- *   4. SVG hex outline that draws itself on load and counter-rotates on scroll
- *   5. copy + CTAs + bottom proof bar
+ *   1. #ffffff base (theme-light)
+ *   2. animated gradient mesh — ambient depth, GSAP pointer-parallax
+ *   3. radial glow "mark" — GSAP pointer-parallax + scroll rotate/scale/fade
+ *   4. hex texture — GSAP pointer-parallax (subtlest layer)
+ *   5. copy scrim (keeps headline legible over the mesh)
+ *   6. copy: eyebrow, headline, subhead, CTAs
+ *   7. proof bar
  *
- * Scroll behaviour is a GSAP ScrollTrigger *scrub* (no pin, no jacking): the
- * copy lifts and fades, the video scales back, and the mark disperses — so
- * leaving the hero feels like a camera pull-back rather than a cut.
- * Reduced motion: static poster, no canvas, no scrub, plain fades.
+ * Every animated property here is GSAP-owned: a single entrance timeline
+ * (badge → headline → subhead → CTAs → proof bar), gsap.quickTo() driving
+ * the three background layers' pointer-parallax, and the existing
+ * ScrollTrigger scrub for the scroll pull-back. Reduced motion: everything
+ * renders in its final state immediately, no timeline, no parallax loop,
+ * no scroll scrub.
  */
-const HEADLINE_WORDS = ["Build", "&", "scale", "digital", "products", "—", "predictably."];
-const SCRAMBLE_WORD_INDEX = 2;
-const GLYPHS = "!<>-_\\/[]{}—=+*^?#";
+const EYEBROW = "AI Automation · Digital Products · Scalable Platforms";
+const TITLE = "From AI automation to scalable digital products, we build the future.";
+const SUBTITLE =
+  "We design and engineer AI solutions, digital products, and scalable platforms that transform the way businesses operate and grow.";
 
 /* PLACEHOLDER numbers — flag for approval */
 const STATS = [
@@ -43,63 +43,56 @@ const STATS = [
   { value: "~1 wk", label: "To kickoff" },
 ];
 
-const ROTATING = ["digital products.", "AI automation.", "commerce platforms.", "SaaS products."];
-
-function ScrambleWord({ word, start }: { word: string; start: boolean }) {
-  const [display, setDisplay] = useState(word);
-  const done = useRef(false);
-  useEffect(() => {
-    if (!start || done.current) return;
-    done.current = true;
-    const t0 = performance.now();
-    let raf = 0;
-    const step = (now: number) => {
-      const p = Math.min(1, (now - t0) / 600);
-      const settled = Math.floor(p * word.length);
-      setDisplay(
-        word
-          .split("")
-          .map((ch, i) => (i < settled || ch === "." ? ch : GLYPHS[(Math.random() * GLYPHS.length) | 0]))
-          .join("")
-      );
-      if (p < 1) raf = requestAnimationFrame(step);
-      else setDisplay(word);
-    };
-    raf = requestAnimationFrame(step);
-    return () => cancelAnimationFrame(raf);
-  }, [start, word]);
-  return (
-    <span className="relative inline-block">
-      <span className="invisible">{word}</span>
-      <span className="absolute left-0 top-0 whitespace-pre">{display}</span>
-    </span>
-  );
-}
-
 export default function Hero() {
   const reduced = usePrefersReducedMotion();
   const interactive = useMotionAllowed();
   const sectionRef = useRef<HTMLElement>(null);
   const copyRef = useRef<HTMLDivElement>(null);
-  const videoRef = useRef<HTMLDivElement>(null);
+  const meshRef = useRef<HTMLDivElement>(null);
   const markRef = useRef<HTMLDivElement>(null);
-  const [headlineIn, setHeadlineIn] = useState(false);
-  const [scrambleGo, setScrambleGo] = useState(false);
-  const [restIn, setRestIn] = useState(false);
+  const hexRef = useRef<HTMLDivElement>(null);
+  const badgeRef = useRef<HTMLParagraphElement>(null);
+  const headlineRef = useRef<HTMLHeadingElement>(null);
+  const subRef = useRef<HTMLParagraphElement>(null);
+  const ctaRef = useRef<HTMLDivElement>(null);
+  const proofRef = useRef<HTMLDivElement>(null);
   const [scrolled, setScrolled] = useState(false);
 
-  // headline choreography
+  // center the mark via GSAP (not CSS) so it composes with the scroll-scrub's
+  // rotate/scale and the pointer-parallax below in one GSAP-owned transform.
+  // Must run before any other effect creates a gsap.context() touching this
+  // element — usePrefersReducedMotion() flips false→true shortly after mount
+  // (SSR-safe initial value), which re-runs the scroll-scrub effect below and
+  // reverts its context; that revert restores the *whole* transform cache to
+  // its pre-context snapshot, so centering has to already be in that snapshot.
   useEffect(() => {
+    if (markRef.current) gsap.set(markRef.current, { xPercent: -50, yPercent: -50 });
+  }, []);
+
+  // entrance choreography — one GSAP timeline, badge through proof bar
+  useEffect(() => {
+    if (!sectionRef.current) return;
+    const targets = [
+      badgeRef.current,
+      headlineRef.current,
+      subRef.current,
+      ctaRef.current,
+      proofRef.current,
+    ];
     if (reduced) {
-      setHeadlineIn(true);
-      setRestIn(true);
+      gsap.set(targets, { opacity: 1, y: 0 });
       return;
     }
-    const t1 = setTimeout(() => setHeadlineIn(true), 260);
-    const dur = 260 + HEADLINE_WORDS.length * 45 + 520;
-    const t2 = setTimeout(() => setScrambleGo(true), dur - 280);
-    const t3 = setTimeout(() => setRestIn(true), dur + 260);
-    return () => [t1, t2, t3].forEach(clearTimeout);
+    const ctx = gsap.context(() => {
+      gsap
+        .timeline({ defaults: { ease: "expo.out" }, delay: 0.15 })
+        .from(badgeRef.current, { opacity: 0, y: 18, duration: 0.6 })
+        .from(headlineRef.current, { opacity: 0, y: 26, duration: 0.8 }, "-=0.35")
+        .from(subRef.current, { opacity: 0, y: 18, duration: 0.6 }, "-=0.5")
+        .from(ctaRef.current, { opacity: 0, y: 16, duration: 0.55 }, "-=0.4")
+        .from(proofRef.current, { opacity: 0, y: 12, duration: 0.5 }, "-=0.3");
+    }, sectionRef);
+    return () => ctx.revert();
   }, [reduced]);
 
   // scroll-scrubbed camera pull-back (no pin)
@@ -120,7 +113,7 @@ export default function Hero() {
         ease: "none",
         scrollTrigger: st,
       });
-      gsap.to(videoRef.current, {
+      gsap.to(meshRef.current, {
         scale: 1.12,
         opacity: 0.25,
         ease: "none",
@@ -143,37 +136,31 @@ export default function Hero() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // pointer tilt on the mark + product-card scene layers (desktop only)
+  // pointer parallax across three background depth layers (desktop only)
   useEffect(() => {
     if (!interactive || !sectionRef.current) return;
     const section = sectionRef.current;
-    const layers = Array.from(section.querySelectorAll<HTMLElement>(".scene-layer"));
-    let raf = 0, mx = 0, my = 0, cx = 0, cy = 0;
+
+    const setMeshX = gsap.quickTo(meshRef.current, "x", { duration: 1.2, ease: "power3.out" });
+    const setMeshY = gsap.quickTo(meshRef.current, "y", { duration: 1.2, ease: "power3.out" });
+    const setMarkX = gsap.quickTo(markRef.current, "x", { duration: 0.9, ease: "power3.out" });
+    const setMarkY = gsap.quickTo(markRef.current, "y", { duration: 0.9, ease: "power3.out" });
+    const setHexX = gsap.quickTo(hexRef.current, "x", { duration: 1.4, ease: "power3.out" });
+    const setHexY = gsap.quickTo(hexRef.current, "y", { duration: 1.4, ease: "power3.out" });
+
     const onMove = (e: MouseEvent) => {
       const r = section.getBoundingClientRect();
-      mx = (e.clientX - r.left) / r.width - 0.5;
-      my = (e.clientY - r.top) / r.height - 0.5;
-    };
-    const tick = () => {
-      cx += (mx - cx) * 0.06;
-      cy += (my - cy) * 0.06;
-      if (markRef.current) {
-        markRef.current.style.setProperty("--tx", `${cx * 26}px`);
-        markRef.current.style.setProperty("--ty", `${cy * 18}px`);
-      }
-      for (const layer of layers) {
-        const depth = parseFloat(layer.dataset.depth ?? "1");
-        layer.style.setProperty("--tx", `${cx * 26 * depth}px`);
-        layer.style.setProperty("--ty", `${cy * 18 * depth}px`);
-      }
-      raf = requestAnimationFrame(tick);
+      const mx = (e.clientX - r.left) / r.width - 0.5;
+      const my = (e.clientY - r.top) / r.height - 0.5;
+      setMeshX(mx * 14);
+      setMeshY(my * 10);
+      setMarkX(mx * 34);
+      setMarkY(my * 24);
+      setHexX(mx * 6);
+      setHexY(my * 4);
     };
     window.addEventListener("mousemove", onMove, { passive: true });
-    raf = requestAnimationFrame(tick);
-    return () => {
-      window.removeEventListener("mousemove", onMove);
-      cancelAnimationFrame(raf);
-    };
+    return () => window.removeEventListener("mousemove", onMove);
   }, [interactive]);
 
   return (
@@ -181,15 +168,12 @@ export default function Hero() {
       ref={sectionRef}
       className="theme-light relative flex min-h-svh flex-col items-center justify-center overflow-hidden bg-canvas"
     >
-      {/* 2 — animated gradient mesh: ambient depth only, full opacity (no
-             screen-blend trick — that only makes sense lightening a dark base) */}
-      <div ref={videoRef} className="absolute inset-[-4%]">
+      {/* 2 — animated gradient mesh: ambient depth, pointer-parallax layer 1 */}
+      <div ref={meshRef} className="absolute inset-[-4%]">
         <HeroMesh />
       </div>
 
-
-      {/* 4 — the particle field *is* the mark; this is just the pointer-tilt
-          anchor GSAP scrubs (kept empty of geometry so nothing duplicates it) */}
+      {/* 3 — radial glow "mark": pointer-parallax layer 2 + scroll rotate/scale/fade */}
       <div
         ref={markRef}
         aria-hidden
@@ -200,7 +184,7 @@ export default function Hero() {
         }}
       />
 
-      {/* copy scrim: keeps the headline readable over the bright particle core */}
+      {/* copy scrim: keeps the headline readable over the mesh */}
       <div
         aria-hidden
         className="absolute left-1/2 top-1/2 h-[62vh] w-[min(96vw,1040px)] -translate-x-1/2 -translate-y-1/2"
@@ -210,89 +194,42 @@ export default function Hero() {
         }}
       />
 
-      {/* hex texture */}
+      {/* 4 — hex texture: pointer-parallax layer 3 (subtlest) */}
       <div
+        ref={hexRef}
         aria-hidden
         className="absolute inset-0 text-ink opacity-[0.03]"
         style={{ backgroundImage: "url(/media/hex-pattern-tile.svg)", backgroundSize: "112px 194px" }}
       />
 
-      {/* product-card scene: floats around the copy, desktop only */}
-      <WorkspaceScene restIn={restIn} />
-
-      {/* 5 — copy */}
+      {/* 6 — copy */}
       <div
         ref={copyRef}
         className="relative z-10 mx-auto w-full max-w-4xl px-6 pb-24 pt-24 text-center lg:px-10"
       >
         <p
+          ref={badgeRef}
           className="mb-7 inline-flex items-center gap-2.5 rounded-full border border-hairline bg-canvas/40 px-4 py-1.5 font-urbanist text-[11px] uppercase tracking-[0.28em] text-ink-dim backdrop-blur-sm"
-          style={seq(headlineIn)}
         >
           <span className="h-1.5 w-1.5 rounded-full bg-aurora-amber dot-pulse" />
-          Product design · Engineering · AI automation
+          {EYEBROW}
         </p>
 
-        {/* ── Signature band: ~11k particles spell what the studio does —
-               DESIGN → BUILD → AUTOMATE → SHIP — then resolve into the hexagon
-               mark and start over. Decorative; the H1 below carries meaning. */}
-        <div className="relative mx-auto mb-1 h-[22vh] max-h-[196px] min-h-[120px] w-full max-w-5xl">
-          {/* particle dust behind the type — same palette, low presence */}
-          <WordMorph className="absolute inset-0 h-full w-full opacity-30" />
-          {/* the gradient mesh, playing inside the letterforms */}
-          <MeshType className="absolute inset-0 h-full w-full" />
-        </div>
-
-        {/* PLACEHOLDER H1 — flag for approval */}
         <h1
-          className="font-urbanist text-[26px] font-bold leading-[1.1] tracking-tight text-ink sm:text-[32px] lg:text-[38px]"
-          aria-label="Build & scale digital products — predictably."
+          ref={headlineRef}
+          className="font-urbanist text-[28px] font-bold leading-[1.15] tracking-tight text-ink sm:text-[36px] lg:text-[44px]"
         >
-          {HEADLINE_WORDS.map((w, i) => (
-            <span
-              key={i}
-              aria-hidden
-              className="mr-[0.22em] inline-block overflow-hidden pb-1 -mb-1 align-bottom"
-            >
-              <span
-                className="inline-block"
-                style={
-                  reduced
-                    ? undefined
-                    : {
-                        transform: headlineIn ? "translateY(0)" : "translateY(115%)",
-                        transition: `transform 620ms cubic-bezier(0.16,1,0.3,1) ${i * 45}ms`,
-                      }
-                }
-              >
-                {i === SCRAMBLE_WORD_INDEX && !reduced ? (
-                  <ScrambleWord word={w} start={scrambleGo} />
-                ) : (
-                  w
-                )}
-              </span>
-            </span>
-          ))}
+          {TITLE}
         </h1>
 
         <p
+          ref={subRef}
           className="mx-auto mt-7 max-w-2xl font-urbanist text-base leading-relaxed text-ink-dim sm:text-lg"
-          style={seq(restIn)}
         >
-          We design, build, and automate digital products for teams across the
-          USA, Canada, and Europe — with weekly visibility and a clean handover
-          every time.
+          {SUBTITLE}
         </p>
 
-        {/* live prompt → pipeline: what an AI-first studio actually does */}
-        <div className="mt-6" style={seq(restIn, 80)}>
-          <PromptPipeline />
-        </div>
-
-        <div
-          className="mt-6 flex flex-wrap items-center justify-center gap-5"
-          style={seq(restIn, 140)}
-        >
+        <div ref={ctaRef} className="mt-9 flex flex-wrap items-center justify-center gap-5">
           <Magnetic>
             <Link
               href="/contact"
@@ -320,10 +257,10 @@ export default function Hero() {
         </div>
       </div>
 
-      {/* proof bar — PLACEHOLDER numbers */}
+      {/* 7 — proof bar — PLACEHOLDER numbers */}
       <div
+        ref={proofRef}
         className="absolute inset-x-0 bottom-0 z-10 border-t border-hairline bg-white/70 backdrop-blur-md"
-        style={seq(restIn, 240)}
       >
         <dl className="mx-auto flex max-w-7xl flex-wrap items-center justify-center gap-x-10 gap-y-3 px-6 py-4 lg:justify-between lg:px-10">
           {STATS.map((s) => (

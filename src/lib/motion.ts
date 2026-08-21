@@ -28,36 +28,9 @@ export function useFinePointer(): boolean {
   return fine;
 }
 
-/** True at ≥1024px viewport width only (no pointer-type check). SSR-safe. */
-export function useIsDesktopWidth(): boolean {
-  const [desktop, setDesktop] = useState(false);
-  useEffect(() => {
-    const mq = window.matchMedia("(min-width: 1024px)");
-    setDesktop(mq.matches);
-    const onChange = (e: MediaQueryListEvent) => setDesktop(e.matches);
-    mq.addEventListener("change", onChange);
-    return () => mq.removeEventListener("change", onChange);
-  }, []);
-  return desktop;
-}
-
 /** Combined guard: cursor-follow / parallax layers should run only when this is true. */
 export function useMotionAllowed(): boolean {
   const reduced = usePrefersReducedMotion();
   const fine = useFinePointer();
   return fine && !reduced;
-}
-
-/**
- * Shared fade + rise entrance style: opacity 0→1, translateY 18px→0.
- * Used by every staggered hero element (headline sub-parts, CTAs, proof
- * bar, product-card scene) so entrance timing stays visually consistent
- * across files without duplicating the transition string.
- */
-export function seqStyle(on: boolean, delay = 0): React.CSSProperties {
-  return {
-    opacity: on ? 1 : 0,
-    transform: on ? "translateY(0)" : "translateY(18px)",
-    transition: `opacity 600ms ease ${delay}ms, transform 600ms cubic-bezier(0.16,1,0.3,1) ${delay}ms`,
-  };
 }

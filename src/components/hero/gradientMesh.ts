@@ -22,9 +22,8 @@ export const MESH_BLOBS: MeshBlob[] = [
 /**
  * Paints a soft, slowly-drifting multi-blob radial-gradient mesh onto `ctx`
  * — a white base with neutral Zinc-gray blobs. Pure function: same
- * (width, height, elapsedMs) always produces the same frame. Used
- * identically by the full-bleed hero background (HeroMesh) and the
- * video-masked type (MeshType) so both read as one visual system.
+ * (width, height, elapsedMs) always produces the same frame. Used by the
+ * full-bleed hero background (HeroMesh).
  */
 export function drawGradientMesh(
   ctx: CanvasRenderingContext2D,
