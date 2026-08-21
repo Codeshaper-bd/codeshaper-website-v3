@@ -17,16 +17,16 @@ export default async function StubPage({
 
   return (
     <main className="flex min-h-svh flex-col items-center justify-center bg-canvas px-6 text-center">
-      <p className="mb-3 font-body text-sm uppercase tracking-[0.25em] text-ink-faint">
+      <p className="mb-3 font-urbanist text-sm uppercase tracking-[0.25em] text-ink-faint">
         Page stub
       </p>
-      <h1 className="font-display text-4xl font-medium tracking-tight text-ink">{title}</h1>
-      <p className="mt-4 max-w-md font-body text-ink-dim">
+      <h1 className="font-urbanist text-4xl font-medium tracking-tight text-ink">{title}</h1>
+      <p className="mt-4 max-w-md font-urbanist text-ink-dim">
         This page is scaffolded but not built yet — part of the homepage-first pass.
       </p>
       <Link
         href="/"
-        className="mt-8 rounded-full border border-hairline-strong px-6 py-3 font-display text-sm text-ink transition-colors hover:border-ink/60"
+        className="mt-8 rounded-full border border-hairline-strong px-6 py-3 font-urbanist text-sm text-ink transition-colors hover:border-ink/60"
       >
         ← Back to home
       </Link>

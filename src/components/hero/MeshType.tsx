@@ -60,7 +60,7 @@ export default function MeshType({ className = "" }: { className?: string }) {
       const H = canvas.height;
       let size = H * 0.72;
       const set = (s: number) => {
-        const family = getComputedStyle(document.body).getPropertyValue("--font-geom") || "sans-serif";
+        const family = getComputedStyle(document.body).getPropertyValue("--font-urbanist") || "sans-serif";
         ctx.font = `700 ${s}px ${family}`;
       };
       set(size);

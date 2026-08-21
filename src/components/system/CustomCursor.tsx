@@ -89,7 +89,7 @@ export default function CustomCursor() {
         aria-hidden
         className="pointer-events-none fixed left-0 top-0 z-[9998] flex h-9 w-9 items-center justify-center rounded-full border border-ink/40 transition-[width,height,background-color,border-color,opacity] duration-200 data-[mode=link]:h-[88px] data-[mode=link]:w-[88px] data-[mode=link]:border-ink/60 data-[mode=link]:bg-ink/5 data-[mode=drag]:h-16 data-[mode=drag]:w-16 data-[mode=drag]:border-ink data-[mode=drag]:bg-canvas/70 data-[mode=text]:opacity-0"
       >
-        <span className="select-none font-body text-[10px] uppercase tracking-widest text-ink opacity-0 transition-opacity duration-200 [[data-mode=drag]>&]:opacity-100">
+        <span className="select-none font-urbanist text-[10px] uppercase tracking-widest text-ink opacity-0 transition-opacity duration-200 [[data-mode=drag]>&]:opacity-100">
           drag
         </span>
       </div>

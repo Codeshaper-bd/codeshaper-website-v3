@@ -36,16 +36,16 @@ export default function EngagementModels() {
   return (
     <section className="bg-canvas py-16 lg:py-32" aria-labelledby="engagement-heading">
       <div className="mx-auto max-w-7xl px-6 lg:px-10">
-        <p className="mb-3 font-body text-sm font-medium uppercase tracking-[0.25em] text-ink-faint">
+        <p className="mb-3 font-urbanist text-sm font-medium uppercase tracking-[0.25em] text-ink-faint">
           Engagement models
         </p>
         <h2
           id="engagement-heading"
-          className="font-display text-3xl font-bold tracking-tight text-ink sm:text-4xl"
+          className="font-urbanist text-3xl font-bold tracking-tight text-ink sm:text-4xl"
         >
           Flexible ways to work with us.
         </h2>
-        <p className="mt-4 max-w-2xl font-body text-lg leading-relaxed text-ink-dim">
+        <p className="mt-4 max-w-2xl font-urbanist text-lg leading-relaxed text-ink-dim">
           Choose the model that matches your scope certainty, timeline, and team
           structure.
         </p>
@@ -56,8 +56,8 @@ export default function EngagementModels() {
               <Reveal delay={i * 80} className="h-full">
                 <Spotlight color="rgba(139, 95, 224, 0.05)" radius={300} className="h-full rounded-xl">
                   <article className="card-dark lift-sm h-full rounded-xl p-8">
-                    <h3 className="font-display text-xl font-bold tracking-tight text-ink">{m.name}</h3>
-                    <p className="mt-3 font-body text-sm leading-relaxed text-ink-dim">{m.fit}</p>
+                    <h3 className="font-urbanist text-xl font-bold tracking-tight text-ink">{m.name}</h3>
+                    <p className="mt-3 font-urbanist text-sm leading-relaxed text-ink-dim">{m.fit}</p>
                   </article>
                 </Spotlight>
               </Reveal>
@@ -68,7 +68,7 @@ export default function EngagementModels() {
         <div className="mt-12">
           <Link
             href="/how-we-work/engagement"
-            className="inline-block rounded-full border border-hairline-strong px-7 py-3.5 font-display text-sm font-medium text-ink transition-colors hover:border-ink/60"
+            className="inline-block rounded-full border border-hairline-strong px-7 py-3.5 font-urbanist text-sm font-medium text-ink transition-colors hover:border-ink/60"
           >
             Compare Engagement Models →
           </Link>

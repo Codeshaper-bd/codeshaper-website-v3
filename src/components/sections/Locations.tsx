@@ -61,16 +61,16 @@ export default function Locations() {
       </div>
 
       <div className="relative z-10 mx-auto max-w-7xl px-6 lg:px-10">
-        <p className="mb-3 font-body text-sm font-medium uppercase tracking-[0.25em] text-ink-faint">
+        <p className="mb-3 font-urbanist text-sm font-medium uppercase tracking-[0.25em] text-ink-faint">
           Locations
         </p>
         <h2
           id="locations-heading"
-          className="font-display text-3xl font-bold tracking-tight text-ink sm:text-4xl"
+          className="font-urbanist text-3xl font-bold tracking-tight text-ink sm:text-4xl"
         >
           Where we work from.
         </h2>
-        <p className="mt-4 max-w-xl font-body text-lg leading-relaxed text-ink-dim">
+        <p className="mt-4 max-w-xl font-urbanist text-lg leading-relaxed text-ink-dim">
           Global delivery with local presence — one accountable team across
           time zones.
         </p>
@@ -90,12 +90,12 @@ export default function Locations() {
                       }}
                       aria-hidden
                     />
-                    <span className="loc-city font-display text-xl font-bold tracking-tight text-ink">
+                    <span className="loc-city font-urbanist text-xl font-bold tracking-tight text-ink">
                       {c.city}
                     </span>
                   </span>
                   {c.lines.map((l) => (
-                    <p key={l} className="font-body text-sm leading-relaxed text-ink-dim">
+                    <p key={l} className="font-urbanist text-sm leading-relaxed text-ink-dim">
                       {l}
                     </p>
                   ))}

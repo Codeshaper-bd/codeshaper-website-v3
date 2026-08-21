@@ -26,10 +26,10 @@ export default function FinalCta() {
         }}
       />
       <div className="relative z-10 mx-auto max-w-3xl px-6 text-center">
-        <h2 id="cta-heading" className="font-display text-4xl font-medium tracking-tight text-ink sm:text-5xl">
+        <h2 id="cta-heading" className="font-urbanist text-4xl font-medium tracking-tight text-ink sm:text-5xl">
           Let&apos;s shape your next product.
         </h2>
-        <p className="mx-auto mt-6 max-w-xl font-body text-lg leading-relaxed text-ink-dim">
+        <p className="mx-auto mt-6 max-w-xl font-urbanist text-lg leading-relaxed text-ink-dim">
           A 30-minute call: your goals, our honest read on scope, and a
           kickoff date — usually within a week.
         </p>

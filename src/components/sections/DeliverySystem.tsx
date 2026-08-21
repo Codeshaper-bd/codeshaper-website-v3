@@ -44,16 +44,16 @@ export default function DeliverySystem() {
     <section className="bg-light-surface py-16 lg:py-32" aria-labelledby="delivery-heading">
       <div className="mx-auto w-full max-w-7xl px-6 lg:px-10">
         <Reveal>
-          <p className="mb-3 font-body text-sm font-medium uppercase tracking-[0.25em] text-light-dim">
+          <p className="mb-3 font-urbanist text-sm font-medium uppercase tracking-[0.25em] text-light-dim">
             How we deliver
           </p>
           <h2
             id="delivery-heading"
-            className="max-w-2xl font-display text-3xl font-bold tracking-tight text-light-ink sm:text-4xl"
+            className="max-w-2xl font-urbanist text-3xl font-bold tracking-tight text-light-ink sm:text-4xl"
           >
             Predictable delivery. No chaos.
           </h2>
-          <p className="mt-4 max-w-xl font-body text-lg leading-relaxed text-light-dim">
+          <p className="mt-4 max-w-xl font-urbanist text-lg leading-relaxed text-light-dim">
             A simple operating system that keeps scope, quality, and speed aligned.
           </p>
         </Reveal>
@@ -64,18 +64,18 @@ export default function DeliverySystem() {
               <Reveal delay={i * 90} className="h-full">
                 <article className="card-light lift-sm flex h-full flex-col rounded-xl p-8">
                   <div className="mb-6 flex items-center gap-3">
-                    <span className="font-display text-sm font-medium text-light-dim">{s.n}</span>
+                    <span className="font-urbanist text-sm font-medium text-light-dim">{s.n}</span>
                     <span className="connector-line h-px flex-1 bg-black/10" aria-hidden />
                     {i < STEPS.length - 1 && (
-                      <span className="font-display text-sm text-light-dim" aria-hidden>
+                      <span className="font-urbanist text-sm text-light-dim" aria-hidden>
                         →
                       </span>
                     )}
                   </div>
-                  <h3 className="font-display text-xl font-bold tracking-tight text-light-ink">
+                  <h3 className="font-urbanist text-xl font-bold tracking-tight text-light-ink">
                     {s.title}
                   </h3>
-                  <p className="mt-3 font-body text-sm leading-relaxed text-light-dim">{s.body}</p>
+                  <p className="mt-3 font-urbanist text-sm leading-relaxed text-light-dim">{s.body}</p>
                 </article>
               </Reveal>
             </li>
@@ -87,7 +87,7 @@ export default function DeliverySystem() {
           {PROOF_ROW.map((p, i) => (
             <li key={p}>
               <Reveal delay={i * 70}>
-                <span className="flex items-center gap-2 font-body text-sm text-light-dim">
+                <span className="flex items-center gap-2 font-urbanist text-sm text-light-dim">
                   <span className="h-1.5 w-1.5 rounded-full bg-aurora-violet" aria-hidden />
                   {p}
                 </span>
@@ -98,7 +98,7 @@ export default function DeliverySystem() {
 
         {/* Standards block */}
         <Reveal>
-          <h3 className="mt-14 font-display text-2xl font-bold tracking-tight text-light-ink">
+          <h3 className="mt-14 font-urbanist text-2xl font-bold tracking-tight text-light-ink">
             Standards that reduce rework
           </h3>
         </Reveal>
@@ -106,12 +106,12 @@ export default function DeliverySystem() {
           {STANDARDS.map((s, ci) => (
             <Reveal key={s.title} delay={ci * 100} className="h-full">
               <div className="card-light lift-sm h-full rounded-xl p-8">
-                <p className="font-display text-lg font-bold text-light-ink">{s.title}</p>
+                <p className="font-urbanist text-lg font-bold text-light-ink">{s.title}</p>
                 <ul className="mt-4 space-y-2.5">
                   {s.items.map((it, ii) => (
                     <li key={it}>
                       <Reveal delay={150 + ii * 60}>
-                        <span className="flex gap-3 font-body text-sm text-light-dim">
+                        <span className="flex gap-3 font-urbanist text-sm text-light-dim">
                           <span className="text-aurora-violet" aria-hidden>
                             ✓
                           </span>
@@ -130,7 +130,7 @@ export default function DeliverySystem() {
           <div className="mt-12">
             <Link
               href="/how-we-work/process"
-              className="inline-block rounded-full border border-black/15 px-7 py-3.5 font-display text-sm font-medium text-light-ink transition-colors hover:border-black/40"
+              className="inline-block rounded-full border border-black/15 px-7 py-3.5 font-urbanist text-sm font-medium text-light-ink transition-colors hover:border-black/40"
             >
               How We Work →
             </Link>

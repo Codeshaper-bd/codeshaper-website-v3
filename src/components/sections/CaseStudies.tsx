@@ -65,19 +65,19 @@ export default function CaseStudies() {
       <div className="mx-auto max-w-7xl px-6 lg:px-10">
         <div className="mb-12 flex flex-wrap items-end justify-between gap-6">
           <div>
-            <p className="mb-3 font-body text-sm font-medium uppercase tracking-[0.25em] text-light-dim">
+            <p className="mb-3 font-urbanist text-sm font-medium uppercase tracking-[0.25em] text-light-dim">
               Proof
             </p>
             <h2
               id="work-heading"
-              className="font-display text-3xl font-bold tracking-tight text-light-ink sm:text-4xl"
+              className="font-urbanist text-3xl font-bold tracking-tight text-light-ink sm:text-4xl"
             >
               Work that shipped, numbers that stuck.
             </h2>
           </div>
           <Link
             href="/work"
-            className="font-body text-sm font-medium text-light-dim underline-offset-4 hover:text-light-ink hover:underline"
+            className="font-urbanist text-sm font-medium text-light-dim underline-offset-4 hover:text-light-ink hover:underline"
           >
             View all Success Stories →
           </Link>
@@ -96,7 +96,7 @@ export default function CaseStudies() {
                     style={{ background: s.gradient }}
                   >
                     <Hex />
-                    <span className="font-display text-xs font-medium uppercase tracking-[0.25em] text-white/60">
+                    <span className="font-urbanist text-xs font-medium uppercase tracking-[0.25em] text-white/60">
                       {s.industry}
                     </span>
                   </div>
@@ -121,7 +121,7 @@ export default function CaseStudies() {
                   <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/45 to-transparent" />
                 </div>
                 <div className="p-8">
-                  <h3 className="font-display text-xl font-bold leading-snug text-light-ink">
+                  <h3 className="font-urbanist text-xl font-bold leading-snug text-light-ink">
                     {s.outcome}
                     <span
                       className="ml-2 inline-block -translate-x-1 opacity-0 transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100"
@@ -130,12 +130,12 @@ export default function CaseStudies() {
                       →
                     </span>
                   </h3>
-                  <p className="mt-3 font-body text-sm text-light-dim">{s.services}</p>
+                  <p className="mt-3 font-urbanist text-sm text-light-dim">{s.services}</p>
                   <div className="mt-5 flex flex-wrap gap-2 border-t border-hairline-light pt-4">
-                    <span className="rounded-full border border-black/10 px-3 py-1 font-body text-xs text-light-dim">
+                    <span className="rounded-full border border-black/10 px-3 py-1 font-urbanist text-xs text-light-dim">
                       {s.industry}
                     </span>
-                    <span className="rounded-full border border-black/10 bg-aurora-violet/10 px-3 py-1 font-body text-xs text-light-ink">
+                    <span className="rounded-full border border-black/10 bg-aurora-violet/10 px-3 py-1 font-urbanist text-xs text-light-ink">
                       {s.model}
                     </span>
                   </div>

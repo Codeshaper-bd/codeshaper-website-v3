@@ -25,7 +25,7 @@ const NEXT_STEPS = [
 ];
 
 const inputCls =
-  "w-full rounded-lg border border-hairline bg-canvas-raised px-4 py-3 font-body text-sm text-ink placeholder:text-ink-faint outline-none transition-colors focus:border-aurora-violet/70";
+  "w-full rounded-lg border border-hairline bg-canvas-raised px-4 py-3 font-urbanist text-sm text-ink placeholder:text-ink-faint outline-none transition-colors focus:border-aurora-violet/70";
 
 export default function FinalCtaForm() {
   const [submitted, setSubmitted] = useState(false);
@@ -76,15 +76,15 @@ export default function FinalCtaForm() {
         {/* Left: pitch */}
         <div>
           <Reveal>
-            <h2 id="cta-heading" className="font-display text-3xl font-bold tracking-tight text-ink sm:text-4xl lg:text-5xl">
+            <h2 id="cta-heading" className="font-urbanist text-3xl font-bold tracking-tight text-ink sm:text-4xl lg:text-5xl">
               Tell us your goal — we&apos;ll recommend the best path.
             </h2>
-            <p className="mt-6 max-w-lg font-body text-lg leading-relaxed text-ink-dim">
+            <p className="mt-6 max-w-lg font-urbanist text-lg leading-relaxed text-ink-dim">
               Share timeline and scope, and we&apos;ll suggest the right service
               and engagement model.
             </p>
 
-            <p className="mt-10 font-body text-xs font-medium uppercase tracking-[0.25em] text-ink-faint">
+            <p className="mt-10 font-urbanist text-xs font-medium uppercase tracking-[0.25em] text-ink-faint">
               What happens next
             </p>
           </Reveal>
@@ -94,10 +94,10 @@ export default function FinalCtaForm() {
                 {/* Steps reveal sequentially; connector draws in below each */}
                 <Reveal delay={200 + i * 180}>
                   <span className="flex items-start gap-4">
-                    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-aurora-violet/50 font-display text-xs font-medium text-ink">
+                    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-aurora-violet/50 font-urbanist text-xs font-medium text-ink">
                       {s.n}
                     </span>
-                    <span className="font-body text-sm leading-relaxed text-ink-dim">{s.text}</span>
+                    <span className="font-urbanist text-sm leading-relaxed text-ink-dim">{s.text}</span>
                   </span>
                   {i < NEXT_STEPS.length - 1 && (
                     <span className="connector-line mt-3 ml-3.5 block h-px w-10 bg-aurora-violet/30" aria-hidden />
@@ -112,7 +112,7 @@ export default function FinalCtaForm() {
               <Magnetic>
                 <Link
                   href="/contact"
-                  className="inline-block rounded-full border border-aurora-violet/70 px-7 py-3.5 font-display text-sm font-medium text-ink shadow-[0_0_20px_rgba(139,95,224,0.3)] transition-shadow hover:shadow-[0_0_36px_rgba(139,95,224,0.5)]"
+                  className="inline-block rounded-full border border-aurora-violet/70 px-7 py-3.5 font-urbanist text-sm font-medium text-ink shadow-[0_0_20px_rgba(139,95,224,0.3)] transition-shadow hover:shadow-[0_0_36px_rgba(139,95,224,0.5)]"
                 >
                   Book a Call →
                 </Link>
@@ -125,8 +125,8 @@ export default function FinalCtaForm() {
         <div ref={cardRef} className="card-dark rounded-2xl p-8">
           {submitted ? (
             <div className="flex h-full min-h-72 flex-col items-center justify-center text-center">
-              <p className="font-display text-2xl font-bold text-ink">Thanks — got it.</p>
-              <p className="mt-3 max-w-sm font-body text-sm leading-relaxed text-ink-dim">
+              <p className="font-urbanist text-2xl font-bold text-ink">Thanks — got it.</p>
+              <p className="mt-3 max-w-sm font-urbanist text-sm leading-relaxed text-ink-dim">
                 We&apos;ll come back within one business day with a recommended
                 path. (Stub confirmation — no data was sent yet.)
               </p>
@@ -141,16 +141,16 @@ export default function FinalCtaForm() {
             >
               <div className="grid gap-5 sm:grid-cols-2">
                 <label className="block">
-                  <span className="mb-1.5 block font-body text-xs font-medium text-ink-dim">Name</span>
+                  <span className="mb-1.5 block font-urbanist text-xs font-medium text-ink-dim">Name</span>
                   <input required name="name" type="text" placeholder="Your name" className={inputCls} />
                 </label>
                 <label className="block">
-                  <span className="mb-1.5 block font-body text-xs font-medium text-ink-dim">Email</span>
+                  <span className="mb-1.5 block font-urbanist text-xs font-medium text-ink-dim">Email</span>
                   <input required name="email" type="email" placeholder="you@company.com" className={inputCls} />
                 </label>
               </div>
               <label className="block">
-                <span className="mb-1.5 block font-body text-xs font-medium text-ink-dim">Service interest</span>
+                <span className="mb-1.5 block font-urbanist text-xs font-medium text-ink-dim">Service interest</span>
                 <select required name="service" defaultValue="" className={inputCls}>
                   <option value="" disabled>Select a service…</option>
                   {SERVICE_COLUMNS.map((s) => (
@@ -160,7 +160,7 @@ export default function FinalCtaForm() {
               </label>
               <div className="grid gap-5 sm:grid-cols-2">
                 <label className="block">
-                  <span className="mb-1.5 block font-body text-xs font-medium text-ink-dim">Industry</span>
+                  <span className="mb-1.5 block font-urbanist text-xs font-medium text-ink-dim">Industry</span>
                   <select required name="industry" defaultValue="" className={inputCls}>
                     <option value="" disabled>Select…</option>
                     {INDUSTRIES.map((i) => (
@@ -169,7 +169,7 @@ export default function FinalCtaForm() {
                   </select>
                 </label>
                 <label className="block">
-                  <span className="mb-1.5 block font-body text-xs font-medium text-ink-dim">Timeline</span>
+                  <span className="mb-1.5 block font-urbanist text-xs font-medium text-ink-dim">Timeline</span>
                   <select required name="timeline" defaultValue="" className={inputCls}>
                     <option value="" disabled>Select…</option>
                     {TIMELINES.map((t) => (
@@ -179,7 +179,7 @@ export default function FinalCtaForm() {
                 </label>
               </div>
               <label className="block">
-                <span className="mb-1.5 block font-body text-xs font-medium text-ink-dim">Short brief</span>
+                <span className="mb-1.5 block font-urbanist text-xs font-medium text-ink-dim">Short brief</span>
                 <textarea
                   name="brief"
                   rows={4}
@@ -190,7 +190,7 @@ export default function FinalCtaForm() {
               <Magnetic className="block w-full">
                 <button
                   type="submit"
-                  className="w-full rounded-full border border-aurora-violet/70 px-7 py-3.5 font-display text-sm font-medium text-ink shadow-[0_0_20px_rgba(139,95,224,0.3)] transition-shadow hover:shadow-[0_0_36px_rgba(139,95,224,0.5)]"
+                  className="w-full rounded-full border border-aurora-violet/70 px-7 py-3.5 font-urbanist text-sm font-medium text-ink shadow-[0_0_20px_rgba(139,95,224,0.3)] transition-shadow hover:shadow-[0_0_36px_rgba(139,95,224,0.5)]"
                 >
                   Start a Project →
                 </button>

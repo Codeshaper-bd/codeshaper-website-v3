@@ -81,16 +81,16 @@ export default function AiSpotlight() {
       <div className="relative z-10 mx-auto grid max-w-7xl items-center gap-14 px-6 lg:grid-cols-2 lg:px-10">
         <div>
           <Reveal>
-            <p className="mb-3 font-body text-sm font-medium uppercase tracking-[0.25em] text-aurora-amber">
+            <p className="mb-3 font-urbanist text-sm font-medium uppercase tracking-[0.25em] text-aurora-amber">
               AI &amp; Automation
             </p>
             <h2
               id="ai-heading"
-              className="font-display text-3xl font-bold tracking-tight text-ink sm:text-4xl lg:text-5xl"
+              className="font-urbanist text-3xl font-bold tracking-tight text-ink sm:text-4xl lg:text-5xl"
             >
               AI-assisted where useful — human-led decisions.
             </h2>
-            <p className="mt-6 max-w-lg font-body text-lg leading-relaxed text-ink-dim">
+            <p className="mt-6 max-w-lg font-urbanist text-lg leading-relaxed text-ink-dim">
               We use AI to accelerate routine work and improve clarity — while
               keeping quality controlled.
             </p>
@@ -99,7 +99,7 @@ export default function AiSpotlight() {
             {BULLETS.map((b, i) => (
               <li key={b}>
                 <Reveal delay={120 + i * 80}>
-                  <span className="flex gap-3 font-body text-sm leading-relaxed text-ink-dim">
+                  <span className="flex gap-3 font-urbanist text-sm leading-relaxed text-ink-dim">
                     <span className="text-aurora-violet" aria-hidden>
                       →
                     </span>
@@ -113,7 +113,7 @@ export default function AiSpotlight() {
             <div className="mt-10">
               <Link
                 href="/services/ai"
-                className="inline-block rounded-full border border-aurora-violet/70 px-7 py-3.5 font-display text-sm font-medium text-ink shadow-[0_0_20px_rgba(139,95,224,0.3)] transition-shadow hover:shadow-[0_0_36px_rgba(139,95,224,0.5)]"
+                className="inline-block rounded-full border border-aurora-violet/70 px-7 py-3.5 font-urbanist text-sm font-medium text-ink shadow-[0_0_20px_rgba(139,95,224,0.3)] transition-shadow hover:shadow-[0_0_36px_rgba(139,95,224,0.5)]"
               >
                 Explore AI &amp; Automation →
               </Link>

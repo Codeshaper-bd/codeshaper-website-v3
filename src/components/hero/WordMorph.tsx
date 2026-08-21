@@ -154,7 +154,8 @@ function sampleText(text: string, count: number, aspect: number): Float32Array {
 
   // shrink long words so every step occupies the same optical width
   let size = 190;
-  const family = `"Space Grotesk Variable", "Space Grotesk", system-ui, sans-serif`;
+  const family =
+    getComputedStyle(document.body).getPropertyValue("--font-urbanist") || "system-ui, sans-serif";
   ctx.font = `700 ${size}px ${family}`;
   const maxW = W * 0.88;
   while (ctx.measureText(text).width > maxW && size > 40) {

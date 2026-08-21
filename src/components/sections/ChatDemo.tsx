@@ -86,8 +86,8 @@ export default function ChatDemo() {
   return (
     <div className="flex h-[430px] flex-col" aria-label="AI agent demo (scripted)">
       <div className="mb-5 flex items-center justify-between">
-        <p className="font-display text-sm font-medium text-ink">Agent demo</p>
-        <span className="rounded-full border border-hairline px-2.5 py-0.5 font-body text-[10px] uppercase tracking-widest text-ink-faint">
+        <p className="font-urbanist text-sm font-medium text-ink">Agent demo</p>
+        <span className="rounded-full border border-hairline px-2.5 py-0.5 font-urbanist text-[10px] uppercase tracking-widest text-ink-faint">
           Scripted preview
         </span>
       </div>
@@ -96,7 +96,7 @@ export default function ChatDemo() {
         {messages.map((m, i) => (
           <div
             key={i}
-            className={`max-w-[85%] rounded-xl px-4 py-3 font-body text-sm leading-relaxed ${
+            className={`max-w-[85%] rounded-xl px-4 py-3 font-urbanist text-sm leading-relaxed ${
               m.role === "user"
                 ? "ml-auto bg-aurora-violet/25 text-ink"
                 : "border border-hairline bg-canvas/60 text-ink-dim"
@@ -122,7 +122,7 @@ export default function ChatDemo() {
               key={p.q}
               onClick={() => send(p.q)}
               disabled={busy}
-              className="rounded-full border border-hairline px-3 py-1.5 font-body text-xs text-ink-dim transition-colors hover:border-aurora-violet/50 hover:text-ink disabled:opacity-40"
+              className="rounded-full border border-hairline px-3 py-1.5 font-urbanist text-xs text-ink-dim transition-colors hover:border-aurora-violet/50 hover:text-ink disabled:opacity-40"
             >
               {p.q}
             </button>
@@ -142,12 +142,12 @@ export default function ChatDemo() {
           onChange={(e) => setInput(e.target.value)}
           placeholder="Ask a business question…"
           aria-label="Ask the demo agent a question"
-          className="min-w-0 flex-1 rounded-full border border-hairline bg-canvas/60 px-4 py-2.5 font-body text-sm text-ink placeholder:text-ink-faint outline-none transition-colors focus:border-aurora-violet/60"
+          className="min-w-0 flex-1 rounded-full border border-hairline bg-canvas/60 px-4 py-2.5 font-urbanist text-sm text-ink placeholder:text-ink-faint outline-none transition-colors focus:border-aurora-violet/60"
         />
         <button
           type="submit"
           disabled={busy || !input.trim()}
-          className="rounded-full border border-aurora-violet/60 px-5 py-2.5 font-display text-sm text-ink transition-opacity disabled:opacity-40"
+          className="rounded-full border border-aurora-violet/60 px-5 py-2.5 font-urbanist text-sm text-ink transition-opacity disabled:opacity-40"
         >
           Send
         </button>

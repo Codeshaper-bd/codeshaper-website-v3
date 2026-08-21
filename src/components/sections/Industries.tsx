@@ -23,16 +23,16 @@ export default function Industries() {
   return (
     <section className="border-t border-hairline-light bg-light-surface py-16 lg:py-32" aria-labelledby="industries-heading">
       <div className="mx-auto max-w-7xl px-6 lg:px-10">
-        <p className="mb-3 font-body text-sm font-medium uppercase tracking-[0.25em] text-light-dim">
+        <p className="mb-3 font-urbanist text-sm font-medium uppercase tracking-[0.25em] text-light-dim">
           Where we operate
         </p>
         <h2
           id="industries-heading"
-          className="font-display text-3xl font-bold tracking-tight text-light-ink sm:text-4xl"
+          className="font-urbanist text-3xl font-bold tracking-tight text-light-ink sm:text-4xl"
         >
           Industries we serve.
         </h2>
-        <p className="mt-4 max-w-2xl font-body text-lg leading-relaxed text-light-dim">
+        <p className="mt-4 max-w-2xl font-urbanist text-lg leading-relaxed text-light-dim">
           We focus on industries where speed to market, product experience, and
           operational efficiency drive growth.
         </p>
@@ -46,11 +46,11 @@ export default function Industries() {
                   href={f.href}
                   className="card-light lift-sm group flex min-h-28 flex-col justify-between rounded-xl p-8 transition-colors hover:border-aurora-indigo/50"
                 >
-                  <span className="font-display text-lg font-bold leading-snug text-light-ink">
+                  <span className="font-urbanist text-lg font-bold leading-snug text-light-ink">
                     {f.name}
                   </span>
                   <span
-                    className="mt-4 font-display text-sm text-light-dim transition-colors group-hover:text-light-ink"
+                    className="mt-4 font-urbanist text-sm text-light-dim transition-colors group-hover:text-light-ink"
                     aria-hidden
                   >
                     →
@@ -66,7 +66,7 @@ export default function Industries() {
             {CHIPS.map((c) => (
               <li
                 key={c}
-                className="chip-pop rounded-full border border-black/10 bg-white px-4 py-2 font-body text-sm text-light-dim"
+                className="chip-pop rounded-full border border-black/10 bg-white px-4 py-2 font-urbanist text-sm text-light-dim"
               >
                 {c}
               </li>
@@ -78,7 +78,7 @@ export default function Industries() {
           <div className="mt-12">
             <Link
               href="/industries"
-              className="inline-block rounded-full border border-black/15 px-7 py-3.5 font-display text-sm font-medium text-light-ink transition-colors hover:border-black/40"
+              className="inline-block rounded-full border border-black/15 px-7 py-3.5 font-urbanist text-sm font-medium text-light-ink transition-colors hover:border-black/40"
             >
               Explore Industries →
             </Link>

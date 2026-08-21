@@ -3,52 +3,17 @@ import localFont from "next/font/local";
 import "./globals.css";
 
 /**
- * Typography — Geom (headings) + Manrope (body), both self-hosted through
- * next/font/local so Next emits <link rel="preload"> and a metric-matched
- * fallback (size-adjust). That keeps font swap from shifting layout.
- * Files live in src/fonts and come from the @fontsource packages.
+ * Typography — Urbanist, self-hosted through next/font/local so Next emits
+ * <link rel="preload"> and a metric-matched fallback (size-adjust). That
+ * keeps font swap from shifting layout. File lives in src/fonts and comes
+ * from the @fontsource/urbanist package.
  */
-const geom = localFont({
-  src: [
-    { path: "../fonts/geom-latin-500-normal.woff2", weight: "500", style: "normal" },
-    { path: "../fonts/geom-latin-700-normal.woff2", weight: "700", style: "normal" },
-  ],
-  display: "swap",
-  variable: "--font-geom",
-  preload: true,
-  fallback: ["ui-sans-serif", "system-ui", "sans-serif"],
-  adjustFontFallback: "Arial",
-});
-
-const manrope = localFont({
-  src: "../fonts/manrope-latin-wght-normal.woff2",
-  weight: "200 800",
-  style: "normal",
-  display: "swap",
-  variable: "--font-manrope",
-  preload: true,
-  fallback: ["ui-sans-serif", "system-ui", "sans-serif"],
-  adjustFontFallback: "Arial",
-});
-
-const satoshi = localFont({
-  src: [
-    { path: "../fonts/satoshi-latin-400-normal.woff2", weight: "400", style: "normal" },
-    { path: "../fonts/satoshi-latin-500-normal.woff2", weight: "500", style: "normal" },
-    { path: "../fonts/satoshi-latin-700-normal.woff2", weight: "700", style: "normal" },
-  ],
-  display: "swap",
-  variable: "--font-satoshi",
-  preload: true,
-  fallback: ["ui-sans-serif", "system-ui", "sans-serif"],
-  adjustFontFallback: "Arial",
-});
-
-/** Urbanist — the reference site's font, scoped to the hero + navbar only. */
 const urbanist = localFont({
   src: [
     { path: "../fonts/urbanist-latin-400-normal.woff2", weight: "400", style: "normal" },
+    { path: "../fonts/urbanist-latin-500-normal.woff2", weight: "500", style: "normal" },
     { path: "../fonts/urbanist-latin-600-normal.woff2", weight: "600", style: "normal" },
+    { path: "../fonts/urbanist-latin-700-normal.woff2", weight: "700", style: "normal" },
   ],
   display: "swap",
   variable: "--font-urbanist",
@@ -69,7 +34,7 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${geom.variable} ${manrope.variable} ${satoshi.variable} ${urbanist.variable}`}>
+    <html lang="en" className={urbanist.variable}>
       <body>{children}</body>
     </html>
   );

@@ -11,8 +11,8 @@ const CITY_NAMES = ["[City 1]", "[City 2]", "[City 3]", "[City 4]", "[City 5]"];
 const insights = SIMPLE_MENUS.find((m) => m.id === "insights")!;
 const company = SIMPLE_MENUS.find((m) => m.id === "company")!;
 
-const colHead = "mb-4 font-body text-xs font-medium uppercase tracking-[0.2em] text-ink-faint";
-const colLink = "font-body text-sm text-ink-dim transition-colors hover:text-ink";
+const colHead = "mb-4 font-urbanist text-xs font-medium uppercase tracking-[0.2em] text-ink-faint";
+const colLink = "font-urbanist text-sm text-ink-dim transition-colors hover:text-ink";
 
 export default function Footer() {
   return (
@@ -30,11 +30,11 @@ export default function Footer() {
                   strokeWidth="2"
                 />
               </svg>
-              <span className="font-display text-lg font-bold tracking-tight text-ink">
+              <span className="font-urbanist text-lg font-bold tracking-tight text-ink">
                 codeshaper
               </span>
             </Link>
-            <p className="mt-4 max-w-xs font-body text-sm leading-relaxed text-ink-faint">
+            <p className="mt-4 max-w-xs font-urbanist text-sm leading-relaxed text-ink-faint">
               Product design, web &amp; mobile engineering, commerce, and AI
               automation — with weekly visibility and clean handover.
             </p>
@@ -107,7 +107,7 @@ export default function Footer() {
         {/* Cities row → Locations section */}
         <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-2">
           {CITY_NAMES.map((c) => (
-            <Link key={c} href="#locations" className="font-body text-xs text-ink-faint transition-colors hover:text-ink">
+            <Link key={c} href="#locations" className="font-urbanist text-xs text-ink-faint transition-colors hover:text-ink">
               {c}
             </Link>
           ))}
@@ -115,14 +115,14 @@ export default function Footer() {
 
         {/* Legal bar */}
         <div className="mt-8 flex flex-wrap items-center justify-between gap-4 border-t border-hairline pt-6">
-          <p className="font-body text-xs text-ink-faint">
+          <p className="font-urbanist text-xs text-ink-faint">
             © {new Date().getFullYear()} Codeshaper. All rights reserved.
           </p>
           <div className="flex gap-6">
-            <Link href="/legal/privacy" className="font-body text-xs text-ink-faint transition-colors hover:text-ink">
+            <Link href="/legal/privacy" className="font-urbanist text-xs text-ink-faint transition-colors hover:text-ink">
               Privacy
             </Link>
-            <Link href="/legal/terms" className="font-body text-xs text-ink-faint transition-colors hover:text-ink">
+            <Link href="/legal/terms" className="font-urbanist text-xs text-ink-faint transition-colors hover:text-ink">
               Terms
             </Link>
           </div>
