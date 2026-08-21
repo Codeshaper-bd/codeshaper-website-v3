@@ -55,6 +55,7 @@ export default function Hero() {
   const hexRef = useRef<HTMLDivElement>(null);
   const badgeRef = useRef<HTMLParagraphElement>(null);
   const headlineRef = useRef<HTMLHeadingElement>(null);
+  const shimmerRef = useRef<HTMLDivElement>(null);
   const wordRefs = useRef<(HTMLSpanElement | null)[]>([]);
   const subRef = useRef<HTMLParagraphElement>(null);
   const ctaRef = useRef<HTMLDivElement>(null);
@@ -84,15 +85,16 @@ export default function Hero() {
     return () => ctx.revert();
   }, [reduced]);
 
-  // continuous headline shimmer: a light sweep across the gradient-clipped
-  // text, independent of and starting after the word-by-word entrance above
+  // continuous headline shimmer: a light bar sweeps left-to-right over the
+  // headline, blended with mix-blend-mode instead of clipped into the text
+  // itself — independent of and starting after the word-entrance above
   useEffect(() => {
-    if (reduced || !headlineRef.current) return;
+    if (reduced || !shimmerRef.current) return;
     const ctx = gsap.context(() => {
       gsap.fromTo(
-        headlineRef.current,
-        { backgroundPosition: "150% 0" },
-        { backgroundPosition: "-150% 0", duration: 5, repeat: -1, ease: "none", delay: 2 }
+        shimmerRef.current,
+        { left: "-40%" },
+        { left: "140%", duration: 2.2, repeat: -1, repeatDelay: 3, ease: "power1.inOut", delay: 2 }
       );
     });
     return () => ctx.revert();
@@ -289,30 +291,38 @@ export default function Hero() {
             {EYEBROW}
           </p>
 
-          <h1
-            ref={headlineRef}
-            className="font-urbanist text-[32px] font-bold leading-[1.12] tracking-tight sm:text-[44px] lg:text-[56px]"
-            style={{
-              backgroundImage:
-                "linear-gradient(100deg, var(--color-ink) 45%, rgba(9,9,11,0.4) 50%, var(--color-ink) 55%)",
-              backgroundSize: "250% 100%",
-              WebkitBackgroundClip: "text",
-              backgroundClip: "text",
-              color: "transparent",
-            }}
-          >
-            {TITLE_WORDS.map((word, i) => (
-              <span
-                key={i}
-                ref={(el) => {
-                  wordRefs.current[i] = el;
-                }}
-                className="mr-[0.28em] inline-block"
-              >
-                {word}
-              </span>
-            ))}
-          </h1>
+          <div className="relative inline-block overflow-hidden">
+            <h1
+              ref={headlineRef}
+              className="font-urbanist text-[32px] font-bold leading-[1.12] tracking-tight text-ink sm:text-[44px] lg:text-[56px]"
+            >
+              {TITLE_WORDS.map((word, i) => (
+                <span
+                  key={i}
+                  ref={(el) => {
+                    wordRefs.current[i] = el;
+                  }}
+                  className="mr-[0.28em] inline-block"
+                >
+                  {word}
+                </span>
+              ))}
+            </h1>
+            {/* continuous shimmer: a light bar sweeps across the headline,
+                blended (not clipped into the text itself, which breaks once
+                the text lives in nested spans — background-clip:text only
+                clips an element's OWN glyphs, not descendants') */}
+            <div
+              ref={shimmerRef}
+              aria-hidden
+              className="pointer-events-none absolute inset-y-0 left-[-40%] w-1/3"
+              style={{
+                background:
+                  "linear-gradient(100deg, transparent, rgba(255,255,255,0.55), transparent)",
+                mixBlendMode: "overlay",
+              }}
+            />
+          </div>
 
           <p
             ref={subRef}
