@@ -30,7 +30,7 @@ export default function MobileMenu({ open, onClose }: { open: boolean; onClose: 
 
   return (
     <div
-      className={`fixed inset-0 top-[76px] z-40 overflow-y-auto bg-canvas transition-opacity duration-300 lg:hidden ${
+      className={`fixed inset-0 top-[80px] z-40 overflow-y-auto bg-canvas transition-opacity duration-300 lg:hidden ${
         open ? "opacity-100" : "pointer-events-none opacity-0"
       }`}
       aria-hidden={!open}

@@ -55,9 +55,9 @@ export default function Navbar() {
         className={`nav-scrim fixed inset-0 z-30 ${megaOpen ? "opacity-100" : "pointer-events-none opacity-0"}`}
       />
 
-      <header className="theme-light fixed inset-x-0 top-0 z-50 p-3 font-urbanist sm:p-4">
+      <header className="theme-light fixed inset-x-0 top-0 z-50 p-4 font-urbanist sm:p-5">
         <div
-          className={`mx-auto max-w-7xl rounded-full border border-hairline bg-canvas/95 backdrop-blur-xl transition-shadow duration-[250ms] ${
+          className={`mx-auto max-w-[1180px] rounded-full border border-hairline bg-[#edecec]/95 backdrop-blur-xl transition-shadow duration-[250ms] ${
             scrolled || openValue || mobileOpen ? "shadow-[0_8px_30px_rgba(11,15,25,0.10)]" : "shadow-none"
           }`}
         >
@@ -102,7 +102,7 @@ export default function Navbar() {
                       />
                     </Nav.Trigger>
                     <Nav.Content
-                      className="mega-panel fixed left-1/2 top-[90px] z-40 w-[min(calc(100vw-48px),1180px)] -translate-x-1/2 data-[state=closed]:hidden"
+                      className="mega-panel fixed left-1/2 top-[94px] z-40 w-[min(calc(100vw-48px),1180px)] -translate-x-1/2 data-[state=closed]:hidden"
                       style={{ position: "fixed" }}
                     >
                       <MegaPanel />
@@ -119,7 +119,7 @@ export default function Navbar() {
                       />
                     </Nav.Trigger>
                     <Nav.Content
-                      className="mega-panel fixed left-1/2 top-[90px] z-40 w-[min(calc(100vw-48px),1180px)] -translate-x-1/2 data-[state=closed]:hidden"
+                      className="mega-panel fixed left-1/2 top-[94px] z-40 w-[min(calc(100vw-48px),1180px)] -translate-x-1/2 data-[state=closed]:hidden"
                       style={{ position: "fixed" }}
                     >
                       <IndustriesMegaPanel />

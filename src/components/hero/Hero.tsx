@@ -7,7 +7,6 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Magnetic from "@/components/system/Magnetic";
 import HeroRings from "./HeroRings";
-import WorkspaceScene from "./WorkspaceScene";
 import { usePrefersReducedMotion, useMotionAllowed } from "@/lib/motion";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -25,22 +24,21 @@ gsap.registerPlugin(ScrollTrigger);
  *      filtered to stay within the site's monochrome palette, GSAP
  *      pointer-parallax
  *   3. decorative concentric rings — GSAP breathing pulse
- *   4. tech-badge cluster — GSAP idle motion + pointer-parallax
- *   5. radial glow "mark" — GSAP pointer-parallax + scroll rotate/scale/fade
- *   6. hex texture — GSAP pointer-parallax (subtlest layer)
- *   7. copy scrim (keeps headline legible over the video)
- *   8. copy: eyebrow, headline, subhead, CTAs
+ *   4. radial glow "mark" — GSAP pointer-parallax + scroll rotate/scale/fade
+ *   5. hex texture — GSAP pointer-parallax (subtlest layer)
+ *   6. copy scrim (keeps headline legible over the video)
+ *   7. copy: eyebrow, headline (word-by-word blur/rise reveal), subhead, CTAs
  *
  * Every animated property here is GSAP-owned: a single entrance timeline
- * (badge → headline → subhead → CTAs), gsap.quickTo() driving
- * the background layers' pointer-parallax, and the existing ScrollTrigger
- * scrub for the scroll pull-back. Reduced motion: everything renders in
- * its final state immediately, no timeline, no parallax loop, no scroll
- * scrub, no video autoplay motion beyond its own native loop (muted,
- * paused via the same `reduced` check).
+ * (badge → headline words, staggered → subhead → CTAs), gsap.quickTo()
+ * driving the background layers' pointer-parallax, and the existing
+ * ScrollTrigger scrub for the scroll pull-back. Reduced motion: everything
+ * renders in its final state immediately, no timeline, no parallax loop,
+ * no scroll scrub, no video autoplay motion beyond its own native loop
+ * (muted, paused via the same `reduced` check).
  */
 const EYEBROW = "AI Automation · Digital Products · Scalable Platforms";
-const TITLE = "From AI automation to scalable digital products, we build the future.";
+const TITLE_WORDS = "From AI automation to scalable digital products, we build the future.".split(" ");
 const SUBTITLE =
   "We design and engineer AI solutions, digital products, and scalable platforms that transform the way businesses operate and grow.";
 
@@ -55,6 +53,7 @@ export default function Hero() {
   const hexRef = useRef<HTMLDivElement>(null);
   const badgeRef = useRef<HTMLParagraphElement>(null);
   const headlineRef = useRef<HTMLHeadingElement>(null);
+  const wordRefs = useRef<(HTMLSpanElement | null)[]>([]);
   const subRef = useRef<HTMLParagraphElement>(null);
   const ctaRef = useRef<HTMLDivElement>(null);
   const [scrolled, setScrolled] = useState(false);
@@ -94,20 +93,26 @@ export default function Hero() {
     if (markRef.current) gsap.set(markRef.current, { xPercent: -50, yPercent: -50 });
   }, []);
 
-  // entrance choreography — one GSAP timeline, badge through CTAs
+  // entrance choreography — one GSAP timeline: badge, then headline words
+  // staggered (blur + rise), then subhead, then CTAs
   useEffect(() => {
     if (!sectionRef.current) return;
-    const targets = [badgeRef.current, headlineRef.current, subRef.current, ctaRef.current];
+    const words = wordRefs.current.filter(Boolean);
+    const targets = [badgeRef.current, ...words, subRef.current, ctaRef.current];
     if (reduced) {
-      gsap.set(targets, { opacity: 1, y: 0 });
+      gsap.set(targets, { opacity: 1, y: 0, filter: "blur(0px)" });
       return;
     }
     const ctx = gsap.context(() => {
       gsap
         .timeline({ defaults: { ease: "expo.out" }, delay: 0.15 })
         .from(badgeRef.current, { opacity: 0, y: 18, duration: 0.6 })
-        .from(headlineRef.current, { opacity: 0, y: 26, duration: 0.8 }, "-=0.35")
-        .from(subRef.current, { opacity: 0, y: 18, duration: 0.6 }, "-=0.5")
+        .from(
+          words,
+          { opacity: 0, y: 26, filter: "blur(8px)", duration: 0.7, stagger: 0.045 },
+          "-=0.35"
+        )
+        .from(subRef.current, { opacity: 0, y: 18, filter: "blur(6px)", duration: 0.6 }, "-=0.5")
         .from(ctaRef.current, { opacity: 0, y: 16, duration: 0.55 }, "-=0.4");
     }, sectionRef);
     return () => ctx.revert();
@@ -154,11 +159,10 @@ export default function Hero() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // pointer parallax across background depth layers + the tech cluster (desktop only)
+  // pointer parallax across background depth layers (desktop only)
   useEffect(() => {
     if (!interactive || !sectionRef.current) return;
     const section = sectionRef.current;
-    const cluster = section.querySelector<HTMLElement>('[data-parallax="cluster"]');
 
     const setMeshX = gsap.quickTo(meshRef.current, "x", { duration: 1.2, ease: "power3.out" });
     const setMeshY = gsap.quickTo(meshRef.current, "y", { duration: 1.2, ease: "power3.out" });
@@ -166,12 +170,6 @@ export default function Hero() {
     const setMarkY = gsap.quickTo(markRef.current, "y", { duration: 0.9, ease: "power3.out" });
     const setHexX = gsap.quickTo(hexRef.current, "x", { duration: 1.4, ease: "power3.out" });
     const setHexY = gsap.quickTo(hexRef.current, "y", { duration: 1.4, ease: "power3.out" });
-    const setClusterX = cluster
-      ? gsap.quickTo(cluster, "x", { duration: 1.0, ease: "power3.out" })
-      : null;
-    const setClusterY = cluster
-      ? gsap.quickTo(cluster, "y", { duration: 1.0, ease: "power3.out" })
-      : null;
 
     const onMove = (e: MouseEvent) => {
       const r = section.getBoundingClientRect();
@@ -183,8 +181,6 @@ export default function Hero() {
       setMarkY(my * 24);
       setHexX(mx * 6);
       setHexY(my * 4);
-      setClusterX?.(mx * 18);
-      setClusterY?.(my * 14);
     };
     window.addEventListener("mousemove", onMove, { passive: true });
     return () => window.removeEventListener("mousemove", onMove);
@@ -227,9 +223,6 @@ export default function Hero() {
 
         {/* decorative concentric rings — bottom-left, GSAP breathing pulse */}
         <HeroRings />
-
-        {/* tech-badge cluster — hugs the headline's corner, GSAP idle motion */}
-        <WorkspaceScene />
 
         {/* 3 — radial glow "mark": pointer-parallax layer 2 + scroll rotate/scale/fade */}
         <div
@@ -277,7 +270,17 @@ export default function Hero() {
             ref={headlineRef}
             className="font-urbanist text-[28px] font-bold leading-[1.15] tracking-tight text-ink sm:text-[36px] lg:text-[44px]"
           >
-            {TITLE}
+            {TITLE_WORDS.map((word, i) => (
+              <span
+                key={i}
+                ref={(el) => {
+                  wordRefs.current[i] = el;
+                }}
+                className="mr-[0.28em] inline-block"
+              >
+                {word}
+              </span>
+            ))}
           </h1>
 
           <p
@@ -291,7 +294,7 @@ export default function Hero() {
             <Magnetic>
               <Link
                 href="/contact"
-                className="inline-flex items-center gap-2 rounded-full bg-aurora-violet px-8 py-4 font-urbanist text-sm font-medium text-white transition-[background-color,transform] duration-300 hover:scale-[1.02] hover:bg-aurora-violet-dark"
+                className="inline-flex items-center gap-2 rounded-full bg-aurora-violet px-8 py-4 font-urbanist text-sm font-semibold text-white shadow-[0_8px_24px_rgba(9,9,11,0.16)] transition-[background-color,transform,box-shadow] duration-300 hover:scale-[1.02] hover:bg-aurora-violet-dark hover:shadow-[0_12px_32px_rgba(9,9,11,0.22)]"
               >
                 Book a Call
                 <ArrowRight size={15} strokeWidth={1.75} />
@@ -300,7 +303,7 @@ export default function Hero() {
 
             <Link
               href="/services"
-              className="inline-flex items-center gap-2 rounded-full border border-hairline-strong bg-white px-8 py-4 font-urbanist text-sm font-medium text-ink transition-[border-color,transform] duration-300 hover:scale-[1.02] hover:border-ink/40"
+              className="inline-flex items-center gap-2 rounded-full border border-hairline-strong bg-white px-8 py-4 font-urbanist text-sm font-semibold text-ink shadow-[0_4px_16px_rgba(9,9,11,0.06)] transition-[border-color,transform,box-shadow] duration-300 hover:scale-[1.02] hover:border-ink/40 hover:shadow-[0_8px_24px_rgba(9,9,11,0.1)]"
             >
               Explore Services
               <ArrowRight size={15} strokeWidth={1.75} />
