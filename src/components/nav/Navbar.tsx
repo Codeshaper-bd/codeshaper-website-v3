@@ -30,7 +30,7 @@ import Magnetic from "@/components/system/Magnetic";
  * hover, magnetic on desktop. Scrim only appears for the mega panel.
  */
 const triggerCls =
-  "nav-underline group flex select-none items-center gap-1 rounded px-3 py-2 font-body text-sm font-medium text-ink-dim outline-none transition-colors hover:text-ink focus-visible:text-ink data-[state=open]:text-ink";
+  "nav-underline group flex select-none items-center gap-1 rounded px-3 py-2 font-urbanist text-sm font-medium text-ink-dim outline-none transition-colors hover:text-ink focus-visible:text-ink data-[state=open]:text-ink";
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -55,12 +55,10 @@ export default function Navbar() {
         className={`nav-scrim fixed inset-0 z-30 ${megaOpen ? "opacity-100" : "pointer-events-none opacity-0"}`}
       />
 
-      <header className="theme-light fixed inset-x-0 top-0 z-50 p-3 font-satoshi sm:p-4">
+      <header className="theme-light fixed inset-x-0 top-0 z-50 p-3 font-urbanist sm:p-4">
         <div
-          className={`mx-auto max-w-7xl rounded-full border transition-[background-color,border-color,box-shadow] duration-[250ms] ${
-            scrolled || openValue || mobileOpen
-              ? "border-hairline bg-canvas/95 shadow-[0_8px_30px_rgba(11,15,25,0.10)] backdrop-blur-xl"
-              : "border-transparent bg-transparent shadow-none backdrop-blur-none"
+          className={`mx-auto max-w-7xl rounded-full border border-hairline bg-canvas/95 backdrop-blur-xl transition-shadow duration-[250ms] ${
+            scrolled || openValue || mobileOpen ? "shadow-[0_8px_30px_rgba(11,15,25,0.10)]" : "shadow-none"
           }`}
         >
           <div className="flex h-16 items-center justify-between px-6 lg:px-10">
@@ -79,7 +77,7 @@ export default function Navbar() {
                   </linearGradient>
                 </defs>
               </svg>
-              <span className="font-display text-lg font-bold tracking-tight text-ink">codeshaper</span>
+              <span className="font-urbanist text-lg font-bold tracking-tight text-ink">codeshaper</span>
             </Link>
 
             <div ref={rootRef} className="ml-auto mr-6 hidden lg:block">
@@ -147,14 +145,14 @@ export default function Navbar() {
             <div className="flex items-center gap-3">
               <Link
                 href="/work"
-                className="hidden rounded-full border border-aurora-indigo/25 px-5 py-2 font-display text-sm font-medium text-ink-dim transition-colors duration-300 hover:border-aurora-indigo/45 hover:text-ink sm:inline-block"
+                className="hidden rounded-full border border-aurora-indigo/25 px-5 py-2 font-urbanist text-sm font-medium text-ink-dim transition-colors duration-300 hover:border-aurora-indigo/45 hover:text-ink sm:inline-block"
               >
                 View Work
               </Link>
               <Magnetic>
                 <Link
                   href="/contact"
-                  className="hidden rounded-full bg-aurora-violet px-5 py-2 font-display text-sm font-medium text-white transition-[background-color,transform] duration-300 hover:scale-[1.02] hover:bg-aurora-violet-dark sm:inline-block"
+                  className="hidden rounded-full bg-aurora-violet px-5 py-2 font-urbanist text-sm font-medium text-white transition-[background-color,transform] duration-300 hover:scale-[1.02] hover:bg-aurora-violet-dark sm:inline-block"
                 >
                   Book a Call
                 </Link>
@@ -213,7 +211,7 @@ function DropdownItem({
               <Nav.Link asChild>
                 <Link
                   href={l.href}
-                  className="menu-row group flex items-center gap-3 rounded-lg px-2.5 py-2.5 font-body text-[13.5px] text-ink-dim transition-colors hover:text-ink"
+                  className="menu-row group flex items-center gap-3 rounded-lg px-2.5 py-2.5 font-urbanist text-[13.5px] text-ink-dim transition-colors hover:text-ink"
                 >
                   <span className="icon-tile flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-hairline bg-canvas-raised text-aurora-indigo group-hover:border-aurora-indigo/45">
                     <Icon name={l.icon} size={14} />
