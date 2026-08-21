@@ -86,7 +86,7 @@ export default function PromptPipeline() {
             <span className="ml-px inline-block h-[13px] w-[6px] translate-y-[2px] bg-aurora-violet align-middle" />
           )}
         </span>
-        <span className="hidden shrink-0 items-center gap-1.5 font-body text-[11px] text-ink-faint sm:flex">
+        <span className="hidden shrink-0 items-center gap-1.5 font-urbanist text-[11px] text-ink-faint sm:flex">
           {stage >= STAGES.length ? (
             <>
               <Check size={12} strokeWidth={2.2} className="text-aurora-amber" />
@@ -113,7 +113,7 @@ export default function PromptPipeline() {
           return (
             <li key={s} className="flex items-center gap-2 sm:gap-3">
               <span
-                className={`rounded-full border px-3 py-1.5 font-body text-[11.5px] transition-all duration-300 ${
+                className={`rounded-full border px-3 py-1.5 font-urbanist text-[11.5px] transition-all duration-300 ${
                   on
                     ? "border-aurora-indigo/60 bg-aurora-indigo/12 text-ink"
                     : active

@@ -226,7 +226,7 @@ export default function Hero() {
         className="relative z-10 mx-auto w-full max-w-4xl px-6 pb-24 pt-24 text-center lg:px-10"
       >
         <p
-          className="mb-7 inline-flex items-center gap-2.5 rounded-full border border-hairline bg-canvas/40 px-4 py-1.5 font-body text-[11px] uppercase tracking-[0.28em] text-ink-dim backdrop-blur-sm"
+          className="mb-7 inline-flex items-center gap-2.5 rounded-full border border-hairline bg-canvas/40 px-4 py-1.5 font-urbanist text-[11px] uppercase tracking-[0.28em] text-ink-dim backdrop-blur-sm"
           style={seq(headlineIn)}
         >
           <span className="h-1.5 w-1.5 rounded-full bg-aurora-amber dot-pulse" />
@@ -245,7 +245,7 @@ export default function Hero() {
 
         {/* PLACEHOLDER H1 — flag for approval */}
         <h1
-          className="font-display text-[26px] font-bold leading-[1.1] tracking-tight text-ink sm:text-[32px] lg:text-[38px]"
+          className="font-urbanist text-[26px] font-bold leading-[1.1] tracking-tight text-ink sm:text-[32px] lg:text-[38px]"
           aria-label="Build & scale digital products — predictably."
         >
           {HEADLINE_WORDS.map((w, i) => (
@@ -276,7 +276,7 @@ export default function Hero() {
         </h1>
 
         <p
-          className="mx-auto mt-7 max-w-2xl font-satoshi text-base leading-relaxed text-ink-dim sm:text-lg"
+          className="mx-auto mt-7 max-w-2xl font-urbanist text-base leading-relaxed text-ink-dim sm:text-lg"
           style={seq(restIn)}
         >
           We design, build, and automate digital products for teams across the
@@ -296,7 +296,7 @@ export default function Hero() {
           <Magnetic>
             <Link
               href="/contact"
-              className="inline-flex items-center gap-2 rounded-full bg-aurora-violet px-8 py-4 font-display text-sm font-medium text-white transition-[background-color,transform] duration-300 hover:scale-[1.02] hover:bg-aurora-violet-dark"
+              className="inline-flex items-center gap-2 rounded-full bg-aurora-violet px-8 py-4 font-urbanist text-sm font-medium text-white transition-[background-color,transform] duration-300 hover:scale-[1.02] hover:bg-aurora-violet-dark"
             >
               Book a Call
               <ArrowRight size={15} strokeWidth={1.75} />
@@ -305,7 +305,7 @@ export default function Hero() {
 
           <Link
             href="/services"
-            className="group inline-flex items-center gap-2 py-4 font-display text-sm font-medium text-ink-dim transition-colors hover:text-ink"
+            className="group inline-flex items-center gap-2 py-4 font-urbanist text-sm font-medium text-ink-dim transition-colors hover:text-ink"
           >
             <span className="relative">
               Explore Services
@@ -328,11 +328,11 @@ export default function Hero() {
         <dl className="mx-auto flex max-w-7xl flex-wrap items-center justify-center gap-x-10 gap-y-3 px-6 py-4 lg:justify-between lg:px-10">
           {STATS.map((s) => (
             <div key={s.label} className="flex items-baseline gap-2">
-              <dd className="font-display text-lg font-bold tracking-tight text-ink">{s.value}</dd>
-              <dt className="font-body text-[13px] text-ink-faint">{s.label}</dt>
+              <dd className="font-urbanist text-lg font-bold tracking-tight text-ink">{s.value}</dd>
+              <dt className="font-urbanist text-[13px] text-ink-faint">{s.label}</dt>
             </div>
           ))}
-          <p className="font-body text-[13px] tracking-wide text-ink-faint">
+          <p className="font-urbanist text-[13px] tracking-wide text-ink-faint">
             USA&ensp;•&ensp;Canada&ensp;•&ensp;Europe
           </p>
         </dl>
