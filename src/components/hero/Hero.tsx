@@ -20,9 +20,11 @@ gsap.registerPlugin(ScrollTrigger);
  *
  * Layer stack (back → front):
  *   1. #ffffff base (theme-light)
- *   2. AI-themed background video (Pexels, royalty-free) — grayscale
- *      filtered to stay within the site's monochrome palette, GSAP
- *      pointer-parallax
+ *   2. AI-themed background video (public/media/hero-video.*, TEMPORARY —
+ *      currently a placeholder pending a licensed replacement, see the
+ *      source's own commit) — desaturated at encode time so it stays
+ *      within the site's monochrome palette, faded at the top edge so
+ *      it stays quiet behind the floating navbar, GSAP pointer-parallax
  *   3. decorative concentric rings — GSAP breathing pulse
  *   4. radial glow "mark" — GSAP pointer-parallax + scroll rotate/scale/fade
  *   5. hex texture — GSAP pointer-parallax (subtlest layer)
@@ -204,11 +206,11 @@ export default function Hero() {
             muted
             loop
             playsInline
-            className="h-full w-full object-cover opacity-[0.32] grayscale"
+            className="h-full w-full object-cover opacity-[0.4] grayscale"
             aria-hidden
           >
-            <source src="/media/hero-ai-neural.mp4" type="video/mp4" />
-            <source src="/media/hero-ai-neural.webm" type="video/webm" />
+            <source src="/media/hero-video.mp4" type="video/mp4" />
+            <source src="/media/hero-video.webm" type="video/webm" />
           </video>
           {/* soft vignette: adds depth without breaking the monochrome palette */}
           <div
@@ -217,6 +219,14 @@ export default function Hero() {
             style={{
               background:
                 "radial-gradient(120% 100% at 50% 38%, transparent 38%, rgba(9,9,11,0.1) 100%)",
+            }}
+          />
+          {/* top fade: keeps the video quiet behind the floating navbar */}
+          <div
+            aria-hidden
+            className="absolute inset-x-0 top-0 h-[34%]"
+            style={{
+              background: "linear-gradient(to bottom, rgba(255,255,255,0.9), transparent)",
             }}
           />
         </div>
