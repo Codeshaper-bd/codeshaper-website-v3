@@ -541,6 +541,24 @@ form[data-show-errors="true"] :invalid {
   }
 }
 
+/* Hero tech-badge cluster: dark blob breathes, tiles bob independently.
+   Animates `translate`/`opacity`, never `transform` — so it composes
+   cleanly with each tile's own `rotate` inline style and the parent
+   `.scene-layer`'s parallax `translate`, matching the pattern above. */
+@keyframes cluster-blob-pulse {
+  0%, 100% { opacity: 0.92; }
+  50% { opacity: 1; }
+}
+.cluster-blob { animation: cluster-blob-pulse 5s ease-in-out infinite; }
+
+@keyframes tile-bob {
+  0%, 100% { translate: 0 0; }
+  50% { translate: 0 -6px; }
+}
+.tile-bob-a { animation: tile-bob 4.6s ease-in-out infinite; }
+.tile-bob-b { animation: tile-bob 5.2s ease-in-out infinite 350ms; }
+.tile-bob-c { animation: tile-bob 4.9s ease-in-out infinite 700ms; }
+
 /* ── Menu typography & polish ─────────────────────────────
    Menus use the body face at a slightly larger size with tightened tracking;
    labels get a brighter grey than the old #5B5B66, which was near-invisible
@@ -645,7 +663,11 @@ form[data-show-errors="true"] :invalid {
   .shake,
   .menu-col,
   .mega-panel[data-state="open"],
-  [data-shown="true"] .chip-pop {
+  [data-shown="true"] .chip-pop,
+  .cluster-blob,
+  .tile-bob-a,
+  .tile-bob-b,
+  .tile-bob-c {
     animation: none !important;
   }
   .connector-line {
