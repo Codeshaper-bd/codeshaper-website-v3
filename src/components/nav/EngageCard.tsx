@@ -21,10 +21,10 @@ export default function EngageCard() {
                   <Icon name={m.icon} size={16} />
                 </span>
                 <span className="min-w-0 flex-1 pt-0.5">
-                  <span className="mega-row-name block font-body text-[13px] font-semibold leading-snug text-ink transition-colors duration-150">
+                  <span className="mega-row-name block font-urbanist text-base font-semibold leading-snug text-ink transition-colors duration-150">
                     {m.label}
                   </span>
-                  <span className="mt-0.5 block font-body text-[11.5px] leading-snug text-ink-dim">
+                  <span className="mt-0.5 block font-urbanist text-[11.5px] leading-snug text-ink-dim">
                     {m.desc}
                   </span>
                 </span>
@@ -36,7 +36,7 @@ export default function EngageCard() {
       <Nav.Link asChild>
         <Link
           href="/engagement"
-          className="mt-3 inline-flex items-center gap-1.5 px-2.5 font-body text-[12px] font-semibold text-aurora-violet transition-colors hover:text-ink"
+          className="mt-3 inline-flex items-center gap-1.5 px-2.5 font-urbanist text-[12px] font-semibold text-aurora-violet transition-colors hover:text-ink"
         >
           Compare all models
           <ArrowRight size={12} strokeWidth={2} />

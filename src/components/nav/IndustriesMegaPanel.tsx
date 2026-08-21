@@ -29,10 +29,10 @@ export default function IndustriesMegaPanel() {
                       <Icon name={ind.icon} size={16} />
                     </span>
                     <span className="min-w-0 flex-1 pt-0.5">
-                      <span className="mega-row-name block font-body text-[12.5px] font-semibold leading-snug text-ink transition-colors duration-150">
+                      <span className="mega-row-name block font-urbanist text-base font-semibold leading-snug text-ink transition-colors duration-150">
                         {ind.label}
                       </span>
-                      <span className="mt-0.5 block font-body text-[10.5px] leading-snug text-ink-dim">
+                      <span className="mt-0.5 block font-urbanist text-[10.5px] leading-snug text-ink-dim">
                         {ind.desc}
                       </span>
                     </span>
@@ -51,19 +51,19 @@ export default function IndustriesMegaPanel() {
               <span className="mb-3.5 flex h-9 w-9 items-center justify-center rounded-xl bg-white/[0.12] text-white">
                 <Icon name={INDUSTRIES_FEATURED.icon} size={17} />
               </span>
-              <span className="mb-1.5 block font-body text-[9.5px] font-bold uppercase tracking-[0.1em] text-white/50">
+              <span className="mb-1.5 block font-urbanist text-[9.5px] font-bold uppercase tracking-[0.1em] text-white/50">
                 {INDUSTRIES_FEATURED.eyebrow}
               </span>
-              <span className="block font-body text-[13px] font-medium leading-relaxed text-white/90">
+              <span className="block font-urbanist text-[13px] font-medium leading-relaxed text-white/90">
                 {INDUSTRIES_FEATURED.body}
               </span>
             </Link>
           </Nav.Link>
-          <p className="menu-section-label mb-2.5 px-1">Popular verticals</p>
+          <p className="menu-section-label font-urbanist mb-2.5 px-1">Popular verticals</p>
           <div className="flex flex-wrap gap-1.5">
             {INDUSTRIES_POPULAR.map((c) => (
               <Nav.Link asChild key={c.href}>
-                <Link href={c.href} className="mega-chip inline-flex items-center rounded-full px-3 py-1.5 font-body text-[11.5px] font-semibold">
+                <Link href={c.href} className="mega-chip inline-flex items-center rounded-full px-3 py-1.5 font-urbanist text-[11.5px] font-semibold">
                   {c.label}
                 </Link>
               </Nav.Link>
@@ -74,21 +74,21 @@ export default function IndustriesMegaPanel() {
 
       {/* Footer bar */}
       <div className="mt-5 flex flex-wrap items-center justify-between gap-4 rounded-2xl bg-canvas-raised px-5 py-3.5">
-        <p className="font-body text-[11.5px] text-ink-dim">
+        <p className="font-urbanist text-[11.5px] text-ink-dim">
           <span className="font-semibold text-ink">10 industries</span>
           <span className="mx-2 inline-block h-[3px] w-[3px] rounded-full bg-hairline-strong align-middle" aria-hidden />
           Built for high-growth digital teams
         </p>
         <div className="flex items-center gap-4">
           <Nav.Link asChild>
-            <Link href="/work" className="font-body text-[12px] text-ink-dim transition-colors hover:text-ink">
+            <Link href="/work" className="font-urbanist text-[12px] text-ink-dim transition-colors hover:text-ink">
               View Case Studies →
             </Link>
           </Nav.Link>
           <Nav.Link asChild>
             <Link
               href="/industries"
-              className="rounded-full border border-aurora-indigo/30 bg-aurora-indigo/5 px-4 py-2 font-body text-[12px] font-semibold text-aurora-violet transition-colors hover:border-aurora-violet hover:bg-aurora-violet hover:text-white"
+              className="rounded-full border border-aurora-indigo/30 bg-aurora-indigo/5 px-4 py-2 font-urbanist text-[12px] font-semibold text-aurora-violet transition-colors hover:border-aurora-violet hover:bg-aurora-violet hover:text-white"
             >
               Explore All Industries →
             </Link>

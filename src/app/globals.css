@@ -256,7 +256,7 @@ body {
    aurora-indigo (3.66:1, fails 4.5:1 for normal text — see Global
    Constraints). Icon/arrow glyphs stay indigo (non-text UI, 3:1 minimum). */
 .mega-col-label {
-  font-family: var(--font-display);
+  font-family: var(--font-urbanist);
   font-size: 13px;
   font-weight: 600;
   letter-spacing: -0.01em;

@@ -30,7 +30,7 @@ import Magnetic from "@/components/system/Magnetic";
  * hover, magnetic on desktop. Scrim only appears for the mega panel.
  */
 const triggerCls =
-  "nav-underline group flex select-none items-center gap-1 rounded px-3 py-2 font-urbanist text-sm font-medium text-ink-dim outline-none transition-colors hover:text-ink focus-visible:text-ink data-[state=open]:text-ink";
+  "nav-underline group flex select-none items-center gap-1 rounded px-3 py-2 font-urbanist text-base font-semibold text-ink-dim outline-none transition-colors hover:text-ink focus-visible:text-ink data-[state=open]:text-ink";
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -143,16 +143,10 @@ export default function Navbar() {
             </div>
 
             <div className="flex items-center gap-3">
-              <Link
-                href="/work"
-                className="hidden rounded-full border border-aurora-indigo/25 px-5 py-2 font-urbanist text-sm font-medium text-ink-dim transition-colors duration-300 hover:border-aurora-indigo/45 hover:text-ink sm:inline-block"
-              >
-                View Work
-              </Link>
               <Magnetic>
                 <Link
                   href="/contact"
-                  className="hidden rounded-full bg-aurora-violet px-5 py-2 font-urbanist text-sm font-medium text-white transition-[background-color,transform] duration-300 hover:scale-[1.02] hover:bg-aurora-violet-dark sm:inline-block"
+                  className="hidden rounded-full bg-aurora-violet px-5 py-2 font-urbanist text-base font-semibold text-white transition-[background-color,transform] duration-300 hover:scale-[1.02] hover:bg-aurora-violet-dark sm:inline-block"
                 >
                   Book a Call
                 </Link>
@@ -211,7 +205,7 @@ function DropdownItem({
               <Nav.Link asChild>
                 <Link
                   href={l.href}
-                  className="menu-row group flex items-center gap-3 rounded-lg px-2.5 py-2.5 font-urbanist text-[13.5px] text-ink-dim transition-colors hover:text-ink"
+                  className="menu-row group flex items-center gap-3 rounded-lg px-2.5 py-2.5 font-urbanist text-base font-semibold text-ink-dim transition-colors hover:text-ink"
                 >
                   <span className="icon-tile flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-hairline bg-canvas-raised text-aurora-indigo group-hover:border-aurora-indigo/45">
                     <Icon name={l.icon} size={14} />
