@@ -44,9 +44,9 @@ export default function Locations() {
           className="horizon-pulse absolute left-1/2 top-full h-[130vw] w-[220vw] -translate-x-1/2 -translate-y-[16%] rounded-[50%] lg:-translate-y-[22%]"
           style={{
             background:
-              "radial-gradient(closest-side, #14142c 0%, #101024 78%, #0A0A0F 100%)",
+              "radial-gradient(closest-side, #27272a 0%, #18181b 78%, #0A0A0F 100%)",
             boxShadow:
-              "0 -2px 40px rgba(91,95,239,0.55), 0 -12px 90px rgba(139,95,224,0.4), 0 -30px 180px rgba(139,95,224,0.25), 0 -60px 280px rgba(242,166,90,0.12)",
+              "0 -2px 40px rgba(255,255,255,0.14), 0 -12px 90px rgba(255,255,255,0.1), 0 -30px 180px rgba(255,255,255,0.06), 0 -60px 280px rgba(255,255,255,0.03)",
           }}
         />
         {/* atmosphere glow line along the horizon */}
@@ -54,7 +54,7 @@ export default function Locations() {
           className="absolute left-1/2 top-full h-[130vw] w-[220vw] -translate-x-1/2 -translate-y-[16%] rounded-[50%] lg:-translate-y-[22%]"
           style={{
             border: "1.5px solid transparent",
-            borderTopColor: "rgba(139,95,224,0.7)",
+            borderTopColor: "rgba(255,255,255,0.5)",
             filter: "blur(1px)",
           }}
         />
@@ -85,7 +85,7 @@ export default function Locations() {
                     <span
                       className="dot-pulse h-2 w-2 rounded-full bg-aurora-amber"
                       style={{
-                        boxShadow: "0 0 10px rgba(242,166,90,0.9)",
+                        boxShadow: "0 0 10px rgba(212,212,216,0.9)",
                         animationDelay: `${i * 640}ms`,
                       }}
                       aria-hidden

@@ -54,7 +54,7 @@ export default function EngagementModels() {
           {MODELS.map((m, i) => (
             <li key={m.name}>
               <Reveal delay={i * 80} className="h-full">
-                <Spotlight color="rgba(139, 95, 224, 0.05)" radius={300} className="h-full rounded-xl">
+                <Spotlight color="rgba(255, 255, 255, 0.06)" radius={300} className="h-full rounded-xl">
                   <article className="card-dark lift-sm h-full rounded-xl p-8">
                     <h3 className="font-urbanist text-xl font-bold tracking-tight text-ink">{m.name}</h3>
                     <p className="mt-3 font-urbanist text-sm leading-relaxed text-ink-dim">{m.fit}</p>

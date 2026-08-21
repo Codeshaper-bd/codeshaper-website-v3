@@ -143,7 +143,7 @@ export default function MeshType({ className = "" }: { className?: string }) {
     <canvas
       ref={canvasRef}
       className={className}
-      style={{ filter: "drop-shadow(0 0 32px rgba(102,126,234,0.25))" }}
+      style={{ filter: "drop-shadow(0 0 32px rgba(9,9,11,0.16))" }}
       aria-hidden
     />
   );

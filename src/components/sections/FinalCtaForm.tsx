@@ -68,7 +68,7 @@ export default function FinalCtaForm() {
         className="absolute left-1/4 top-1/3 h-[420px] w-[640px] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-25 blur-3xl"
         style={{
           background:
-            "radial-gradient(closest-side, rgba(139,95,224,0.5), rgba(91,95,239,0.2), transparent)",
+            "radial-gradient(closest-side, rgba(255,255,255,0.16), rgba(255,255,255,0.06), transparent)",
         }}
       />
 
@@ -112,7 +112,7 @@ export default function FinalCtaForm() {
               <Magnetic>
                 <Link
                   href="/contact"
-                  className="inline-block rounded-full border border-aurora-violet/70 px-7 py-3.5 font-urbanist text-sm font-medium text-ink shadow-[0_0_20px_rgba(139,95,224,0.3)] transition-shadow hover:shadow-[0_0_36px_rgba(139,95,224,0.5)]"
+                  className="inline-block rounded-full border border-aurora-violet/70 px-7 py-3.5 font-urbanist text-sm font-medium text-ink transition-colors hover:border-aurora-violet"
                 >
                   Book a Call →
                 </Link>
@@ -190,7 +190,7 @@ export default function FinalCtaForm() {
               <Magnetic className="block w-full">
                 <button
                   type="submit"
-                  className="w-full rounded-full border border-aurora-violet/70 px-7 py-3.5 font-urbanist text-sm font-medium text-ink shadow-[0_0_20px_rgba(139,95,224,0.3)] transition-shadow hover:shadow-[0_0_36px_rgba(139,95,224,0.5)]"
+                  className="w-full rounded-full border border-aurora-violet/70 px-7 py-3.5 font-urbanist text-sm font-medium text-ink transition-colors hover:border-aurora-violet"
                 >
                   Start a Project →
                 </button>

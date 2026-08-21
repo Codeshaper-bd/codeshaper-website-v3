@@ -66,14 +66,14 @@ export default function AiSpotlight() {
           className={`absolute left-[10%] top-[15%] h-[60%] w-[55%] rounded-full opacity-50 blur-3xl ${reduced ? "" : "aurora-fallback-a"}`}
           style={{
             background:
-              "radial-gradient(closest-side, rgba(91,95,239,0.55), rgba(139,95,224,0.25), transparent)",
+              "radial-gradient(closest-side, rgba(255,255,255,0.14), rgba(255,255,255,0.06), transparent)",
           }}
         />
         <div
           className={`absolute right-[5%] top-[30%] h-[55%] w-[45%] rounded-full opacity-60 blur-3xl ${reduced ? "" : "aurora-fallback-b"}`}
           style={{
             background:
-              "radial-gradient(closest-side, rgba(242,166,90,0.35), rgba(242,166,90,0.12), transparent)",
+              "radial-gradient(closest-side, rgba(255,255,255,0.1), rgba(255,255,255,0.04), transparent)",
           }}
         />
       </div>
@@ -113,7 +113,7 @@ export default function AiSpotlight() {
             <div className="mt-10">
               <Link
                 href="/services/ai"
-                className="inline-block rounded-full border border-aurora-violet/70 px-7 py-3.5 font-urbanist text-sm font-medium text-ink shadow-[0_0_20px_rgba(139,95,224,0.3)] transition-shadow hover:shadow-[0_0_36px_rgba(139,95,224,0.5)]"
+                className="inline-block rounded-full border border-aurora-violet/70 px-7 py-3.5 font-urbanist text-sm font-medium text-ink transition-colors hover:border-aurora-violet"
               >
                 Explore AI &amp; Automation →
               </Link>

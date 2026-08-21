@@ -196,7 +196,7 @@ export default function Hero() {
         className="hero-mark pointer-events-none absolute left-1/2 top-1/2 h-[min(72vh,640px)] w-[min(72vh,640px)]"
         style={{
           background:
-            "radial-gradient(closest-side, rgba(102,126,234,0.14), rgba(20,184,166,0.05) 55%, transparent 72%)",
+            "radial-gradient(closest-side, rgba(9,9,11,0.08), rgba(9,9,11,0.03) 55%, transparent 72%)",
         }}
       />
 

@@ -17,14 +17,17 @@
   --color-light-dim: #5b5b66;         /* text on light, secondary */
   --color-menu-label: #6d6d7d;        /* section labels inside dark menus */
 
-  --color-aurora-indigo: #5b5fef;
-  --color-aurora-violet: #8b5fe0;
-  --color-aurora-amber: #f2a65a;
+  /* Monochrome accent system (Zinc scale, matching the reference site exactly).
+     On the dark canvas, "accent" means lighter-than-base — the inverse of the
+     light theme below, where accent means darker-than-base. */
+  --color-aurora-indigo: #a1a1aa;      /* zinc-400: icon/border/decorative, 3:1-class */
+  --color-aurora-violet: #fafafa;      /* zinc-50: CTA fill + text-safe accent */
+  --color-aurora-amber: #d4d4d8;       /* zinc-300: secondary decorative */
   /* Light-theme-only text-safe variants (see .theme-light below); unused by
      any dark-theme section, so their dark-theme fallback just mirrors the
      base token of the same family. */
-  --color-aurora-amber-dark: #f2a65a;
-  --color-aurora-violet-dark: #8b5fe0;
+  --color-aurora-amber-dark: #d4d4d8;
+  --color-aurora-violet-dark: #fafafa;
 
   --color-hairline: rgba(255, 255, 255, 0.08);       /* 1px, dark surfaces */
   --color-hairline-strong: rgba(255, 255, 255, 0.16);
@@ -45,10 +48,9 @@
    are only correct for this subtree; every other section still needs the
    dark originals.
 
-   Within this scope, --color-aurora-violet is repurposed to hold the "deep
-   indigo" hover/secondary shade and --color-aurora-amber is repurposed to
-   hold the teal secondary accent (both from the v2 brand reference) rather
-   than their dark-theme meanings. The class names stay "aurora-*" to avoid
+   Within this scope, --color-aurora-* is the monochrome Zinc-scale accent
+   system (see the dark-theme comment above): accent means darker-than-base
+   here, since the canvas is white. The class names stay "aurora-*" to avoid
    a site-wide token rename in this pass; a later cleanup could rename them
    to brand-neutral names once every section has migrated. */
 .theme-light {
@@ -68,23 +70,23 @@
   --color-hairline-strong: #d1d5db;
   --color-menu-label: #6b7280;
 
-  --color-aurora-indigo: #667eea; /* primary brand */
-  --color-aurora-violet: #44549b; /* repurposed: deep indigo (hover/secondary) */
-  --color-aurora-amber: #14b8a6;  /* repurposed: teal (secondary accent) */
-  /* Text-safe darker variants — the base indigo/teal tokens above are 3:1-class
-     (fine for large text, icon fills, borders, decorative dots) but fail 4.5:1
-     for normal body/link text on white. Use these two specifically for TEXT. */
-  --color-aurora-amber-dark: #0f766e;  /* teal text, 5.47:1 on white ✓ */
-  --color-aurora-violet-dark: #354178; /* CTA hover, 9.64:1 on white ✓ */
+  --color-aurora-indigo: #71717a; /* zinc-500: icon/border/decorative, 3:1-class */
+  --color-aurora-violet: #18181b; /* zinc-900: CTA fill + text-safe accent */
+  --color-aurora-amber: #a1a1aa;  /* zinc-400: secondary decorative, 3:1-class */
+  /* Text-safe darker variants — the base tokens above are 3:1-class (fine for
+     large text, icon fills, borders, decorative dots) but fail 4.5:1 for
+     normal body/link text on white. Use these two specifically for TEXT. */
+  --color-aurora-amber-dark: #52525b;  /* zinc-600, ~7:1 on white ✓ */
+  --color-aurora-violet-dark: #09090b; /* zinc-950, CTA hover, ~19:1 on white ✓ */
 }
 
-/* .glass is shared with Locations.tsx / AiSpotlight.tsx / WorkspaceScene.tsx,
-   which stay dark this round — override rather than edit the base rule. */
+/* .glass is shared with Locations.tsx / AiSpotlight.tsx, which stay dark —
+   override rather than edit the base rule. */
 .theme-light .glass {
   background: rgba(255, 255, 255, 0.85);
   border-color: rgba(11, 15, 25, 0.08);
   box-shadow:
-    0 0 0 1px rgba(102, 126, 234, 0.08),
+    0 0 0 1px rgba(9, 9, 11, 0.06),
     0 8px 32px rgba(11, 15, 25, 0.1);
 }
 
@@ -154,20 +156,20 @@ body {
     0 14px 36px rgba(0, 0, 0, 0.1);
 }
 
-/* Dark-surface card: shadows don't read on dark — 12% border + soft aurora glow */
+/* Dark-surface card: shadows don't read on dark — 12% border + soft neutral glow */
 .card-dark {
   background: var(--color-canvas-raised);
   border: 1px solid rgba(255, 255, 255, 0.12);
   box-shadow:
-    0 0 0 1px rgba(91, 95, 239, 0.06),
-    0 0 40px rgba(139, 95, 224, 0.1);
+    0 0 0 1px rgba(255, 255, 255, 0.06),
+    0 0 40px rgba(255, 255, 255, 0.06);
   transition: box-shadow 300ms ease;
 }
 
 .card-dark:hover {
   box-shadow:
-    0 0 0 1px rgba(91, 95, 239, 0.12),
-    0 0 56px rgba(139, 95, 224, 0.18);
+    0 0 0 1px rgba(255, 255, 255, 0.1),
+    0 0 56px rgba(255, 255, 255, 0.1);
 }
 
 /* Glass — decorative blur over a solid base + dark-card elevation */
@@ -177,8 +179,8 @@ body {
   -webkit-backdrop-filter: blur(20px) saturate(1.3);
   border: 1px solid rgba(255, 255, 255, 0.12);
   box-shadow:
-    0 0 0 1px rgba(91, 95, 239, 0.06),
-    0 0 48px rgba(139, 95, 224, 0.12);
+    0 0 0 1px rgba(255, 255, 255, 0.06),
+    0 0 48px rgba(255, 255, 255, 0.06);
 }
 
 /* Mega menu panel: fully opaque solid — content behind must NEVER be legible.
@@ -190,8 +192,8 @@ body {
      matching the v2 reference. overflow:hidden clips the ::before
      top-hairline (below) to the rounded corners for free. */
   background:
-    radial-gradient(120% 140% at 12% 0%, rgba(102, 126, 234, 0.05), transparent 55%),
-    radial-gradient(90% 120% at 88% 10%, rgba(20, 184, 166, 0.04), transparent 60%),
+    radial-gradient(120% 140% at 12% 0%, rgba(9, 9, 11, 0.04), transparent 55%),
+    radial-gradient(90% 120% at 88% 10%, rgba(9, 9, 11, 0.03), transparent 60%),
     #ffffff;
   border: 1px solid var(--color-hairline);
   border-radius: 24px;
@@ -203,7 +205,7 @@ body {
 /* Dropdown surface: same material language, smaller */
 .dropdown-panel {
   background:
-    radial-gradient(120% 140% at 20% 0%, rgba(102, 126, 234, 0.06), transparent 60%),
+    radial-gradient(120% 140% at 20% 0%, rgba(9, 9, 11, 0.05), transparent 60%),
     #ffffff !important;
 }
 .dropdown-panel::before {
@@ -212,7 +214,7 @@ body {
   inset-inline: 12px;
   top: 0;
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.4), transparent);
+  background: linear-gradient(90deg, transparent, rgba(9, 9, 11, 0.3), transparent);
 }
 
 /* Menu rows: a soft gradient sweep appears under the pointer */
@@ -229,8 +231,8 @@ body {
   opacity: 0;
   background: linear-gradient(
     90deg,
-    rgba(102, 126, 234, 0.12),
-    rgba(20, 184, 166, 0.06) 55%,
+    rgba(9, 9, 11, 0.08),
+    rgba(9, 9, 11, 0.04) 55%,
     transparent
   );
   transition: opacity 220ms ease;
@@ -265,8 +267,8 @@ body {
   transition: background 180ms ease, border-color 180ms ease;
 }
 .mega-row:hover {
-  background: rgba(102, 126, 234, 0.06);
-  border-color: rgba(102, 126, 234, 0.12);
+  background: rgba(9, 9, 11, 0.04);
+  border-color: rgba(9, 9, 11, 0.1);
 }
 .mega-row:hover .mega-row-name {
   color: var(--color-aurora-violet);
@@ -278,22 +280,22 @@ body {
 
 .mega-icon-tile {
   background: linear-gradient(180deg, #ffffff 0%, var(--color-canvas-raised) 100%);
-  border: 1px solid rgba(102, 126, 234, 0.18);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 10px 22px rgba(102, 126, 234, 0.08);
+  border: 1px solid rgba(9, 9, 11, 0.12);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 10px 22px rgba(9, 9, 11, 0.06);
   transition: transform 180ms ease, background 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
 }
 .mega-row:hover .mega-icon-tile {
   transform: translateY(-1px);
-  background: rgba(102, 126, 234, 0.1);
-  border-color: rgba(102, 126, 234, 0.28);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.85), 0 12px 26px rgba(102, 126, 234, 0.12);
+  background: rgba(9, 9, 11, 0.06);
+  border-color: rgba(9, 9, 11, 0.22);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.85), 0 12px 26px rgba(9, 9, 11, 0.1);
 }
 
 .mega-feature-card {
   background:
-    radial-gradient(circle at 86% 10%, rgba(102, 126, 234, 0.2), transparent 32%),
+    radial-gradient(circle at 86% 10%, rgba(255, 255, 255, 0.12), transparent 32%),
     linear-gradient(145deg, #0b0f19 0%, #171a2c 55%, #20264b 100%);
-  border: 1px solid rgba(102, 126, 234, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.14);
   transition: transform 200ms ease, box-shadow 200ms ease;
 }
 .mega-feature-card:hover {
@@ -308,9 +310,9 @@ body {
   transition: background 180ms ease, color 180ms ease, border-color 180ms ease;
 }
 .mega-chip:hover {
-  background: rgba(102, 126, 234, 0.08);
+  background: rgba(9, 9, 11, 0.05);
   color: var(--color-aurora-violet);
-  border-color: rgba(102, 126, 234, 0.24);
+  border-color: rgba(9, 9, 11, 0.2);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -569,20 +571,14 @@ form[data-show-errors="true"] :invalid {
   text-transform: uppercase;
 }
 
-/* Mega panel edge: a hairline of aurora light so the panel feels lit, not flat */
+/* Mega panel edge: a hairline of neutral light so the panel feels lit, not flat */
 .mega-panel::before {
   content: "";
   position: absolute;
   inset-inline: 0;
   top: 0;
   height: 1px;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(102, 126, 234, 0.55) 35%,
-    rgba(20, 184, 166, 0.45) 70%,
-    transparent
-  );
+  background: linear-gradient(90deg, transparent, rgba(9, 9, 11, 0.4) 50%, transparent);
 }
 .mega-panel {
   position: relative;

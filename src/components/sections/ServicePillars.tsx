@@ -30,7 +30,7 @@ export default function ServicePillars() {
           {SERVICE_COLUMNS.map((col, i) => (
             <li key={col.id} className="border-b border-hairline-light">
               <Reveal delay={i * 70}>
-                <Spotlight color="rgba(139, 95, 224, 0.06)" radius={400}>
+                <Spotlight color="rgba(9, 9, 11, 0.05)" radius={400}>
                   <Link
                     href={col.href}
                     className="group grid grid-cols-[3rem_1fr] items-baseline gap-4 py-8 sm:grid-cols-[5rem_1fr_auto] sm:py-10"

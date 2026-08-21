@@ -49,10 +49,10 @@ export default function MagneticButton({ href, children, className = "", glow = 
       <span ref={innerRef} className="inline-block will-change-transform">
         <Link
           href={href}
-          className={`inline-flex items-center gap-2 rounded-full border px-7 py-3.5 font-urbanist text-sm font-medium tracking-wide transition-[color,border-color,box-shadow,transform] duration-300 hover:scale-[1.02] ${
+          className={`inline-flex items-center gap-2 rounded-full border px-7 py-3.5 font-urbanist text-sm font-medium tracking-wide transition-[color,border-color,transform] duration-300 hover:scale-[1.02] ${
             glow
-              ? "border-aurora-violet/70 text-ink shadow-[0_0_20px_rgba(139,95,224,0.3),inset_0_0_12px_rgba(139,95,224,0.08)] hover:border-aurora-violet hover:shadow-[0_0_40px_rgba(139,95,224,0.5),inset_0_0_16px_rgba(139,95,224,0.16)]"
-              : "border-hairline-strong text-ink hover:border-ink/60 hover:shadow-[0_0_24px_rgba(139,95,224,0.2)]"
+              ? "border-aurora-violet/70 text-ink hover:border-aurora-violet"
+              : "border-hairline-strong text-ink hover:border-ink/60"
           } ${className}`}
         >
           {children}
