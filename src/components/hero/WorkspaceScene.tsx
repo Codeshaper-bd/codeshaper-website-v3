@@ -17,7 +17,7 @@ import { seqStyle } from "@/lib/motion";
 
 function NextjsMark() {
   return (
-    <svg width="26" height="26" viewBox="0 0 26 26" aria-hidden>
+    <svg width="46" height="46" viewBox="0 0 26 26" aria-hidden>
       <circle cx="13" cy="13" r="13" fill="#000" />
       <path d="M9 8v10h1.8v-7.4L16.4 18H18V8h-1.8v7.4L10.7 8H9z" fill="#fff" />
     </svg>
@@ -26,7 +26,7 @@ function NextjsMark() {
 
 function ReactMark() {
   return (
-    <svg width="32" height="32" viewBox="-11 -11 22 22" aria-hidden>
+    <svg width="58" height="58" viewBox="-11 -11 22 22" aria-hidden>
       <circle r="2.4" fill="#087EA4" />
       <g stroke="#087EA4" strokeWidth="1.4" fill="none">
         <ellipse rx="10" ry="4.2" />
@@ -39,7 +39,7 @@ function ReactMark() {
 
 function TypeScriptMark() {
   return (
-    <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden>
+    <svg width="42" height="42" viewBox="0 0 24 24" aria-hidden>
       <rect width="24" height="24" rx="5" fill="#3178C6" />
       <text
         x="12"
@@ -84,27 +84,31 @@ export default function WorkspaceScene({ restIn }: { restIn: boolean }) {
     <div
       data-depth="0.5"
       aria-hidden
-      className="scene-layer pointer-events-none absolute right-[2%] top-[11%] z-[5] hidden lg:block xl:right-[5%] xl:top-[9%]"
+      className="scene-layer pointer-events-none absolute right-[-40px] top-[449px] z-[5] hidden lg:block xl:right-[60px]"
       style={seqStyle(restIn, 220)}
     >
-      <div className="relative h-[210px] w-[240px]">
+      {/* Blob's top edge (y=0 here) is the only part that grazes the headline
+          row above — every tile starts at or below it and hangs off the
+          blob's body/bottom, matching the reference (no tile ever sits
+          above the blob, so nothing covers the visible headline text). */}
+      <div className="relative h-[210px] w-[320px]">
         {/* dark blob backdrop */}
         <div
-          className="cluster-blob absolute left-[10px] top-[75px] h-[92px] w-[220px] rounded-full"
+          className="cluster-blob absolute left-[30px] top-0 h-[100px] w-[260px] rounded-full"
           style={{
             background: "linear-gradient(135deg, var(--color-aurora-violet-dark), var(--color-aurora-indigo))",
           }}
         />
 
-        <BadgeTile size={56} rotate={-8} bobClass="tile-bob-a" posClass="left-[4px] top-[8px]">
+        <BadgeTile size={92} rotate={-8} bobClass="tile-bob-a" posClass="left-0 top-[55px]">
           <NextjsMark />
         </BadgeTile>
 
-        <BadgeTile size={68} rotate={9} bobClass="tile-bob-b" posClass="right-[-6px] top-[56px]">
+        <BadgeTile size={118} rotate={9} bobClass="tile-bob-b" posClass="left-[190px] top-[45px]">
           <ReactMark />
         </BadgeTile>
 
-        <BadgeTile size={48} rotate={-5} bobClass="tile-bob-c" posClass="left-[46px] bottom-[6px]">
+        <BadgeTile size={84} rotate={-5} bobClass="tile-bob-c" posClass="left-[95px] top-[85px]">
           <TypeScriptMark />
         </BadgeTile>
       </div>
