@@ -55,15 +55,15 @@ export default function Navbar() {
         className={`nav-scrim fixed inset-0 z-30 ${megaOpen ? "opacity-100" : "pointer-events-none opacity-0"}`}
       />
 
-      <header className="theme-light fixed inset-x-0 top-0 z-50 font-satoshi">
+      <header className="theme-light fixed inset-x-0 top-0 z-50 p-3 font-satoshi sm:p-4">
         <div
-          className={`border-b transition-[background-color,border-color,box-shadow] duration-[250ms] ${
+          className={`mx-auto max-w-7xl rounded-full border transition-[background-color,border-color,box-shadow] duration-[250ms] ${
             scrolled || openValue || mobileOpen
-              ? "border-hairline bg-canvas/95 shadow-[0_1px_0_rgba(11,15,25,0.04)] backdrop-blur-xl"
+              ? "border-hairline bg-canvas/95 shadow-[0_8px_30px_rgba(11,15,25,0.10)] backdrop-blur-xl"
               : "border-transparent bg-transparent shadow-none backdrop-blur-none"
           }`}
         >
-          <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6 lg:px-10">
+          <div className="flex h-16 items-center justify-between px-6 lg:px-10">
             <Link href="/" className="flex shrink-0 items-center gap-2.5" aria-label="Codeshaper home">
               <svg width="26" height="28" viewBox="0 0 26 28" aria-hidden>
                 <path
@@ -104,7 +104,7 @@ export default function Navbar() {
                       />
                     </Nav.Trigger>
                     <Nav.Content
-                      className="mega-panel fixed left-1/2 top-[74px] z-40 w-[min(calc(100vw-48px),1180px)] -translate-x-1/2 data-[state=closed]:hidden"
+                      className="mega-panel fixed left-1/2 top-[90px] z-40 w-[min(calc(100vw-48px),1180px)] -translate-x-1/2 data-[state=closed]:hidden"
                       style={{ position: "fixed" }}
                     >
                       <MegaPanel />
@@ -121,7 +121,7 @@ export default function Navbar() {
                       />
                     </Nav.Trigger>
                     <Nav.Content
-                      className="mega-panel fixed left-1/2 top-[74px] z-40 w-[min(calc(100vw-48px),1180px)] -translate-x-1/2 data-[state=closed]:hidden"
+                      className="mega-panel fixed left-1/2 top-[90px] z-40 w-[min(calc(100vw-48px),1180px)] -translate-x-1/2 data-[state=closed]:hidden"
                       style={{ position: "fixed" }}
                     >
                       <IndustriesMegaPanel />
