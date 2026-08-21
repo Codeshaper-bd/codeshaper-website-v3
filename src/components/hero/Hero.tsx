@@ -6,7 +6,6 @@ import { ArrowRight } from "lucide-react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Magnetic from "@/components/system/Magnetic";
-import HeroMesh from "./HeroMesh";
 import HeroRings from "./HeroRings";
 import WorkspaceScene from "./WorkspaceScene";
 import { usePrefersReducedMotion, useMotionAllowed } from "@/lib/motion";
@@ -14,23 +13,32 @@ import { usePrefersReducedMotion, useMotionAllowed } from "@/lib/motion";
 gsap.registerPlugin(ScrollTrigger);
 
 /**
- * Hero — minimal, centered, GSAP-driven.
+ * Hero — full-bleed video, centered copy, GSAP-driven, inset rounded card.
+ *
+ * The whole section sits inset from the viewport edge (margin from the
+ * dark page canvas around it) with rounded corners, clipped via
+ * overflow-hidden — a floating card rather than an edge-to-edge banner.
  *
  * Layer stack (back → front):
  *   1. #ffffff base (theme-light)
- *   2. animated gradient mesh — ambient depth, GSAP pointer-parallax
- *   3. radial glow "mark" — GSAP pointer-parallax + scroll rotate/scale/fade
- *   4. hex texture — GSAP pointer-parallax (subtlest layer)
- *   5. copy scrim (keeps headline legible over the mesh)
- *   6. copy: eyebrow, headline, subhead, CTAs
- *   7. proof bar
+ *   2. AI-themed background video (Pexels, royalty-free) — grayscale
+ *      filtered to stay within the site's monochrome palette, GSAP
+ *      pointer-parallax
+ *   3. decorative concentric rings — GSAP breathing pulse
+ *   4. tech-badge cluster — GSAP idle motion + pointer-parallax
+ *   5. radial glow "mark" — GSAP pointer-parallax + scroll rotate/scale/fade
+ *   6. hex texture — GSAP pointer-parallax (subtlest layer)
+ *   7. copy scrim (keeps headline legible over the video)
+ *   8. copy: eyebrow, headline, subhead, CTAs
+ *   9. proof bar
  *
  * Every animated property here is GSAP-owned: a single entrance timeline
  * (badge → headline → subhead → CTAs → proof bar), gsap.quickTo() driving
- * the three background layers' pointer-parallax, and the existing
- * ScrollTrigger scrub for the scroll pull-back. Reduced motion: everything
- * renders in its final state immediately, no timeline, no parallax loop,
- * no scroll scrub.
+ * the background layers' pointer-parallax, and the existing ScrollTrigger
+ * scrub for the scroll pull-back. Reduced motion: everything renders in
+ * its final state immediately, no timeline, no parallax loop, no scroll
+ * scrub, no video autoplay motion beyond its own native loop (muted,
+ * paused via the same `reduced` check).
  */
 const EYEBROW = "AI Automation · Digital Products · Scalable Platforms";
 const TITLE = "From AI automation to scalable digital products, we build the future.";
@@ -59,6 +67,14 @@ export default function Hero() {
   const ctaRef = useRef<HTMLDivElement>(null);
   const proofRef = useRef<HTMLDivElement>(null);
   const [scrolled, setScrolled] = useState(false);
+
+  // respect reduced motion: pause the background video's own loop, not just our GSAP tweens
+  useEffect(() => {
+    const video = meshRef.current?.querySelector("video");
+    if (!video) return;
+    if (reduced) video.pause();
+    else video.play().catch(() => {});
+  }, [reduced]);
 
   // center the mark via GSAP (not CSS) so it composes with the scroll-scrub's
   // rotate/scale and the pointer-parallax below in one GSAP-owned transform.
@@ -175,127 +191,140 @@ export default function Hero() {
   }, [interactive]);
 
   return (
-    <section
-      ref={sectionRef}
-      className="theme-light relative flex min-h-svh flex-col items-center justify-center overflow-hidden bg-canvas"
-    >
-      {/* 2 — animated gradient mesh: ambient depth, pointer-parallax layer 1 */}
-      <div ref={meshRef} className="absolute inset-[-4%]">
-        <HeroMesh />
-      </div>
-
-      {/* decorative concentric rings — bottom-left, GSAP breathing pulse */}
-      <HeroRings />
-
-      {/* tech-badge cluster — hugs the headline's corner, GSAP idle motion */}
-      <WorkspaceScene />
-
-      {/* 3 — radial glow "mark": pointer-parallax layer 2 + scroll rotate/scale/fade */}
-      <div
-        ref={markRef}
-        aria-hidden
-        className="hero-mark pointer-events-none absolute left-1/2 top-1/2 h-[min(72vh,640px)] w-[min(72vh,640px)]"
-        style={{
-          background:
-            "radial-gradient(closest-side, rgba(9,9,11,0.08), rgba(9,9,11,0.03) 55%, transparent 72%)",
-        }}
-      />
-
-      {/* copy scrim: keeps the headline readable over the mesh */}
-      <div
-        aria-hidden
-        className="absolute left-1/2 top-1/2 h-[62vh] w-[min(96vw,1040px)] -translate-x-1/2 -translate-y-1/2"
-        style={{
-          background:
-            "radial-gradient(52% 46% at 50% 48%, rgba(255,255,255,0.75) 0%, rgba(255,255,255,0.4) 60%, transparent 100%)",
-        }}
-      />
-
-      {/* 4 — hex texture: pointer-parallax layer 3 (subtlest) */}
-      <div
-        ref={hexRef}
-        aria-hidden
-        className="absolute inset-0 text-ink opacity-[0.03]"
-        style={{ backgroundImage: "url(/media/hex-pattern-tile.svg)", backgroundSize: "112px 194px" }}
-      />
-
-      {/* 6 — copy */}
-      <div
-        ref={copyRef}
-        className="relative z-10 mx-auto w-full max-w-4xl px-6 pb-24 pt-24 text-center lg:px-10"
+    <div className="bg-canvas p-3 sm:p-4">
+      <section
+        ref={sectionRef}
+        className="theme-light relative flex min-h-[calc(100svh-24px)] flex-col items-center justify-center overflow-hidden rounded-[32px] bg-canvas sm:min-h-[calc(100svh-32px)]"
       >
-        <p
-          ref={badgeRef}
-          className="mb-7 inline-flex items-center gap-2.5 rounded-full border border-hairline bg-canvas/40 px-4 py-1.5 font-urbanist text-[11px] uppercase tracking-[0.28em] text-ink-dim backdrop-blur-sm"
-        >
-          <span className="h-1.5 w-1.5 rounded-full bg-aurora-amber dot-pulse" />
-          {EYEBROW}
-        </p>
-
-        <h1
-          ref={headlineRef}
-          className="font-urbanist text-[28px] font-bold leading-[1.15] tracking-tight text-ink sm:text-[36px] lg:text-[44px]"
-        >
-          {TITLE}
-        </h1>
-
-        <p
-          ref={subRef}
-          className="mx-auto mt-7 max-w-2xl font-urbanist text-base leading-relaxed text-ink-dim sm:text-lg"
-        >
-          {SUBTITLE}
-        </p>
-
-        <div ref={ctaRef} className="mt-9 flex flex-wrap items-center justify-center gap-5">
-          <Magnetic>
-            <Link
-              href="/contact"
-              className="inline-flex items-center gap-2 rounded-full bg-aurora-violet px-8 py-4 font-urbanist text-sm font-medium text-white transition-[background-color,transform] duration-300 hover:scale-[1.02] hover:bg-aurora-violet-dark"
-            >
-              Book a Call
-              <ArrowRight size={15} strokeWidth={1.75} />
-            </Link>
-          </Magnetic>
-
-          <Link
-            href="/services"
-            className="inline-flex items-center gap-2 rounded-full border border-hairline-strong bg-white px-8 py-4 font-urbanist text-sm font-medium text-ink transition-[border-color,transform] duration-300 hover:scale-[1.02] hover:border-ink/40"
+        {/* 2 — AI-themed background video: ambient depth, pointer-parallax layer 1.
+            Grayscale-filtered to stay within the site's monochrome palette
+            regardless of the source clip's native color. */}
+        <div ref={meshRef} className="absolute inset-[-4%]">
+          <video
+            autoPlay
+            muted
+            loop
+            playsInline
+            className="h-full w-full object-cover opacity-[0.22] grayscale"
+            aria-hidden
           >
-            Explore Services
-            <ArrowRight size={15} strokeWidth={1.75} />
-          </Link>
+            <source src="/media/hero-ai-plexus.mp4" type="video/mp4" />
+          </video>
         </div>
-      </div>
 
-      {/* 7 — proof bar — PLACEHOLDER numbers */}
-      <div
-        ref={proofRef}
-        className="absolute inset-x-0 bottom-0 z-10 border-t border-hairline bg-white/70 backdrop-blur-md"
-      >
-        <dl className="mx-auto flex max-w-7xl flex-wrap items-center justify-center gap-x-10 gap-y-3 px-6 py-4 lg:justify-between lg:px-10">
-          {STATS.map((s) => (
-            <div key={s.label} className="flex items-baseline gap-2">
-              <dd className="font-urbanist text-lg font-bold tracking-tight text-ink">{s.value}</dd>
-              <dt className="font-urbanist text-[13px] text-ink-faint">{s.label}</dt>
-            </div>
-          ))}
-          <p className="font-urbanist text-[13px] tracking-wide text-ink-faint">
-            USA&ensp;•&ensp;Canada&ensp;•&ensp;Europe
-          </p>
-        </dl>
-      </div>
+        {/* decorative concentric rings — bottom-left, GSAP breathing pulse */}
+        <HeroRings />
 
-      {!reduced && (
+        {/* tech-badge cluster — hugs the headline's corner, GSAP idle motion */}
+        <WorkspaceScene />
+
+        {/* 3 — radial glow "mark": pointer-parallax layer 2 + scroll rotate/scale/fade */}
+        <div
+          ref={markRef}
+          aria-hidden
+          className="hero-mark pointer-events-none absolute left-1/2 top-1/2 h-[min(72vh,640px)] w-[min(72vh,640px)]"
+          style={{
+            background:
+              "radial-gradient(closest-side, rgba(9,9,11,0.08), rgba(9,9,11,0.03) 55%, transparent 72%)",
+          }}
+        />
+
+        {/* copy scrim: keeps the headline readable over the video */}
         <div
           aria-hidden
-          className="pointer-events-none absolute bottom-24 left-1/2 hidden -translate-x-1/2 flex-col items-center gap-2 transition-opacity duration-500 lg:flex"
-          style={{ opacity: scrolled ? 0 : 1 }}
+          className="absolute left-1/2 top-1/2 h-[62vh] w-[min(96vw,1040px)] -translate-x-1/2 -translate-y-1/2"
+          style={{
+            background:
+              "radial-gradient(52% 46% at 50% 48%, rgba(255,255,255,0.75) 0%, rgba(255,255,255,0.4) 60%, transparent 100%)",
+          }}
+        />
+
+        {/* 4 — hex texture: pointer-parallax layer 3 (subtlest) */}
+        <div
+          ref={hexRef}
+          aria-hidden
+          className="absolute inset-0 text-ink opacity-[0.03]"
+          style={{ backgroundImage: "url(/media/hex-pattern-tile.svg)", backgroundSize: "112px 194px" }}
+        />
+
+        {/* 6 — copy */}
+        <div
+          ref={copyRef}
+          className="relative z-10 mx-auto w-full max-w-4xl px-6 pb-24 pt-24 text-center lg:px-10"
         >
-          <span className="relative block h-12 w-px overflow-hidden bg-hairline">
-            <span className="scroll-cue-dot absolute left-1/2 top-0 block h-1.5 w-1.5 -translate-x-1/2 rounded-full bg-aurora-violet" />
-          </span>
+          <p
+            ref={badgeRef}
+            className="mb-7 inline-flex items-center gap-2.5 rounded-full border border-hairline bg-canvas/40 px-4 py-1.5 font-urbanist text-[11px] uppercase tracking-[0.28em] text-ink-dim backdrop-blur-sm"
+          >
+            <span className="h-1.5 w-1.5 rounded-full bg-aurora-amber dot-pulse" />
+            {EYEBROW}
+          </p>
+
+          <h1
+            ref={headlineRef}
+            className="font-urbanist text-[28px] font-bold leading-[1.15] tracking-tight text-ink sm:text-[36px] lg:text-[44px]"
+          >
+            {TITLE}
+          </h1>
+
+          <p
+            ref={subRef}
+            className="mx-auto mt-7 max-w-2xl font-urbanist text-base leading-relaxed text-ink-dim sm:text-lg"
+          >
+            {SUBTITLE}
+          </p>
+
+          <div ref={ctaRef} className="mt-9 flex flex-wrap items-center justify-center gap-5">
+            <Magnetic>
+              <Link
+                href="/contact"
+                className="inline-flex items-center gap-2 rounded-full bg-aurora-violet px-8 py-4 font-urbanist text-sm font-medium text-white transition-[background-color,transform] duration-300 hover:scale-[1.02] hover:bg-aurora-violet-dark"
+              >
+                Book a Call
+                <ArrowRight size={15} strokeWidth={1.75} />
+              </Link>
+            </Magnetic>
+
+            <Link
+              href="/services"
+              className="inline-flex items-center gap-2 rounded-full border border-hairline-strong bg-white px-8 py-4 font-urbanist text-sm font-medium text-ink transition-[border-color,transform] duration-300 hover:scale-[1.02] hover:border-ink/40"
+            >
+              Explore Services
+              <ArrowRight size={15} strokeWidth={1.75} />
+            </Link>
+          </div>
         </div>
-      )}
-    </section>
+
+        {/* 7 — proof bar — PLACEHOLDER numbers */}
+        <div
+          ref={proofRef}
+          className="absolute inset-x-0 bottom-0 z-10 border-t border-hairline bg-white/70 backdrop-blur-md"
+        >
+          <dl className="mx-auto flex max-w-7xl flex-wrap items-center justify-center gap-x-10 gap-y-3 px-6 py-4 lg:justify-between lg:px-10">
+            {STATS.map((s) => (
+              <div key={s.label} className="flex items-baseline gap-2">
+                <dd className="font-urbanist text-lg font-bold tracking-tight text-ink">{s.value}</dd>
+                <dt className="font-urbanist text-[13px] text-ink-faint">{s.label}</dt>
+              </div>
+            ))}
+            <p className="font-urbanist text-[13px] tracking-wide text-ink-faint">
+              USA&ensp;•&ensp;Canada&ensp;•&ensp;Europe
+            </p>
+          </dl>
+        </div>
+
+        {!reduced && (
+          <div
+            aria-hidden
+            className="pointer-events-none absolute bottom-24 left-1/2 hidden -translate-x-1/2 flex-col items-center gap-2 transition-opacity duration-500 lg:flex"
+            style={{ opacity: scrolled ? 0 : 1 }}
+          >
+            <span className="relative block h-12 w-px overflow-hidden bg-hairline">
+              <span className="scroll-cue-dot absolute left-1/2 top-0 block h-1.5 w-1.5 -translate-x-1/2 rounded-full bg-aurora-violet" />
+            </span>
+          </div>
+        )}
+      </section>
+    </div>
   );
 }
