@@ -55,7 +55,6 @@ export default function Hero() {
   const hexRef = useRef<HTMLDivElement>(null);
   const badgeRef = useRef<HTMLParagraphElement>(null);
   const headlineRef = useRef<HTMLHeadingElement>(null);
-  const shimmerRef = useRef<HTMLDivElement>(null);
   const wordRefs = useRef<(HTMLSpanElement | null)[]>([]);
   const subRef = useRef<HTMLParagraphElement>(null);
   const ctaRef = useRef<HTMLDivElement>(null);
@@ -85,21 +84,6 @@ export default function Hero() {
     return () => ctx.revert();
   }, [reduced]);
 
-  // continuous headline shimmer: a light bar sweeps left-to-right over the
-  // headline, blended with mix-blend-mode instead of clipped into the text
-  // itself — independent of and starting after the word-entrance above
-  useEffect(() => {
-    if (reduced || !shimmerRef.current) return;
-    const ctx = gsap.context(() => {
-      gsap.fromTo(
-        shimmerRef.current,
-        { left: "-40%" },
-        { left: "140%", duration: 2.2, repeat: -1, repeatDelay: 3, ease: "power1.inOut", delay: 2 }
-      );
-    });
-    return () => ctx.revert();
-  }, [reduced]);
-
   // center the mark via GSAP (not CSS) so it composes with the scroll-scrub's
   // rotate/scale and the pointer-parallax below in one GSAP-owned transform.
   // Must run before any other effect creates a gsap.context() touching this
@@ -112,25 +96,23 @@ export default function Hero() {
   }, []);
 
   // entrance choreography — one GSAP timeline: badge, then headline words
-  // staggered (blur + rise), then subhead, then CTAs
+  // masked-slide-up (each word sits behind its own overflow-hidden window
+  // and rises into view — no blur, no background-clip:text; both broke or
+  // looked wrong in earlier attempts), then subhead, then CTAs
   useEffect(() => {
     if (!sectionRef.current) return;
     const words = wordRefs.current.filter(Boolean);
-    const targets = [badgeRef.current, ...words, subRef.current, ctaRef.current];
     if (reduced) {
-      gsap.set(targets, { opacity: 1, y: 0, filter: "blur(0px)" });
+      gsap.set(words, { yPercent: 0 });
+      gsap.set([badgeRef.current, subRef.current, ctaRef.current], { opacity: 1, y: 0 });
       return;
     }
     const ctx = gsap.context(() => {
       gsap
         .timeline({ defaults: { ease: "expo.out" }, delay: 0.15 })
         .from(badgeRef.current, { opacity: 0, y: 18, duration: 0.6 })
-        .from(
-          words,
-          { opacity: 0, y: 26, filter: "blur(8px)", duration: 0.7, stagger: 0.045 },
-          "-=0.35"
-        )
-        .from(subRef.current, { opacity: 0, y: 18, filter: "blur(6px)", duration: 0.6 }, "-=0.5")
+        .from(words, { yPercent: 115, duration: 0.85, stagger: 0.055 }, "-=0.35")
+        .from(subRef.current, { opacity: 0, y: 18, duration: 0.6 }, "-=0.55")
         .from(ctaRef.current, { opacity: 0, y: 16, duration: 0.55 }, "-=0.4");
     }, sectionRef);
     return () => ctx.revert();
@@ -219,8 +201,8 @@ export default function Hero() {
           ref={meshRef}
           className="absolute inset-[-4%]"
           style={{
-            WebkitMaskImage: "linear-gradient(to bottom, transparent 0%, black 22%, black 100%)",
-            maskImage: "linear-gradient(to bottom, transparent 0%, black 22%, black 100%)",
+            WebkitMaskImage: "linear-gradient(to bottom, transparent 0%, transparent 12%, black 62%)",
+            maskImage: "linear-gradient(to bottom, transparent 0%, transparent 12%, black 62%)",
           }}
         >
           <video
@@ -291,38 +273,23 @@ export default function Hero() {
             {EYEBROW}
           </p>
 
-          <div className="relative inline-block overflow-hidden">
-            <h1
-              ref={headlineRef}
-              className="font-urbanist text-[32px] font-bold leading-[1.12] tracking-tight text-ink sm:text-[44px] lg:text-[56px]"
-            >
-              {TITLE_WORDS.map((word, i) => (
+          <h1
+            ref={headlineRef}
+            className="font-urbanist text-[32px] font-bold leading-[1.12] tracking-tight text-ink sm:text-[44px] lg:text-[56px]"
+          >
+            {TITLE_WORDS.map((word, i) => (
+              <span key={i} className="mr-[0.28em] inline-block overflow-hidden pb-1 -mb-1 align-bottom">
                 <span
-                  key={i}
                   ref={(el) => {
                     wordRefs.current[i] = el;
                   }}
-                  className="mr-[0.28em] inline-block"
+                  className="inline-block"
                 >
                   {word}
                 </span>
-              ))}
-            </h1>
-            {/* continuous shimmer: a light bar sweeps across the headline,
-                blended (not clipped into the text itself, which breaks once
-                the text lives in nested spans — background-clip:text only
-                clips an element's OWN glyphs, not descendants') */}
-            <div
-              ref={shimmerRef}
-              aria-hidden
-              className="pointer-events-none absolute inset-y-0 left-[-40%] w-1/3"
-              style={{
-                background:
-                  "linear-gradient(100deg, transparent, rgba(255,255,255,0.55), transparent)",
-                mixBlendMode: "overlay",
-              }}
-            />
-          </div>
+              </span>
+            ))}
+          </h1>
 
           <p
             ref={subRef}
