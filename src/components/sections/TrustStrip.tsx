@@ -6,14 +6,21 @@ import Reveal from "@/components/system/Reveal";
 import { useMotionAllowed } from "@/lib/motion";
 
 /**
- * Clients & trust — light theme (theme-light, same mechanism as Hero/Navbar)
- * rather than the dark bg-canvas convention from the previous pass, so the
- * section reads as a continuation of the Hero instead of a contrasting dark
- * band. Client list as a tight, uniform wall of small glassmorphic cards (2
- * rows of 8 at desktop) that tilt toward the pointer and light up with a
- * cursor-follow glow. Names render in a single consistent case (uppercase)
- * regardless of how each one is naturally styled, and wrap onto 2 lines
- * instead of truncating so nothing gets cut off.
+ * Clients & trust — plain full-bleed section on bg-light-surface, the exact
+ * same background token ServicePillars (the section right after this one)
+ * uses. Earlier passes wrapped this in its own floating rounded card with an
+ * independent frame color, which kept reading as a mismatched seam against
+ * Hero's own frame above it — dropping the card/frame entirely and matching
+ * the neighboring section's literal background token removes the seam by
+ * construction instead of re-tuning colors again. theme-light is still
+ * applied so the aurora- and ink- tokens used inside (badges, hover borders)
+ * resolve to their light-appropriate values.
+ *
+ * Client list as a tight, uniform wall of small glassmorphic cards (2 rows
+ * of 8 at desktop) that tilt toward the pointer and light up with a
+ * cursor-follow glow, each revealed with an increasing stagger. Names render
+ * in a single consistent case (uppercase) regardless of how each one is
+ * naturally styled, and wrap onto 2 lines instead of truncating.
  */
 const CLIENTS = [
   "Essentialist",
@@ -26,7 +33,7 @@ const CLIENTS = [
   "UpWork",
   "Lexa Shield",
   "Quinta dos Vales",
-  "DTech Corporation Limited",
+  "DTech Corporation",
   "Astrica Trading",
   "MYTH LIFESTYLE",
   "GoPosly",
@@ -34,7 +41,7 @@ const CLIENTS = [
   "Regray Stone",
 ];
 
-const PROOF = ["Clear scope before estimates", "Weekly demos and decision notes", "Clean ownership transfer"];
+const PROOF = ["Fast, transparent delivery", "Senior engineers only", "Clear scope before any estimate"];
 
 function ClientCard({ name }: { name: string }) {
   const interactive = useMotionAllowed();
@@ -121,58 +128,56 @@ function ClientCard({ name }: { name: string }) {
 
 export default function TrustStrip() {
   return (
-    <div className="bg-[#fafafa] px-3 sm:px-4">
-      <section
-        aria-label="Clients and partners"
-        className="theme-light relative overflow-hidden rounded-t-[32px] bg-canvas py-12 font-urbanist shadow-[0_24px_70px_rgba(11,15,25,0.08),0_4px_14px_rgba(11,15,25,0.04)] lg:py-20"
-      >
-        {/* subtle texture, same asset Hero uses, so the section visibly shares Hero's material language */}
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0 text-ink opacity-[0.025]"
-          style={{ backgroundImage: "url(/media/hex-pattern-tile.svg)", backgroundSize: "112px 194px" }}
-        />
+    <section
+      aria-label="Clients and partners"
+      className="theme-light relative overflow-hidden bg-light-surface py-16 font-urbanist lg:py-24"
+    >
+      {/* subtle texture, same asset Hero uses, so the section visibly shares Hero's material language */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 text-ink opacity-[0.025]"
+        style={{ backgroundImage: "url(/media/hex-pattern-tile.svg)", backgroundSize: "112px 194px" }}
+      />
 
-        <div className="relative z-10 mx-auto max-w-7xl px-6 lg:px-10">
-          <Reveal>
-            <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-              <div>
-                <p className="mb-2.5 inline-flex items-center gap-2.5 font-urbanist text-[11px] font-medium uppercase tracking-[0.28em] text-ink-dim">
-                  <span className="h-1.5 w-1.5 rounded-full bg-aurora-amber" />
-                  Selected Clients
-                </p>
-                <h2 className="font-urbanist text-[20px] font-bold leading-tight tracking-tight text-ink sm:text-[32px] lg:text-[40px]">
-                  Trusted By Fast-Growing Teams
-                  <br />
-                  <span className="text-ink-dim">From Startups to Enterprises</span>
-                </h2>
-              </div>
-              <ul className="flex flex-wrap gap-2.5">
-                {PROOF.map((p) => (
-                  <li
-                    key={p}
-                    className="rounded-full border border-hairline bg-canvas-raised px-3.5 py-1.5 font-urbanist text-[12px] text-ink-dim"
-                  >
-                    {p}
-                  </li>
-                ))}
-              </ul>
+      <div className="relative z-10 mx-auto max-w-7xl px-6 lg:px-10">
+        <Reveal>
+          <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+            <div>
+              <p className="mb-2.5 inline-flex items-center gap-2.5 font-urbanist text-[11px] font-medium uppercase tracking-[0.28em] text-ink-dim">
+                <span className="h-1.5 w-1.5 rounded-full bg-aurora-amber" />
+                Selected Clients
+              </p>
+              <h2 className="font-urbanist text-[20px] font-bold leading-tight tracking-tight text-ink sm:text-[32px] lg:text-[40px]">
+                The Choice Of Fast-Moving Teams
+                <br />
+                <span className="text-ink-dim">From Startups to Global Brands</span>
+              </h2>
             </div>
-          </Reveal>
-
-          <Reveal delay={100}>
-            <div
-              className="mt-8 grid grid-flow-col grid-rows-2 gap-3 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] auto-cols-[40vw] sm:auto-cols-[190px] lg:auto-cols-fr lg:grid-flow-row lg:grid-cols-8 lg:overflow-visible [&::-webkit-scrollbar]:hidden"
-              style={{ touchAction: "pan-x" }}
-            >
-              {CLIENTS.map((name) => (
-                <ClientCard key={name} name={name} />
+            <ul className="flex flex-wrap gap-2.5">
+              {PROOF.map((p) => (
+                <li
+                  key={p}
+                  className="rounded-full border border-hairline bg-canvas px-3.5 py-1.5 font-urbanist text-[12px] font-medium text-ink-dim transition-colors duration-300 hover:border-aurora-violet/30 hover:text-ink"
+                >
+                  {p}
+                </li>
               ))}
-            </div>
-          </Reveal>
-          <span className="sr-only">Trusted by {CLIENTS.join(", ")}</span>
+            </ul>
+          </div>
+        </Reveal>
+
+        <div
+          className="mt-8 grid grid-flow-col grid-rows-2 gap-3 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] auto-cols-[40vw] sm:auto-cols-[190px] lg:auto-cols-fr lg:grid-flow-row lg:grid-cols-8 lg:overflow-visible [&::-webkit-scrollbar]:hidden"
+          style={{ touchAction: "pan-x" }}
+        >
+          {CLIENTS.map((name, i) => (
+            <Reveal key={name} delay={i * 45}>
+              <ClientCard name={name} />
+            </Reveal>
+          ))}
         </div>
-      </section>
-    </div>
+        <span className="sr-only">Trusted by {CLIENTS.join(", ")}</span>
+      </div>
+    </section>
   );
 }
