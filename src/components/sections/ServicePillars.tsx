@@ -3,12 +3,42 @@
 import { useEffect, useRef } from "react";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
+import { SiFigma, SiSketch, SiFramer as SiFramerTool, SiReact, SiNextdotjs, SiNodedotjs, SiTypescript, SiWordpress, SiWebflow, SiGoogleanalytics, SiShopify, SiWoocommerce, SiStripe, SiPython, SiLangchain, SiHuggingface, SiZapier } from "react-icons/si";
+import type { IconType } from "react-icons";
 import { SERVICE_COLUMNS } from "@/lib/navigation";
 import { Icon, SERVICE_ICONS } from "@/lib/icons";
 import Reveal from "@/components/system/Reveal";
 import Spotlight from "@/components/system/Spotlight";
 import { useMotionAllowed } from "@/lib/motion";
 import gsap from "gsap";
+
+/** Representative tools/tech per practice — shown as a small icon row on each card. */
+const TOOL_ICONS: Record<string, IconType[]> = {
+  design: [SiFigma, SiSketch, SiFramerTool],
+  engineering: [SiReact, SiNextdotjs, SiNodedotjs, SiTypescript],
+  websites: [SiWordpress, SiWebflow, SiGoogleanalytics],
+  commerce: [SiShopify, SiWoocommerce, SiStripe],
+  ai: [SiPython, SiLangchain, SiHuggingface, SiZapier],
+};
+
+function ToolStack({ id, dark = false }: { id: string; dark?: boolean }) {
+  const tools = TOOL_ICONS[id];
+  if (!tools) return null;
+  return (
+    <div className="relative z-10 mt-5 flex items-center gap-2">
+      {tools.map((ToolIcon, i) => (
+        <span
+          key={i}
+          className={`flex h-7 w-7 items-center justify-center rounded-full ${
+            dark ? "border border-white/15 bg-white/[0.06] text-white/70" : "border border-hairline bg-canvas text-ink-dim"
+          }`}
+        >
+          <ToolIcon size={13} />
+        </span>
+      ))}
+    </div>
+  );
+}
 
 /**
  * Services — card grid (inspired by aigocy's numbered service cards)
@@ -77,7 +107,7 @@ function ServiceCard({ col, displayNumber }: { col: (typeof SERVICE_COLUMNS)[num
       <Spotlight color="rgba(24, 24, 27, 0.05)" radius={360} className="h-full">
         <div
           ref={cardRef}
-          className="relative flex h-full flex-col rounded-3xl border border-hairline bg-canvas p-7 transition-[border-color,box-shadow] duration-300 hover:border-aurora-violet/20 hover:shadow-[0_20px_50px_rgba(9,9,11,0.08)] lg:p-8"
+          className="relative flex h-full flex-col rounded-[28px] border border-hairline bg-[#fafafa] p-7 transition-[border-color,box-shadow] duration-300 hover:border-aurora-violet/20 hover:shadow-[0_20px_50px_rgba(9,9,11,0.08)] lg:p-8"
         >
           <div className="relative z-10 flex items-start justify-between">
             <span className="font-urbanist text-sm font-semibold text-ink-faint">{displayNumber}</span>
@@ -99,6 +129,8 @@ function ServiceCard({ col, displayNumber }: { col: (typeof SERVICE_COLUMNS)[num
           </Link>
 
           <p className="relative z-10 mt-2.5 font-urbanist text-[14.5px] leading-relaxed text-ink-dim">{col.blurb}</p>
+
+          <ToolStack id={col.id} />
 
           <ul className="relative z-10 mt-5 flex-1 space-y-0.5 border-t border-hairline pt-4">
             {visibleLinks.map((l) => (
@@ -128,7 +160,7 @@ function FeaturedServiceCard({ col }: { col: (typeof SERVICE_COLUMNS)[number] })
     <div className="h-full" style={{ perspective: "1100px" }}>
       <div
         ref={cardRef}
-        className="mega-feature-card relative flex h-full flex-col overflow-hidden rounded-3xl p-7 lg:flex-row lg:items-center lg:gap-10 lg:p-10"
+        className="mega-feature-card relative flex h-full flex-col overflow-hidden rounded-[28px] p-7 lg:flex-row lg:items-center lg:gap-10 lg:p-10"
       >
         <div
           aria-hidden
@@ -160,6 +192,8 @@ function FeaturedServiceCard({ col }: { col: (typeof SERVICE_COLUMNS)[number] })
           </Link>
 
           <p className="relative z-10 mt-3 max-w-md font-urbanist text-[15px] leading-relaxed text-white/70">{col.blurb}</p>
+
+          <ToolStack id={col.id} dark />
         </div>
 
         <ul className="relative z-10 mt-7 flex-1 space-y-1 lg:mt-0 lg:max-w-sm">
