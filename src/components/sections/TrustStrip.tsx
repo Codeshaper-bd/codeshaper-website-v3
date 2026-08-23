@@ -1,4 +1,3 @@
-import { MapPin } from "lucide-react";
 import {
   Hexagon,
   Triangle,
@@ -61,7 +60,13 @@ const CLIENTS = [
   "Regray Stone",
 ];
 
-const REGIONS = ["USA", "Canada", "Europe", "North America", "Asia"];
+const REGIONS = [
+  { label: "USA", flag: "🇺🇸" },
+  { label: "Canada", flag: "🇨🇦" },
+  { label: "Europe", flag: "🇪🇺" },
+  { label: "North America", flag: "🌎" },
+  { label: "Asia", flag: "🌏" },
+];
 
 function buildLogoMap(): Record<string, IconType | LucideIcon> {
   const map: Record<string, IconType | LucideIcon> = {};
@@ -78,15 +83,11 @@ function LogoTile({ name }: { name: string }) {
   const LogoIcon = LOGO_MAP[name];
   const isReal = name in KNOWN_LOGOS;
   return (
-    <div
-      className="group flex shrink-0 items-center gap-3 rounded-2xl border border-hairline bg-canvas px-6 py-4 shadow-[0_1px_2px_rgba(9,9,11,0.04)] transition-all duration-300 hover:-translate-y-0.5 hover:border-aurora-violet/25 hover:shadow-[0_10px_24px_rgba(9,9,11,0.08)]"
-      title={name}
-    >
-      <LogoIcon
-        size={isReal ? 22 : 18}
-        className={`shrink-0 text-ink-dim transition-colors duration-300 group-hover:text-ink ${isReal ? "" : "opacity-70"}`}
-      />
-      <span className="whitespace-nowrap font-urbanist text-[13px] font-semibold text-ink-dim transition-colors duration-300 group-hover:text-ink">
+    <div className="group flex shrink-0 items-center gap-3.5 rounded-2xl border border-hairline bg-canvas py-3 pl-3 pr-5 shadow-[0_1px_2px_rgba(9,9,11,0.04)] transition-all duration-300 hover:-translate-y-0.5 hover:border-aurora-violet/25 hover:shadow-[0_10px_24px_rgba(9,9,11,0.08)]">
+      <span className="mega-icon-tile flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-aurora-indigo">
+        <LogoIcon size={isReal ? 20 : 17} className={isReal ? "" : "opacity-70"} />
+      </span>
+      <span className="whitespace-nowrap font-urbanist text-[14px] font-semibold text-ink-dim transition-colors duration-300 group-hover:text-ink">
         {name}
       </span>
     </div>
@@ -142,11 +143,13 @@ export default function TrustStrip() {
             <ul className="flex flex-wrap gap-2.5 lg:justify-end">
               {REGIONS.map((r) => (
                 <li
-                  key={r}
+                  key={r.label}
                   className="flex items-center gap-1.5 rounded-full border border-hairline bg-canvas px-3.5 py-1.5 font-urbanist text-[12px] font-medium text-ink-dim"
                 >
-                  <MapPin size={12} strokeWidth={2} className="text-ink-faint" />
-                  {r}
+                  <span aria-hidden className="text-[13px] leading-none">
+                    {r.flag}
+                  </span>
+                  {r.label}
                 </li>
               ))}
             </ul>
