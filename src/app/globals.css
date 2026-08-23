@@ -475,6 +475,18 @@ body {
 }
 .dot-pulse { animation: dot-pulse 3.2s ease-in-out infinite; }
 
+/* Client logo badges: gentle idle float, staggered per-badge via inline
+   animation-delay so the row doesn't bob in unison. */
+@keyframes badge-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+.badge-float { animation: badge-float 4.5s ease-in-out infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .badge-float { animation: none; }
+}
+
 /* Location card hover: glass brightens, city name → amber */
 .loc-card { transition: background-color 300ms ease; }
 .loc-card:hover { background: rgba(30, 30, 40, 0.94); }
