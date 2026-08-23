@@ -1,74 +1,163 @@
 "use client";
 
+import { useEffect, useRef } from "react";
 import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 import { SERVICE_COLUMNS } from "@/lib/navigation";
+import { Icon, SERVICE_ICONS } from "@/lib/icons";
 import Reveal from "@/components/system/Reveal";
 import Spotlight from "@/components/system/Spotlight";
+import { useMotionAllowed } from "@/lib/motion";
+import gsap from "gsap";
 
 /**
- * 4.3 Services index — PASS 2: rows reveal with shared stagger; hover gets a
- * contained radial spotlight (violet ~6%, ~400px), arrow nudges 4px right,
- * number transitions to Indigo. Structure/content unchanged from Pass 1.
+ * Services — card grid (inspired by aigocy's numbered service cards)
+ * replacing the previous single-column numbered-row list. theme-light is
+ * applied so the aurora-/ink- tokens used inside (icon tiles, hover accents)
+ * resolve to their light-appropriate values — the previous version used
+ * these tokens without theme-light, which silently resolved to the dark-mode
+ * values (near-white) and made the number's hover color invisible on this
+ * light background. bg-light-surface itself is untouched (a fixed token,
+ * not swapped by theme-light) so the seamless match with TrustStrip's
+ * background above it is unaffected.
+ *
+ * The 5th (flagship "ai") card spans the remaining 2 columns of row 2 on a
+ * 3-column desktop grid so the layout fills evenly instead of leaving an
+ * orphan single card.
  */
+function ServiceCard({ col, index }: { col: (typeof SERVICE_COLUMNS)[number]; index: number }) {
+  const interactive = useMotionAllowed();
+  const cardRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const card = cardRef.current;
+    if (!card || !interactive) return;
+    gsap.set(card, { rotationX: 0, rotationY: 0, scaleX: 1, scaleY: 1 });
+
+    const onMove = (e: PointerEvent) => {
+      const r = card.getBoundingClientRect();
+      const px = (e.clientX - r.left) / r.width;
+      const py = (e.clientY - r.top) / r.height;
+      gsap.to(card, {
+        rotationY: (px - 0.5) * 6,
+        rotationX: -(py - 0.5) * 6,
+        duration: 0.6,
+        ease: "power3.out",
+        overwrite: "auto",
+      });
+    };
+    const onEnter = () => gsap.to(card, { scaleX: 1.015, scaleY: 1.015, duration: 0.4, ease: "power3.out", overwrite: "auto" });
+    const onLeave = () =>
+      gsap.to(card, { rotationX: 0, rotationY: 0, scaleX: 1, scaleY: 1, duration: 0.6, ease: "power3.out", overwrite: "auto" });
+
+    card.addEventListener("pointermove", onMove);
+    card.addEventListener("pointerenter", onEnter);
+    card.addEventListener("pointerleave", onLeave);
+    return () => {
+      card.removeEventListener("pointermove", onMove);
+      card.removeEventListener("pointerenter", onEnter);
+      card.removeEventListener("pointerleave", onLeave);
+    };
+  }, [interactive]);
+
+  const visibleLinks = col.links.slice(0, 3);
+  const moreCount = col.links.length - visibleLinks.length;
+
+  return (
+    <div className="h-full" style={{ perspective: "900px" }}>
+      <Spotlight
+        color="rgba(24, 24, 27, 0.05)"
+        radius={360}
+        className="h-full"
+      >
+        <div
+          ref={cardRef}
+          className="relative flex h-full flex-col rounded-3xl border border-hairline bg-canvas p-7 transition-[border-color,box-shadow] duration-300 hover:border-aurora-violet/20 hover:shadow-[0_20px_50px_rgba(9,9,11,0.08)] lg:p-8"
+        >
+          <div className="relative z-10 flex items-start justify-between">
+            <span className="font-urbanist text-sm font-semibold text-ink-faint">{col.number}</span>
+            {col.flagship && (
+              <span className="rounded-full border border-hairline px-2 py-0.5 font-urbanist text-[10px] font-bold uppercase tracking-wide text-aurora-amber-dark">
+                New
+              </span>
+            )}
+          </div>
+
+          <span className="mega-icon-tile relative z-10 mt-5 flex h-11 w-11 items-center justify-center rounded-xl text-aurora-indigo">
+            <Icon name={SERVICE_ICONS[col.id]} size={19} />
+          </span>
+
+          <Link href={col.href} className="group/title relative z-10 mt-5 inline-flex items-start gap-1.5">
+            <h3 className="font-urbanist text-xl font-bold leading-snug tracking-tight text-ink transition-colors duration-200 group-hover/title:text-aurora-violet">
+              {col.title}
+            </h3>
+            <ArrowRight
+              size={16}
+              strokeWidth={2}
+              className="mt-1.5 shrink-0 text-ink-faint transition-transform duration-200 group-hover/title:translate-x-1 group-hover/title:text-aurora-violet"
+            />
+          </Link>
+
+          <p className="relative z-10 mt-2.5 font-urbanist text-[14.5px] leading-relaxed text-ink-dim">{col.blurb}</p>
+
+          <ul className="relative z-10 mt-5 flex-1 space-y-0.5 border-t border-hairline pt-4">
+            {visibleLinks.map((l) => (
+              <li key={l.href}>
+                <Link
+                  href={l.href}
+                  className="group/row flex items-center gap-2 rounded-lg px-1.5 py-1.5 font-urbanist text-[13px] font-medium text-ink-dim transition-colors duration-200 hover:bg-canvas-raised hover:text-ink"
+                >
+                  <Icon name={l.icon} size={13} className="shrink-0 text-ink-faint" />
+                  <span className="truncate">{l.label}</span>
+                </Link>
+              </li>
+            ))}
+            {moreCount > 0 && (
+              <li className="px-1.5 pt-1 font-urbanist text-[12px] text-ink-faint">+{moreCount} more</li>
+            )}
+          </ul>
+        </div>
+      </Spotlight>
+    </div>
+  );
+}
+
 export default function ServicePillars() {
   return (
-    <section className="bg-light-surface py-16 lg:py-32" aria-labelledby="services-heading">
+    <section className="theme-light bg-light-surface py-16 lg:py-32" aria-labelledby="services-heading">
       <div className="mx-auto max-w-7xl px-6 lg:px-10">
         <Reveal>
-          <p className="mb-3 font-urbanist text-sm font-medium uppercase tracking-[0.25em] text-light-dim">
+          <p className="mb-3 inline-flex items-center gap-2.5 font-urbanist text-sm font-medium uppercase tracking-[0.25em] text-ink-dim">
+            <span className="h-1.5 w-1.5 rounded-full bg-aurora-amber" />
             What we do
           </p>
           <h2
             id="services-heading"
-            className="mb-14 max-w-2xl font-urbanist text-3xl font-bold tracking-tight text-light-ink sm:text-4xl"
+            className="max-w-2xl font-urbanist text-4xl font-bold leading-tight tracking-tight text-ink sm:text-5xl"
           >
             Five practices, one delivery system.
           </h2>
+          <p className="mt-5 max-w-xl font-urbanist text-base leading-relaxed text-ink-dim">
+            Every project moves through the same disciplines — from first sketch to a shipped, supported product.
+          </p>
         </Reveal>
 
-        <ol className="border-t border-hairline-light">
+        <div className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {SERVICE_COLUMNS.map((col, i) => (
-            <li key={col.id} className="border-b border-hairline-light">
-              <Reveal delay={i * 70}>
-                <Spotlight color="rgba(9, 9, 11, 0.05)" radius={400}>
-                  <Link
-                    href={col.href}
-                    className="group grid grid-cols-[3rem_1fr] items-baseline gap-4 py-8 sm:grid-cols-[5rem_1fr_auto] sm:py-10"
-                  >
-                    <span className="font-urbanist text-sm font-medium text-light-dim transition-colors duration-300 group-hover:text-aurora-indigo">
-                      {col.number}
-                    </span>
-                    <span>
-                      <span className="font-urbanist text-2xl font-bold tracking-tight text-light-ink sm:text-3xl">
-                        {col.title}
-                      </span>
-                      <span className="mt-2 block max-w-xl font-urbanist text-base leading-relaxed text-light-ink/80">
-                        {col.blurb}
-                      </span>
-                      <span className="mt-2 block max-w-xl font-urbanist text-sm leading-relaxed text-light-dim">
-                        {col.links.map((l) => l.label).join(" · ")}
-                      </span>
-                    </span>
-                    <span
-                      className="hidden font-urbanist text-light-dim transition-transform duration-300 group-hover:translate-x-1 group-hover:text-light-ink sm:block"
-                      aria-hidden
-                    >
-                      →
-                    </span>
-                  </Link>
-                </Spotlight>
-              </Reveal>
-            </li>
+            <Reveal key={col.id} delay={i * 80} className={col.flagship ? "sm:col-span-2 lg:col-span-2" : undefined}>
+              <ServiceCard col={col} index={i} />
+            </Reveal>
           ))}
-        </ol>
+        </div>
 
-        <Reveal delay={200}>
+        <Reveal delay={SERVICE_COLUMNS.length * 80}>
           <div className="mt-12">
             <Link
               href="/services"
-              className="inline-block rounded-full border border-black/15 px-7 py-3.5 font-urbanist text-sm font-medium text-light-ink transition-colors hover:border-black/40"
+              className="inline-flex items-center gap-2 rounded-full bg-aurora-violet px-7 py-3.5 font-urbanist text-sm font-semibold text-white transition-[background-color,transform] duration-300 hover:scale-[1.02] hover:bg-aurora-violet-dark"
             >
-              Explore All Services →
+              Explore All Services
+              <ArrowRight size={15} strokeWidth={1.75} />
             </Link>
           </div>
         </Reveal>
