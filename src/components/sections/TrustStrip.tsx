@@ -121,51 +121,55 @@ function ClientCard({ name }: { name: string }) {
 
 export default function TrustStrip() {
   return (
-    <section
-      aria-label="Clients and partners"
-      className="theme-light relative overflow-hidden border-y border-hairline bg-canvas py-16 font-urbanist lg:py-20"
-    >
-      {/* subtle texture, same asset Hero uses, so the section visibly shares Hero's material language */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 text-ink opacity-[0.025]"
-        style={{ backgroundImage: "url(/media/hex-pattern-tile.svg)", backgroundSize: "112px 194px" }}
-      />
+    <div className="bg-[#edecec] p-3 sm:p-4">
+      <section
+        aria-label="Clients and partners"
+        className="theme-light relative overflow-hidden rounded-[32px] bg-canvas py-16 font-urbanist shadow-[0_24px_70px_rgba(11,15,25,0.08),0_4px_14px_rgba(11,15,25,0.04)] lg:py-20"
+      >
+        {/* subtle texture, same asset Hero uses, so the section visibly shares Hero's material language */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 text-ink opacity-[0.025]"
+          style={{ backgroundImage: "url(/media/hex-pattern-tile.svg)", backgroundSize: "112px 194px" }}
+        />
 
-      <div className="relative z-10 mx-auto max-w-7xl px-6 lg:px-10">
-        <Reveal>
-          <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-            <div>
-              <p className="mb-3 inline-flex items-center gap-2.5 font-urbanist text-[11px] font-medium uppercase tracking-[0.28em] text-ink-dim">
-                <span className="h-1.5 w-1.5 rounded-full bg-aurora-amber" />
-                Selected Clients
-              </p>
-              <h2 className="max-w-lg font-urbanist text-4xl font-bold leading-tight tracking-tight text-ink sm:text-5xl">
-                Trusted by top-tier brands.
-              </h2>
+        <div className="relative z-10 mx-auto max-w-7xl px-6 lg:px-10">
+          <Reveal>
+            <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+              <div>
+                <p className="mb-3 inline-flex items-center gap-2.5 font-urbanist text-[11px] font-medium uppercase tracking-[0.28em] text-ink-dim">
+                  <span className="h-1.5 w-1.5 rounded-full bg-aurora-amber" />
+                  Selected Clients
+                </p>
+                <h2 className="max-w-lg font-urbanist text-4xl font-bold leading-tight tracking-tight text-ink sm:text-5xl">
+                  Trusted By Fast-Growing Teams
+                  <br />
+                  <span className="text-ink-dim">From Startups to Enterprises</span>
+                </h2>
+              </div>
+              <ul className="flex flex-wrap gap-2.5">
+                {PROOF.map((p) => (
+                  <li
+                    key={p}
+                    className="rounded-full border border-hairline bg-canvas-raised px-3.5 py-1.5 font-urbanist text-[12px] text-ink-dim"
+                  >
+                    {p}
+                  </li>
+                ))}
+              </ul>
             </div>
-            <ul className="flex flex-wrap gap-2.5">
-              {PROOF.map((p) => (
-                <li
-                  key={p}
-                  className="rounded-full border border-hairline bg-canvas-raised px-3.5 py-1.5 font-urbanist text-[12px] text-ink-dim"
-                >
-                  {p}
-                </li>
-              ))}
-            </ul>
-          </div>
-        </Reveal>
+          </Reveal>
 
-        <Reveal delay={100}>
-          <div className="mt-10 grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-8">
-            {CLIENTS.map((name) => (
-              <ClientCard key={name} name={name} />
-            ))}
-          </div>
-        </Reveal>
-        <span className="sr-only">Trusted by {CLIENTS.join(", ")}</span>
-      </div>
-    </section>
+          <Reveal delay={100}>
+            <div className="mt-10 grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-8">
+              {CLIENTS.map((name) => (
+                <ClientCard key={name} name={name} />
+              ))}
+            </div>
+          </Reveal>
+          <span className="sr-only">Trusted by {CLIENTS.join(", ")}</span>
+        </div>
+      </section>
+    </div>
   );
 }
