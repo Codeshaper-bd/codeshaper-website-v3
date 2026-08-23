@@ -4,6 +4,7 @@ import Navbar from "@/components/nav/Navbar";
 import Hero from "@/components/hero/Hero";
 import TrustStrip from "@/components/sections/TrustStrip";
 import ServicePillars from "@/components/sections/ServicePillars";
+import AboutStudio from "@/components/sections/AboutStudio";
 import AiSpotlight from "@/components/sections/AiSpotlight";
 import DeliverySystem from "@/components/sections/DeliverySystem";
 import CaseStudies from "@/components/sections/CaseStudies";
@@ -30,6 +31,7 @@ export default function Home() {
         <Hero />
         <TrustStrip />
         <ServicePillars />
+        <AboutStudio />
         <AiSpotlight />
         <DeliverySystem />
         <CaseStudies />
