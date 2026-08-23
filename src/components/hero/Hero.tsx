@@ -186,7 +186,7 @@ export default function Hero() {
   }, [interactive]);
 
   return (
-    <div className="bg-[#edecec] p-3 sm:p-4">
+    <div className="bg-light-surface p-3 sm:p-4">
       <section
         ref={sectionRef}
         className="theme-light relative flex min-h-[calc(100svh-24px)] flex-col items-center justify-center overflow-hidden rounded-[32px] bg-canvas sm:min-h-[calc(100svh-32px)]"

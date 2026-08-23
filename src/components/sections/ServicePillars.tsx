@@ -18,17 +18,21 @@ import gsap from "gsap";
  * these tokens without theme-light, which silently resolved to the dark-mode
  * values (near-white) and made the number's hover color invisible on this
  * light background. bg-light-surface itself is untouched (a fixed token,
- * not swapped by theme-light) so the seamless match with TrustStrip's
- * background above it is unaffected.
+ * shared with TrustStrip's background and Hero's outer frame) so the
+ * seamless match across all three sections is unaffected.
  *
- * The 5th (flagship "ai") card spans the remaining 2 columns of row 2 on a
- * 3-column desktop grid so the layout fills evenly instead of leaving an
- * orphan single card.
+ * "AI & Automation" is reordered to the front here (SERVICE_COLUMNS itself
+ * stays in its original order since the mega menu's Core Services list
+ * depends on it) and rendered as a wide, dark feature card — reusing the
+ * mega menu's own featured-card gradient — spanning the other 2 columns of
+ * row 1 so it visibly leads and stands out from the 4 uniform cards after
+ * it, instead of just carrying a small badge.
  */
-function ServiceCard({ col, index }: { col: (typeof SERVICE_COLUMNS)[number]; index: number }) {
-  const interactive = useMotionAllowed();
-  const cardRef = useRef<HTMLDivElement>(null);
+const AI_COLUMN = SERVICE_COLUMNS.find((c) => c.id === "ai")!;
+const ORDERED_COLUMNS = [AI_COLUMN, ...SERVICE_COLUMNS.filter((c) => c.id !== "ai")];
 
+function useCardTilt(cardRef: React.RefObject<HTMLDivElement | null>, degrees: number) {
+  const interactive = useMotionAllowed();
   useEffect(() => {
     const card = cardRef.current;
     if (!card || !interactive) return;
@@ -39,8 +43,8 @@ function ServiceCard({ col, index }: { col: (typeof SERVICE_COLUMNS)[number]; in
       const px = (e.clientX - r.left) / r.width;
       const py = (e.clientY - r.top) / r.height;
       gsap.to(card, {
-        rotationY: (px - 0.5) * 6,
-        rotationX: -(py - 0.5) * 6,
+        rotationY: (px - 0.5) * degrees,
+        rotationX: -(py - 0.5) * degrees,
         duration: 0.6,
         ease: "power3.out",
         overwrite: "auto",
@@ -58,33 +62,29 @@ function ServiceCard({ col, index }: { col: (typeof SERVICE_COLUMNS)[number]; in
       card.removeEventListener("pointerenter", onEnter);
       card.removeEventListener("pointerleave", onLeave);
     };
-  }, [interactive]);
+  }, [interactive, cardRef, degrees]);
+}
+
+function ServiceCard({ col, displayNumber }: { col: (typeof SERVICE_COLUMNS)[number]; displayNumber: string }) {
+  const cardRef = useRef<HTMLDivElement>(null);
+  useCardTilt(cardRef, 6);
 
   const visibleLinks = col.links.slice(0, 3);
   const moreCount = col.links.length - visibleLinks.length;
 
   return (
     <div className="h-full" style={{ perspective: "900px" }}>
-      <Spotlight
-        color="rgba(24, 24, 27, 0.05)"
-        radius={360}
-        className="h-full"
-      >
+      <Spotlight color="rgba(24, 24, 27, 0.05)" radius={360} className="h-full">
         <div
           ref={cardRef}
           className="relative flex h-full flex-col rounded-3xl border border-hairline bg-canvas p-7 transition-[border-color,box-shadow] duration-300 hover:border-aurora-violet/20 hover:shadow-[0_20px_50px_rgba(9,9,11,0.08)] lg:p-8"
         >
           <div className="relative z-10 flex items-start justify-between">
-            <span className="font-urbanist text-sm font-semibold text-ink-faint">{col.number}</span>
-            {col.flagship && (
-              <span className="rounded-full border border-hairline px-2 py-0.5 font-urbanist text-[10px] font-bold uppercase tracking-wide text-aurora-amber-dark">
-                New
-              </span>
-            )}
+            <span className="font-urbanist text-sm font-semibold text-ink-faint">{displayNumber}</span>
           </div>
 
-          <span className="mega-icon-tile relative z-10 mt-5 flex h-11 w-11 items-center justify-center rounded-xl text-aurora-indigo">
-            <Icon name={SERVICE_ICONS[col.id]} size={19} />
+          <span className="mega-icon-tile relative z-10 mt-5 flex h-12 w-12 items-center justify-center rounded-xl text-aurora-indigo">
+            <Icon name={SERVICE_ICONS[col.id]} size={20} />
           </span>
 
           <Link href={col.href} className="group/title relative z-10 mt-5 inline-flex items-start gap-1.5">
@@ -112,9 +112,7 @@ function ServiceCard({ col, index }: { col: (typeof SERVICE_COLUMNS)[number]; in
                 </Link>
               </li>
             ))}
-            {moreCount > 0 && (
-              <li className="px-1.5 pt-1 font-urbanist text-[12px] text-ink-faint">+{moreCount} more</li>
-            )}
+            {moreCount > 0 && <li className="px-1.5 pt-1 font-urbanist text-[12px] text-ink-faint">+{moreCount} more</li>}
           </ul>
         </div>
       </Spotlight>
@@ -122,9 +120,69 @@ function ServiceCard({ col, index }: { col: (typeof SERVICE_COLUMNS)[number]; in
   );
 }
 
+function FeaturedServiceCard({ col }: { col: (typeof SERVICE_COLUMNS)[number] }) {
+  const cardRef = useRef<HTMLDivElement>(null);
+  useCardTilt(cardRef, 4);
+
+  return (
+    <div className="h-full" style={{ perspective: "1100px" }}>
+      <div
+        ref={cardRef}
+        className="mega-feature-card relative flex h-full flex-col overflow-hidden rounded-3xl p-7 lg:flex-row lg:items-center lg:gap-10 lg:p-10"
+      >
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 text-white opacity-[0.04]"
+          style={{ backgroundImage: "url(/media/hex-pattern-tile.svg)", backgroundSize: "112px 194px" }}
+        />
+
+        <div className="relative z-10 flex-1">
+          <div className="flex items-center gap-3">
+            <span className="font-urbanist text-sm font-semibold text-white/40">01</span>
+            <span className="rounded-full bg-white/10 px-2.5 py-0.5 font-urbanist text-[10px] font-bold uppercase tracking-wide text-white">
+              Featured
+            </span>
+          </div>
+
+          <span className="mt-5 flex h-12 w-12 items-center justify-center rounded-xl bg-white/10 text-white lg:mt-6">
+            <Icon name={SERVICE_ICONS[col.id]} size={20} />
+          </span>
+
+          <Link href={col.href} className="group/title relative z-10 mt-5 inline-flex items-start gap-2 lg:mt-6">
+            <h3 className="font-urbanist text-2xl font-bold leading-snug tracking-tight text-white sm:text-3xl">
+              {col.title}
+            </h3>
+            <ArrowRight
+              size={20}
+              strokeWidth={2}
+              className="mt-2 shrink-0 text-white/60 transition-transform duration-200 group-hover/title:translate-x-1 group-hover/title:text-white"
+            />
+          </Link>
+
+          <p className="relative z-10 mt-3 max-w-md font-urbanist text-[15px] leading-relaxed text-white/70">{col.blurb}</p>
+        </div>
+
+        <ul className="relative z-10 mt-7 flex-1 space-y-1 lg:mt-0 lg:max-w-sm">
+          {col.links.map((l) => (
+            <li key={l.href}>
+              <Link
+                href={l.href}
+                className="group/row flex items-center gap-2.5 rounded-xl px-3 py-2.5 font-urbanist text-[13.5px] font-medium text-white/75 transition-colors duration-200 hover:bg-white/[0.08] hover:text-white"
+              >
+                <Icon name={l.icon} size={14} className="shrink-0 text-white/50" />
+                <span className="truncate">{l.label}</span>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  );
+}
+
 export default function ServicePillars() {
   return (
-    <section className="theme-light bg-light-surface py-16 lg:py-32" aria-labelledby="services-heading">
+    <section className="theme-light bg-light-surface py-16 lg:py-24" aria-labelledby="services-heading">
       <div className="mx-auto max-w-7xl px-6 lg:px-10">
         <Reveal>
           <p className="mb-3 inline-flex items-center gap-2.5 font-urbanist text-sm font-medium uppercase tracking-[0.25em] text-ink-dim">
@@ -143,14 +201,18 @@ export default function ServicePillars() {
         </Reveal>
 
         <div className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {SERVICE_COLUMNS.map((col, i) => (
-            <Reveal key={col.id} delay={i * 80} className={col.flagship ? "sm:col-span-2 lg:col-span-2" : undefined}>
-              <ServiceCard col={col} index={i} />
+          {ORDERED_COLUMNS.map((col, i) => (
+            <Reveal key={col.id} delay={i * 80} className={col.id === "ai" ? "sm:col-span-2 lg:col-span-2" : undefined}>
+              {col.id === "ai" ? (
+                <FeaturedServiceCard col={col} />
+              ) : (
+                <ServiceCard col={col} displayNumber={String(i + 1).padStart(2, "0")} />
+              )}
             </Reveal>
           ))}
         </div>
 
-        <Reveal delay={SERVICE_COLUMNS.length * 80}>
+        <Reveal delay={ORDERED_COLUMNS.length * 80}>
           <div className="mt-12">
             <Link
               href="/services"

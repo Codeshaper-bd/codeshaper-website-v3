@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { MapPin } from "lucide-react";
 import gsap from "gsap";
 import Reveal from "@/components/system/Reveal";
 import { useMotionAllowed } from "@/lib/motion";
@@ -41,7 +42,7 @@ const CLIENTS = [
   "Regray Stone",
 ];
 
-const PROOF = ["Fast, transparent delivery", "Senior engineers only", "Clear scope before any estimate"];
+const REGIONS = ["USA", "Canada", "Europe"];
 
 function ClientCard({ name }: { name: string }) {
   const interactive = useMotionAllowed();
@@ -154,12 +155,13 @@ export default function TrustStrip() {
               </h2>
             </div>
             <ul className="flex flex-wrap gap-2.5">
-              {PROOF.map((p) => (
+              {REGIONS.map((r) => (
                 <li
-                  key={p}
-                  className="rounded-full border border-hairline bg-canvas px-3.5 py-1.5 font-urbanist text-[12px] font-medium text-ink-dim transition-colors duration-300 hover:border-aurora-violet/30 hover:text-ink"
+                  key={r}
+                  className="flex items-center gap-1.5 rounded-full border border-hairline bg-canvas px-3.5 py-1.5 font-urbanist text-[12px] font-medium text-ink-dim transition-colors duration-300 hover:border-aurora-violet/30 hover:text-ink"
                 >
-                  {p}
+                  <MapPin size={12} strokeWidth={2} className="text-ink-faint" />
+                  {r}
                 </li>
               ))}
             </ul>
