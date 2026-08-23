@@ -104,7 +104,7 @@ function ServiceCard({ col, displayNumber }: { col: (typeof SERVICE_COLUMNS)[num
 
   return (
     <div className="h-full" style={{ perspective: "900px" }}>
-      <Spotlight color="rgba(24, 24, 27, 0.05)" radius={360} className="h-full">
+      <Spotlight color="rgba(24, 24, 27, 0.05)" radius={360} className="h-full rounded-[28px] bg-[#fafafa]">
         <div
           ref={cardRef}
           className="relative flex h-full flex-col rounded-[28px] border border-hairline bg-[#fafafa] p-7 transition-[border-color,box-shadow] duration-300 hover:border-aurora-violet/20 hover:shadow-[0_20px_50px_rgba(9,9,11,0.08)] lg:p-8"
@@ -157,7 +157,7 @@ function FeaturedServiceCard({ col }: { col: (typeof SERVICE_COLUMNS)[number] })
   useCardTilt(cardRef, 4);
 
   return (
-    <div className="h-full" style={{ perspective: "1100px" }}>
+    <div className="h-full overflow-hidden rounded-[28px] bg-[#0b0f19]" style={{ perspective: "1100px" }}>
       <div
         ref={cardRef}
         className="mega-feature-card relative flex h-full flex-col overflow-hidden rounded-[28px] p-7 lg:flex-row lg:items-center lg:gap-10 lg:p-10"
