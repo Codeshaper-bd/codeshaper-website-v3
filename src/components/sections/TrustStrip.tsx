@@ -121,10 +121,10 @@ function ClientCard({ name }: { name: string }) {
 
 export default function TrustStrip() {
   return (
-    <div className="bg-[#edecec] p-3 sm:p-4">
+    <div className="bg-[#fafafa] px-3 pt-3 sm:px-4 sm:pt-4">
       <section
         aria-label="Clients and partners"
-        className="theme-light relative overflow-hidden rounded-[32px] bg-canvas py-16 font-urbanist shadow-[0_24px_70px_rgba(11,15,25,0.08),0_4px_14px_rgba(11,15,25,0.04)] lg:py-20"
+        className="theme-light relative overflow-hidden rounded-t-[32px] bg-canvas py-12 font-urbanist shadow-[0_24px_70px_rgba(11,15,25,0.08),0_4px_14px_rgba(11,15,25,0.04)] lg:py-20"
       >
         {/* subtle texture, same asset Hero uses, so the section visibly shares Hero's material language */}
         <div
@@ -137,11 +137,11 @@ export default function TrustStrip() {
           <Reveal>
             <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
               <div>
-                <p className="mb-3 inline-flex items-center gap-2.5 font-urbanist text-[11px] font-medium uppercase tracking-[0.28em] text-ink-dim">
+                <p className="mb-2.5 inline-flex items-center gap-2.5 font-urbanist text-[11px] font-medium uppercase tracking-[0.28em] text-ink-dim">
                   <span className="h-1.5 w-1.5 rounded-full bg-aurora-amber" />
                   Selected Clients
                 </p>
-                <h2 className="max-w-lg font-urbanist text-4xl font-bold leading-tight tracking-tight text-ink sm:text-5xl">
+                <h2 className="font-urbanist text-[20px] font-bold leading-tight tracking-tight text-ink sm:text-[32px] lg:text-[40px]">
                   Trusted By Fast-Growing Teams
                   <br />
                   <span className="text-ink-dim">From Startups to Enterprises</span>
@@ -161,7 +161,10 @@ export default function TrustStrip() {
           </Reveal>
 
           <Reveal delay={100}>
-            <div className="mt-10 grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-8">
+            <div
+              className="mt-8 grid grid-flow-col grid-rows-2 gap-3 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] auto-cols-[40vw] sm:auto-cols-[190px] lg:auto-cols-fr lg:grid-flow-row lg:grid-cols-8 lg:overflow-visible [&::-webkit-scrollbar]:hidden"
+              style={{ touchAction: "pan-x" }}
+            >
               {CLIENTS.map((name) => (
                 <ClientCard key={name} name={name} />
               ))}
