@@ -121,7 +121,7 @@ function ClientCard({ name }: { name: string }) {
 
 export default function TrustStrip() {
   return (
-    <div className="bg-[#fafafa] px-3 pt-3 sm:px-4 sm:pt-4">
+    <div className="bg-[#fafafa] px-3 sm:px-4">
       <section
         aria-label="Clients and partners"
         className="theme-light relative overflow-hidden rounded-t-[32px] bg-canvas py-12 font-urbanist shadow-[0_24px_70px_rgba(11,15,25,0.08),0_4px_14px_rgba(11,15,25,0.04)] lg:py-20"
