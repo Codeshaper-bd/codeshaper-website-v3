@@ -42,7 +42,8 @@ gsap.registerPlugin(ScrollTrigger, SplitText);
  * (muted, paused via the same `reduced` check).
  */
 const EYEBROW = "AI Automation · Digital Products · Scalable Platforms";
-const TITLE = "From AI automation to scalable digital products, we build the future.";
+const TITLE_LINE_1 = "From AI automation to scalable";
+const TITLE_LINE_2 = "digital products, we build the future.";
 const SUBTITLE =
   "We design and engineer AI solutions, digital products, and scalable platforms that transform the way businesses operate and grow.";
 
@@ -199,8 +200,8 @@ export default function Hero() {
           ref={meshRef}
           className="absolute inset-[-4%]"
           style={{
-            WebkitMaskImage: "linear-gradient(to bottom, transparent 0%, transparent 12%, black 62%)",
-            maskImage: "linear-gradient(to bottom, transparent 0%, transparent 12%, black 62%)",
+            WebkitMaskImage: "linear-gradient(to bottom, transparent 0%, transparent 6%, black 34%)",
+            maskImage: "linear-gradient(to bottom, transparent 0%, transparent 6%, black 34%)",
           }}
         >
           <video
@@ -221,7 +222,7 @@ export default function Hero() {
             className="absolute inset-0"
             style={{
               background:
-                "radial-gradient(120% 100% at 50% 38%, transparent 38%, rgba(9,9,11,0.1) 100%)",
+                "radial-gradient(120% 100% at 50% 38%, transparent 44%, rgba(9,9,11,0.09) 100%)",
             }}
           />
         </div>
@@ -240,16 +241,6 @@ export default function Hero() {
           }}
         />
 
-        {/* copy scrim: keeps the headline readable over the video */}
-        <div
-          aria-hidden
-          className="absolute left-1/2 top-1/2 h-[62vh] w-[min(96vw,1040px)] -translate-x-1/2 -translate-y-1/2"
-          style={{
-            background:
-              "radial-gradient(52% 46% at 50% 48%, rgba(255,255,255,0.75) 0%, rgba(255,255,255,0.4) 60%, transparent 100%)",
-          }}
-        />
-
         {/* 4 — hex texture: pointer-parallax layer 3 (subtlest) */}
         <div
           ref={hexRef}
@@ -263,6 +254,25 @@ export default function Hero() {
           ref={copyRef}
           className="relative z-10 mx-auto w-full max-w-4xl px-6 py-24 text-center lg:px-10"
         >
+          {/* copy scrim: keeps the headline readable over the video. Sized to
+              copyRef's own box (not vh/vw units) so it tracks the actual text
+              content at every breakpoint/aspect-ratio instead of drifting out
+              of alignment on tall or narrow viewports. Also doubles as cover
+              for the TEMPORARY placeholder video's centered stock watermark
+              (baked into every frame, not just an intro card — confirmed by
+              sampling the clip) — kept at its original strength for that
+              reason; the "more visible video" request is answered by the top
+              mask below instead, which only affects the watermark-free band
+              behind the navbar. */}
+          <div
+            aria-hidden
+            className="pointer-events-none absolute -inset-10 -z-10 sm:-inset-16 lg:-inset-24"
+            style={{
+              background:
+                "radial-gradient(42% 48% at 50% 50%, rgba(255,255,255,0.86) 0%, rgba(255,255,255,0.5) 55%, transparent 90%)",
+            }}
+          />
+
           <p
             ref={badgeRef}
             className="mb-7 inline-flex items-center gap-2.5 rounded-full border border-hairline bg-canvas/40 px-4 py-1.5 font-urbanist text-[11px] uppercase tracking-[0.28em] text-ink-dim backdrop-blur-sm"
@@ -273,14 +283,16 @@ export default function Hero() {
 
           <h1
             ref={headlineRef}
-            className="font-urbanist text-[32px] font-bold leading-[1.12] tracking-tight text-ink sm:text-[44px] lg:text-[56px]"
+            className="font-urbanist text-[32px] font-bold leading-[1.14] tracking-tight text-ink sm:text-[42px] lg:text-[52px]"
           >
-            {TITLE}
+            {TITLE_LINE_1}
+            <br />
+            {TITLE_LINE_2}
           </h1>
 
           <p
             ref={subRef}
-            className="mx-auto mt-7 max-w-2xl font-urbanist text-lg leading-relaxed text-ink-dim sm:text-xl"
+            className="mx-auto mt-7 max-w-2xl font-urbanist text-base leading-relaxed text-ink-dim"
           >
             {SUBTITLE}
           </p>

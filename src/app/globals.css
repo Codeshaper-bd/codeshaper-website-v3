@@ -256,8 +256,8 @@ body {
    Constraints). Icon/arrow glyphs stay indigo (non-text UI, 3:1 minimum). */
 .mega-col-label {
   font-family: var(--font-urbanist);
-  font-size: 13px;
-  font-weight: 600;
+  font-size: 14px;
+  font-weight: 700;
   letter-spacing: -0.01em;
   color: var(--color-aurora-violet);
 }
@@ -520,9 +520,9 @@ form[data-show-errors="true"] :invalid {
    on the panel surface. */
 .menu-section-label {
   color: var(--color-menu-label);
-  font-size: 10.5px;
+  font-size: 11.5px;
   font-weight: 600;
-  letter-spacing: 0.22em;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
 }
 

@@ -41,7 +41,7 @@ export default function MegaPanel() {
                           </span>
                         )}
                       </span>
-                      <span className="mt-0.5 block truncate font-urbanist text-[12px] leading-snug text-ink-dim">
+                      <span className="mt-0.5 block truncate font-urbanist text-[13px] leading-snug text-ink-dim">
                         {col.tags}
                       </span>
                     </span>
@@ -65,13 +65,13 @@ export default function MegaPanel() {
               <span className="mb-3.5 flex h-9 w-9 items-center justify-center rounded-xl bg-white/[0.12] text-white">
                 <Icon name={SERVICES_FEATURED.icon} size={17} />
               </span>
-              <span className="mb-1.5 block font-urbanist text-[9.5px] font-bold uppercase tracking-[0.1em] text-white/50">
+              <span className="mb-1.5 block font-urbanist text-[10.5px] font-bold uppercase tracking-[0.1em] text-white/50">
                 {SERVICES_FEATURED.eyebrow}
               </span>
               <span className="block font-urbanist text-[17px] font-bold leading-tight tracking-tight text-white">
                 {SERVICES_FEATURED.title}
               </span>
-              <span className="mt-1.5 block font-urbanist text-[12.5px] leading-relaxed text-white/85">
+              <span className="mt-1.5 block font-urbanist text-[13.5px] leading-relaxed text-white/85">
                 {SERVICES_FEATURED.desc}
               </span>
             </Link>
@@ -80,7 +80,7 @@ export default function MegaPanel() {
           <div className="flex flex-wrap gap-1.5">
             {SERVICES_QUICK_ACCESS.map((c) => (
               <Nav.Link asChild key={c.href}>
-                <Link href={c.href} className="mega-chip inline-flex items-center rounded-full px-3 py-1.5 font-urbanist text-[11.5px] font-semibold">
+                <Link href={c.href} className="mega-chip inline-flex items-center rounded-full px-3 py-1.5 font-urbanist text-[12.5px] font-semibold">
                   {c.label}
                 </Link>
               </Nav.Link>
@@ -91,21 +91,21 @@ export default function MegaPanel() {
 
       {/* Footer bar */}
       <div className="mt-5 flex flex-wrap items-center justify-between gap-4 rounded-2xl bg-canvas-raised px-5 py-3.5">
-        <p className="font-urbanist text-[11.5px] text-ink-dim">
+        <p className="font-urbanist text-[12.5px] text-ink-dim">
           <span className="font-semibold text-ink">5 services</span>
           <span className="mx-2 inline-block h-[3px] w-[3px] rounded-full bg-hairline-strong align-middle" aria-hidden />
           Full-stack digital product studio
         </p>
         <div className="flex items-center gap-4">
           <Nav.Link asChild>
-            <Link href="/work" className="font-urbanist text-[12px] text-ink-dim transition-colors hover:text-ink">
+            <Link href="/work" className="font-urbanist text-[13px] text-ink-dim transition-colors hover:text-ink">
               View Our Work →
             </Link>
           </Nav.Link>
           <Nav.Link asChild>
             <Link
               href="/services"
-              className="rounded-full border border-aurora-indigo/30 bg-aurora-indigo/5 px-4 py-2 font-urbanist text-[12px] font-semibold text-aurora-violet transition-colors hover:border-aurora-violet hover:bg-aurora-violet hover:text-white"
+              className="rounded-full border border-aurora-indigo/30 bg-aurora-indigo/5 px-4 py-2 font-urbanist text-[13px] font-semibold text-aurora-violet transition-colors hover:border-aurora-violet hover:bg-aurora-violet hover:text-white"
             >
               Explore All Services →
             </Link>

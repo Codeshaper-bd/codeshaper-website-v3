@@ -11,6 +11,9 @@ import IndustriesMegaPanel from "./IndustriesMegaPanel";
 import MobileMenu from "./MobileMenu";
 import Magnetic from "@/components/system/Magnetic";
 
+const HIDE_THRESHOLD = 96; // px scrolled before the bar is allowed to hide
+const DIRECTION_SLOP = 6; // px of scroll delta before a direction registers
+
 /**
  * Header.
  *
@@ -34,18 +37,36 @@ const triggerCls =
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
+  const [hidden, setHidden] = useState(false);
   const [openValue, setOpenValue] = useState("");
   const [mobileOpen, setMobileOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
+  const lastY = useRef(0);
 
+  // Floating bar: always visible near the top; once scrolled past the
+  // threshold it hides while scrolling down (more room to read) and
+  // reappears the moment the user scrolls back up.
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 80);
+    lastY.current = window.scrollY;
+    const onScroll = () => {
+      const y = window.scrollY;
+      setScrolled(y > 80);
+      if (y < HIDE_THRESHOLD) {
+        setHidden(false);
+      } else if (y > lastY.current + DIRECTION_SLOP) {
+        setHidden(true);
+      } else if (y < lastY.current - DIRECTION_SLOP) {
+        setHidden(false);
+      }
+      lastY.current = y;
+    };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
   const megaOpen = openValue === "services" || openValue === "industries";
+  const forceVisible = Boolean(openValue) || mobileOpen;
 
   return (
     <>
@@ -55,7 +76,11 @@ export default function Navbar() {
         className={`nav-scrim fixed inset-0 z-30 ${megaOpen ? "opacity-100" : "pointer-events-none opacity-0"}`}
       />
 
-      <header className="theme-light fixed inset-x-0 top-0 z-50 p-4 font-urbanist sm:p-5">
+      <header
+        className={`theme-light fixed inset-x-0 top-0 z-50 p-5 font-urbanist transition-transform duration-300 ease-out sm:p-7 ${
+          hidden && !forceVisible ? "-translate-y-[calc(100%+16px)]" : "translate-y-0"
+        }`}
+      >
         <div
           className={`mx-auto max-w-[1180px] rounded-full border border-hairline bg-white/95 backdrop-blur-xl transition-shadow duration-[250ms] ${
             scrolled || openValue || mobileOpen ? "shadow-[0_8px_30px_rgba(11,15,25,0.10)]" : "shadow-none"
@@ -102,7 +127,7 @@ export default function Navbar() {
                       />
                     </Nav.Trigger>
                     <Nav.Content
-                      className="mega-panel fixed left-1/2 top-[94px] z-40 w-[min(calc(100vw-48px),1180px)] -translate-x-1/2 data-[state=closed]:hidden"
+                      className="mega-panel fixed left-1/2 top-[102px] z-40 w-[min(calc(100vw-48px),1180px)] -translate-x-1/2 data-[state=closed]:hidden"
                       style={{ position: "fixed" }}
                     >
                       <MegaPanel />
@@ -119,7 +144,7 @@ export default function Navbar() {
                       />
                     </Nav.Trigger>
                     <Nav.Content
-                      className="mega-panel fixed left-1/2 top-[94px] z-40 w-[min(calc(100vw-48px),1180px)] -translate-x-1/2 data-[state=closed]:hidden"
+                      className="mega-panel fixed left-1/2 top-[102px] z-40 w-[min(calc(100vw-48px),1180px)] -translate-x-1/2 data-[state=closed]:hidden"
                       style={{ position: "fixed" }}
                     >
                       <IndustriesMegaPanel />
