@@ -5,11 +5,12 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { SplitText } from "gsap/SplitText";
 import Magnetic from "@/components/system/Magnetic";
 import HeroRings from "./HeroRings";
 import { usePrefersReducedMotion, useMotionAllowed } from "@/lib/motion";
 
-gsap.registerPlugin(ScrollTrigger);
+gsap.registerPlugin(ScrollTrigger, SplitText);
 
 /**
  * Hero — full-bleed video, centered copy, GSAP-driven, inset rounded card.
@@ -29,10 +30,11 @@ gsap.registerPlugin(ScrollTrigger);
  *   4. radial glow "mark" — GSAP pointer-parallax + scroll rotate/scale/fade
  *   5. hex texture — GSAP pointer-parallax (subtlest layer)
  *   6. copy scrim (keeps headline legible over the video)
- *   7. copy: eyebrow, headline (word-by-word blur/rise reveal), subhead, CTAs
+ *   7. copy: eyebrow, headline (SplitText masked word reveal), subhead, CTAs
  *
  * Every animated property here is GSAP-owned: a single entrance timeline
- * (badge → headline words, staggered → subhead → CTAs), gsap.quickTo()
+ * (badge → SplitText-split headline words, staggered → subhead → CTAs),
+ * gsap.quickTo()
  * driving the background layers' pointer-parallax, and the existing
  * ScrollTrigger scrub for the scroll pull-back. Reduced motion: everything
  * renders in its final state immediately, no timeline, no parallax loop,
@@ -40,7 +42,7 @@ gsap.registerPlugin(ScrollTrigger);
  * (muted, paused via the same `reduced` check).
  */
 const EYEBROW = "AI Automation · Digital Products · Scalable Platforms";
-const TITLE_WORDS = "From AI automation to scalable digital products, we build the future.".split(" ");
+const TITLE = "From AI automation to scalable digital products, we build the future.";
 const SUBTITLE =
   "We design and engineer AI solutions, digital products, and scalable platforms that transform the way businesses operate and grow.";
 
@@ -55,7 +57,6 @@ export default function Hero() {
   const hexRef = useRef<HTMLDivElement>(null);
   const badgeRef = useRef<HTMLParagraphElement>(null);
   const headlineRef = useRef<HTMLHeadingElement>(null);
-  const wordRefs = useRef<(HTMLSpanElement | null)[]>([]);
   const subRef = useRef<HTMLParagraphElement>(null);
   const ctaRef = useRef<HTMLDivElement>(null);
   const [scrolled, setScrolled] = useState(false);
@@ -96,22 +97,19 @@ export default function Hero() {
   }, []);
 
   // entrance choreography — one GSAP timeline: badge, then headline words
-  // masked-slide-up (each word sits behind its own overflow-hidden window
-  // and rises into view — no blur, no background-clip:text; both broke or
-  // looked wrong in earlier attempts), then subhead, then CTAs
+  // masked-slide-up via GSAP's own SplitText (mask: "words" auto-wraps each
+  // word in an overflow:clip mask — the official version of what was
+  // hand-rolled here before), then subhead, then CTAs.
+  // Reduced motion: skip the split entirely — plain, unsplit text is
+  // already fully visible with no JS involved.
   useEffect(() => {
-    if (!sectionRef.current) return;
-    const words = wordRefs.current.filter(Boolean);
-    if (reduced) {
-      gsap.set(words, { yPercent: 0 });
-      gsap.set([badgeRef.current, subRef.current, ctaRef.current], { opacity: 1, y: 0 });
-      return;
-    }
+    if (reduced || !sectionRef.current || !headlineRef.current) return;
     const ctx = gsap.context(() => {
+      const split = SplitText.create(headlineRef.current, { type: "words", mask: "words" });
       gsap
         .timeline({ defaults: { ease: "expo.out" }, delay: 0.15 })
         .from(badgeRef.current, { opacity: 0, y: 18, duration: 0.6 })
-        .from(words, { yPercent: 115, duration: 0.85, stagger: 0.055 }, "-=0.35")
+        .from(split.words, { yPercent: 115, duration: 0.85, stagger: 0.055 }, "-=0.35")
         .from(subRef.current, { opacity: 0, y: 18, duration: 0.6 }, "-=0.55")
         .from(ctaRef.current, { opacity: 0, y: 16, duration: 0.55 }, "-=0.4");
     }, sectionRef);
@@ -277,18 +275,7 @@ export default function Hero() {
             ref={headlineRef}
             className="font-urbanist text-[32px] font-bold leading-[1.12] tracking-tight text-ink sm:text-[44px] lg:text-[56px]"
           >
-            {TITLE_WORDS.map((word, i) => (
-              <span key={i} className="mr-[0.28em] inline-block overflow-hidden pb-1 -mb-1 align-bottom">
-                <span
-                  ref={(el) => {
-                    wordRefs.current[i] = el;
-                  }}
-                  className="inline-block"
-                >
-                  {word}
-                </span>
-              </span>
-            ))}
+            {TITLE}
           </h1>
 
           <p
