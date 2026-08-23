@@ -216,9 +216,13 @@ function FeaturedServiceCard({ col }: { col: (typeof SERVICE_COLUMNS)[number] })
 
 export default function ServicePillars() {
   return (
-    <section className="theme-light bg-light-surface py-16 lg:py-24" aria-labelledby="services-heading">
-      <div className="mx-auto max-w-7xl px-6 lg:px-10">
-        <Reveal>
+    <div className="bg-light-surface p-3 sm:p-4">
+      <section
+        className="theme-light relative overflow-hidden rounded-[32px] bg-canvas py-16 lg:py-24"
+        aria-labelledby="services-heading"
+      >
+        <div className="mx-auto max-w-7xl px-6 lg:px-10">
+          <Reveal>
           <p className="mb-3 inline-flex items-center gap-2.5 font-urbanist text-sm font-medium uppercase tracking-[0.25em] text-ink-dim">
             <span className="h-1.5 w-1.5 rounded-full bg-aurora-amber" />
             What we do
@@ -257,7 +261,8 @@ export default function ServicePillars() {
             </Link>
           </div>
         </Reveal>
-      </div>
-    </section>
+        </div>
+      </section>
+    </div>
   );
 }
