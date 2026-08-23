@@ -31,10 +31,10 @@ export default function Home() {
         <Hero />
         <TrustStrip />
         <ServicePillars />
+        <CaseStudies />
         <AboutStudio />
         <AiSpotlight />
         <DeliverySystem />
-        <CaseStudies />
         <Industries />
         <EngagementModels />
         <Locations />
