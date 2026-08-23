@@ -42,13 +42,16 @@ const ASSURANCE = [
 function MarqueeRow({ names, reverse = false }: { names: string[]; reverse?: boolean }) {
   const row = [...names, ...names]; // duplicated for seamless wrap
   return (
-    <div className="marquee-track flex w-max items-center gap-4" style={reverse ? { animationDirection: "reverse" } : undefined}>
+    <div
+      className="marquee-track flex w-max items-center gap-4"
+      style={reverse ? { animationDirection: "reverse" } : undefined}
+    >
       {row.map((name, i) => (
         <span
           key={`${name}-${i}`}
-          className="flex items-center gap-2.5 whitespace-nowrap rounded-full border border-hairline bg-canvas px-5 py-2.5 font-urbanist text-[15px] font-semibold text-ink-dim shadow-[0_1px_2px_rgba(9,9,11,0.04)] transition-all duration-300 hover:-translate-y-0.5 hover:border-aurora-violet/30 hover:text-ink hover:shadow-[0_8px_20px_rgba(9,9,11,0.08)]"
+          className="flex items-center gap-2.5 whitespace-nowrap rounded-full border border-white/10 bg-white/[0.04] px-5 py-2.5 font-urbanist text-[15px] font-semibold text-white/70 backdrop-blur-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-white/25 hover:bg-white/[0.08] hover:text-white"
         >
-          <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-aurora-violet/[0.08] font-urbanist text-[11px] font-bold text-aurora-violet">
+          <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-white/10 font-urbanist text-[11px] font-bold text-white">
             {name.charAt(0)}
           </span>
           {name}
@@ -101,10 +104,25 @@ export default function TrustStrip() {
 
       <div className="mx-auto max-w-7xl px-6 lg:px-10">
         <Reveal delay={160}>
-          <div className="mt-14 rounded-3xl border border-hairline bg-canvas-raised p-6 sm:p-8">
-            <p className="menu-section-label mb-6 px-1 font-urbanist">Brands we&apos;ve shipped for</p>
+          <div className="mega-feature-card relative mt-14 overflow-hidden rounded-[28px] p-8 sm:p-10 lg:p-12">
             <div
-              className="relative -mx-6 space-y-4 overflow-hidden sm:-mx-8"
+              aria-hidden
+              className="pointer-events-none absolute inset-0 text-white opacity-[0.05]"
+              style={{ backgroundImage: "url(/media/hex-pattern-tile.svg)", backgroundSize: "112px 194px" }}
+            />
+            <div className="relative flex flex-wrap items-end justify-between gap-6">
+              <p className="font-urbanist text-[10.5px] font-bold uppercase tracking-[0.2em] text-white/50">
+                Brands we&apos;ve shipped for
+              </p>
+              <p className="font-urbanist text-4xl font-bold leading-none tracking-tight text-white sm:text-5xl">
+                {allNames.length}
+                <span className="ml-2 align-middle font-urbanist text-[13px] font-medium normal-case tracking-normal text-white/50">
+                  brands and counting
+                </span>
+              </p>
+            </div>
+            <div
+              className="relative mt-9 -mx-8 space-y-4 overflow-hidden sm:-mx-10 lg:-mx-12"
               data-cursor="drag"
               aria-hidden
               style={{
