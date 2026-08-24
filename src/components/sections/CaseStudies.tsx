@@ -6,14 +6,27 @@ import { ArrowRight, ArrowLeft } from "lucide-react";
 import Reveal from "@/components/system/Reveal";
 
 /**
- * Success Stories — single draggable row of dark, premium cards, aligned
- * to the same max-w-7xl column as the section heading (both wrapped in an
- * identical `mx-auto max-w-7xl` + `px-6 lg:px-10`, so the first card's
- * left edge is pixel-exact with the heading's left edge). Dragging is
- * native scroll (`overflow-x: auto` + `scrollLeft`) driven by pointer
- * events for mouse/trackpad, with touch left to the browser's own
+ * Success Stories — single draggable row of dark, premium cards, full-bleed
+ * to the true browser viewport edge (matching the requested reference)
+ * rather than boxed inside the site's usual max-w-7xl. The first card's
+ * left edge still lines up exactly with the heading above it: the track
+ * measures the heading's actual rendered `left` offset on mount/resize
+ * and applies it as the track's own padding-left, so alignment holds at
+ * every breakpoint without duplicating Tailwind's max-w-7xl/mx-auto math
+ * by hand. The right side runs to the true viewport edge, hard-cut like
+ * the reference — no edge mask, since a soft fade only makes sense when
+ * clipped by an inset container, not the actual screen edge.
+ *
+ * Dragging is native scroll (`overflow-x: auto` + `scrollLeft`) driven by
+ * pointer events for mouse/trackpad, with touch left to the browser's own
  * panning — no ScrollTrigger, no page-scroll hijacking, nothing to
  * reconcile with the "no pinning anywhere" rule.
+ *
+ * `overflow-x: auto` on the track computes `overflow-y` to `auto` too per
+ * the CSS spec (an axis can't stay `visible` once the other isn't), which
+ * was clipping each card's hover lift/glow at the track's own box edge —
+ * fixed with generous vertical padding on the track so hover effects have
+ * room to render instead of getting cut off.
  *
  * Images are temporary: Picsum placeholder photos (deterministic per
  * seed, so they're stable across renders and distinct per card) — swap
@@ -31,7 +44,7 @@ type Story = {
   project: string;
   description: string;
   image: string;
-  category: string;
+  categories: string[];
   industry: string;
   stats: [Stat, Stat];
   accent: string;
@@ -42,8 +55,8 @@ const REAL_STORIES: Story[] = [
   {
     project: "Fennec",
     description: "A connected web and mobile platform for nightlife operations — venues, guests, events, memberships.",
-    image: "https://picsum.photos/seed/fennec-nightlife/800/600",
-    category: "Web App · Mobile App",
+    image: "https://picsum.photos/seed/fennec-nightlife/900/700",
+    categories: ["Web App", "Mobile App"],
     industry: "Nightlife & Hospitality",
     stats: [
       { value: "Web + App", label: "Platforms shipped" },
@@ -55,8 +68,8 @@ const REAL_STORIES: Story[] = [
   {
     project: "Essentialist",
     description: "A premium membership website with GSAP motion, CMS structure, and a polished application flow.",
-    image: "https://picsum.photos/seed/essentialist-travel/800/600",
-    category: "WordPress · GSAP",
+    image: "https://picsum.photos/seed/essentialist-travel/900/700",
+    categories: ["WordPress", "GSAP"],
     industry: "Luxury Travel",
     stats: [
       { value: "WordPress", label: "Platform" },
@@ -68,8 +81,8 @@ const REAL_STORIES: Story[] = [
   {
     project: "Acculance",
     description: "A SaaS-ready POS, inventory, and accounting platform for growing businesses.",
-    image: "https://picsum.photos/seed/acculance-pos/800/600",
-    category: "SaaS · POS",
+    image: "https://picsum.photos/seed/acculance-pos/900/700",
+    categories: ["SaaS", "POS"],
     industry: "Retail & Business Ops",
     stats: [
       { value: "3 Modules", label: "POS · Inventory · Accounting" },
@@ -85,8 +98,8 @@ const PLACEHOLDER_STORIES: Story[] = [
   {
     project: "Northwind Commerce",
     description: "Placeholder — a multi-brand storefront and checkout unified under one account and cart.",
-    image: "https://picsum.photos/seed/northwind-retail/800/600",
-    category: "eCommerce · Storefront",
+    image: "https://picsum.photos/seed/northwind-retail/900/700",
+    categories: ["eCommerce", "Storefront"],
     industry: "Retail",
     stats: [
       { value: "Multi-brand", label: "Storefront" },
@@ -98,8 +111,8 @@ const PLACEHOLDER_STORIES: Story[] = [
   {
     project: "Verdant Health",
     description: "Placeholder — a patient portal covering scheduling, records access, and billing in one experience.",
-    image: "https://picsum.photos/seed/verdant-health/800/600",
-    category: "Healthtech · Patient Portal",
+    image: "https://picsum.photos/seed/verdant-health/900/700",
+    categories: ["Healthtech", "Patient Portal"],
     industry: "Healthcare",
     stats: [
       { value: "Patient Portal", label: "Core module" },
@@ -111,8 +124,8 @@ const PLACEHOLDER_STORIES: Story[] = [
   {
     project: "Continuum Logistics",
     description: "Placeholder — real-time fleet visibility, route planning, and dispatch for daily operations.",
-    image: "https://picsum.photos/seed/continuum-logistics/800/600",
-    category: "Logistics · Fleet Ops",
+    image: "https://picsum.photos/seed/continuum-logistics/900/700",
+    categories: ["Logistics", "Fleet Ops"],
     industry: "Transportation & Logistics",
     stats: [
       { value: "Fleet Ops", label: "Core module" },
@@ -128,10 +141,10 @@ const STORIES: Story[] = [...REAL_STORIES, ...PLACEHOLDER_STORIES];
 function StoryCard({ story }: { story: Story }) {
   return (
     <article
-      className="group flex w-[340px] shrink-0 select-none flex-col overflow-hidden rounded-[28px] bg-[#141316] shadow-[0_20px_50px_rgba(9,9,11,0.16)] transition-[transform,box-shadow] duration-300 ease-out hover:-translate-y-1.5 hover:shadow-[0_28px_64px_var(--card-glow)] sm:w-[380px]"
-      style={{ "--card-glow": `${story.accent}3d` } as CSSProperties}
+      className="group flex w-[320px] shrink-0 select-none flex-col overflow-hidden rounded-[28px] bg-[#141316] shadow-[0_20px_50px_rgba(9,9,11,0.16)] transition-[transform,box-shadow] duration-300 ease-out hover:-translate-y-2 hover:shadow-[0_32px_70px_var(--card-glow)] sm:w-[380px]"
+      style={{ "--card-glow": `${story.accent}40` } as CSSProperties}
     >
-      <div className="relative h-[190px] shrink-0 overflow-hidden sm:h-[210px]">
+      <div className="relative h-[220px] shrink-0 overflow-hidden sm:h-[250px]">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={story.image}
@@ -153,13 +166,21 @@ function StoryCard({ story }: { story: Story }) {
       </div>
 
       <div className="flex flex-1 flex-col p-7 sm:p-8">
-        <p className="font-urbanist text-[11px] font-semibold uppercase tracking-[0.16em]" style={{ color: story.accent }}>
-          {story.category}
-        </p>
-        <h3 className="mt-2 font-urbanist text-xl font-bold text-white">{story.project}</h3>
+        <div className="flex flex-wrap gap-1.5">
+          {story.categories.map((c) => (
+            <span
+              key={c}
+              className="rounded-full border px-2.5 py-1 font-urbanist text-[10.5px] font-semibold uppercase tracking-[0.08em]"
+              style={{ color: story.accent, borderColor: `${story.accent}45` }}
+            >
+              {c}
+            </span>
+          ))}
+        </div>
+        <h3 className="mt-3.5 font-urbanist text-xl font-bold text-white sm:text-[22px]">{story.project}</h3>
         <p className="mt-2.5 font-urbanist text-[13.5px] leading-relaxed text-white/55">{story.description}</p>
 
-        <div className="mt-5 grid grid-cols-2 gap-4 border-y border-white/10 py-4">
+        <div className="mt-6 grid grid-cols-2 gap-4 border-y border-white/10 py-4">
           {story.stats.map((stat) => (
             <div key={stat.label}>
               <p className="font-urbanist text-[14.5px] font-bold leading-tight text-white">{stat.value}</p>
@@ -185,8 +206,33 @@ function StoryCard({ story }: { story: Story }) {
 }
 
 export default function CaseStudies() {
+  const headingRef = useRef<HTMLHeadingElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
   const draggedRef = useRef(false);
+
+  // Keep the track's left padding pixel-matched to the heading's own left
+  // edge, so the first card lines up with the heading even though the
+  // track itself is full-bleed (no max-w-7xl wrapper) and the heading's
+  // effective inset changes with viewport width via mx-auto centering.
+  useEffect(() => {
+    const track = trackRef.current;
+    const heading = headingRef.current;
+    if (!track || !heading) return;
+
+    const updateInset = () => {
+      const left = heading.getBoundingClientRect().left;
+      track.style.paddingLeft = `${Math.max(left, 0)}px`;
+    };
+
+    updateInset();
+    window.addEventListener("resize", updateInset);
+    const ro = new ResizeObserver(updateInset);
+    ro.observe(document.body);
+    return () => {
+      window.removeEventListener("resize", updateInset);
+      ro.disconnect();
+    };
+  }, []);
 
   useEffect(() => {
     const el = trackRef.current;
@@ -247,7 +293,7 @@ export default function CaseStudies() {
   };
 
   return (
-    <section className="theme-light relative bg-light-surface py-16 lg:py-24" aria-labelledby="work-heading">
+    <section className="theme-light relative overflow-x-hidden bg-light-surface py-16 lg:py-24" aria-labelledby="work-heading">
       <div className="mx-auto max-w-7xl px-6 lg:px-10">
         <Reveal>
           <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
@@ -256,7 +302,7 @@ export default function CaseStudies() {
                 <span className="h-1.5 w-1.5 rounded-full bg-aurora-amber" />
                 Success Stories
               </p>
-              <h2 id="work-heading" className="font-urbanist text-4xl font-bold leading-tight tracking-tight text-ink sm:text-5xl">
+              <h2 ref={headingRef} id="work-heading" className="font-urbanist text-4xl font-bold leading-tight tracking-tight text-ink sm:text-5xl">
                 Work that ships, every time.
               </h2>
               <Link
@@ -296,20 +342,14 @@ export default function CaseStudies() {
       </div>
 
       <Reveal>
-        <div className="mx-auto max-w-7xl">
-          <div
-            ref={trackRef}
-            className="no-scrollbar mt-12 flex cursor-grab gap-6 overflow-x-auto px-6 lg:px-10"
-            style={{
-              WebkitMaskImage: "linear-gradient(to right, black 0, black calc(100% - 40px), transparent 100%)",
-              maskImage: "linear-gradient(to right, black 0, black calc(100% - 40px), transparent 100%)",
-            }}
-          >
-            {STORIES.map((story) => (
-              <StoryCard key={story.project} story={story} />
-            ))}
-            <div className="w-6 shrink-0 lg:w-10" aria-hidden />
-          </div>
+        <div
+          ref={trackRef}
+          className="no-scrollbar mt-12 flex cursor-grab gap-6 overflow-x-auto py-6"
+        >
+          {STORIES.map((story) => (
+            <StoryCard key={story.project} story={story} />
+          ))}
+          <div className="w-6 shrink-0 sm:w-10" aria-hidden />
         </div>
       </Reveal>
     </section>
