@@ -37,7 +37,12 @@ export default function CustomCursor() {
       my = e.clientY;
       const t = e.target as Element | null;
       let next: typeof mode = "default";
-      if (t?.closest(TEXTY)) next = "text";
+      // Explicit opt-out for a nested real link/button inside a `data-cursor="drag"`
+      // row (e.g. a card's own CTA) — reuses "text" mode's full-suspend behavior
+      // so the element's own hover styling shows through with the native pointer,
+      // instead of the drag/link ring fighting it for attention.
+      if (t?.closest("[data-cursor='none']")) next = "text";
+      else if (t?.closest(TEXTY)) next = "text";
       else if (t?.closest("[data-cursor='drag']")) next = "drag";
       else if (t?.closest(CLICKABLE)) next = "link";
       if (next !== mode) {
