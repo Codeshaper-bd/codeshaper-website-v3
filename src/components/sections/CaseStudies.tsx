@@ -263,6 +263,13 @@ export default function CaseStudies() {
 
     const onPointerDown = (e: PointerEvent) => {
       if (e.pointerType !== "mouse") return;
+      // Don't start drag-tracking (and don't setPointerCapture) when the
+      // press lands on a real interactive element — capturing the pointer
+      // on the track interferes with that element's own click synthesis
+      // for a genuine mouse down→up sequence (confirmed in Testimonials'
+      // identical drag code: a raw `.click()` still worked, but a
+      // realistic mousedown/mouseup did not, until this exclusion existed).
+      if ((e.target as HTMLElement).closest("a, button")) return;
       dragging = true;
       draggedRef.current = false;
       startX = e.clientX;

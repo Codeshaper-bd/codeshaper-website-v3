@@ -10,6 +10,7 @@ import DeliverySystem from "@/components/sections/DeliverySystem";
 import CaseStudies from "@/components/sections/CaseStudies";
 import Industries from "@/components/sections/Industries";
 import EngagementModels from "@/components/sections/EngagementModels";
+import Testimonials from "@/components/sections/Testimonials";
 import Locations from "@/components/sections/Locations";
 import FinalCtaForm from "@/components/sections/FinalCtaForm";
 import Footer from "@/components/sections/Footer";
@@ -34,7 +35,7 @@ export default function Home() {
         <AboutStudio />
         <ServicePillars />
         <EngagementModels />
-        {/* Client Testimonials — new section, not yet designed/built; goes here per the requested order */}
+        <Testimonials />
         <Industries />
         <AiSpotlight />
         <DeliverySystem />
