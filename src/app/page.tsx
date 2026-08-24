@@ -32,11 +32,11 @@ export default function Home() {
         <TrustStrip />
         <ServicePillars />
         <CaseStudies />
+        <EngagementModels />
         <AboutStudio />
         <AiSpotlight />
         <DeliverySystem />
         <Industries />
-        <EngagementModels />
         <Locations />
         <FinalCtaForm />
       </main>

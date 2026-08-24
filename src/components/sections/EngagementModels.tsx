@@ -1,78 +1,147 @@
 "use client";
 
 import Link from "next/link";
+import type { CSSProperties } from "react";
+import type { LucideIcon } from "lucide-react";
+import { Rocket, Boxes, Users, UserPlus, Globe2, ArrowRight } from "lucide-react";
 import Reveal from "@/components/system/Reveal";
-import Spotlight from "@/components/system/Spotlight";
 
 /**
- * 4.8 Engagement models — PASS 2: cards reveal staggered; hover gets border
- * glow (card-dark:hover) + lift + a faint contained spotlight (dimmer than
- * the services rows).
+ * Engagement models — redesigned as a compact, single-row (on desktop)
+ * lineup of standout cards: an icon badge, a huge ghost numeral tinted in
+ * the card's own accent, then title + a one-line fit. Kept on the site's
+ * default dark root scope (no `theme-light`) rather than converted to a
+ * light section — same dark-canvas convention AiSpotlight already uses,
+ * and it gives the page a deliberate light/dark/light rhythm right after
+ * Success Stories instead of another light section back-to-back.
+ *
+ * The 2/5-column split on the last (5th) card mirrors DeliverySystem's
+ * own `i === 4 ? "sm:col-span-2 lg:col-span-1" : ""` pattern for a
+ * 5-item grid — reusing that exact convention rather than inventing a
+ * new one. The per-card accent tint reuses CaseStudies' own approach
+ * (a muted custom hex per card, not the grayscale `aurora-*` tokens,
+ * which stay reserved for the site-wide monochrome system) — same
+ * technique, so the two sections read as one consistent design language
+ * rather than two different ideas.
  */
-const MODELS = [
+type Model = {
+  name: string;
+  fit: string;
+  icon: LucideIcon;
+  accent: string;
+};
+
+const MODELS: Model[] = [
   {
     name: "MVP Sprint",
-    fit: "A fixed, fast lane from idea to first shippable product — best when speed to validation matters most.",
+    fit: "Fastest lane from idea to a shippable first product.",
+    icon: Rocket,
+    accent: "#7c6cff",
   },
   {
     name: "End-to-End Delivery",
-    fit: "We own the full build against an agreed scope — best when you know what you need and want it handled.",
+    fit: "We own the full build against an agreed scope.",
+    icon: Boxes,
+    accent: "#5b9bdb",
   },
   {
     name: "Dedicated Product Team",
-    fit: "A stable cross-functional squad embedded on your roadmap — best for continuous product work.",
+    fit: "A stable squad embedded on your roadmap.",
+    icon: Users,
+    accent: "#3fae82",
   },
   {
     name: "Team Augmentation",
-    fit: "Specialists slot into your existing team and process — best when you need capacity, not management.",
+    fit: "Specialists slot into your existing team.",
+    icon: UserPlus,
+    accent: "#d99a4e",
   },
   {
     name: "Global Delivery Model",
-    fit: "Distributed build with local-time overlap and single-point accountability — best for cost + coverage.",
+    fit: "Distributed build, single-point accountability.",
+    icon: Globe2,
+    accent: "#d1487a",
   },
 ];
 
+function ModelCard({ model, index }: { model: Model; index: number }) {
+  const Icon = model.icon;
+  const n = String(index + 1).padStart(2, "0");
+  return (
+    <article
+      className="group relative flex h-[320px] flex-col justify-between overflow-hidden rounded-[28px] border border-white/8 bg-canvas-raised p-7 transition-[transform,box-shadow,border-color] duration-300 ease-out hover:-translate-y-1.5 hover:border-white/20 hover:shadow-[0_28px_60px_var(--card-glow)] sm:p-8"
+      style={{ "--card-glow": `${model.accent}30` } as CSSProperties}
+    >
+      {/* subtle per-card tint wash, same technique as CaseStudies' accent cards */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 opacity-[0.16] transition-opacity duration-300 ease-out group-hover:opacity-[0.26]"
+        style={{ background: `radial-gradient(circle at 85% 15%, ${model.accent}, transparent 60%)` }}
+      />
+
+      <div className="relative z-10 flex items-start justify-between">
+        <span className="flex h-11 w-11 items-center justify-center rounded-full border border-white/12 bg-white/[0.06] text-ink transition-transform duration-300 ease-out group-hover:scale-110" style={{ color: model.accent }}>
+          <Icon size={19} strokeWidth={1.75} />
+        </span>
+        <span
+          aria-hidden
+          className="select-none font-urbanist text-[76px] font-extrabold leading-none tracking-tight transition-transform duration-300 ease-out group-hover:scale-105"
+          style={{ color: model.accent, opacity: 0.28 }}
+        >
+          {n}
+        </span>
+      </div>
+
+      <div className="relative z-10">
+        <h3 className="font-urbanist text-lg font-bold leading-snug text-ink sm:text-xl">{model.name}</h3>
+        <p className="mt-2 font-urbanist text-[13.5px] leading-relaxed text-ink-dim">{model.fit}</p>
+      </div>
+    </article>
+  );
+}
+
 export default function EngagementModels() {
   return (
-    <section className="bg-canvas py-16 lg:py-32" aria-labelledby="engagement-heading">
+    <section className="relative bg-canvas py-16 lg:py-20" aria-labelledby="engagement-heading">
       <div className="mx-auto max-w-7xl px-6 lg:px-10">
-        <p className="mb-3 font-urbanist text-sm font-medium uppercase tracking-[0.25em] text-ink-faint">
-          Engagement models
-        </p>
-        <h2
-          id="engagement-heading"
-          className="font-urbanist text-3xl font-bold tracking-tight text-ink sm:text-4xl"
-        >
-          Flexible ways to work with us.
-        </h2>
-        <p className="mt-4 max-w-2xl font-urbanist text-lg leading-relaxed text-ink-dim">
-          Choose the model that matches your scope certainty, timeline, and team
-          structure.
-        </p>
+        <Reveal>
+          <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+            <div>
+              <p className="mb-3 inline-flex items-center gap-2.5 font-urbanist text-[11px] font-medium uppercase tracking-[0.28em] text-ink-faint">
+                <span className="h-1.5 w-1.5 rounded-full bg-aurora-amber" />
+                Engagement Models
+              </p>
+              <h2 id="engagement-heading" className="font-urbanist text-3xl font-bold tracking-tight text-ink sm:text-4xl">
+                Flexible ways to work with us.
+              </h2>
+            </div>
+            <p className="max-w-sm font-urbanist text-[15px] leading-relaxed text-ink-dim">
+              Choose the model that matches your scope certainty, timeline, and team structure.
+            </p>
+          </div>
+        </Reveal>
 
-        <ul className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        <ul className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-5">
           {MODELS.map((m, i) => (
-            <li key={m.name}>
+            <li key={m.name} className={i === MODELS.length - 1 ? "sm:col-span-2 lg:col-span-1" : ""}>
               <Reveal delay={i * 80} className="h-full">
-                <Spotlight color="rgba(255, 255, 255, 0.06)" radius={300} className="h-full rounded-xl">
-                  <article className="card-dark lift-sm h-full rounded-xl p-8">
-                    <h3 className="font-urbanist text-xl font-bold tracking-tight text-ink">{m.name}</h3>
-                    <p className="mt-3 font-urbanist text-sm leading-relaxed text-ink-dim">{m.fit}</p>
-                  </article>
-                </Spotlight>
+                <ModelCard model={m} index={i} />
               </Reveal>
             </li>
           ))}
         </ul>
 
-        <div className="mt-12">
-          <Link
-            href="/how-we-work/engagement"
-            className="inline-block rounded-full border border-hairline-strong px-7 py-3.5 font-urbanist text-sm font-medium text-ink transition-colors hover:border-ink/60"
-          >
-            Compare Engagement Models →
-          </Link>
-        </div>
+        <Reveal delay={150}>
+          <div className="mt-12">
+            <Link
+              href="/how-we-work/engagement"
+              className="inline-flex items-center gap-2 rounded-full border border-aurora-violet/70 px-7 py-3.5 font-urbanist text-sm font-medium text-ink transition-colors duration-200 hover:border-aurora-violet"
+            >
+              Compare Engagement Models
+              <ArrowRight size={15} strokeWidth={1.75} />
+            </Link>
+          </div>
+        </Reveal>
       </div>
     </section>
   );
