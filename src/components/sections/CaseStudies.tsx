@@ -7,10 +7,19 @@ import Reveal from "@/components/system/Reveal";
 
 /**
  * Success Stories — single draggable row of dark, premium cards. The
- * section uses the same "floating rounded card" background treatment as
- * Services (`bg-light-surface p-3 sm:p-4` outer frame + `theme-light
- * rounded-[32px] bg-canvas` inner section), with the row contained in
- * the same `max-w-7xl` column Services uses.
+ * section keeps Services' "floating rounded card" background treatment
+ * (`bg-light-surface p-3 sm:p-4` outer frame + `theme-light rounded-[32px]
+ * bg-canvas` inner section), but — unlike Services — the row itself is
+ * NOT boxed inside the max-w-7xl/px-6/lg:px-10 column: it's a direct
+ * child of the section, full width edge-to-edge of the rounded white
+ * card. Only the heading/intro block above it stays in that padded
+ * column. The first card's left edge still lines up with the heading:
+ * the track measures the heading's actual rendered `left` offset on
+ * mount/resize and applies it as the track's own padding-left, which
+ * works the same way whether the "edge" it's measured against is the
+ * true browser viewport or (as here) the rounded card's own bounds —
+ * `getBoundingClientRect()` is always viewport-absolute regardless of
+ * nesting, so no different math is needed for the two cases.
  *
  * Cards get their definition purely from color contrast (near-black card
  * on the white inner section) plus a subtle inset top highlight — no
@@ -22,15 +31,11 @@ import Reveal from "@/components/system/Reveal";
  * Dragging is native scroll (`overflow-x: auto` + `scrollLeft`) driven by
  * pointer events for mouse/trackpad, with touch left to the browser's own
  * panning — no ScrollTrigger, no page-scroll hijacking, nothing to
- * reconcile with the "no pinning anywhere" rule. The track carries
- * `data-cursor="drag"`, which the site's global CustomCursor already
- * understands (Pass 2 §2.2) — without it, hovering a card's Discover
- * link inside a draggable row triggered CustomCursor's normal 88px
- * "link" ring, visually clashing with the card's own smaller hover
- * circle; `drag` mode takes priority over that and shows the dedicated
- * drag cursor across the whole row instead. The Discover link itself
- * carries `data-cursor="none"` so it shows its own hover animation with
- * the native pointer instead of either ring.
+ * reconcile with the "no pinning anywhere" rule. No `data-cursor="drag"`
+ * on the track (tried once — the dedicated drag ring itself read as an
+ * unwanted hover effect); the Discover link still carries
+ * `data-cursor="none"` so it only shows its own hover animation with the
+ * native pointer, with no CustomCursor ring involved at all.
  *
  * `overflow-x: auto` on the track computes `overflow-y` to `auto` too per
  * the CSS spec (an axis can't stay `visible` once the other isn't), which
@@ -216,8 +221,37 @@ function StoryCard({ story }: { story: Story }) {
 }
 
 export default function CaseStudies() {
+  const headingRef = useRef<HTMLHeadingElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
   const draggedRef = useRef(false);
+
+  // Keep the track's left padding pixel-matched to the heading's own left
+  // edge, so the first card lines up with the heading even though the
+  // track itself is full width of the rounded card (no max-w-7xl wrapper).
+  useEffect(() => {
+    const track = trackRef.current;
+    const heading = headingRef.current;
+    if (!track || !heading) return;
+
+    const updateInset = () => {
+      // Offset relative to the track's own parent, not the raw viewport
+      // position — the track already starts at the rounded card's left
+      // edge, so padding-left only needs to cover the *extra* inset the
+      // heading has beyond that (its own max-w-7xl/px-6/lg:px-10 column).
+      const headingLeft = heading.getBoundingClientRect().left;
+      const trackParentLeft = track.parentElement!.getBoundingClientRect().left;
+      track.style.paddingLeft = `${Math.max(headingLeft - trackParentLeft, 0)}px`;
+    };
+
+    updateInset();
+    window.addEventListener("resize", updateInset);
+    const ro = new ResizeObserver(updateInset);
+    ro.observe(document.body);
+    return () => {
+      window.removeEventListener("resize", updateInset);
+      ro.disconnect();
+    };
+  }, []);
 
   useEffect(() => {
     const el = trackRef.current;
@@ -288,7 +322,7 @@ export default function CaseStudies() {
                   <span className="h-1.5 w-1.5 rounded-full bg-aurora-amber" />
                   Success Stories
                 </p>
-                <h2 id="work-heading" className="font-urbanist text-4xl font-bold leading-tight tracking-tight text-ink sm:text-5xl">
+                <h2 ref={headingRef} id="work-heading" className="font-urbanist text-4xl font-bold leading-tight tracking-tight text-ink sm:text-5xl">
                   Work that ships, every time.
                 </h2>
                 <Link
@@ -325,16 +359,16 @@ export default function CaseStudies() {
               </div>
             </div>
           </Reveal>
-
-          <Reveal>
-            <div ref={trackRef} data-cursor="drag" className="no-scrollbar mt-12 flex cursor-grab gap-6 overflow-x-auto py-6">
-              {STORIES.map((story) => (
-                <StoryCard key={story.project} story={story} />
-              ))}
-              <div className="w-px shrink-0" aria-hidden />
-            </div>
-          </Reveal>
         </div>
+
+        <Reveal>
+          <div ref={trackRef} className="no-scrollbar mt-12 flex cursor-grab gap-6 overflow-x-auto py-6">
+            {STORIES.map((story) => (
+              <StoryCard key={story.project} story={story} />
+            ))}
+            <div className="w-6 shrink-0 sm:w-10" aria-hidden />
+          </div>
+        </Reveal>
       </section>
     </div>
   );
