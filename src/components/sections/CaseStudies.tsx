@@ -1,34 +1,39 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, type CSSProperties } from "react";
 import Link from "next/link";
 import { ArrowRight, ArrowLeft } from "lucide-react";
 import Reveal from "@/components/system/Reveal";
 
 /**
- * Success Stories — single draggable row of dark, minimal cards (near-black
- * on the site's usual light-surface background), each with a small
- * hand-authored line-art glyph instead of the repeated abstract-blur photo
- * used in earlier passes. Dragging is native scroll (`overflow-x: auto` +
- * `scrollLeft`) driven by pointer events for mouse/trackpad, with touch
- * left to the browser's own panning — no ScrollTrigger, no page-scroll
- * hijacking, nothing to reconcile with the "no pinning anywhere" rule.
+ * Success Stories — single draggable row of dark, premium cards, aligned
+ * to the same max-w-7xl column as the section heading (both wrapped in an
+ * identical `mx-auto max-w-7xl` + `px-6 lg:px-10`, so the first card's
+ * left edge is pixel-exact with the heading's left edge). Dragging is
+ * native scroll (`overflow-x: auto` + `scrollLeft`) driven by pointer
+ * events for mouse/trackpad, with touch left to the browser's own
+ * panning — no ScrollTrigger, no page-scroll hijacking, nothing to
+ * reconcile with the "no pinning anywhere" rule.
+ *
+ * Images are temporary: Picsum placeholder photos (deterministic per
+ * seed, so they're stable across renders and distinct per card) — swap
+ * `image` for real project screenshots when available, per the user's
+ * own "dummy image for now" request.
  *
  * Only Fennec, Essentialist, and Acculance are real, verified projects.
- * The other three are explicit placeholders (see PLACEHOLDER_STORIES)
+ * The other three are explicit placeholders (see PLACEHOLDER_STORIES),
  * added at the user's request to fill out the row before real work
- * replaces them.
+ * replaces them. Stats are honest, categorical facts (platforms/stack/
+ * modules) rather than invented outcome numbers.
  */
-type Shape =
-  | { kind: "hex"; cx: number; cy: number; r: number; rotate?: number; accent?: boolean }
-  | { kind: "circle"; cx: number; cy: number; r: number; accent?: boolean; filled?: boolean }
-  | { kind: "square"; cx: number; cy: number; size: number; rotate?: number; accent?: boolean }
-  | { kind: "triangle"; cx: number; cy: number; size: number; rotate?: number; accent?: boolean };
-
+type Stat = { value: string; label: string };
 type Story = {
   project: string;
   description: string;
-  glyph: Shape[];
+  image: string;
+  category: string;
+  industry: string;
+  stats: [Stat, Stat];
   accent: string;
   href: string;
 };
@@ -37,39 +42,40 @@ const REAL_STORIES: Story[] = [
   {
     project: "Fennec",
     description: "A connected web and mobile platform for nightlife operations — venues, guests, events, memberships.",
-    accent: "#7c6cff",
-    glyph: [
-      { kind: "hex", cx: 118, cy: 72, r: 46 },
-      { kind: "square", cx: 95, cy: 108, size: 66, rotate: -8 },
-      { kind: "square", cx: 148, cy: 122, size: 66, rotate: 7 },
-      { kind: "circle", cx: 178, cy: 62, r: 8, accent: true, filled: true },
+    image: "https://picsum.photos/seed/fennec-nightlife/800/600",
+    category: "Web App · Mobile App",
+    industry: "Nightlife & Hospitality",
+    stats: [
+      { value: "Web + App", label: "Platforms shipped" },
+      { value: "Ongoing", label: "Engagement" },
     ],
+    accent: "#7c6cff",
     href: "/work/fennec",
   },
   {
     project: "Essentialist",
     description: "A premium membership website with GSAP motion, CMS structure, and a polished application flow.",
-    accent: "#d97fc4",
-    glyph: [
-      { kind: "hex", cx: 88, cy: 82, r: 40 },
-      { kind: "hex", cx: 152, cy: 82, r: 40 },
-      { kind: "hex", cx: 120, cy: 132, r: 40 },
-      { kind: "circle", cx: 120, cy: 82, r: 7, accent: true, filled: true },
+    image: "https://picsum.photos/seed/essentialist-travel/800/600",
+    category: "WordPress · GSAP",
+    industry: "Luxury Travel",
+    stats: [
+      { value: "WordPress", label: "Platform" },
+      { value: "GSAP", label: "Motion system" },
     ],
+    accent: "#d97fc4",
     href: "/work/essentialist",
   },
   {
     project: "Acculance",
     description: "A SaaS-ready POS, inventory, and accounting platform for growing businesses.",
-    accent: "#5b9bdb",
-    glyph: [
-      { kind: "square", cx: 82, cy: 68, size: 34 },
-      { kind: "square", cx: 122, cy: 68, size: 34 },
-      { kind: "square", cx: 82, cy: 108, size: 34 },
-      { kind: "square", cx: 122, cy: 108, size: 34 },
-      { kind: "circle", cx: 172, cy: 88, r: 30 },
-      { kind: "circle", cx: 172, cy: 88, r: 6, accent: true, filled: true },
+    image: "https://picsum.photos/seed/acculance-pos/800/600",
+    category: "SaaS · POS",
+    industry: "Retail & Business Ops",
+    stats: [
+      { value: "3 Modules", label: "POS · Inventory · Accounting" },
+      { value: "Laravel / Vue", label: "Stack" },
     ],
+    accent: "#5b9bdb",
     href: "/work/acculance",
   },
 ];
@@ -79,129 +85,101 @@ const PLACEHOLDER_STORIES: Story[] = [
   {
     project: "Northwind Commerce",
     description: "Placeholder — a multi-brand storefront and checkout unified under one account and cart.",
-    accent: "#d99a4e",
-    glyph: [
-      { kind: "hex", cx: 108, cy: 100, r: 50 },
-      { kind: "triangle", cx: 168, cy: 76, size: 46 },
-      { kind: "circle", cx: 62, cy: 58, r: 8, accent: true, filled: true },
+    image: "https://picsum.photos/seed/northwind-retail/800/600",
+    category: "eCommerce · Storefront",
+    industry: "Retail",
+    stats: [
+      { value: "Multi-brand", label: "Storefront" },
+      { value: "Unified Cart", label: "Checkout flow" },
     ],
+    accent: "#d99a4e",
     href: "/work",
   },
   {
     project: "Verdant Health",
     description: "Placeholder — a patient portal covering scheduling, records access, and billing in one experience.",
-    accent: "#3fae82",
-    glyph: [
-      { kind: "hex", cx: 118, cy: 94, r: 48 },
-      { kind: "circle", cx: 118, cy: 94, r: 28 },
-      { kind: "square", cx: 176, cy: 56, size: 28, rotate: 12 },
-      { kind: "circle", cx: 118, cy: 94, r: 6, accent: true, filled: true },
+    image: "https://picsum.photos/seed/verdant-health/800/600",
+    category: "Healthtech · Patient Portal",
+    industry: "Healthcare",
+    stats: [
+      { value: "Patient Portal", label: "Core module" },
+      { value: "Compliance-ready", label: "Data handling" },
     ],
+    accent: "#3fae82",
     href: "/work",
   },
   {
     project: "Continuum Logistics",
     description: "Placeholder — real-time fleet visibility, route planning, and dispatch for daily operations.",
-    accent: "#d1487a",
-    glyph: [
-      { kind: "hex", cx: 96, cy: 100, r: 48 },
-      { kind: "triangle", cx: 168, cy: 90, size: 44, rotate: 90 },
-      { kind: "square", cx: 50, cy: 142, size: 20, rotate: 10 },
-      { kind: "circle", cx: 190, cy: 90, r: 6, accent: true, filled: true },
+    image: "https://picsum.photos/seed/continuum-logistics/800/600",
+    category: "Logistics · Fleet Ops",
+    industry: "Transportation & Logistics",
+    stats: [
+      { value: "Fleet Ops", label: "Core module" },
+      { value: "Real-time", label: "Tracking" },
     ],
+    accent: "#d1487a",
     href: "/work",
   },
 ];
 
 const STORIES: Story[] = [...REAL_STORIES, ...PLACEHOLDER_STORIES];
 
-function hexPoints(cx: number, cy: number, r: number, rotateDeg = 0) {
-  const pts: string[] = [];
-  for (let i = 0; i < 6; i++) {
-    const angle = (Math.PI / 3) * i + (Math.PI / 180) * rotateDeg;
-    pts.push(`${(cx + r * Math.cos(angle)).toFixed(1)},${(cy + r * Math.sin(angle)).toFixed(1)}`);
-  }
-  return pts.join(" ");
-}
-
-function trianglePoints(cx: number, cy: number, size: number, rotateDeg = 0) {
-  const h = size * 0.87;
-  const base = [
-    [cx, cy - h / 2],
-    [cx - size / 2, cy + h / 2],
-    [cx + size / 2, cy + h / 2],
-  ];
-  const rad = (Math.PI / 180) * rotateDeg;
-  return base
-    .map(([x, y]) => {
-      const dx = x - cx;
-      const dy = y - cy;
-      const rx = cx + dx * Math.cos(rad) - dy * Math.sin(rad);
-      const ry = cy + dx * Math.sin(rad) + dy * Math.cos(rad);
-      return `${rx.toFixed(1)},${ry.toFixed(1)}`;
-    })
-    .join(" ");
-}
-
-function CardGlyph({ shapes, accent }: { shapes: Shape[]; accent: string }) {
-  return (
-    <svg viewBox="0 0 240 190" className="h-full w-full overflow-visible" aria-hidden>
-      {shapes.map((s, i) => {
-        const stroke = s.accent ? accent : "#ffffff";
-        const strokeOpacity = s.accent ? 0.9 : 0.16;
-        if (s.kind === "hex") {
-          return <polygon key={i} points={hexPoints(s.cx, s.cy, s.r, s.rotate)} fill="none" stroke={stroke} strokeOpacity={strokeOpacity} strokeWidth={1.2} />;
-        }
-        if (s.kind === "circle") {
-          return s.filled ? (
-            <circle key={i} cx={s.cx} cy={s.cy} r={s.r} fill={stroke} fillOpacity={0.95} />
-          ) : (
-            <circle key={i} cx={s.cx} cy={s.cy} r={s.r} fill="none" stroke={stroke} strokeOpacity={strokeOpacity} strokeWidth={1.2} />
-          );
-        }
-        if (s.kind === "square") {
-          return (
-            <rect
-              key={i}
-              x={s.cx - s.size / 2}
-              y={s.cy - s.size / 2}
-              width={s.size}
-              height={s.size}
-              rx={s.size * 0.18}
-              fill="none"
-              stroke={stroke}
-              strokeOpacity={strokeOpacity}
-              strokeWidth={1.2}
-              transform={s.rotate ? `rotate(${s.rotate} ${s.cx} ${s.cy})` : undefined}
-            />
-          );
-        }
-        return <polygon key={i} points={trianglePoints(s.cx, s.cy, s.size, s.rotate)} fill="none" stroke={stroke} strokeOpacity={strokeOpacity} strokeWidth={1.2} />;
-      })}
-    </svg>
-  );
-}
-
 function StoryCard({ story }: { story: Story }) {
   return (
-    <article className="flex h-[400px] w-[320px] shrink-0 select-none flex-col justify-between rounded-[28px] bg-[#141316] p-8 sm:w-[360px]">
-      <div>
-        <h3 className="font-urbanist text-xl font-bold text-white">{story.project}</h3>
-        <p className="mt-3 max-w-[30ch] font-urbanist text-[13.5px] leading-relaxed text-white/55">{story.description}</p>
+    <article
+      className="group flex w-[340px] shrink-0 select-none flex-col overflow-hidden rounded-[28px] bg-[#141316] shadow-[0_20px_50px_rgba(9,9,11,0.16)] transition-[transform,box-shadow] duration-300 ease-out hover:-translate-y-1.5 hover:shadow-[0_28px_64px_var(--card-glow)] sm:w-[380px]"
+      style={{ "--card-glow": `${story.accent}3d` } as CSSProperties}
+    >
+      <div className="relative h-[190px] shrink-0 overflow-hidden sm:h-[210px]">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={story.image}
+          alt=""
+          draggable={false}
+          loading="lazy"
+          className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.06]"
+        />
+        {/* merge the photo into the dark card body instead of a hard edge */}
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#141316] via-transparent to-black/10" />
+        {/* diagonal shine sweep on hover */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/15 to-transparent transition-transform duration-700 ease-out group-hover:translate-x-full"
+        />
+        <span className="absolute left-4 top-4 rounded-full border border-white/25 bg-black/30 px-3 py-1 font-urbanist text-[10.5px] font-semibold uppercase tracking-[0.1em] text-white backdrop-blur-sm">
+          {story.industry}
+        </span>
       </div>
 
-      <div className="-mx-2 h-[130px]">
-        <CardGlyph shapes={story.glyph} accent={story.accent} />
-      </div>
+      <div className="flex flex-1 flex-col p-7 sm:p-8">
+        <p className="font-urbanist text-[11px] font-semibold uppercase tracking-[0.16em]" style={{ color: story.accent }}>
+          {story.category}
+        </p>
+        <h3 className="mt-2 font-urbanist text-xl font-bold text-white">{story.project}</h3>
+        <p className="mt-2.5 font-urbanist text-[13.5px] leading-relaxed text-white/55">{story.description}</p>
 
-      <Link href={story.href} draggable={false} className="group/link inline-flex w-fit items-center gap-3">
-        <span className="flex h-9 w-9 items-center justify-center rounded-full border border-white/20 text-white transition-colors duration-200 group-hover/link:border-white group-hover/link:bg-white group-hover/link:text-[#141316]">
-          <ArrowRight size={15} strokeWidth={2} />
-        </span>
-        <span className="font-urbanist text-[11.5px] font-semibold uppercase tracking-[0.18em] text-white/70 transition-colors duration-200 group-hover/link:text-white">
-          Discover
-        </span>
-      </Link>
+        <div className="mt-5 grid grid-cols-2 gap-4 border-y border-white/10 py-4">
+          {story.stats.map((stat) => (
+            <div key={stat.label}>
+              <p className="font-urbanist text-[14.5px] font-bold leading-tight text-white">{stat.value}</p>
+              <p className="mt-1 font-urbanist text-[11px] leading-snug text-white/45">{stat.label}</p>
+            </div>
+          ))}
+        </div>
+
+        <Link href={story.href} draggable={false} className="group/link mt-6 inline-flex w-fit items-center gap-3">
+          <span
+            className="flex h-9 w-9 items-center justify-center rounded-full border border-white/20 text-white transition-colors duration-200 group-hover/link:border-transparent group-hover/link:bg-[var(--hover-bg)] group-hover/link:text-[#141316]"
+            style={{ "--hover-bg": story.accent } as CSSProperties}
+          >
+            <ArrowRight size={15} strokeWidth={2} className="transition-transform duration-200 group-hover/link:translate-x-0.5" />
+          </span>
+          <span className="font-urbanist text-[11.5px] font-semibold uppercase tracking-[0.18em] text-white/70 transition-colors duration-200 group-hover/link:text-white">
+            Discover
+          </span>
+        </Link>
+      </div>
     </article>
   );
 }
@@ -265,7 +243,7 @@ export default function CaseStudies() {
   const scrollByCard = (dir: 1 | -1) => {
     const el = trackRef.current;
     if (!el) return;
-    el.scrollBy({ left: dir * 380, behavior: "smooth" });
+    el.scrollBy({ left: dir * 400, behavior: "smooth" });
   };
 
   return (
@@ -283,9 +261,10 @@ export default function CaseStudies() {
               </h2>
               <Link
                 href="/work"
-                className="mt-6 inline-flex items-center rounded-full bg-ink px-5 py-2.5 font-urbanist text-[11px] font-semibold uppercase tracking-[0.14em] text-white transition-transform duration-200 hover:scale-[1.03]"
+                className="mt-6 inline-flex items-center gap-2 rounded-full bg-aurora-violet px-7 py-3.5 font-urbanist text-sm font-semibold text-white transition-[background-color,transform] duration-300 hover:scale-[1.02] hover:bg-aurora-violet-dark"
               >
                 All Success Stories
+                <ArrowRight size={15} strokeWidth={1.75} />
               </Link>
             </div>
 
@@ -317,18 +296,20 @@ export default function CaseStudies() {
       </div>
 
       <Reveal>
-        <div
-          ref={trackRef}
-          className="no-scrollbar mt-12 flex cursor-grab gap-6 overflow-x-auto px-6 lg:px-10"
-          style={{
-            WebkitMaskImage: "linear-gradient(to right, transparent 0, black 24px, black calc(100% - 24px), transparent 100%)",
-            maskImage: "linear-gradient(to right, transparent 0, black 24px, black calc(100% - 24px), transparent 100%)",
-          }}
-        >
-          {STORIES.map((story) => (
-            <StoryCard key={story.project} story={story} />
-          ))}
-          <div className="w-px shrink-0" aria-hidden />
+        <div className="mx-auto max-w-7xl">
+          <div
+            ref={trackRef}
+            className="no-scrollbar mt-12 flex cursor-grab gap-6 overflow-x-auto px-6 lg:px-10"
+            style={{
+              WebkitMaskImage: "linear-gradient(to right, black 0, black calc(100% - 40px), transparent 100%)",
+              maskImage: "linear-gradient(to right, black 0, black calc(100% - 40px), transparent 100%)",
+            }}
+          >
+            {STORIES.map((story) => (
+              <StoryCard key={story.project} story={story} />
+            ))}
+            <div className="w-6 shrink-0 lg:w-10" aria-hidden />
+          </div>
         </div>
       </Reveal>
     </section>
