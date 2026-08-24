@@ -35,7 +35,15 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className={urbanist.variable}>
-      <body>{children}</body>
+      {/*
+        suppressHydrationWarning is scoped to this element's own attributes
+        only (not descendants) — it's the standard Next.js/React mitigation
+        for browser extensions (Grammarly, etc.) that inject attributes like
+        data-gr-ext-installed onto <body> before React hydrates, which would
+        otherwise always mismatch server vs. client markup. It does not hide
+        any other hydration issues elsewhere in the tree.
+      */}
+      <body suppressHydrationWarning>{children}</body>
     </html>
   );
 }
