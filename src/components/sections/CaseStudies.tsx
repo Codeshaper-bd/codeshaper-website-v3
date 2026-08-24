@@ -6,16 +6,16 @@ import { ArrowRight, ArrowLeft } from "lucide-react";
 import Reveal from "@/components/system/Reveal";
 
 /**
- * Success Stories — single draggable row of dark, premium cards, full-bleed
- * to the true browser viewport edge (matching the requested reference)
- * rather than boxed inside the site's usual max-w-7xl. The first card's
- * left edge still lines up exactly with the heading above it: the track
- * measures the heading's actual rendered `left` offset on mount/resize
- * and applies it as the track's own padding-left, so alignment holds at
- * every breakpoint without duplicating Tailwind's max-w-7xl/mx-auto math
- * by hand. The right side runs to the true viewport edge, hard-cut like
- * the reference — no edge mask, since a soft fade only makes sense when
- * clipped by an inset container, not the actual screen edge.
+ * Success Stories — single draggable row of dark, premium cards. The
+ * section now uses the exact same "floating rounded card" background
+ * treatment as Services (`bg-light-surface p-3 sm:p-4` outer frame +
+ * `theme-light rounded-[32px] bg-canvas` inner section) instead of the
+ * previous full-bleed-to-viewport-edge layout — the row is contained
+ * inside the same `max-w-7xl` column Services uses, not the true browser
+ * edge. Cards get a visible border (matching Services' bordered-card
+ * convention) and no longer carry a permanent drop shadow — only the
+ * existing accent-tinted glow on hover, same as Services' cards only
+ * shadow on hover.
  *
  * Dragging is native scroll (`overflow-x: auto` + `scrollLeft`) driven by
  * pointer events for mouse/trackpad, with touch left to the browser's own
@@ -141,7 +141,7 @@ const STORIES: Story[] = [...REAL_STORIES, ...PLACEHOLDER_STORIES];
 function StoryCard({ story }: { story: Story }) {
   return (
     <article
-      className="group flex w-[320px] shrink-0 select-none flex-col overflow-hidden rounded-[28px] bg-[#141316] shadow-[0_20px_50px_rgba(9,9,11,0.16)] transition-[transform,box-shadow] duration-300 ease-out hover:-translate-y-2 hover:shadow-[0_32px_70px_var(--card-glow)] sm:w-[380px]"
+      className="group flex w-[320px] shrink-0 select-none flex-col overflow-hidden rounded-[28px] border border-white/10 bg-[#141316] transition-[transform,box-shadow,border-color] duration-300 ease-out hover:-translate-y-2 hover:border-white/20 hover:shadow-[0_32px_70px_var(--card-glow)] sm:w-[380px]"
       style={{ "--card-glow": `${story.accent}40` } as CSSProperties}
     >
       <div className="relative h-[220px] shrink-0 overflow-hidden sm:h-[250px]">
@@ -206,33 +206,8 @@ function StoryCard({ story }: { story: Story }) {
 }
 
 export default function CaseStudies() {
-  const headingRef = useRef<HTMLHeadingElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
   const draggedRef = useRef(false);
-
-  // Keep the track's left padding pixel-matched to the heading's own left
-  // edge, so the first card lines up with the heading even though the
-  // track itself is full-bleed (no max-w-7xl wrapper) and the heading's
-  // effective inset changes with viewport width via mx-auto centering.
-  useEffect(() => {
-    const track = trackRef.current;
-    const heading = headingRef.current;
-    if (!track || !heading) return;
-
-    const updateInset = () => {
-      const left = heading.getBoundingClientRect().left;
-      track.style.paddingLeft = `${Math.max(left, 0)}px`;
-    };
-
-    updateInset();
-    window.addEventListener("resize", updateInset);
-    const ro = new ResizeObserver(updateInset);
-    ro.observe(document.body);
-    return () => {
-      window.removeEventListener("resize", updateInset);
-      ro.disconnect();
-    };
-  }, []);
 
   useEffect(() => {
     const el = trackRef.current;
@@ -293,65 +268,64 @@ export default function CaseStudies() {
   };
 
   return (
-    <section className="theme-light relative overflow-x-hidden bg-light-surface py-16 lg:py-24" aria-labelledby="work-heading">
-      <div className="mx-auto max-w-7xl px-6 lg:px-10">
-        <Reveal>
-          <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-            <div>
-              <p className="mb-3 inline-flex items-center gap-2.5 font-urbanist text-[11px] font-medium uppercase tracking-[0.28em] text-ink-dim">
-                <span className="h-1.5 w-1.5 rounded-full bg-aurora-amber" />
-                Success Stories
-              </p>
-              <h2 ref={headingRef} id="work-heading" className="font-urbanist text-4xl font-bold leading-tight tracking-tight text-ink sm:text-5xl">
-                Work that ships, every time.
-              </h2>
-              <Link
-                href="/work"
-                className="mt-6 inline-flex items-center gap-2 rounded-full bg-aurora-violet px-7 py-3.5 font-urbanist text-sm font-semibold text-white transition-[background-color,transform] duration-300 hover:scale-[1.02] hover:bg-aurora-violet-dark"
-              >
-                All Success Stories
-                <ArrowRight size={15} strokeWidth={1.75} />
-              </Link>
-            </div>
+    <div className="bg-light-surface p-3 sm:p-4">
+      <section className="theme-light relative overflow-hidden rounded-[32px] bg-canvas py-16 lg:py-24" aria-labelledby="work-heading">
+        <div className="mx-auto max-w-7xl px-6 lg:px-10">
+          <Reveal>
+            <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+              <div>
+                <p className="mb-3 inline-flex items-center gap-2.5 font-urbanist text-[11px] font-medium uppercase tracking-[0.28em] text-ink-dim">
+                  <span className="h-1.5 w-1.5 rounded-full bg-aurora-amber" />
+                  Success Stories
+                </p>
+                <h2 id="work-heading" className="font-urbanist text-4xl font-bold leading-tight tracking-tight text-ink sm:text-5xl">
+                  Work that ships, every time.
+                </h2>
+                <Link
+                  href="/work"
+                  className="mt-6 inline-flex items-center gap-2 rounded-full bg-aurora-violet px-7 py-3.5 font-urbanist text-sm font-semibold text-white transition-[background-color,transform] duration-300 hover:scale-[1.02] hover:bg-aurora-violet-dark"
+                >
+                  All Success Stories
+                  <ArrowRight size={15} strokeWidth={1.75} />
+                </Link>
+              </div>
 
-            <div className="flex items-center gap-3 self-start lg:self-end">
-              <p className="max-w-[26ch] font-urbanist text-[14px] leading-relaxed text-ink-dim">
-                Drag to browse — from unclear scope to launched product, every time.
-              </p>
-              <div className="flex shrink-0 items-center gap-2">
-                <button
-                  type="button"
-                  aria-label="Scroll left"
-                  onClick={() => scrollByCard(-1)}
-                  className="flex h-10 w-10 items-center justify-center rounded-full border border-hairline bg-canvas text-ink-dim transition-colors duration-200 hover:border-ink hover:text-ink"
-                >
-                  <ArrowLeft size={16} strokeWidth={1.75} />
-                </button>
-                <button
-                  type="button"
-                  aria-label="Scroll right"
-                  onClick={() => scrollByCard(1)}
-                  className="flex h-10 w-10 items-center justify-center rounded-full bg-ink text-white transition-transform duration-200 hover:scale-[1.05]"
-                >
-                  <ArrowRight size={16} strokeWidth={1.75} />
-                </button>
+              <div className="flex items-center gap-3 self-start lg:self-end">
+                <p className="max-w-[26ch] font-urbanist text-[14px] leading-relaxed text-ink-dim">
+                  Drag to browse — from unclear scope to launched product, every time.
+                </p>
+                <div className="flex shrink-0 items-center gap-2">
+                  <button
+                    type="button"
+                    aria-label="Scroll left"
+                    onClick={() => scrollByCard(-1)}
+                    className="flex h-10 w-10 items-center justify-center rounded-full border border-hairline bg-canvas text-ink-dim transition-colors duration-200 hover:border-ink hover:text-ink"
+                  >
+                    <ArrowLeft size={16} strokeWidth={1.75} />
+                  </button>
+                  <button
+                    type="button"
+                    aria-label="Scroll right"
+                    onClick={() => scrollByCard(1)}
+                    className="flex h-10 w-10 items-center justify-center rounded-full bg-ink text-white transition-transform duration-200 hover:scale-[1.05]"
+                  >
+                    <ArrowRight size={16} strokeWidth={1.75} />
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
-        </Reveal>
-      </div>
+          </Reveal>
 
-      <Reveal>
-        <div
-          ref={trackRef}
-          className="no-scrollbar mt-12 flex cursor-grab gap-6 overflow-x-auto py-6"
-        >
-          {STORIES.map((story) => (
-            <StoryCard key={story.project} story={story} />
-          ))}
-          <div className="w-6 shrink-0 sm:w-10" aria-hidden />
+          <Reveal>
+            <div ref={trackRef} className="no-scrollbar mt-12 flex cursor-grab gap-6 overflow-x-auto py-6">
+              {STORIES.map((story) => (
+                <StoryCard key={story.project} story={story} />
+              ))}
+              <div className="w-px shrink-0" aria-hidden />
+            </div>
+          </Reveal>
         </div>
-      </Reveal>
-    </section>
+      </section>
+    </div>
   );
 }

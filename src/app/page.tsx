@@ -30,13 +30,14 @@ export default function Home() {
       <main>
         <Hero />
         <TrustStrip />
-        <ServicePillars />
         <CaseStudies />
-        <EngagementModels />
         <AboutStudio />
+        <ServicePillars />
+        <EngagementModels />
+        {/* Client Testimonials — new section, not yet designed/built; goes here per the requested order */}
+        <Industries />
         <AiSpotlight />
         <DeliverySystem />
-        <Industries />
         <Locations />
         <FinalCtaForm />
       </main>
