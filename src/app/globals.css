@@ -625,6 +625,13 @@ form[data-show-errors="true"] :invalid {
 [data-shown="true"] .chip-pop:nth-child(2) { animation-delay: 80ms; }
 [data-shown="true"] .chip-pop:nth-child(3) { animation-delay: 160ms; }
 
+/* Industries "delivery lens" panel — crossfade when the selected row changes */
+@keyframes lens-fade-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.lens-fade-in { animation: lens-fade-in 350ms cubic-bezier(0.16, 1, 0.3, 1) both; }
+
 /* Reduced motion: kill every Pass 2 loop/animation, keep content visible */
 @media (prefers-reduced-motion: reduce) {
   .horizon-pulse,
@@ -634,7 +641,8 @@ form[data-show-errors="true"] :invalid {
   .shake,
   .menu-col,
   .mega-panel[data-state="open"],
-  [data-shown="true"] .chip-pop {
+  [data-shown="true"] .chip-pop,
+  .lens-fade-in {
     animation: none !important;
   }
   .connector-line {
