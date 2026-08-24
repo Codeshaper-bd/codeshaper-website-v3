@@ -360,6 +360,16 @@ body {
   }
 }
 
+/* ── Hide scrollbar on custom drag-to-scroll rows (arrows + drag replace it) ── */
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
 /* ── Aurora drift (CSS fallback + backdrop layers) ───────── */
 @keyframes aurora-drift-a {
   0%, 100% { transform: translate(-6%, -4%) scale(1); }

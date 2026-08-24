@@ -1,75 +1,74 @@
 "use client";
 
+import { useEffect, useRef } from "react";
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, ArrowLeft } from "lucide-react";
 import Reveal from "@/components/system/Reveal";
 
 /**
- * Success Stories — static 2-column grid (no scroll-jacking; the previous
- * horizontal scroll-scrubbed row was dropped in favor of a plain grid per
- * direct request). Each card is a "frame" (colored gradient) holding a
- * large rectangular image up top and a white content card that overlaps
- * it, floating card-in-card — matching the requested reference style.
+ * Success Stories — single draggable row of dark, minimal cards (near-black
+ * on the site's usual light-surface background), each with a small
+ * hand-authored line-art glyph instead of the repeated abstract-blur photo
+ * used in earlier passes. Dragging is native scroll (`overflow-x: auto` +
+ * `scrollLeft`) driven by pointer events for mouse/trackpad, with touch
+ * left to the browser's own panning — no ScrollTrigger, no page-scroll
+ * hijacking, nothing to reconcile with the "no pinning anywhere" rule.
  *
- * Only Fennec, Essentialist, and Acculance have real, verified project
- * detail (sourced from the v2 site's own case studies — see its own
- * "verify before launch" comments on anything more specific than this).
- * The other 3 slots are explicit placeholders, added at the user's
- * request to fill the 2x3 grid ahead of real content — swap PLACEHOLDER_STORIES
- * for real projects when available; nothing here claims a real client.
+ * Only Fennec, Essentialist, and Acculance are real, verified projects.
+ * The other three are explicit placeholders (see PLACEHOLDER_STORIES)
+ * added at the user's request to fill out the row before real work
+ * replaces them.
  */
-type Stat = { value: string; label: string };
+type Shape =
+  | { kind: "hex"; cx: number; cy: number; r: number; rotate?: number; accent?: boolean }
+  | { kind: "circle"; cx: number; cy: number; r: number; accent?: boolean; filled?: boolean }
+  | { kind: "square"; cx: number; cy: number; size: number; rotate?: number; accent?: boolean }
+  | { kind: "triangle"; cx: number; cy: number; size: number; rotate?: number; accent?: boolean };
+
 type Story = {
   project: string;
-  headline: string;
   description: string;
-  tags: string[];
-  image: string;
-  gradient: string;
-  stats: [Stat, Stat];
+  glyph: Shape[];
+  accent: string;
   href: string;
 };
 
 const REAL_STORIES: Story[] = [
   {
     project: "Fennec",
-    headline: "Built a connected web and mobile platform for nightlife operations.",
-    description:
-      "We delivered Fennec's product ecosystem across web, mobile, and business workflows — supporting venues, guests, events, memberships, and ongoing product growth.",
-    tags: ["Nightlife SaaS", "Web App", "Mobile App"],
-    image: "/media/case-fintech.jpg",
-    gradient: "linear-gradient(145deg, #232350 0%, #35307c 55%, #4a3a8e 100%)",
-    stats: [
-      { value: "Web + App", label: "Platforms shipped" },
-      { value: "Ongoing", label: "Engagement" },
+    description: "A connected web and mobile platform for nightlife operations — venues, guests, events, memberships.",
+    accent: "#7c6cff",
+    glyph: [
+      { kind: "hex", cx: 118, cy: 72, r: 46 },
+      { kind: "square", cx: 95, cy: 108, size: 66, rotate: -8 },
+      { kind: "square", cx: 148, cy: 122, size: 66, rotate: 7 },
+      { kind: "circle", cx: 178, cy: 62, r: 8, accent: true, filled: true },
     ],
     href: "/work/fennec",
   },
   {
     project: "Essentialist",
-    headline: "Launched a premium membership website with motion, CMS, and application flow.",
-    description:
-      "A high-end WordPress experience for a luxury travel membership brand, including GSAP animation, CMS structure, and a polished membership journey.",
-    tags: ["WordPress", "GSAP", "Membership Flow"],
-    image: "/media/case-commerce.jpg",
-    gradient: "linear-gradient(145deg, #3a2340 0%, #63395e 55%, #96604a 100%)",
-    stats: [
-      { value: "WordPress", label: "Platform" },
-      { value: "GSAP", label: "Motion system" },
+    description: "A premium membership website with GSAP motion, CMS structure, and a polished application flow.",
+    accent: "#d97fc4",
+    glyph: [
+      { kind: "hex", cx: 88, cy: 82, r: 40 },
+      { kind: "hex", cx: 152, cy: 82, r: 40 },
+      { kind: "hex", cx: 120, cy: 132, r: 40 },
+      { kind: "circle", cx: 120, cy: 82, r: 7, accent: true, filled: true },
     ],
     href: "/work/essentialist",
   },
   {
     project: "Acculance",
-    headline: "Built a SaaS-ready POS, inventory, and accounting platform.",
-    description:
-      "A business management product covering sales, inventory, POS, accounting, reporting, and operational workflows for growing businesses.",
-    tags: ["SaaS", "POS", "Accounting"],
-    image: "/media/case-logistics.jpg",
-    gradient: "linear-gradient(145deg, #1c1c46 0%, #2b3a72 55%, #3d5290 100%)",
-    stats: [
-      { value: "3 Modules", label: "POS · Inventory · Accounting" },
-      { value: "Laravel / Vue", label: "Stack" },
+    description: "A SaaS-ready POS, inventory, and accounting platform for growing businesses.",
+    accent: "#5b9bdb",
+    glyph: [
+      { kind: "square", cx: 82, cy: 68, size: 34 },
+      { kind: "square", cx: 122, cy: 68, size: 34 },
+      { kind: "square", cx: 82, cy: 108, size: 34 },
+      { kind: "square", cx: 122, cy: 108, size: 34 },
+      { kind: "circle", cx: 172, cy: 88, r: 30 },
+      { kind: "circle", cx: 172, cy: 88, r: 6, accent: true, filled: true },
     ],
     href: "/work/acculance",
   },
@@ -79,43 +78,36 @@ const REAL_STORIES: Story[] = [
 const PLACEHOLDER_STORIES: Story[] = [
   {
     project: "Northwind Commerce",
-    headline: "Modernized a multi-brand storefront into one unified checkout.",
-    description:
-      "Placeholder case study — a consolidated storefront and checkout experience spanning multiple product brands under one account and cart.",
-    tags: ["eCommerce", "Storefront", "Checkout"],
-    image: "/media/case-healthcare.jpg",
-    gradient: "linear-gradient(145deg, #4a2e1c 0%, #7a4a2b 55%, #a3703f 100%)",
-    stats: [
-      { value: "Multi-brand", label: "Storefront" },
-      { value: "Unified Cart", label: "Checkout flow" },
+    description: "Placeholder — a multi-brand storefront and checkout unified under one account and cart.",
+    accent: "#d99a4e",
+    glyph: [
+      { kind: "hex", cx: 108, cy: 100, r: 50 },
+      { kind: "triangle", cx: 168, cy: 76, size: 46 },
+      { kind: "circle", cx: 62, cy: 58, r: 8, accent: true, filled: true },
     ],
     href: "/work",
   },
   {
     project: "Verdant Health",
-    headline: "Designed a patient portal for scheduling, records, and billing.",
-    description:
-      "Placeholder case study — a patient-facing portal covering appointment scheduling, records access, and billing in one experience.",
-    tags: ["Healthtech", "Patient Portal", "Billing"],
-    image: "/media/case-fintech.jpg",
-    gradient: "linear-gradient(145deg, #163a2e 0%, #205c46 55%, #2f8465 100%)",
-    stats: [
-      { value: "Patient Portal", label: "Core module" },
-      { value: "Compliance-ready", label: "Data handling" },
+    description: "Placeholder — a patient portal covering scheduling, records access, and billing in one experience.",
+    accent: "#3fae82",
+    glyph: [
+      { kind: "hex", cx: 118, cy: 94, r: 48 },
+      { kind: "circle", cx: 118, cy: 94, r: 28 },
+      { kind: "square", cx: 176, cy: 56, size: 28, rotate: 12 },
+      { kind: "circle", cx: 118, cy: 94, r: 6, accent: true, filled: true },
     ],
     href: "/work",
   },
   {
     project: "Continuum Logistics",
-    headline: "Shipped real-time fleet tracking for a growing logistics operator.",
-    description:
-      "Placeholder case study — live fleet visibility, route planning, and dispatch tools built for day-to-day logistics operations.",
-    tags: ["Logistics", "Fleet Ops", "Dispatch"],
-    image: "/media/case-logistics.jpg",
-    gradient: "linear-gradient(145deg, #3a1c2e 0%, #642b46 55%, #8f3a5e 100%)",
-    stats: [
-      { value: "Fleet Ops", label: "Core module" },
-      { value: "Real-time", label: "Tracking" },
+    description: "Placeholder — real-time fleet visibility, route planning, and dispatch for daily operations.",
+    accent: "#d1487a",
+    glyph: [
+      { kind: "hex", cx: 96, cy: 100, r: 48 },
+      { kind: "triangle", cx: 168, cy: 90, size: 44, rotate: 90 },
+      { kind: "square", cx: 50, cy: 142, size: 20, rotate: 10 },
+      { kind: "circle", cx: 190, cy: 90, r: 6, accent: true, filled: true },
     ],
     href: "/work",
   },
@@ -123,63 +115,159 @@ const PLACEHOLDER_STORIES: Story[] = [
 
 const STORIES: Story[] = [...REAL_STORIES, ...PLACEHOLDER_STORIES];
 
+function hexPoints(cx: number, cy: number, r: number, rotateDeg = 0) {
+  const pts: string[] = [];
+  for (let i = 0; i < 6; i++) {
+    const angle = (Math.PI / 3) * i + (Math.PI / 180) * rotateDeg;
+    pts.push(`${(cx + r * Math.cos(angle)).toFixed(1)},${(cy + r * Math.sin(angle)).toFixed(1)}`);
+  }
+  return pts.join(" ");
+}
+
+function trianglePoints(cx: number, cy: number, size: number, rotateDeg = 0) {
+  const h = size * 0.87;
+  const base = [
+    [cx, cy - h / 2],
+    [cx - size / 2, cy + h / 2],
+    [cx + size / 2, cy + h / 2],
+  ];
+  const rad = (Math.PI / 180) * rotateDeg;
+  return base
+    .map(([x, y]) => {
+      const dx = x - cx;
+      const dy = y - cy;
+      const rx = cx + dx * Math.cos(rad) - dy * Math.sin(rad);
+      const ry = cy + dx * Math.sin(rad) + dy * Math.cos(rad);
+      return `${rx.toFixed(1)},${ry.toFixed(1)}`;
+    })
+    .join(" ");
+}
+
+function CardGlyph({ shapes, accent }: { shapes: Shape[]; accent: string }) {
+  return (
+    <svg viewBox="0 0 240 190" className="h-full w-full overflow-visible" aria-hidden>
+      {shapes.map((s, i) => {
+        const stroke = s.accent ? accent : "#ffffff";
+        const strokeOpacity = s.accent ? 0.9 : 0.16;
+        if (s.kind === "hex") {
+          return <polygon key={i} points={hexPoints(s.cx, s.cy, s.r, s.rotate)} fill="none" stroke={stroke} strokeOpacity={strokeOpacity} strokeWidth={1.2} />;
+        }
+        if (s.kind === "circle") {
+          return s.filled ? (
+            <circle key={i} cx={s.cx} cy={s.cy} r={s.r} fill={stroke} fillOpacity={0.95} />
+          ) : (
+            <circle key={i} cx={s.cx} cy={s.cy} r={s.r} fill="none" stroke={stroke} strokeOpacity={strokeOpacity} strokeWidth={1.2} />
+          );
+        }
+        if (s.kind === "square") {
+          return (
+            <rect
+              key={i}
+              x={s.cx - s.size / 2}
+              y={s.cy - s.size / 2}
+              width={s.size}
+              height={s.size}
+              rx={s.size * 0.18}
+              fill="none"
+              stroke={stroke}
+              strokeOpacity={strokeOpacity}
+              strokeWidth={1.2}
+              transform={s.rotate ? `rotate(${s.rotate} ${s.cx} ${s.cy})` : undefined}
+            />
+          );
+        }
+        return <polygon key={i} points={trianglePoints(s.cx, s.cy, s.size, s.rotate)} fill="none" stroke={stroke} strokeOpacity={strokeOpacity} strokeWidth={1.2} />;
+      })}
+    </svg>
+  );
+}
+
 function StoryCard({ story }: { story: Story }) {
   return (
-    <article className="group relative overflow-hidden rounded-[32px] p-3 shadow-[0_20px_50px_rgba(9,9,11,0.1)] sm:p-3.5" style={{ background: story.gradient }}>
-      <div className="relative overflow-hidden rounded-[22px]">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={story.image}
-          alt=""
-          loading="lazy"
-          className="h-[220px] w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04] sm:h-[260px] lg:h-[280px]"
-        />
-        {/*
-          The placeholder photography is the same abstract blur asset reused
-          across cards — tinting it with the card's own gradient (blend
-          mode, not opacity) makes each card read as its own color-graded
-          shot instead of six copies of the same image.
-        */}
-        <div aria-hidden className="pointer-events-none absolute inset-0 mix-blend-overlay" style={{ background: story.gradient }} />
-        <div aria-hidden className="pointer-events-none absolute inset-0 bg-black/10" />
+    <article className="flex h-[400px] w-[320px] shrink-0 select-none flex-col justify-between rounded-[28px] bg-[#141316] p-8 sm:w-[360px]">
+      <div>
+        <h3 className="font-urbanist text-xl font-bold text-white">{story.project}</h3>
+        <p className="mt-3 max-w-[30ch] font-urbanist text-[13.5px] leading-relaxed text-white/55">{story.description}</p>
       </div>
 
-      <div className="relative z-10 -mt-9 rounded-[22px] bg-canvas p-6 shadow-[0_16px_36px_rgba(9,9,11,0.14)] sm:-mt-10 sm:p-7">
-        <p className="font-urbanist text-[11px] font-bold uppercase tracking-[0.2em] text-aurora-violet">Case Study</p>
-        <h3 className="mt-2.5 font-urbanist text-xl font-bold leading-snug tracking-tight text-ink lg:text-[22px]">{story.headline}</h3>
-        <p className="mt-2.5 font-urbanist text-[13.5px] leading-relaxed text-ink-dim">{story.description}</p>
-
-        <div className="mt-5 grid grid-cols-2 gap-4 border-y border-hairline py-4">
-          {story.stats.map((stat) => (
-            <div key={stat.label}>
-              <p className="font-urbanist text-[15px] font-bold leading-tight text-ink">{stat.value}</p>
-              <p className="mt-1 font-urbanist text-[11.5px] leading-snug text-ink-dim">{stat.label}</p>
-            </div>
-          ))}
-        </div>
-
-        <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
-          <div className="flex flex-wrap gap-1.5">
-            {story.tags.map((t) => (
-              <span key={t} className="rounded-full border border-hairline bg-canvas-raised px-2.5 py-1 font-urbanist text-[11px] text-ink-dim">
-                {t}
-              </span>
-            ))}
-          </div>
-          <Link
-            href={story.href}
-            className="group/link inline-flex shrink-0 items-center gap-1.5 font-urbanist text-[13.5px] font-semibold text-ink transition-colors duration-200 hover:text-aurora-violet"
-          >
-            Read More
-            <ArrowRight size={14} strokeWidth={2} className="transition-transform duration-200 group-hover/link:translate-x-1" />
-          </Link>
-        </div>
+      <div className="-mx-2 h-[130px]">
+        <CardGlyph shapes={story.glyph} accent={story.accent} />
       </div>
+
+      <Link href={story.href} draggable={false} className="group/link inline-flex w-fit items-center gap-3">
+        <span className="flex h-9 w-9 items-center justify-center rounded-full border border-white/20 text-white transition-colors duration-200 group-hover/link:border-white group-hover/link:bg-white group-hover/link:text-[#141316]">
+          <ArrowRight size={15} strokeWidth={2} />
+        </span>
+        <span className="font-urbanist text-[11.5px] font-semibold uppercase tracking-[0.18em] text-white/70 transition-colors duration-200 group-hover/link:text-white">
+          Discover
+        </span>
+      </Link>
     </article>
   );
 }
 
 export default function CaseStudies() {
+  const trackRef = useRef<HTMLDivElement>(null);
+  const draggedRef = useRef(false);
+
+  useEffect(() => {
+    const el = trackRef.current;
+    if (!el) return;
+
+    let dragging = false;
+    let startX = 0;
+    let startScroll = 0;
+
+    const onPointerDown = (e: PointerEvent) => {
+      if (e.pointerType !== "mouse") return;
+      dragging = true;
+      draggedRef.current = false;
+      startX = e.clientX;
+      startScroll = el.scrollLeft;
+      el.setPointerCapture(e.pointerId);
+      el.style.cursor = "grabbing";
+    };
+    const onPointerMove = (e: PointerEvent) => {
+      if (!dragging) return;
+      const dx = e.clientX - startX;
+      if (Math.abs(dx) > 4) draggedRef.current = true;
+      el.scrollLeft = startScroll - dx;
+    };
+    const endDrag = (e: PointerEvent) => {
+      if (!dragging) return;
+      dragging = false;
+      el.style.cursor = "grab";
+      if (el.hasPointerCapture(e.pointerId)) el.releasePointerCapture(e.pointerId);
+    };
+    const onClickCapture = (e: MouseEvent) => {
+      if (draggedRef.current) {
+        e.preventDefault();
+        e.stopPropagation();
+        draggedRef.current = false;
+      }
+    };
+
+    el.addEventListener("pointerdown", onPointerDown);
+    el.addEventListener("pointermove", onPointerMove);
+    el.addEventListener("pointerup", endDrag);
+    el.addEventListener("pointercancel", endDrag);
+    el.addEventListener("click", onClickCapture, true);
+
+    return () => {
+      el.removeEventListener("pointerdown", onPointerDown);
+      el.removeEventListener("pointermove", onPointerMove);
+      el.removeEventListener("pointerup", endDrag);
+      el.removeEventListener("pointercancel", endDrag);
+      el.removeEventListener("click", onClickCapture, true);
+    };
+  }, []);
+
+  const scrollByCard = (dir: 1 | -1) => {
+    const el = trackRef.current;
+    if (!el) return;
+    el.scrollBy({ left: dir * 380, behavior: "smooth" });
+  };
+
   return (
     <section className="theme-light relative bg-light-surface py-16 lg:py-24" aria-labelledby="work-heading">
       <div className="mx-auto max-w-7xl px-6 lg:px-10">
@@ -193,34 +281,56 @@ export default function CaseStudies() {
               <h2 id="work-heading" className="font-urbanist text-4xl font-bold leading-tight tracking-tight text-ink sm:text-5xl">
                 Work that ships, every time.
               </h2>
+              <Link
+                href="/work"
+                className="mt-6 inline-flex items-center rounded-full bg-ink px-5 py-2.5 font-urbanist text-[11px] font-semibold uppercase tracking-[0.14em] text-white transition-transform duration-200 hover:scale-[1.03]"
+              >
+                All Success Stories
+              </Link>
             </div>
-            <p className="max-w-sm font-urbanist text-[15px] leading-relaxed text-ink-dim">
-              From unclear scope to launched product — with weekly progress, clean handover, and outcomes clients
-              own.
-            </p>
-          </div>
-        </Reveal>
 
-        <div className="mt-12 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:gap-10">
-          {STORIES.map((story, i) => (
-            <Reveal key={story.project} delay={(i % 2) * 80}>
-              <StoryCard story={story} />
-            </Reveal>
-          ))}
-        </div>
-
-        <Reveal>
-          <div className="mt-12 flex justify-center lg:mt-14">
-            <Link
-              href="/work"
-              className="inline-flex items-center gap-2 rounded-full bg-aurora-violet px-7 py-3.5 font-urbanist text-sm font-semibold text-white transition-[background-color,transform] duration-300 hover:scale-[1.02] hover:bg-aurora-violet-dark"
-            >
-              View All Success Stories
-              <ArrowRight size={15} strokeWidth={1.75} />
-            </Link>
+            <div className="flex items-center gap-3 self-start lg:self-end">
+              <p className="max-w-[26ch] font-urbanist text-[14px] leading-relaxed text-ink-dim">
+                Drag to browse — from unclear scope to launched product, every time.
+              </p>
+              <div className="flex shrink-0 items-center gap-2">
+                <button
+                  type="button"
+                  aria-label="Scroll left"
+                  onClick={() => scrollByCard(-1)}
+                  className="flex h-10 w-10 items-center justify-center rounded-full border border-hairline bg-canvas text-ink-dim transition-colors duration-200 hover:border-ink hover:text-ink"
+                >
+                  <ArrowLeft size={16} strokeWidth={1.75} />
+                </button>
+                <button
+                  type="button"
+                  aria-label="Scroll right"
+                  onClick={() => scrollByCard(1)}
+                  className="flex h-10 w-10 items-center justify-center rounded-full bg-ink text-white transition-transform duration-200 hover:scale-[1.05]"
+                >
+                  <ArrowRight size={16} strokeWidth={1.75} />
+                </button>
+              </div>
+            </div>
           </div>
         </Reveal>
       </div>
+
+      <Reveal>
+        <div
+          ref={trackRef}
+          className="no-scrollbar mt-12 flex cursor-grab gap-6 overflow-x-auto px-6 lg:px-10"
+          style={{
+            WebkitMaskImage: "linear-gradient(to right, transparent 0, black 24px, black calc(100% - 24px), transparent 100%)",
+            maskImage: "linear-gradient(to right, transparent 0, black 24px, black calc(100% - 24px), transparent 100%)",
+          }}
+        >
+          {STORIES.map((story) => (
+            <StoryCard key={story.project} story={story} />
+          ))}
+          <div className="w-px shrink-0" aria-hidden />
+        </div>
+      </Reveal>
     </section>
   );
 }
