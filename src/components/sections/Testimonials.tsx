@@ -305,16 +305,16 @@ export default function Testimonials() {
               </div>
             </div>
           </Reveal>
-
-          <Reveal>
-            <div ref={trackRef} className="no-scrollbar mt-12 flex cursor-grab gap-6 overflow-x-auto py-6">
-              {TESTIMONIALS.map((t) =>
-                t.type === "text" ? <TextCard key={t.name} t={t} /> : <VideoCard key={t.name} t={t} />
-              )}
-              <div className="w-6 shrink-0 sm:w-10" aria-hidden />
-            </div>
-          </Reveal>
         </div>
+
+        <Reveal>
+          <div ref={trackRef} className="no-scrollbar mt-12 flex cursor-grab gap-6 overflow-x-auto py-6">
+            {TESTIMONIALS.map((t) =>
+              t.type === "text" ? <TextCard key={t.name} t={t} /> : <VideoCard key={t.name} t={t} />
+            )}
+            <div className="w-6 shrink-0 sm:w-10" aria-hidden />
+          </div>
+        </Reveal>
       </section>
     </div>
   );
