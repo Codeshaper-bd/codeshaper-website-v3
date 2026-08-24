@@ -5,16 +5,25 @@ import { ArrowLeft, ArrowRight, Play, Quote } from "lucide-react";
 import Reveal from "@/components/system/Reveal";
 
 /**
- * Client Testimonials — new section after Engagement Models. Reuses the
- * exact draggable-row mechanics proven out in CaseStudies (native
+ * Client Testimonials — after Engagement Models. Reuses the exact
+ * draggable-row mechanics proven out in CaseStudies (native
  * `overflow-x: auto` + pointer-driven `scrollLeft`, no ScrollTrigger, no
  * `data-cursor="drag"` since that itself read as an unwanted hover effect
- * there) and the same dark-card visual language (near-black card, inset
- * top highlight, accent-tinted hover glow, no border stroke) so this reads
- * as a sibling section rather than a different design system — while
- * being visually its own thing via its card content (quote-first text
- * cards and playable video cards, mixed in one row, per the two content
- * types the user described).
+ * there, interactive elements excluded from drag-initiation so their own
+ * clicks still fire) and the same first-card-aligns-with-heading fix
+ * (track measures the heading's rendered `left` offset and applies it as
+ * its own padding-left — this section was missing that fix initially,
+ * which is why the row didn't line up with the heading).
+ *
+ * Cards are white with a hairline border (`bg-[#fafafa]`, `border-hairline`,
+ * `hover:border-aurora-violet/20`) rather than CaseStudies' dark shell —
+ * a border reads clean on a light card next to a light section (this is
+ * Services' own card recipe), whereas the same border read as a dull,
+ * undefined line on CaseStudies' dark cards, which is why those went
+ * borderless instead. Each card keeps its own accent-tinted glow on
+ * hover (the `--card-glow` custom-property technique already used
+ * elsewhere), just layered on top of the border-color hover instead of
+ * replacing it.
  *
  * Video cards are genuinely playable: clicking the poster swaps in a real
  * `<video>` with controls. Sources are existing site placeholder clips
@@ -84,17 +93,17 @@ const TESTIMONIALS: Testimonial[] = [
 function TextCard({ t }: { t: Extract<Testimonial, { type: "text" }> }) {
   return (
     <article
-      className="flex h-[420px] w-[300px] shrink-0 select-none flex-col overflow-hidden rounded-[28px] bg-[#141316] p-7 shadow-[inset_0_1px_0_rgba(255,255,255,0.09)] transition-[transform,box-shadow] duration-300 ease-out hover:-translate-y-2 hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.09),0_32px_70px_var(--card-glow)] sm:w-[340px] sm:p-8"
-      style={{ "--card-glow": `${t.accent}40` } as CSSProperties}
+      className="flex h-[420px] w-[300px] shrink-0 select-none flex-col overflow-hidden rounded-[28px] border border-hairline bg-[#fafafa] p-7 transition-[transform,border-color,box-shadow] duration-300 ease-out hover:-translate-y-2 hover:border-aurora-violet/20 hover:shadow-[0_32px_70px_var(--card-glow)] sm:w-[340px] sm:p-8"
+      style={{ "--card-glow": `${t.accent}26` } as CSSProperties}
     >
-      <Quote size={30} strokeWidth={1.5} style={{ color: t.accent }} className="opacity-70" />
-      <p className="mt-5 flex-1 font-urbanist text-[17px] font-medium leading-relaxed text-white/90">“{t.quote}”</p>
-      <div className="mt-6 flex items-center gap-3 border-t border-white/10 pt-5">
+      <Quote size={30} strokeWidth={1.5} style={{ color: t.accent }} />
+      <p className="mt-5 flex-1 font-urbanist text-[17px] font-medium leading-relaxed text-ink">“{t.quote}”</p>
+      <div className="mt-6 flex items-center gap-3 border-t border-hairline pt-5">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={t.avatar} alt="" draggable={false} className="h-11 w-11 shrink-0 rounded-full object-cover" />
         <div className="min-w-0">
-          <p className="truncate font-urbanist text-[13.5px] font-bold text-white">{t.name}</p>
-          <p className="truncate font-urbanist text-[12px] text-white/50">{t.role}</p>
+          <p className="truncate font-urbanist text-[13.5px] font-bold text-ink">{t.name}</p>
+          <p className="truncate font-urbanist text-[12px] text-ink-dim">{t.role}</p>
         </div>
       </div>
     </article>
@@ -106,8 +115,8 @@ function VideoCard({ t }: { t: Extract<Testimonial, { type: "video" }> }) {
 
   return (
     <article
-      className="group relative h-[420px] w-[300px] shrink-0 select-none overflow-hidden rounded-[28px] bg-[#141316] shadow-[inset_0_1px_0_rgba(255,255,255,0.09)] transition-[transform,box-shadow] duration-300 ease-out hover:-translate-y-2 hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.09),0_32px_70px_var(--card-glow)] sm:w-[340px]"
-      style={{ "--card-glow": `${t.accent}40` } as CSSProperties}
+      className="group relative h-[420px] w-[300px] shrink-0 select-none overflow-hidden rounded-[28px] border border-hairline bg-[#fafafa] transition-[transform,border-color,box-shadow] duration-300 ease-out hover:-translate-y-2 hover:border-aurora-violet/20 hover:shadow-[0_32px_70px_var(--card-glow)] sm:w-[340px]"
+      style={{ "--card-glow": `${t.accent}26` } as CSSProperties}
     >
       {playing ? (
         <video
@@ -152,8 +161,32 @@ function VideoCard({ t }: { t: Extract<Testimonial, { type: "video" }> }) {
 }
 
 export default function Testimonials() {
+  const headingRef = useRef<HTMLHeadingElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
   const draggedRef = useRef(false);
+
+  // Keep the track's left padding pixel-matched to the heading's own left
+  // edge, so the first card lines up with the heading — same fix CaseStudies
+  // needed for its own full-bleed row.
+  useEffect(() => {
+    const track = trackRef.current;
+    const heading = headingRef.current;
+    if (!track || !heading) return;
+
+    const updateInset = () => {
+      const left = heading.getBoundingClientRect().left;
+      track.style.paddingLeft = `${Math.max(left, 0)}px`;
+    };
+
+    updateInset();
+    window.addEventListener("resize", updateInset);
+    const ro = new ResizeObserver(updateInset);
+    ro.observe(document.body);
+    return () => {
+      window.removeEventListener("resize", updateInset);
+      ro.disconnect();
+    };
+  }, []);
 
   useEffect(() => {
     const el = trackRef.current;
@@ -221,7 +254,7 @@ export default function Testimonials() {
   };
 
   return (
-    <section className="theme-light relative bg-light-surface py-16 lg:py-24" aria-labelledby="testimonials-heading">
+    <section className="theme-light relative overflow-x-hidden bg-light-surface py-16 lg:py-24" aria-labelledby="testimonials-heading">
       <div className="mx-auto max-w-7xl px-6 lg:px-10">
         <Reveal>
           <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
@@ -230,7 +263,7 @@ export default function Testimonials() {
                 <span className="h-1.5 w-1.5 rounded-full bg-aurora-amber" />
                 Client Testimonials
               </p>
-              <h2 id="testimonials-heading" className="font-urbanist text-4xl font-bold leading-tight tracking-tight text-ink sm:text-5xl">
+              <h2 ref={headingRef} id="testimonials-heading" className="font-urbanist text-4xl font-bold leading-tight tracking-tight text-ink sm:text-5xl">
                 Trusted by teams who shipped with us.
               </h2>
             </div>
@@ -263,11 +296,11 @@ export default function Testimonials() {
       </div>
 
       <Reveal>
-        <div ref={trackRef} className="no-scrollbar mt-12 flex cursor-grab gap-6 overflow-x-auto px-6 py-6 lg:px-10">
+        <div ref={trackRef} className="no-scrollbar mt-12 flex cursor-grab gap-6 overflow-x-auto py-6">
           {TESTIMONIALS.map((t) =>
             t.type === "text" ? <TextCard key={t.name} t={t} /> : <VideoCard key={t.name} t={t} />
           )}
-          <div className="w-px shrink-0" aria-hidden />
+          <div className="w-6 shrink-0 sm:w-10" aria-hidden />
         </div>
       </Reveal>
     </section>
