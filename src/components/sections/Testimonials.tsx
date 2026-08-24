@@ -11,9 +11,15 @@ import Reveal from "@/components/system/Reveal";
  * `data-cursor="drag"` since that itself read as an unwanted hover effect
  * there, interactive elements excluded from drag-initiation so their own
  * clicks still fire) and the same first-card-aligns-with-heading fix
- * (track measures the heading's rendered `left` offset and applies it as
- * its own padding-left — this section was missing that fix initially,
- * which is why the row didn't line up with the heading).
+ * (track measures the heading's rendered `left` offset, relative to the
+ * track's own parent rather than the raw viewport, and applies it as its
+ * own padding-left).
+ *
+ * Background matches CaseStudies' own "floating rounded card" treatment
+ * (`bg-light-surface p-3 sm:p-4` outer frame + `theme-light rounded-[32px]
+ * bg-canvas` inner section) instead of a flat `bg-light-surface` section —
+ * this section was missing that frame initially, which is why it looked
+ * different from Success Stories despite using the same background color.
  *
  * Cards are white with a hairline border (`bg-[#fafafa]`, `border-hairline`,
  * `hover:border-aurora-violet/20`) rather than CaseStudies' dark shell —
@@ -167,15 +173,20 @@ export default function Testimonials() {
 
   // Keep the track's left padding pixel-matched to the heading's own left
   // edge, so the first card lines up with the heading — same fix CaseStudies
-  // needed for its own full-bleed row.
+  // needed for its own row. Offset is relative to the track's own parent
+  // (the rounded card), not the raw viewport — the track already starts at
+  // the card's left edge, so padding-left only needs to cover the *extra*
+  // inset the heading has beyond that (its own max-w-7xl/px-6/lg:px-10
+  // column) — otherwise that inset gets double-counted.
   useEffect(() => {
     const track = trackRef.current;
     const heading = headingRef.current;
     if (!track || !heading) return;
 
     const updateInset = () => {
-      const left = heading.getBoundingClientRect().left;
-      track.style.paddingLeft = `${Math.max(left, 0)}px`;
+      const headingLeft = heading.getBoundingClientRect().left;
+      const trackParentLeft = track.parentElement!.getBoundingClientRect().left;
+      track.style.paddingLeft = `${Math.max(headingLeft - trackParentLeft, 0)}px`;
     };
 
     updateInset();
@@ -254,55 +265,57 @@ export default function Testimonials() {
   };
 
   return (
-    <section className="theme-light relative overflow-x-hidden bg-light-surface py-16 lg:py-24" aria-labelledby="testimonials-heading">
-      <div className="mx-auto max-w-7xl px-6 lg:px-10">
-        <Reveal>
-          <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-            <div>
-              <p className="mb-3 inline-flex items-center gap-2.5 font-urbanist text-[11px] font-medium uppercase tracking-[0.28em] text-ink-dim">
-                <span className="h-1.5 w-1.5 rounded-full bg-aurora-amber" />
-                Client Testimonials
-              </p>
-              <h2 ref={headingRef} id="testimonials-heading" className="font-urbanist text-4xl font-bold leading-tight tracking-tight text-ink sm:text-5xl">
-                Trusted by teams who shipped with us.
-              </h2>
-            </div>
+    <div className="bg-light-surface p-3 sm:p-4">
+      <section className="theme-light relative overflow-hidden rounded-[32px] bg-canvas py-16 lg:py-24" aria-labelledby="testimonials-heading">
+        <div className="mx-auto max-w-7xl px-6 lg:px-10">
+          <Reveal>
+            <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+              <div>
+                <p className="mb-3 inline-flex items-center gap-2.5 font-urbanist text-[11px] font-medium uppercase tracking-[0.28em] text-ink-dim">
+                  <span className="h-1.5 w-1.5 rounded-full bg-aurora-amber" />
+                  Client Testimonials
+                </p>
+                <h2 ref={headingRef} id="testimonials-heading" className="font-urbanist text-4xl font-bold leading-tight tracking-tight text-ink sm:text-5xl">
+                  Trusted by teams who shipped with us.
+                </h2>
+              </div>
 
-            <div className="flex items-center gap-3 self-start lg:self-end">
-              <p className="max-w-[26ch] font-urbanist text-[14px] leading-relaxed text-ink-dim">
-                Drag to browse — hear it directly from the people we've worked with.
-              </p>
-              <div className="flex shrink-0 items-center gap-2">
-                <button
-                  type="button"
-                  aria-label="Scroll left"
-                  onClick={() => scrollByCard(-1)}
-                  className="flex h-10 w-10 items-center justify-center rounded-full border border-hairline bg-canvas text-ink-dim transition-colors duration-200 hover:border-ink hover:text-ink"
-                >
-                  <ArrowLeft size={16} strokeWidth={1.75} />
-                </button>
-                <button
-                  type="button"
-                  aria-label="Scroll right"
-                  onClick={() => scrollByCard(1)}
-                  className="flex h-10 w-10 items-center justify-center rounded-full bg-ink text-white transition-transform duration-200 hover:scale-[1.05]"
-                >
-                  <ArrowRight size={16} strokeWidth={1.75} />
-                </button>
+              <div className="flex items-center gap-3 self-start lg:self-end">
+                <p className="max-w-[26ch] font-urbanist text-[14px] leading-relaxed text-ink-dim">
+                  Drag to browse — hear it directly from the people we've worked with.
+                </p>
+                <div className="flex shrink-0 items-center gap-2">
+                  <button
+                    type="button"
+                    aria-label="Scroll left"
+                    onClick={() => scrollByCard(-1)}
+                    className="flex h-10 w-10 items-center justify-center rounded-full border border-hairline bg-canvas text-ink-dim transition-colors duration-200 hover:border-ink hover:text-ink"
+                  >
+                    <ArrowLeft size={16} strokeWidth={1.75} />
+                  </button>
+                  <button
+                    type="button"
+                    aria-label="Scroll right"
+                    onClick={() => scrollByCard(1)}
+                    className="flex h-10 w-10 items-center justify-center rounded-full bg-ink text-white transition-transform duration-200 hover:scale-[1.05]"
+                  >
+                    <ArrowRight size={16} strokeWidth={1.75} />
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
-        </Reveal>
-      </div>
+          </Reveal>
 
-      <Reveal>
-        <div ref={trackRef} className="no-scrollbar mt-12 flex cursor-grab gap-6 overflow-x-auto py-6">
-          {TESTIMONIALS.map((t) =>
-            t.type === "text" ? <TextCard key={t.name} t={t} /> : <VideoCard key={t.name} t={t} />
-          )}
-          <div className="w-6 shrink-0 sm:w-10" aria-hidden />
+          <Reveal>
+            <div ref={trackRef} className="no-scrollbar mt-12 flex cursor-grab gap-6 overflow-x-auto py-6">
+              {TESTIMONIALS.map((t) =>
+                t.type === "text" ? <TextCard key={t.name} t={t} /> : <VideoCard key={t.name} t={t} />
+              )}
+              <div className="w-6 shrink-0 sm:w-10" aria-hidden />
+            </div>
+          </Reveal>
         </div>
-      </Reveal>
-    </section>
+      </section>
+    </div>
   );
 }
