@@ -40,6 +40,25 @@ import {
 } from "react-icons/si";
 import Reveal from "@/components/system/Reveal";
 
+/**
+ * Tech Stack — reworked per direct feedback on the first pass: the section
+ * now uses the same "floating rounded card" frame as Testimonials/
+ * CaseStudies (`bg-light-surface p-3 sm:p-4` outer margin + `rounded-[32px]`
+ * inner section), just kept dark inside rather than switched to
+ * `theme-light` — same structural language, its own tone. That replaces
+ * the previous flush-dark `bg-canvas` section and the redundant second
+ * bordered panel nested inside it.
+ *
+ * Tiles dropped their inline description entirely (icon + name only,
+ * in a small square) — closer to hyperline.co's own dense icon grid and
+ * the actual mechanism that makes this "compact": a tile with no body
+ * copy can be roughly a third the size, so far more fit per row without
+ * the grid needing more height. The description now only shows in a
+ * hover reveal *inside* the same tile (an absolutely-positioned overlay,
+ * so it can't affect the grid's row height), and hovering one tile dims
+ * the rest via a `:has()` rule in globals.css — the same spotlight
+ * behavior visible in the hyperline.co reference when hovering "Mollie".
+ */
 type Category = "All" | "Frontend" | "Backend" | "Mobile" | "Commerce" | "Cloud & Data" | "AI";
 
 type Tech = {
@@ -106,100 +125,100 @@ export default function TechStack() {
   );
 
   return (
-    <section className="relative overflow-hidden bg-canvas py-16 lg:py-24" aria-labelledby="tech-stack-heading">
-      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.035)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.035)_1px,transparent_1px)] bg-[size:72px_72px]" />
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/25 to-transparent" />
+    <div className="bg-light-surface p-3 sm:p-4">
+      <section className="relative overflow-hidden rounded-[32px] bg-canvas py-14 lg:py-16" aria-labelledby="tech-stack-heading">
+        <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.035)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.035)_1px,transparent_1px)] bg-[size:64px_64px]" />
 
-      <div className="relative mx-auto max-w-7xl px-6 lg:px-10">
-        <Reveal>
-          <div className="mx-auto max-w-3xl text-center">
-            <p className="mb-3 inline-flex items-center gap-2.5 font-urbanist text-[11px] font-medium uppercase tracking-[0.28em] text-ink-dim">
-              <span className="h-1.5 w-1.5 rounded-full bg-aurora-amber" />
-              Tech Stack
-            </p>
-            <h2 id="tech-stack-heading" className="font-urbanist text-4xl font-bold leading-tight text-ink sm:text-5xl">
-              Modern tools, AI-ready delivery.
-            </h2>
-            <p className="mt-4 font-urbanist text-base leading-relaxed text-ink-dim">
-              We pick proven technology for the job, then connect it with AI-assisted workflows where it improves speed, clarity, support, or operations.
-            </p>
-          </div>
-        </Reveal>
+        <div className="relative mx-auto max-w-7xl px-6 lg:px-10">
+          <Reveal>
+            <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+              <div>
+                <p className="mb-2.5 inline-flex items-center gap-2.5 font-urbanist text-[11px] font-medium uppercase tracking-[0.28em] text-ink-dim">
+                  <span className="h-1.5 w-1.5 rounded-full bg-aurora-amber" />
+                  Tech Stack
+                </p>
+                <h2 id="tech-stack-heading" className="font-urbanist text-3xl font-bold leading-tight text-ink sm:text-4xl">
+                  Modern tools, AI-ready delivery.
+                </h2>
+                <p className="mt-2.5 max-w-lg font-urbanist text-[13.5px] leading-relaxed text-ink-dim">
+                  We pick proven technology for the job, then connect it with AI-assisted workflows where it improves speed, clarity, or operations.
+                </p>
+              </div>
 
-        <Reveal delay={120}>
-          <div className="mt-8 flex justify-center">
-            <div className="no-scrollbar flex max-w-full gap-1 overflow-x-auto rounded-full border border-hairline bg-canvas-raised/80 p-1">
-              {CATEGORIES.map((item) => (
-                <button
-                  key={item}
-                  type="button"
-                  aria-pressed={category === item}
-                  onClick={() => setCategory(item)}
-                  className={`shrink-0 rounded-full px-4 py-2 font-urbanist text-[12.5px] font-semibold transition-colors duration-200 ${
-                    category === item ? "bg-ink text-canvas" : "text-ink-dim hover:bg-white/[0.06] hover:text-ink"
-                  }`}
-                >
-                  {item}
-                </button>
-              ))}
+              <div className="no-scrollbar flex max-w-full shrink-0 gap-1 overflow-x-auto rounded-full border border-hairline bg-canvas-raised/80 p-1">
+                {CATEGORIES.map((item) => (
+                  <button
+                    key={item}
+                    type="button"
+                    aria-pressed={category === item}
+                    onClick={() => setCategory(item)}
+                    className={`shrink-0 rounded-full px-3.5 py-2 font-urbanist text-[12px] font-semibold transition-colors duration-200 ${
+                      category === item ? "bg-ink text-canvas" : "text-ink-dim hover:bg-white/[0.06] hover:text-ink"
+                    }`}
+                  >
+                    {item}
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>
-        </Reveal>
+          </Reveal>
 
-        <Reveal delay={180}>
-          <div className="relative mx-auto mt-10 max-w-6xl overflow-hidden rounded-[32px] border border-hairline-strong bg-canvas-raised/80 p-2 shadow-[0_30px_90px_rgba(0,0,0,0.28)]">
-            <div className="tech-scan pointer-events-none absolute inset-x-2 top-2 h-24 rounded-[26px] opacity-70" />
-            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
+          <Reveal delay={120}>
+            <div className="tech-board relative mt-7 grid grid-cols-4 gap-2 sm:grid-cols-6 lg:grid-cols-9">
               {visibleTech.map((tech, i) => {
                 const Icon = tech.icon;
                 return (
                   <div
                     key={`${category}-${tech.name}`}
-                    className="tech-tile group relative min-h-[126px] overflow-hidden rounded-[24px] border border-white/[0.06] bg-white/[0.035] p-4 transition-[border-color,background-color,transform] duration-300 hover:-translate-y-1 hover:border-white/18 hover:bg-white/[0.07]"
-                    style={{ "--tile-color": tech.color, animationDelay: `${(i % 12) * 28}ms` } as CSSProperties}
+                    className="tech-tile group relative h-[84px] overflow-hidden rounded-2xl border border-white/[0.07] bg-white/[0.035] transition-[filter,border-color,background-color,transform] duration-300 hover:-translate-y-0.5 hover:border-white/20 hover:bg-white/[0.07] sm:h-[92px]"
+                    style={{ "--tile-color": tech.color, animationDelay: `${(i % 18) * 22}ms` } as CSSProperties}
                   >
-                    <div className="flex h-full flex-col">
-                      <div className="flex items-start justify-between gap-3">
-                        <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-black/25 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]">
-                          {Icon ? (
-                            <Icon size={26} color={tech.color} aria-hidden />
-                          ) : (
-                            <span className="font-urbanist text-[13px] font-bold text-white">{tech.badge}</span>
-                          )}
-                        </span>
-                        <span className="rounded-full border border-white/10 px-2 py-1 font-urbanist text-[10px] text-white/45">
-                          {tech.category === "Cloud & Data" ? "Infra" : tech.category}
-                        </span>
-                      </div>
-                      <div className="mt-auto pt-5">
-                        <h3 className="font-urbanist text-[15px] font-bold text-ink">{tech.name}</h3>
-                        <p className="mt-1 line-clamp-2 font-urbanist text-[11.5px] leading-snug text-ink-dim">
-                          {tech.description}
-                        </p>
-                      </div>
+                    {/* resting face: icon + name */}
+                    <div className="flex h-full flex-col items-center justify-center gap-2 p-2 text-center transition-opacity duration-200 group-hover:opacity-0">
+                      <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-black/25 sm:h-9 sm:w-9">
+                        {Icon ? (
+                          <Icon size={18} color={tech.color} aria-hidden />
+                        ) : (
+                          <span className="font-urbanist text-[9px] font-bold text-white">{tech.badge}</span>
+                        )}
+                      </span>
+                      <span className="font-urbanist text-[10.5px] font-semibold leading-tight text-ink/85">{tech.name}</span>
+                    </div>
+
+                    {/* hover face: name + description + category, no layout impact (absolute) */}
+                    <div
+                      aria-hidden
+                      className="absolute inset-0 flex flex-col items-center justify-center gap-1 p-2.5 text-center opacity-0 transition-opacity duration-200 group-hover:opacity-100"
+                      style={{ background: `linear-gradient(165deg, ${tech.color}26, rgba(10,10,15,0.94) 65%)` }}
+                    >
+                      <span className="font-urbanist text-[11px] font-bold text-white">{tech.name}</span>
+                      <span className="line-clamp-2 font-urbanist text-[9px] leading-snug text-white/70">{tech.description}</span>
+                      <span className="mt-0.5 rounded-full border border-white/15 px-1.5 py-0.5 font-urbanist text-[8px] text-white/60">
+                        {tech.category === "Cloud & Data" ? "Infra" : tech.category}
+                      </span>
                     </div>
                   </div>
                 );
               })}
             </div>
-          </div>
-        </Reveal>
+          </Reveal>
 
-        <Reveal delay={240}>
-          <div className="mx-auto mt-8 flex max-w-6xl flex-col gap-4 border-t border-hairline pt-6 sm:flex-row sm:items-center sm:justify-between">
-            <p className="max-w-2xl font-urbanist text-sm leading-relaxed text-ink-dim">
-              Frontend, backend, mobile, commerce, cloud, data, and AI automation stay under one delivery rhythm, so the stack feels coherent when your team takes over.
-            </p>
-            <Link
-              href="/services"
-              className="inline-flex w-fit shrink-0 items-center gap-2 rounded-full bg-aurora-violet px-6 py-3 font-urbanist text-sm font-semibold text-canvas transition-[background-color,transform] duration-300 hover:scale-[1.02] hover:bg-aurora-amber"
-            >
-              Match tech to service
-              <ArrowRight size={15} strokeWidth={1.75} />
-            </Link>
-          </div>
-        </Reveal>
-      </div>
-    </section>
+          <Reveal delay={200}>
+            <div className="mt-8 flex flex-col gap-4 border-t border-hairline pt-6 sm:flex-row sm:items-center sm:justify-between">
+              <p className="max-w-2xl font-urbanist text-[13px] leading-relaxed text-ink-dim">
+                Frontend, backend, mobile, commerce, cloud, data, and AI automation stay under one delivery rhythm, so the stack feels coherent when your team takes over.
+              </p>
+              <Link
+                href="/services"
+                className="inline-flex w-fit shrink-0 items-center gap-2 rounded-full bg-aurora-violet px-6 py-3 font-urbanist text-sm font-semibold text-canvas transition-[background-color,transform] duration-300 hover:scale-[1.02] hover:bg-aurora-amber"
+              >
+                Match tech to service
+                <ArrowRight size={15} strokeWidth={1.75} />
+              </Link>
+            </div>
+          </Reveal>
+        </div>
+      </section>
+    </div>
   );
 }

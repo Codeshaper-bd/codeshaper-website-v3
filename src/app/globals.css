@@ -632,17 +632,9 @@ form[data-show-errors="true"] :invalid {
 }
 .lens-fade-in { animation: lens-fade-in 350ms cubic-bezier(0.16, 1, 0.3, 1) both; }
 
-/* Tech stack board: subtle scan light + tile entrance, Hyperline-inspired but
-   kept in this site's darker material language. */
-@keyframes tech-scan {
-  0%, 100% { transform: translateY(-42%); opacity: 0.35; }
-  50% { transform: translateY(360%); opacity: 0.75; }
-}
-.tech-scan {
-  background: linear-gradient(180deg, transparent, rgba(255, 255, 255, 0.08), transparent);
-  animation: tech-scan 7s ease-in-out infinite;
-}
-
+/* Tech stack board: tile entrance + hyperline.co-style hover spotlight —
+   hovering one tile dims every other tile in the board via :has(), same
+   behavior as hovering an integration icon on hyperline.co itself. */
 @keyframes tech-tile-in {
   from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: translateY(0); }
@@ -663,6 +655,9 @@ form[data-show-errors="true"] :invalid {
 .tech-tile:hover::before {
   opacity: 1;
 }
+.tech-board:has(.tech-tile:hover) .tech-tile:not(:hover) {
+  filter: brightness(0.5) saturate(0.55);
+}
 
 /* Reduced motion: kill every Pass 2 loop/animation, keep content visible */
 @media (prefers-reduced-motion: reduce) {
@@ -675,7 +670,6 @@ form[data-show-errors="true"] :invalid {
   .mega-panel[data-state="open"],
   [data-shown="true"] .chip-pop,
   .lens-fade-in,
-  .tech-scan,
   .tech-tile {
     animation: none !important;
   }
