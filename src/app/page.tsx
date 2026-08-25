@@ -11,6 +11,7 @@ import CaseStudies from "@/components/sections/CaseStudies";
 import CaseStudiesExpand from "@/components/sections/CaseStudiesExpand";
 import Industries from "@/components/sections/Industries";
 import TechStack from "@/components/sections/TechStack";
+import AiDevExcellence from "@/components/sections/AiDevExcellence";
 import EngagementModels from "@/components/sections/EngagementModels";
 import Testimonials from "@/components/sections/Testimonials";
 import Locations from "@/components/sections/Locations";
@@ -42,6 +43,7 @@ export default function Home() {
         <Testimonials />
         <Industries />
         <TechStack />
+        <AiDevExcellence />
         <AiSpotlight />
         <DeliverySystem />
         <Locations />

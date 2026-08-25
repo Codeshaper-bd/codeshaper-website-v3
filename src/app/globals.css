@@ -659,6 +659,16 @@ form[data-show-errors="true"] :invalid {
   filter: brightness(0.5) saturate(0.55);
 }
 
+/* AI-Driven Development phase icons: a slow pulsing ring behind each icon,
+   tinted per-card via --pulse-color — a quiet "actively working" cue. */
+@keyframes ai-pulse-ring {
+  0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--pulse-color) 32%, transparent); }
+  50% { box-shadow: 0 0 0 9px color-mix(in srgb, var(--pulse-color) 10%, transparent); }
+}
+.ai-pulse {
+  animation: ai-pulse-ring 2.6s ease-in-out infinite;
+}
+
 /* Reduced motion: kill every Pass 2 loop/animation, keep content visible */
 @media (prefers-reduced-motion: reduce) {
   .horizon-pulse,
@@ -670,7 +680,8 @@ form[data-show-errors="true"] :invalid {
   .mega-panel[data-state="open"],
   [data-shown="true"] .chip-pop,
   .lens-fade-in,
-  .tech-tile {
+  .tech-tile,
+  .ai-pulse {
     animation: none !important;
   }
   .connector-line {
