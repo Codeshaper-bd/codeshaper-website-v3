@@ -668,6 +668,23 @@ form[data-show-errors="true"] :invalid {
 .ai-pulse {
   animation: ai-pulse-ring 2.6s ease-in-out infinite;
 }
+.ai-pulse-lg {
+  animation: ai-pulse-ring-lg 2.6s ease-in-out infinite;
+}
+@keyframes ai-pulse-ring-lg {
+  0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--pulse-color) 22%, transparent); }
+  50% { box-shadow: 0 0 0 14px color-mix(in srgb, var(--pulse-color) 8%, transparent); }
+}
+
+/* AI-Driven Development core visual: flow lines from the center "AI core"
+   node out to each phase icon, dashes crawling outward to read as data
+   actively moving through the pipeline rather than a static diagram. */
+@keyframes ai-flow {
+  to { stroke-dashoffset: -20; }
+}
+.ai-flow-line {
+  animation: ai-flow 1.4s linear infinite;
+}
 
 /* Reduced motion: kill every Pass 2 loop/animation, keep content visible */
 @media (prefers-reduced-motion: reduce) {
@@ -681,7 +698,9 @@ form[data-show-errors="true"] :invalid {
   [data-shown="true"] .chip-pop,
   .lens-fade-in,
   .tech-tile,
-  .ai-pulse {
+  .ai-pulse,
+  .ai-pulse-lg,
+  .ai-flow-line {
     animation: none !important;
   }
   .connector-line {
