@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, type ComponentType, type SVGProps } from "react";
+import { MapPin } from "lucide-react";
 import Reveal from "@/components/system/Reveal";
 import { usePrefersReducedMotion } from "@/lib/motion";
 import { StatueOfLibertyIcon, ClockTowerIcon, MosqueIcon, PagodaIcon, OperaHouseIcon, FernIcon } from "./LandmarkIcons";
@@ -129,10 +130,15 @@ function RouteMap({ active, onPick }: { active: number; onPick: (i: number) => v
           <filter id="loc-map-glow" x="-200%" y="-200%" width="500%" height="500%">
             <feGaussianBlur stdDeviation="1" />
           </filter>
+          <linearGradient id="loc-route-gradient" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="100" y2="0">
+            {LOCATIONS.map((p, i) => (
+              <stop key={p.country} offset={`${p.x}%`} stopColor={accentFor(p.role)} />
+            ))}
+          </linearGradient>
         </defs>
-        <path d={ROUTE_PATH} fill="none" stroke="#ffffff" strokeOpacity="0.18" strokeWidth="0.5" />
+        <path d={ROUTE_PATH} fill="none" stroke="url(#loc-route-gradient)" strokeOpacity="0.3" strokeWidth="0.6" />
         {!reduced && (
-          <circle r="1.1" fill="#ffffff" filter="url(#loc-map-glow)" opacity="0.75">
+          <circle r="1.1" fill="#ffffff" filter="url(#loc-map-glow)" opacity="0.85">
             <animateMotion dur="7s" repeatCount="indefinite" path={ROUTE_PATH} />
           </circle>
         )}
@@ -149,13 +155,13 @@ function RouteMap({ active, onPick }: { active: number; onPick: (i: number) => v
             onClick={() => onPick(i)}
             onMouseEnter={() => onPick(i)}
             aria-label={p.country}
-            className="absolute flex -translate-x-1/2 -translate-y-1/2 flex-col items-center"
+            className="group absolute flex -translate-x-1/2 -translate-y-1/2 flex-col items-center"
             style={{ left: `${p.x}%`, top: `${p.y}%` }}
           >
             {isActive ? (
               <span
                 aria-hidden
-                className="dot-pulse relative flex items-center justify-center rounded-full border backdrop-blur-sm"
+                className="dot-pulse relative flex items-center justify-center rounded-full border backdrop-blur-sm transition-transform duration-300 group-hover:scale-105"
                 style={{
                   width: 34,
                   height: 34,
@@ -170,15 +176,11 @@ function RouteMap({ active, onPick }: { active: number; onPick: (i: number) => v
             ) : (
               <span
                 aria-hidden
-                className="block rounded-full transition-all duration-300"
-                style={{
-                  width: 8,
-                  height: 8,
-                  backgroundColor: "#ffffff",
-                  opacity: 0.55,
-                  boxShadow: "0 0 6px rgba(255,255,255,0.5)",
-                }}
-              />
+                className="relative flex items-center justify-center rounded-full border border-white/10 bg-white/[0.04] backdrop-blur-sm transition-all duration-300 group-hover:scale-110 group-hover:border-white/25 group-hover:bg-white/[0.08]"
+                style={{ width: 22, height: 22, color: "rgba(255,255,255,0.4)" }}
+              >
+                <Icon width={12} height={12} strokeWidth={1.6} />
+              </span>
             )}
             <span
               className="absolute top-full mt-2 hidden whitespace-nowrap font-urbanist text-[10.5px] font-semibold uppercase tracking-[0.14em] transition-colors duration-300 sm:block"
@@ -271,7 +273,7 @@ export default function Locations() {
         </Reveal>
 
         <Reveal delay={80}>
-          <div className="glass mt-10 rounded-[32px] p-6 sm:p-8 lg:p-10">
+          <div className="glass mt-10 rounded-[32px] p-6 shadow-[0_40px_100px_rgba(0,0,0,0.5)] sm:p-8 lg:p-10">
             <RouteMap active={active} onPick={pick} />
 
             <div
@@ -290,11 +292,12 @@ export default function Locations() {
                     onMouseEnter={() => setActive(i)}
                     onFocus={() => setActive(i)}
                     onClick={() => pick(i)}
-                    className="flex items-center justify-center gap-2 rounded-full border px-3.5 py-2 font-urbanist text-[12.5px] font-semibold transition-[background-color,border-color,color] duration-300 sm:justify-start"
+                    className="flex items-center justify-center gap-2 rounded-full border px-3.5 py-2 font-urbanist text-[12.5px] font-semibold transition-[background-color,border-color,color,box-shadow,transform] duration-300 hover:-translate-y-0.5 sm:justify-start"
                     style={{
                       borderColor: isActive ? `${a}80` : "rgba(255,255,255,0.12)",
                       backgroundColor: isActive ? `${a}1f` : "transparent",
                       color: isActive ? a : "rgba(255,255,255,0.55)",
+                      boxShadow: isActive ? `0 6px 20px ${a}33` : "none",
                     }}
                   >
                     <Icon width={15} height={15} strokeWidth={1.6} />
@@ -304,10 +307,16 @@ export default function Locations() {
               })}
             </div>
 
-            <div key={active} className="lens-fade-in mt-7 flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
-              <div className="flex gap-5">
+            <div key={active} className="lens-fade-in relative mt-7 flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
+              <div
+                aria-hidden
+                className="pointer-events-none absolute -left-4 -top-10 h-40 w-40 rounded-full opacity-60 blur-3xl"
+                style={{ background: `radial-gradient(circle, ${accent}30, transparent 70%)` }}
+              />
+
+              <div className="relative flex gap-5">
                 <div
-                  className="relative flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-2xl border sm:h-[72px] sm:w-[72px]"
+                  className="icon-pop-in relative flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-2xl border transition-transform duration-300 hover:scale-105 sm:h-[72px] sm:w-[72px]"
                   style={{ borderColor: `${accent}40`, backgroundColor: `${accent}14` }}
                 >
                   <div
@@ -328,11 +337,15 @@ export default function Locations() {
                     <span className="h-1.5 w-1.5 shrink-0 rounded-full" style={{ backgroundColor: accent }} aria-hidden />
                     <p className="font-urbanist text-[10.5px] font-semibold uppercase tracking-[0.14em] text-white/45">{current.role}</p>
                   </div>
-                  <h3 className="mt-1.5 font-urbanist text-2xl font-bold tracking-tight text-white">{current.country}</h3>
+                  <h3 className="mt-1.5 font-urbanist text-[26px] font-bold leading-tight tracking-tight text-white">{current.country}</h3>
                   <p className="mt-3 max-w-md font-urbanist text-[13.5px] leading-relaxed text-white/60">{current.short}</p>
                   <div className="mt-4 flex flex-wrap gap-1.5">
                     {current.bestFor.map((tag) => (
-                      <span key={tag} className="rounded-full border border-white/15 bg-white/[0.07] px-2.5 py-1 font-urbanist text-[10.5px] text-white/70">
+                      <span
+                        key={tag}
+                        className="flex items-center gap-1.5 rounded-full border border-white/15 bg-white/[0.07] px-2.5 py-1 font-urbanist text-[10.5px] text-white/70 transition-colors duration-300 hover:border-white/25 hover:bg-white/[0.1]"
+                      >
+                        <span className="h-1 w-1 shrink-0 rounded-full" style={{ backgroundColor: accent }} aria-hidden />
                         {tag}
                       </span>
                     ))}
@@ -340,10 +353,13 @@ export default function Locations() {
                 </div>
               </div>
 
-              <div className="shrink-0 font-urbanist text-[11.5px] leading-relaxed text-white/35 sm:text-right">
-                Street address — TBD
-                <br />
-                {current.country}
+              <div className="relative flex shrink-0 items-start gap-2 font-urbanist text-[11.5px] leading-relaxed text-white/35 sm:text-right">
+                <MapPin size={13} strokeWidth={1.75} className="mt-0.5 shrink-0 opacity-60 sm:order-2" />
+                <span className="sm:order-1">
+                  Street address — TBD
+                  <br />
+                  {current.country}
+                </span>
               </div>
             </div>
           </div>
