@@ -80,7 +80,7 @@
   --color-aurora-violet-dark: #09090b; /* zinc-950, CTA hover, ~19:1 on white ✓ */
 }
 
-/* .glass is shared with Locations.tsx / AiSpotlight.tsx, which stay dark —
+/* .glass is used by Locations.tsx, which stays dark —
    override rather than edit the base rule. */
 .theme-light .glass {
   background: rgba(255, 255, 255, 0.85);
@@ -368,24 +368,6 @@ body {
 
 .no-scrollbar::-webkit-scrollbar {
   display: none;
-}
-
-/* ── Aurora drift (CSS fallback + backdrop layers) ───────── */
-@keyframes aurora-drift-a {
-  0%, 100% { transform: translate(-6%, -4%) scale(1); }
-  50% { transform: translate(8%, 6%) scale(1.15); }
-}
-@keyframes aurora-drift-b {
-  0%, 100% { transform: translate(6%, 5%) scale(1.1); }
-  50% { transform: translate(-7%, -6%) scale(0.95); }
-}
-
-.aurora-fallback-a { animation: aurora-drift-a 18s ease-in-out infinite; }
-.aurora-fallback-b { animation: aurora-drift-b 22s ease-in-out infinite; }
-
-@media (prefers-reduced-motion: reduce) {
-  .aurora-fallback-a,
-  .aurora-fallback-b { animation: none; }
 }
 
 /* ── Focus visibility ────────────────────────────────────── */
@@ -695,8 +677,27 @@ form[data-show-errors="true"] :invalid {
   background: var(--color-ink);
 }
 
+/* FAQ accordion: grid-template-rows 0fr→1fr trick — animates open/close
+   height without measuring scrollHeight in JS. Inner wrapper needs
+   min-height: 0 or the 0fr collapse doesn't fully close. */
+.faq-panel {
+  display: grid;
+  grid-template-rows: 0fr;
+  overflow: hidden;
+  transition: grid-template-rows 380ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.faq-panel[data-open="true"] {
+  grid-template-rows: 1fr;
+}
+.faq-panel > div {
+  min-height: 0;
+}
+
 /* Reduced motion: kill every Pass 2 loop/animation, keep content visible */
 @media (prefers-reduced-motion: reduce) {
+  .faq-panel {
+    transition: none;
+  }
   .horizon-pulse,
   .dot-pulse,
   .typing-dot,

@@ -6,7 +6,7 @@ import { SERVICE_COLUMNS, SIMPLE_MENUS, INDUSTRIES, ENGAGEMENT_MODELS } from "@/
  * (Brand / Services / Industries / How We Work / Insights),
  * company links row, city names row (links to #locations), legal bar.
  */
-const CITY_NAMES = ["[City 1]", "[City 2]", "[City 3]", "[City 4]", "[City 5]"]; // PLACEHOLDER
+const CITY_NAMES = ["Bangladesh", "Japan", "USA", "UK", "Australia", "New Zealand"];
 
 const insights = SIMPLE_MENUS.find((m) => m.id === "insights")!;
 const company = SIMPLE_MENUS.find((m) => m.id === "company")!;
