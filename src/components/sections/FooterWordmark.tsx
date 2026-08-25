@@ -1,32 +1,59 @@
 "use client";
 
-import { useEffect, useRef, type MouseEvent } from "react";
+import { useEffect, useLayoutEffect, useRef, type MouseEvent } from "react";
 import gsap from "gsap";
 import { usePrefersReducedMotion } from "@/lib/motion";
 
 const WORD = "codeshaper";
 const ACCENT = "#7c6cff";
 const BASE = "#f5f4f2"; // matches --color-ink in the dark (unthemed) scope Footer lives in
+const FIT_PROBE_SIZE = 100; // px — arbitrary known base used to compute the fit ratio
 
 /**
- * Footer wordmark, round 2 — was static text, now a per-letter GSAP piece:
- * a masked stagger reveal (letters slide up from behind overflow-hidden)
- * the first time it scrolls into view, plus a magnetic hover — letters
- * near the cursor lift, scale, and tint toward the violet accent, falling
- * off with distance. Mouse-driven, so it's a desktop-only flourish; touch
- * devices just get the entrance.
+ * Footer wordmark, round 3 — now rendered in caps and JS-fit to exactly
+ * 100% of its container's width (a `clamp()` font-size only ever
+ * approximates full-bleed at whatever breakpoints it was tuned for; this
+ * measures the actual rendered width at a known probe size and rescales
+ * the font-size by the exact ratio, so it's edge-to-edge at any viewport
+ * without distorting letter proportions — the same idea fitty.js/
+ * react-textfit use). Re-measures via ResizeObserver on the wrapping
+ * element, so it stays exact across breakpoint changes.
  *
- * IntersectionObserver (not GSAP ScrollTrigger — this project doesn't use
- * that plugin anywhere, consistent with "no pinning" elsewhere) drives the
- * reveal, with the same two safety nets Reveal.tsx uses: reduced-motion
- * renders the final state immediately instead of skipping setup outright
- * (so a `reduced` flip mid-mount can't leave letters stuck invisible), and
- * a timeout failsafe in case the observer never fires.
+ * Runs in useLayoutEffect (before paint) so there's no visible jump from
+ * the CSS fallback size to the fitted one.
+ *
+ * Everything else is unchanged from round 2: a masked per-letter stagger
+ * reveal on scroll into view, plus a magnetic hover (letters near the
+ * cursor lift/scale/tint violet, falling off with distance) — see the
+ * round-2 notes below for why IntersectionObserver instead of
+ * ScrollTrigger, and the reduced-motion / failsafe handling.
  */
 export default function FooterWordmark() {
   const reduced = usePrefersReducedMotion();
+  const wrapRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLParagraphElement>(null);
   const lettersRef = useRef<(HTMLSpanElement | null)[]>([]);
+
+  useLayoutEffect(() => {
+    const el = containerRef.current;
+    const wrap = wrapRef.current;
+    if (!el || !wrap) return;
+
+    const fit = () => {
+      const available = wrap.clientWidth;
+      if (!available) return;
+      el.style.fontSize = `${FIT_PROBE_SIZE}px`;
+      const natural = el.scrollWidth;
+      if (natural > 0) {
+        el.style.fontSize = `${(available / natural) * FIT_PROBE_SIZE}px`;
+      }
+    };
+
+    fit();
+    const ro = new ResizeObserver(fit);
+    ro.observe(wrap);
+    return () => ro.disconnect();
+  }, []);
 
   useEffect(() => {
     const letters = lettersRef.current.filter((el): el is HTMLSpanElement => Boolean(el));
@@ -91,25 +118,27 @@ export default function FooterWordmark() {
   };
 
   return (
-    <p
-      ref={containerRef}
-      onMouseMove={handleMove}
-      onMouseLeave={handleLeave}
-      aria-label="codeshaper"
-      className="m-0 flex select-none overflow-hidden whitespace-nowrap font-urbanist text-[clamp(3rem,15vw,11rem)] font-black leading-[0.85] tracking-tighter text-ink"
-    >
-      {WORD.split("").map((ch, i) => (
-        <span
-          key={i}
-          aria-hidden
-          ref={(el) => {
-            lettersRef.current[i] = el;
-          }}
-          className="inline-block"
-        >
-          {ch}
-        </span>
-      ))}
-    </p>
+    <div ref={wrapRef} className="w-full">
+      <p
+        ref={containerRef}
+        onMouseMove={handleMove}
+        onMouseLeave={handleLeave}
+        aria-label="codeshaper"
+        className="m-0 inline-flex select-none overflow-hidden whitespace-nowrap font-urbanist text-[clamp(3rem,15vw,11rem)] font-black uppercase leading-[0.85] tracking-tighter text-ink"
+      >
+        {WORD.split("").map((ch, i) => (
+          <span
+            key={i}
+            aria-hidden
+            ref={(el) => {
+              lettersRef.current[i] = el;
+            }}
+            className="inline-block"
+          >
+            {ch}
+          </span>
+        ))}
+      </p>
+    </div>
   );
 }
