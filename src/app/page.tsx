@@ -37,7 +37,7 @@ import FAQ from "@/components/sections/FAQ";
  * Reasoning: a cold organic-search visitor needs "what do you do" and
  * "who's it for" before "proof you can do it" and "who you are as a
  * studio" — the previous order showed case studies and company story
- * before the visitor knew what Codeshaper actually offers.
+ * before the visitor knew what CodeShaper actually offers.
  */
 export default function Home() {
   return (

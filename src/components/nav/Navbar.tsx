@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import * as Nav from "@radix-ui/react-navigation-menu";
 import { ChevronDown } from "lucide-react";
 import { SIMPLE_MENUS } from "@/lib/navigation";
@@ -87,22 +88,8 @@ export default function Navbar() {
           }`}
         >
           <div className="flex h-16 items-center justify-between px-6 lg:px-10">
-            <Link href="/" className="flex shrink-0 items-center gap-2.5" aria-label="Codeshaper home">
-              <svg width="26" height="28" viewBox="0 0 26 28" aria-hidden>
-                <path
-                  d="M13 1 L24.3 7.5 L24.3 20.5 L13 27 L1.7 20.5 L1.7 7.5 Z"
-                  fill="none"
-                  stroke="url(#logoGrad)"
-                  strokeWidth="2"
-                />
-                <defs>
-                  <linearGradient id="logoGrad" x1="0" y1="0" x2="1" y2="1">
-                    <stop offset="0%" stopColor="#667EEA" />
-                    <stop offset="100%" stopColor="#14B8A6" />
-                  </linearGradient>
-                </defs>
-              </svg>
-              <span className="font-urbanist text-lg font-bold tracking-tight text-ink">codeshaper</span>
+            <Link href="/" className="flex shrink-0 items-center" aria-label="CodeShaper home">
+              <Image src="/brand/logo.png" alt="codeShaper" width={169} height={60} priority className="h-8 w-auto" />
             </Link>
 
             <div ref={rootRef} className="ml-auto mr-6 hidden lg:block">

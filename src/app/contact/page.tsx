@@ -4,9 +4,9 @@ import Reveal from "@/components/system/Reveal";
 import ContactForm from "@/components/sections/ContactForm";
 
 export const metadata: Metadata = {
-  title: "Contact Codeshaper — Book a Call",
+  title: "Contact CodeShaper — Book a Call",
   description:
-    "Tell Codeshaper about your product, timeline, and scope. We'll recommend the right service and engagement model and get back to you within one business day.",
+    "Tell CodeShaper about your product, timeline, and scope. We'll recommend the right service and engagement model and get back to you within one business day.",
   alternates: { canonical: "/contact" },
 };
 

@@ -14,4 +14,4 @@
  */
 export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL ?? "https://codeshaper.example.com").replace(/\/$/, "");
 
-export const SITE_NAME = "Codeshaper";
+export const SITE_NAME = "CodeShaper";

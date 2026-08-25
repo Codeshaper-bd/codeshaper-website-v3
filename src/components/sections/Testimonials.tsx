@@ -47,7 +47,7 @@ const TESTIMONIALS: Testimonial[] = [
     type: "video",
     name: "Jordan Ellis",
     role: "Founder, Lumen Studio",
-    quote: "Codeshaper felt like an extension of our own team from day one.",
+    quote: "CodeShaper felt like an extension of our own team from day one.",
     poster: "https://picsum.photos/seed/testimonial-jordan/600/760",
     video: "/media/about-team.mp4",
     accent: "#7c6cff",

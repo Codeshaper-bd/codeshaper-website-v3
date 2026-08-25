@@ -4,8 +4,8 @@ import { useEffect, useLayoutEffect, useRef, type MouseEvent } from "react";
 import gsap from "gsap";
 import { usePrefersReducedMotion } from "@/lib/motion";
 
-const WORD = "codeshaper";
-const ACCENT = "#7c6cff";
+const WORD = "CodeShaper";
+const ACCENT = "#4D5CDE"; // sampled from the real logo mark (public/brand/logo.png)
 const BASE = "#f5f4f2"; // matches --color-ink in the dark (unthemed) scope Footer lives in
 const FIT_PROBE_SIZE = 100; // px — arbitrary known base used to compute the fit ratio
 
@@ -148,7 +148,7 @@ export default function FooterWordmark() {
         ref={containerRef}
         onMouseMove={handleMove}
         onMouseLeave={handleLeave}
-        aria-label="codeshaper"
+        aria-label="CodeShaper"
         className="m-0 inline-flex select-none overflow-hidden whitespace-nowrap font-urbanist text-[clamp(3rem,15vw,11rem)] font-black uppercase leading-[0.85] tracking-tighter text-ink"
       >
         {WORD.split("").map((ch, i) => (

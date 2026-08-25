@@ -32,7 +32,7 @@ import CountUp from "@/components/system/CountUp";
  */
 const FAQS: { q: string; a: string }[] = [
   {
-    q: "What services does Codeshaper offer?",
+    q: "What services does CodeShaper offer?",
     a: "Five core practices: Experience & Product Design, Product Engineering, Websites & Growth, Commerce Experiences, and AI & Automation — see Services for the full breakdown of each.",
   },
   {

@@ -1,5 +1,6 @@
 import type { CSSProperties } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { FileText, ArrowUp, Mail, Phone } from "lucide-react";
 import { SERVICE_COLUMNS, SIMPLE_MENUS, INDUSTRIES_POPULAR, ENGAGEMENT_MODELS } from "@/lib/navigation";
 import FooterWordmark from "./FooterWordmark";
@@ -79,7 +80,7 @@ export default function Footer() {
         <Reveal>
         <div className="flex flex-col gap-5 border-b border-hairline pb-8 sm:flex-row sm:items-center sm:justify-between">
           <p className="font-urbanist text-xs font-medium uppercase tracking-[0.25em] text-ink-faint">
-            Follow Codeshaper
+            Follow CodeShaper
           </p>
           <div className="flex items-center gap-3">
             {SOCIAL_LINKS.map((s) => (
@@ -152,17 +153,16 @@ export default function Footer() {
         <div className="mt-10 grid gap-10 lg:grid-cols-[280px_1fr] lg:gap-8">
           {/* Brand */}
           <div>
-            <Link href="/" className="flex items-center gap-2.5" aria-label="Codeshaper home">
-              <svg width="22" height="24" viewBox="0 0 26 28" aria-hidden>
-                <path
-                  d="M13 1 L24.3 7.5 L24.3 20.5 L13 27 L1.7 20.5 L1.7 7.5 Z"
-                  fill="none"
-                  stroke="#8B5FE0"
-                  strokeWidth="2"
-                />
-              </svg>
+            <Link href="/" className="flex items-center gap-2.5" aria-label="CodeShaper home">
+              {/* Footer sits on the dark (unthemed) surface, so the raster
+                  logo lockup (baked-in black wordmark) can't be used here —
+                  use the icon-only badge instead, which carries its own
+                  fill/contrast, paired with a live text-ink span so the
+                  wordmark still adapts correctly if this section's theme
+                  ever changes. */}
+              <Image src="/brand/favicon.png" alt="" width={32} height={32} className="h-7 w-7 rounded-md" />
               <span className="font-urbanist text-lg font-bold tracking-tight text-ink">
-                codeshaper
+                codeShaper
               </span>
             </Link>
             <p className="mt-4 max-w-xs font-urbanist text-sm leading-relaxed text-ink-faint">
@@ -279,7 +279,7 @@ export default function Footer() {
         {/* Legal bar */}
         <div className="mt-8 flex flex-wrap items-center justify-between gap-4 border-t border-hairline pt-6">
           <p className="font-urbanist text-xs text-ink-faint">
-            © {new Date().getFullYear()} Codeshaper. All rights reserved.
+            © {new Date().getFullYear()} CodeShaper. All rights reserved.
           </p>
           <div className="flex items-center gap-6">
             <Link href="/legal/privacy" className="font-urbanist text-xs text-ink-faint transition-colors hover:text-ink">

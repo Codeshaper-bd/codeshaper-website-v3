@@ -11,7 +11,7 @@ import { usePrefersReducedMotion, useMotionAllowed } from "@/lib/motion";
  * About — "who we are" section right after Services. Split layout: a
  * looping team/desk video on the left (TEMPORARY — a free Pexels clip,
  * desaturated to match the site's monochrome palette, standing in until a
- * real Codeshaper video is supplied) and copy + real, code-backed stats on
+ * real CodeShaper video is supplied) and copy + real, code-backed stats on
  * the right. Every stat here is an actual structural count already
  * established elsewhere on the site (SERVICE_COLUMNS, INDUSTRIES, the
  * TrustStrip client list, REGIONS) — no founding year, headcount, or
@@ -172,7 +172,7 @@ export default function AboutStudio() {
                 href="/company/about"
                 className="inline-flex items-center gap-2 rounded-full bg-aurora-violet px-7 py-3.5 font-urbanist text-sm font-semibold text-white transition-[background-color,transform] duration-300 hover:scale-[1.02] hover:bg-aurora-violet-dark"
               >
-                About Codeshaper
+                About CodeShaper
                 <ArrowRight size={15} strokeWidth={1.75} />
               </Link>
             </div>

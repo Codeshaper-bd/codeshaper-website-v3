@@ -24,9 +24,9 @@ const urbanist = localFont({
 });
 
 // SEO decision (Pass 1 §2): visible H1 stays short/human; keyword line lives here.
-const TITLE = "Product Design, Web & Mobile App Development, eCommerce & AI Automation | Codeshaper";
+const TITLE = "Product Design, Web & Mobile App Development, eCommerce & AI Automation | CodeShaper";
 const DESCRIPTION =
-  "Codeshaper helps teams design, build, modernize, and automate digital products — with weekly visibility, clean handover, and flexible engagement models.";
+  "CodeShaper helps teams design, build, modernize, and automate digital products — with weekly visibility, clean handover, and flexible engagement models.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -54,18 +54,19 @@ export const metadata: Metadata = {
 
 /**
  * Organization + WebSite JSON-LD. Only facts that are actually true are
- * asserted here: name and (placeholder, see lib/site.ts) URL. No `logo`
- * (nothing higher-res than the 32px favicon exists), no `sameAs` (no
- * real social profile URLs exist anywhere in this project — see
- * Footer.tsx — and a fake one is exactly the kind of unverifiable claim
- * this project avoids everywhere else), no `SearchAction` (there's no
- * on-site search to back that claim up).
+ * asserted here: name, the real logo (public/brand/logo.png, supplied
+ * directly by the client), and (placeholder, see lib/site.ts) URL. No
+ * `sameAs` (no real social profile URLs exist anywhere in this project
+ * — see Footer.tsx — and a fake one is exactly the kind of unverifiable
+ * claim this project avoids everywhere else), no `SearchAction` (there's
+ * no on-site search to back that claim up).
  */
 const ORG_JSON_LD = {
   "@context": "https://schema.org",
   "@type": "Organization",
   name: SITE_NAME,
   url: SITE_URL,
+  logo: `${SITE_URL}/brand/logo.png`,
 };
 
 const WEBSITE_JSON_LD = {
