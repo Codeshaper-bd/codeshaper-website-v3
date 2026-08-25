@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ComponentType, type SVGProps } from "react";
 import Reveal from "@/components/system/Reveal";
 import { usePrefersReducedMotion } from "@/lib/motion";
+import { StatueOfLibertyIcon, ClockTowerIcon, MosqueIcon, PagodaIcon, OperaHouseIcon, FernIcon } from "./LandmarkIcons";
 
 /**
  * Locations — round 2. Feedback: the previous 4-column region grid
@@ -23,6 +24,12 @@ import { usePrefersReducedMotion } from "@/lib/motion";
  * — only the country-level footprint was given — swap for the real
  * registered address per office. Country / role / description / best-for
  * content is real.
+ *
+ * Round 3: per-country landmark line icons (LandmarkIcons.tsx), inspired
+ * by musemind.agency's per-city illustrations — replace the plain dots
+ * as the active pin badge, the tab icons, and a hero badge in the detail
+ * panel. Deliberately generic silhouettes (not claims about one specific
+ * named building) where a country has no single obvious landmark.
  */
 type LocationDetail = {
   country: string;
@@ -33,6 +40,7 @@ type LocationDetail = {
   bestFor: string[];
   x: number;
   y: number;
+  icon: ComponentType<SVGProps<SVGSVGElement>>;
 };
 
 /** West → east, matching real longitude order — pins and tabs share this order. */
@@ -46,6 +54,7 @@ const LOCATIONS: LocationDetail[] = [
     bestFor: ["MVP sprints", "Roadmap planning", "Ongoing product iteration"],
     x: 6,
     y: 38,
+    icon: StatueOfLibertyIcon,
   },
   {
     country: "UK",
@@ -56,6 +65,7 @@ const LOCATIONS: LocationDetail[] = [
     bestFor: ["Product discovery", "Sprint planning", "Delivery oversight"],
     x: 24,
     y: 29.8,
+    icon: ClockTowerIcon,
   },
   {
     country: "Bangladesh",
@@ -66,6 +76,7 @@ const LOCATIONS: LocationDetail[] = [
     bestFor: ["End-to-end builds", "Dedicated product teams", "Ongoing iteration"],
     x: 42,
     y: 24.7,
+    icon: MosqueIcon,
   },
   {
     country: "Japan",
@@ -76,6 +87,7 @@ const LOCATIONS: LocationDetail[] = [
     bestFor: ["Product planning", "Stakeholder coordination", "Delivery alignment"],
     x: 60,
     y: 24.7,
+    icon: PagodaIcon,
   },
   {
     country: "Australia",
@@ -86,6 +98,7 @@ const LOCATIONS: LocationDetail[] = [
     bestFor: ["Dedicated team collaboration", "Ongoing roadmap delivery"],
     x: 78,
     y: 29.8,
+    icon: OperaHouseIcon,
   },
   {
     country: "New Zealand",
@@ -96,6 +109,7 @@ const LOCATIONS: LocationDetail[] = [
     bestFor: ["Product support", "Iteration cycles", "Cross-timezone teams"],
     x: 96,
     y: 38,
+    icon: FernIcon,
   },
 ];
 
@@ -127,6 +141,7 @@ function RouteMap({ active, onPick }: { active: number; onPick: (i: number) => v
       {LOCATIONS.map((p, i) => {
         const isActive = i === active;
         const accent = accentFor(p.role);
+        const Icon = p.icon;
         return (
           <button
             key={p.country}
@@ -137,17 +152,34 @@ function RouteMap({ active, onPick }: { active: number; onPick: (i: number) => v
             className="absolute flex -translate-x-1/2 -translate-y-1/2 flex-col items-center"
             style={{ left: `${p.x}%`, top: `${p.y}%` }}
           >
-            <span
-              aria-hidden
-              className={isActive ? "dot-pulse block rounded-full" : "block rounded-full transition-all duration-300"}
-              style={{
-                width: isActive ? 12 : 8,
-                height: isActive ? 12 : 8,
-                backgroundColor: isActive ? accent : "#ffffff",
-                opacity: isActive ? 1 : 0.55,
-                boxShadow: isActive ? `0 0 16px ${accent}` : "0 0 6px rgba(255,255,255,0.5)",
-              }}
-            />
+            {isActive ? (
+              <span
+                aria-hidden
+                className="dot-pulse relative flex items-center justify-center rounded-full border backdrop-blur-sm"
+                style={{
+                  width: 34,
+                  height: 34,
+                  color: accent,
+                  borderColor: `${accent}55`,
+                  backgroundColor: `${accent}22`,
+                  boxShadow: `0 0 18px ${accent}88`,
+                }}
+              >
+                <Icon width={18} height={18} strokeWidth={1.6} />
+              </span>
+            ) : (
+              <span
+                aria-hidden
+                className="block rounded-full transition-all duration-300"
+                style={{
+                  width: 8,
+                  height: 8,
+                  backgroundColor: "#ffffff",
+                  opacity: 0.55,
+                  boxShadow: "0 0 6px rgba(255,255,255,0.5)",
+                }}
+              />
+            )}
             <span
               className="absolute top-full mt-2 hidden whitespace-nowrap font-urbanist text-[10.5px] font-semibold uppercase tracking-[0.14em] transition-colors duration-300 sm:block"
               style={{ color: isActive ? accent : "rgba(255,255,255,0.4)" }}
@@ -179,6 +211,7 @@ export default function Locations() {
 
   const current = LOCATIONS[active];
   const accent = accentFor(current.role);
+  const CurrentIcon = current.icon;
 
   return (
     <section
@@ -249,6 +282,7 @@ export default function Locations() {
               {LOCATIONS.map((loc, i) => {
                 const isActive = i === active;
                 const a = accentFor(loc.role);
+                const Icon = loc.icon;
                 return (
                   <button
                     key={loc.country}
@@ -263,6 +297,7 @@ export default function Locations() {
                       color: isActive ? a : "rgba(255,255,255,0.55)",
                     }}
                   >
+                    <Icon width={15} height={15} strokeWidth={1.6} />
                     {loc.country}
                   </button>
                 );
@@ -270,23 +305,38 @@ export default function Locations() {
             </div>
 
             <div key={active} className="lens-fade-in mt-7 flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
-              <div>
-                <p className="font-urbanist text-[10.5px] font-semibold uppercase tracking-[0.16em] text-white/40">
-                  {current.region}
-                  <span className="ml-1.5 font-normal text-white/25">— {current.regionNote}</span>
-                </p>
-                <div className="mt-2 flex items-center gap-2">
-                  <span className="h-1.5 w-1.5 shrink-0 rounded-full" style={{ backgroundColor: accent }} aria-hidden />
-                  <p className="font-urbanist text-[10.5px] font-semibold uppercase tracking-[0.14em] text-white/45">{current.role}</p>
+              <div className="flex gap-5">
+                <div
+                  className="relative flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-2xl border sm:h-[72px] sm:w-[72px]"
+                  style={{ borderColor: `${accent}40`, backgroundColor: `${accent}14` }}
+                >
+                  <div
+                    aria-hidden
+                    className="absolute inset-0"
+                    style={{ background: `radial-gradient(circle at 30% 20%, ${accent}55, transparent 70%)` }}
+                  />
+                  <CurrentIcon className="relative sm:hidden" width={26} height={26} strokeWidth={1.4} style={{ color: accent }} />
+                  <CurrentIcon className="relative hidden sm:block" width={34} height={34} strokeWidth={1.3} style={{ color: accent }} />
                 </div>
-                <h3 className="mt-1.5 font-urbanist text-2xl font-bold tracking-tight text-white">{current.country}</h3>
-                <p className="mt-3 max-w-md font-urbanist text-[13.5px] leading-relaxed text-white/60">{current.short}</p>
-                <div className="mt-4 flex flex-wrap gap-1.5">
-                  {current.bestFor.map((tag) => (
-                    <span key={tag} className="rounded-full border border-white/15 bg-white/[0.07] px-2.5 py-1 font-urbanist text-[10.5px] text-white/70">
-                      {tag}
-                    </span>
-                  ))}
+
+                <div>
+                  <p className="font-urbanist text-[10.5px] font-semibold uppercase tracking-[0.16em] text-white/40">
+                    {current.region}
+                    <span className="ml-1.5 font-normal text-white/25">— {current.regionNote}</span>
+                  </p>
+                  <div className="mt-2 flex items-center gap-2">
+                    <span className="h-1.5 w-1.5 shrink-0 rounded-full" style={{ backgroundColor: accent }} aria-hidden />
+                    <p className="font-urbanist text-[10.5px] font-semibold uppercase tracking-[0.14em] text-white/45">{current.role}</p>
+                  </div>
+                  <h3 className="mt-1.5 font-urbanist text-2xl font-bold tracking-tight text-white">{current.country}</h3>
+                  <p className="mt-3 max-w-md font-urbanist text-[13.5px] leading-relaxed text-white/60">{current.short}</p>
+                  <div className="mt-4 flex flex-wrap gap-1.5">
+                    {current.bestFor.map((tag) => (
+                      <span key={tag} className="rounded-full border border-white/15 bg-white/[0.07] px-2.5 py-1 font-urbanist text-[10.5px] text-white/70">
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
                 </div>
               </div>
 
