@@ -1,24 +1,32 @@
 import Link from "next/link";
-import { FileText } from "lucide-react";
+import { FileText, ArrowUp } from "lucide-react";
 import { SERVICE_COLUMNS, SIMPLE_MENUS, INDUSTRIES, ENGAGEMENT_MODELS } from "@/lib/navigation";
 
 /**
- * Footer — round 2, inspired by musemind.agency / designmonks.co (a huge
- * wordmark as a closing graphic statement) and Vivasoft / JoulesLabs (a
- * "Company Profile" link near the brand block). 5-column link grid is
- * unchanged; three additions on top:
+ * Footer — round 3. Feedback: the link columns read as "very basic" —
+ * plain floating text on flat black, no structure — next to designmonks.co,
+ * which groups its links inside bordered/textured panels rather than
+ * leaving them loose.
  *
- * 1. "Company Profile" — no PDF asset exists yet, so this points at the
- *    real /company/about route rather than a fabricated download link
- *    that would 404. Swap the href for a real PDF if one gets added.
- * 2. The giant "codeshaper" wordmark sits in its own row near the
- *    bottom, same casing as the real logo lockup above — a static
- *    graphic close, not an animated element, matching how the
- *    reference sites use it (a full stop, not something to interact
- *    with).
- * 3. "Contact" removed from the Company links row per explicit request
- *    — FinalCtaForm right above this footer already is the contact
- *    surface, so a second "Contact" link here was redundant.
+ * Kept the 5-column content (Brand + Services/Industries/How We
+ * Engage/Insights) but regrouped the 4 link columns into one bordered,
+ * divided panel (`divide-x` on desktop, `divide-y` stacked on mobile)
+ * instead of four columns floating independently — the actual fix for
+ * "basic," not just a coat of paint. Added a subtle violet ambient glow
+ * behind the whole footer for depth (same restrained accent language as
+ * every other dark section, not designmonks' literal green wash), small
+ * accent-dot bullets on each column heading (matching the eyebrow-dot
+ * convention used everywhere else on this site), and a "Back to top"
+ * control near the legal bar — a plain `href="#"` anchor, no client JS
+ * needed since an empty fragment already scrolls to the document top.
+ *
+ * The giant "codeshaper" wordmark stays as-is (round 2) — that wasn't
+ * part of this round's complaint.
+ *
+ * FinalCtaForm (the homepage contact-form section that used to sit
+ * directly above this footer) was removed per direct request; the
+ * "Contact" entry was already dropped from the Company links row last
+ * round for the same reason, so nothing else changes on that front.
  *
  * No social icons and no certification/award badges (ISO, GDPR, Clutch
  * rating, etc.) like the references show — none of those exist for this
@@ -31,14 +39,28 @@ const insights = SIMPLE_MENUS.find((m) => m.id === "insights")!;
 const company = SIMPLE_MENUS.find((m) => m.id === "company")!;
 const companyLinks = company.links.filter((l) => l.label !== "Contact");
 
-const colHead = "mb-4 font-urbanist text-xs font-medium uppercase tracking-[0.2em] text-ink-faint";
 const colLink = "link-underline font-urbanist text-sm text-ink-dim transition-colors hover:text-ink";
+
+function ColHead({ children }: { children: string }) {
+  return (
+    <p className="mb-4 flex items-center gap-2 font-urbanist text-xs font-medium uppercase tracking-[0.2em] text-ink-faint">
+      <span className="h-1 w-1 shrink-0 rounded-full bg-aurora-amber" aria-hidden />
+      {children}
+    </p>
+  );
+}
 
 export default function Footer() {
   return (
     <footer className="relative overflow-hidden border-t border-hairline bg-canvas pb-10 pt-20">
-      <div className="mx-auto max-w-7xl px-6 lg:px-10">
-        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-5">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0"
+        style={{ background: "radial-gradient(60% 45% at 50% 0%, rgba(124,108,255,0.1), transparent 70%)" }}
+      />
+
+      <div className="relative mx-auto max-w-7xl px-6 lg:px-10">
+        <div className="grid gap-10 lg:grid-cols-[280px_1fr] lg:gap-8">
           {/* Brand */}
           <div>
             <Link href="/" className="flex items-center gap-2.5" aria-label="Codeshaper home">
@@ -67,63 +89,68 @@ export default function Footer() {
             </Link>
           </div>
 
-          {/* Services */}
-          <div>
-            <p className={colHead}>Services</p>
-            <ul className="space-y-2.5">
-              {SERVICE_COLUMNS.map((c) => (
-                <li key={c.id}>
-                  <Link href={c.href} className={colLink}>{c.title}</Link>
-                </li>
-              ))}
-              <li>
-                <Link href="/services" className={colLink}>All services →</Link>
-              </li>
-            </ul>
-          </div>
+          {/* Link panel — one bordered card, divided internally instead of four loose columns */}
+          <div className="overflow-hidden rounded-[28px] border border-white/10 bg-white/[0.02]">
+            <div className="grid divide-y divide-white/10 sm:grid-cols-2 sm:divide-x sm:divide-y-0 lg:grid-cols-4">
+              {/* Services */}
+              <div className="p-6 sm:p-7">
+                <ColHead>Services</ColHead>
+                <ul className="space-y-2.5">
+                  {SERVICE_COLUMNS.map((c) => (
+                    <li key={c.id}>
+                      <Link href={c.href} className={colLink}>{c.title}</Link>
+                    </li>
+                  ))}
+                  <li>
+                    <Link href="/services" className={colLink}>All services →</Link>
+                  </li>
+                </ul>
+              </div>
 
-          {/* Industries */}
-          <div>
-            <p className={colHead}>Industries</p>
-            <ul className="space-y-2.5">
-              {INDUSTRIES.map((l) => (
-                <li key={l.href}>
-                  <Link href={l.href} className={colLink}>{l.label}</Link>
-                </li>
-              ))}
-              <li>
-                <Link href="/industries" className={colLink}>All industries →</Link>
-              </li>
-            </ul>
-          </div>
+              {/* Industries */}
+              <div className="p-6 sm:p-7">
+                <ColHead>Industries</ColHead>
+                <ul className="space-y-2.5">
+                  {INDUSTRIES.map((l) => (
+                    <li key={l.href}>
+                      <Link href={l.href} className={colLink}>{l.label}</Link>
+                    </li>
+                  ))}
+                  <li>
+                    <Link href="/industries" className={colLink}>All industries →</Link>
+                  </li>
+                </ul>
+              </div>
 
-          {/* How We Engage */}
-          <div>
-            <p className={colHead}>How We Engage</p>
-            <ul className="space-y-2.5">
-              {ENGAGEMENT_MODELS.map((l) => (
-                <li key={l.href}>
-                  <Link href={l.href} className={colLink}>{l.label}</Link>
-                </li>
-              ))}
-            </ul>
-          </div>
+              {/* How We Engage */}
+              <div className="p-6 sm:p-7">
+                <ColHead>How We Engage</ColHead>
+                <ul className="space-y-2.5">
+                  {ENGAGEMENT_MODELS.map((l) => (
+                    <li key={l.href}>
+                      <Link href={l.href} className={colLink}>{l.label}</Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
 
-          {/* Insights */}
-          <div>
-            <p className={colHead}>Insights</p>
-            <ul className="space-y-2.5">
-              {insights.links.map((l) => (
-                <li key={l.href}>
-                  <Link href={l.href} className={colLink}>{l.label}</Link>
-                </li>
-              ))}
-            </ul>
+              {/* Insights */}
+              <div className="p-6 sm:p-7">
+                <ColHead>Insights</ColHead>
+                <ul className="space-y-2.5">
+                  {insights.links.map((l) => (
+                    <li key={l.href}>
+                      <Link href={l.href} className={colLink}>{l.label}</Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* Company row (Contact removed — FinalCtaForm above is the contact surface) */}
-        <div className="mt-14 flex flex-wrap items-center gap-x-8 gap-y-3 border-t border-hairline pt-8">
+        {/* Company row */}
+        <div className="mt-10 flex flex-wrap items-center gap-x-8 gap-y-3 border-t border-hairline pt-8">
           {companyLinks.map((l) => (
             <Link key={l.href} href={l.href} className={colLink}>
               {l.label}
@@ -152,13 +179,20 @@ export default function Footer() {
           <p className="font-urbanist text-xs text-ink-faint">
             © {new Date().getFullYear()} Codeshaper. All rights reserved.
           </p>
-          <div className="flex gap-6">
+          <div className="flex items-center gap-6">
             <Link href="/legal/privacy" className="font-urbanist text-xs text-ink-faint transition-colors hover:text-ink">
               Privacy
             </Link>
             <Link href="/legal/terms" className="font-urbanist text-xs text-ink-faint transition-colors hover:text-ink">
               Terms
             </Link>
+            <a
+              href="#"
+              aria-label="Back to top"
+              className="flex h-8 w-8 items-center justify-center rounded-full border border-hairline text-ink-faint transition-colors hover:border-ink-faint hover:text-ink"
+            >
+              <ArrowUp size={14} strokeWidth={1.75} />
+            </a>
           </div>
         </div>
       </div>

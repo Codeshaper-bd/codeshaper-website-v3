@@ -36,7 +36,7 @@ export default function MobileMenu({ open, onClose }: { open: boolean; onClose: 
       aria-hidden={!open}
     >
       <nav aria-label="Mobile" className="px-6 py-8">
-        <Link href="/" onClick={onClose} className="block py-3 font-urbanist text-lg font-medium text-ink">
+        <Link href="/" onClick={onClose} className="block py-4 font-urbanist text-base font-medium text-ink">
           Home
         </Link>
 

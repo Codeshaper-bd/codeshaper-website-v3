@@ -14,20 +14,24 @@ import EngagementModels from "@/components/sections/EngagementModels";
 import Testimonials from "@/components/sections/Testimonials";
 import Locations from "@/components/sections/Locations";
 import FAQ from "@/components/sections/FAQ";
-import FinalCtaForm from "@/components/sections/FinalCtaForm";
 import Footer from "@/components/sections/Footer";
 import Reveal from "@/components/system/Reveal";
 
 /**
  * PASS 2: motion layer active — Lenis smooth scroll, custom cursor
  * (desktop ≥1024px), shared reveal system, parallax (hero only),
- * magnetic CTAs (hero + form only). No pinning anywhere.
+ * magnetic CTAs (hero only). No pinning anywhere.
  * Footer is a quiet zone: simple fade-in, no cursor effects.
  * Pass 3 (video media) still pending.
  *
  * AI Spotlight and Delivery System (including its "Standards that
  * reduce rework" block) were removed per direct request — that content
  * now lives only in the dedicated Services/How We Work pages.
+ *
+ * FinalCtaForm (the full contact-form section) was removed per direct
+ * request — FAQ's own "Still have questions?" card and the Navbar's
+ * "Book a Call" cover the same conversion path without a second,
+ * heavier lead-gen form right before the footer.
  */
 export default function Home() {
   return (
@@ -49,7 +53,6 @@ export default function Home() {
         <AiDevExcellence />
         <Locations />
         <FAQ />
-        <FinalCtaForm />
       </main>
       <Reveal distance={0}>
         <Footer />
