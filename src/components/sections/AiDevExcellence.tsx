@@ -1,6 +1,6 @@
 "use client";
 
-import type { CSSProperties } from "react";
+import { useEffect, useState, type CSSProperties } from "react";
 import Link from "next/link";
 import { ArrowRight, ClipboardList, Code2, ShieldCheck, Rocket, Cpu, Bot, User, type LucideIcon } from "lucide-react";
 import Reveal from "@/components/system/Reveal";
@@ -8,25 +8,26 @@ import CountUp from "@/components/system/CountUp";
 import { usePrefersReducedMotion } from "@/lib/motion";
 
 /**
- * AI-Driven Development — round 2 redesign. Feedback asked for three
- * things: (1) make the concept explicit — "AI with human make the
- * process faster" — (2) more animation/impact, (3) big brainstation-style
- * stat numbers.
+ * AI-Driven Development — round 3. Feedback: the section had grown too
+ * tall (visual + a full-width stat band + a full-width phase row, each
+ * with its own vertical rhythm), and the animation ("dashed lines +
+ * floating icons") read as basic rather than modern/interactive.
  *
- * (1) The visual is now a converging diagram: an "AI" node and a "Human"
- * node feed into one core, which fans out to the 4 delivery phases —
- * literally depicting AI + human collaboration driving the pipeline,
- * rather than an abstract "AI core" alone.
+ * Consolidated everything into ONE panel: a compact diagram next to an
+ * interactive phase switcher (tabs crossfade the description via
+ * .lens-fade-in, and highlight the matching path/node in the diagram —
+ * same "hover to spotlight" idea as TechStack's board, applied here via
+ * React state instead of :has() since the trigger and target are two
+ * different subtrees). Idles into a slow auto-cycle so it reads as alive
+ * without anyone touching it; hovering the tab row pauses it, clicking
+ * pins a choice. Traveling glow dots (blurred SVG circles) replace the
+ * dashed connector animation — solid lines read calmer/more premium than
+ * a technical-diagram dash crawl.
  *
- * (2) Added: floating bob on every node (staggered delay so they're not
- * synced), a traveling particle on every connector line on top of the
- * existing dashed flow animation, and count-up numbers on scroll.
- *
- * (3) PLACEHOLDER_STATS below are dummy numbers, per explicit request
- * ("use dummy number and later I will update them with my real
- * numbers" — 2026-08-25). Unlike the 37/4 counts (real, derived from
- * TECH_STACK.length and PHASES.length), these are NOT verified facts —
- * swap them for real figures before this ships.
+ * PLACEHOLDER_STATS are still dummy values per explicit request ("use
+ * dummy number and later I will update them with my real numbers") —
+ * kept separate from the honest 37/4 counts (TECH_STACK.length /
+ * PHASES.length) in the caption below the panel.
  */
 type Phase = {
   phase: string;
@@ -77,23 +78,48 @@ const PLACEHOLDER_STATS: { value: number; suffix: string; label: string }[] = [
 const TOOLS_COUNT = 37; // TECH_STACK.length in TechStack.tsx — keep in sync
 const PHASE_COUNT = PHASES.length;
 
-const AI_NODE = { label: "AI", icon: Bot, accent: "#9db8ff", x: 22.5, y: 20 };
-const HUMAN_NODE = { label: "Human", icon: User, accent: "#e8637e", x: 77.5, y: 20 };
-const CORE_POS = { x: 50, y: 46 };
+const AI_NODE = { label: "AI", icon: Bot, accent: "#9db8ff", x: 26, y: 14 };
+const HUMAN_NODE = { label: "Human", icon: User, accent: "#e8637e", x: 74, y: 14 };
+const CORE_POS = { x: 50, y: 42 };
 const PHASE_POS = [
-  { x: 8.75, y: 72 },
-  { x: 36.25, y: 72 },
-  { x: 63.75, y: 72 },
-  { x: 91.25, y: 72 },
+  { x: 12, y: 78 },
+  { x: 37.3, y: 78 },
+  { x: 62.6, y: 78 },
+  { x: 88, y: 78 },
 ];
 
-function FlowLine({ x1, y1, x2, y2, color, animateParticle }: { x1: number; y1: number; x2: number; y2: number; color: string; animateParticle: boolean }) {
+function GlowLine({
+  x1,
+  y1,
+  x2,
+  y2,
+  color,
+  active,
+  animate,
+}: {
+  x1: number;
+  y1: number;
+  x2: number;
+  y2: number;
+  color: string;
+  active: boolean;
+  animate: boolean;
+}) {
   return (
     <>
-      <line x1={x1} y1={y1} x2={x2} y2={y2} stroke={color} strokeOpacity="0.4" strokeWidth="0.6" strokeDasharray="2.4 2.4" className="ai-flow-line" />
-      {animateParticle && (
-        <circle r="1.1" fill={color}>
-          <animateMotion dur="2.4s" repeatCount="indefinite" path={`M${x1},${y1} L${x2},${y2}`} />
+      <line
+        x1={x1}
+        y1={y1}
+        x2={x2}
+        y2={y2}
+        stroke={color}
+        strokeWidth={active ? 0.9 : 0.5}
+        strokeOpacity={active ? 0.75 : 0.22}
+        style={{ transition: "stroke-width 400ms ease, stroke-opacity 400ms ease" }}
+      />
+      {animate && (
+        <circle r={active ? 1.4 : 0.9} fill={color} filter="url(#ai-dev-glow)" opacity={active ? 1 : 0.55}>
+          <animateMotion dur={active ? "1.6s" : "2.6s"} repeatCount="indefinite" path={`M${x1},${y1} L${x2},${y2}`} />
         </circle>
       )}
     </>
@@ -108,8 +134,7 @@ function NodeBadge({
   accent,
   icon: Icon,
   label,
-  floatDelay,
-  animate,
+  active,
 }: {
   x: number;
   y: number;
@@ -118,54 +143,79 @@ function NodeBadge({
   accent: string;
   icon: LucideIcon;
   label?: string;
-  floatDelay: number;
-  animate: boolean;
+  active?: boolean;
 }) {
   return (
-    <div className="absolute" style={{ left: `${x}%`, top: `${y}%`, transform: "translate(-50%, -50%)" }}>
-      <div className={animate ? "ai-node-float relative" : "relative"} style={{ animationDelay: `${floatDelay}s` }}>
-        <span aria-hidden className="ai-pulse absolute inset-0 rounded-full" style={{ "--pulse-color": accent } as CSSProperties} />
-        <span
-          className="relative flex items-center justify-center rounded-full border border-white/15 bg-white/[0.08] backdrop-blur-sm"
-          style={{ width: size, height: size, color: accent }}
-        >
-          <Icon size={iconSize} strokeWidth={1.75} />
-        </span>
-        {label && (
-          <span className="absolute left-1/2 top-full mt-2 -translate-x-1/2 whitespace-nowrap font-urbanist text-[10.5px] font-semibold uppercase tracking-[0.16em] text-white/60">
-            {label}
-          </span>
-        )}
+    <div
+      className="absolute"
+      style={{ left: `${x}%`, top: `${y}%`, transform: "translate(-50%, -50%)" }}
+    >
+      <div
+        className="relative flex items-center justify-center rounded-full border backdrop-blur-sm transition-[transform,background-color,border-color,box-shadow] duration-400"
+        style={{
+          width: size,
+          height: size,
+          color: accent,
+          borderColor: active ? `${accent}66` : "rgba(255,255,255,0.14)",
+          backgroundColor: active ? `${accent}22` : "rgba(255,255,255,0.06)",
+          boxShadow: active ? `0 0 24px ${accent}55` : "none",
+          transform: active ? "scale(1.12)" : "scale(1)",
+        }}
+      >
+        <Icon size={iconSize} strokeWidth={1.75} />
       </div>
+      {label && (
+        <span
+          className="absolute left-1/2 top-full mt-1.5 -translate-x-1/2 whitespace-nowrap font-urbanist text-[10px] font-semibold uppercase tracking-[0.14em] transition-colors duration-300"
+          style={{ color: active ? accent : "rgba(255,255,255,0.45)" }}
+        >
+          {label}
+        </span>
+      )}
     </div>
   );
 }
 
-function AiHumanVisual() {
+function AiHumanDiagram({ activeIndex }: { activeIndex: number }) {
   const reduced = usePrefersReducedMotion();
   const animate = !reduced;
 
   return (
-    <div className="relative aspect-[16/10] w-full overflow-hidden rounded-[32px] bg-ink">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_38%,rgba(255,255,255,0.1),transparent_60%)]" />
-
+    <div className="relative mx-auto aspect-square w-full max-w-[300px]">
       <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="absolute inset-0 h-full w-full" aria-hidden>
-        <FlowLine x1={AI_NODE.x} y1={AI_NODE.y} x2={HUMAN_NODE.x} y2={HUMAN_NODE.y} color="#ffffff" animateParticle={animate} />
-        <FlowLine x1={AI_NODE.x} y1={AI_NODE.y} x2={CORE_POS.x} y2={CORE_POS.y} color={AI_NODE.accent} animateParticle={animate} />
-        <FlowLine x1={HUMAN_NODE.x} y1={HUMAN_NODE.y} x2={CORE_POS.x} y2={CORE_POS.y} color={HUMAN_NODE.accent} animateParticle={animate} />
+        <defs>
+          <filter id="ai-dev-glow" x="-200%" y="-200%" width="500%" height="500%">
+            <feGaussianBlur stdDeviation="1.1" />
+          </filter>
+        </defs>
+        <GlowLine x1={AI_NODE.x} y1={AI_NODE.y} x2={HUMAN_NODE.x} y2={HUMAN_NODE.y} color="#ffffff" active={false} animate={animate} />
+        <GlowLine x1={AI_NODE.x} y1={AI_NODE.y} x2={CORE_POS.x} y2={CORE_POS.y} color={AI_NODE.accent} active={false} animate={animate} />
+        <GlowLine x1={HUMAN_NODE.x} y1={HUMAN_NODE.y} x2={CORE_POS.x} y2={CORE_POS.y} color={HUMAN_NODE.accent} active={false} animate={animate} />
         {PHASE_POS.map((pos, i) => (
-          <FlowLine key={i} x1={CORE_POS.x} y1={CORE_POS.y} x2={pos.x} y2={pos.y} color={PHASES[i].accent} animateParticle={animate} />
+          <GlowLine
+            key={i}
+            x1={CORE_POS.x}
+            y1={CORE_POS.y}
+            x2={pos.x}
+            y2={pos.y}
+            color={PHASES[i].accent}
+            active={i === activeIndex}
+            animate={animate}
+          />
         ))}
       </svg>
 
-      <NodeBadge x={AI_NODE.x} y={AI_NODE.y} size={52} iconSize={20} accent={AI_NODE.accent} icon={AI_NODE.icon} label={AI_NODE.label} floatDelay={0} animate={animate} />
-      <NodeBadge x={HUMAN_NODE.x} y={HUMAN_NODE.y} size={52} iconSize={20} accent={HUMAN_NODE.accent} icon={HUMAN_NODE.icon} label={HUMAN_NODE.label} floatDelay={0.6} animate={animate} />
+      <NodeBadge x={AI_NODE.x} y={AI_NODE.y} size={44} iconSize={17} accent={AI_NODE.accent} icon={AI_NODE.icon} label={AI_NODE.label} />
+      <NodeBadge x={HUMAN_NODE.x} y={HUMAN_NODE.y} size={44} iconSize={17} accent={HUMAN_NODE.accent} icon={HUMAN_NODE.icon} label={HUMAN_NODE.label} />
 
       <div className="absolute" style={{ left: `${CORE_POS.x}%`, top: `${CORE_POS.y}%`, transform: "translate(-50%, -50%)" }}>
-        <span aria-hidden className="ai-pulse-lg absolute inset-0 rounded-full" style={{ "--pulse-color": "#ffffff" } as CSSProperties} />
-        <span className="relative flex h-16 w-16 items-center justify-center rounded-full border border-white/25 bg-white/[0.12] text-white shadow-[0_0_40px_rgba(255,255,255,0.15)]">
-          <Cpu size={24} strokeWidth={1.5} />
-        </span>
+        <div className="relative">
+          {animate && <div className="ai-core-ring absolute -inset-1.5 rounded-full p-px" />}
+          <span aria-hidden className="ai-pulse-lg absolute inset-0 rounded-full" style={{ "--pulse-color": "#ffffff" } as CSSProperties} />
+          <span className="relative flex h-14 w-14 items-center justify-center rounded-full border border-white/25 bg-ink text-white shadow-[0_0_30px_rgba(255,255,255,0.18)]">
+            <Cpu size={22} strokeWidth={1.5} />
+          </span>
+        </div>
       </div>
 
       {PHASES.map((p, i) => {
@@ -175,13 +225,12 @@ function AiHumanVisual() {
             key={p.phase}
             x={pos.x}
             y={pos.y}
-            size={44}
-            iconSize={17}
+            size={38}
+            iconSize={15}
             accent={p.accent}
             icon={p.icon}
             label={p.phase}
-            floatDelay={1.1 + i * 0.3}
-            animate={animate}
+            active={i === activeIndex}
           />
         );
       })}
@@ -190,67 +239,97 @@ function AiHumanVisual() {
 }
 
 export default function AiDevExcellence() {
+  const reduced = usePrefersReducedMotion();
+  const [active, setActive] = useState(0);
+  const [autoPaused, setAutoPaused] = useState(false);
+
+  useEffect(() => {
+    if (reduced || autoPaused) return;
+    const id = setInterval(() => setActive((a) => (a + 1) % PHASES.length), 3800);
+    return () => clearInterval(id);
+  }, [reduced, autoPaused]);
+
+  const activePhase = PHASES[active];
+  const ActiveIcon = activePhase.icon;
+
   return (
-    <section className="theme-light relative bg-light-surface py-16 lg:py-20" aria-labelledby="ai-dev-heading">
+    <section className="theme-light relative bg-light-surface py-14 lg:py-16" aria-labelledby="ai-dev-heading">
       <div className="mx-auto max-w-7xl px-6 lg:px-10">
         <Reveal>
-          <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-            <div>
-              <p className="mb-3 inline-flex items-center gap-2.5 font-urbanist text-[11px] font-medium uppercase tracking-[0.28em] text-ink-dim">
-                <span className="h-1.5 w-1.5 rounded-full bg-aurora-amber" />
-                AI-Driven Development
-              </p>
-              <h2 id="ai-dev-heading" className="max-w-2xl font-urbanist text-3xl font-bold leading-tight tracking-tight text-ink sm:text-4xl">
-                AI and people, working the same pipeline.
-              </h2>
-            </div>
-            <p className="max-w-sm font-urbanist text-[15px] leading-relaxed text-ink-dim">
-              AI speeds up every phase; people still make the calls that matter — that pairing is what makes the process faster without cutting corners.
-            </p>
-          </div>
+          <p className="mb-3 inline-flex items-center gap-2.5 font-urbanist text-[11px] font-medium uppercase tracking-[0.28em] text-ink-dim">
+            <span className="h-1.5 w-1.5 rounded-full bg-aurora-amber" />
+            AI-Driven Development
+          </p>
+          <h2 id="ai-dev-heading" className="max-w-2xl font-urbanist text-3xl font-bold leading-tight tracking-tight text-ink sm:text-4xl">
+            AI and people, working the same pipeline.
+          </h2>
         </Reveal>
 
         <Reveal delay={80}>
-          <div className="mt-10">
-            <AiHumanVisual />
+          <div className="mt-8 overflow-hidden rounded-[32px] bg-ink p-6 sm:p-8 lg:p-10">
+            <div className="grid gap-10 lg:grid-cols-[300px_1fr] lg:items-center lg:gap-14">
+              <AiHumanDiagram activeIndex={active} />
+
+              <div>
+                <div
+                  className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap"
+                  onMouseEnter={() => setAutoPaused(true)}
+                  onMouseLeave={() => setAutoPaused(false)}
+                >
+                  {PHASES.map((p, i) => {
+                    const Icon = p.icon;
+                    const isActive = i === active;
+                    return (
+                      <button
+                        key={p.phase}
+                        type="button"
+                        onMouseEnter={() => setActive(i)}
+                        onFocus={() => setActive(i)}
+                        onClick={() => {
+                          setActive(i);
+                          setAutoPaused(true);
+                        }}
+                        className="flex items-center justify-center gap-2 rounded-full border px-4 py-2 font-urbanist text-[13px] font-semibold transition-[background-color,border-color,color] duration-300 sm:justify-start"
+                        style={{
+                          borderColor: isActive ? `${p.accent}80` : "rgba(255,255,255,0.12)",
+                          backgroundColor: isActive ? `${p.accent}1f` : "transparent",
+                          color: isActive ? p.accent : "rgba(255,255,255,0.55)",
+                        }}
+                      >
+                        <Icon size={15} strokeWidth={1.75} />
+                        {p.phase}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                <div key={active} className="lens-fade-in mt-6">
+                  <div className="flex items-center gap-3">
+                    <span className="flex h-9 w-9 items-center justify-center rounded-xl" style={{ backgroundColor: `${activePhase.accent}1f`, color: activePhase.accent }}>
+                      <ActiveIcon size={18} strokeWidth={1.75} />
+                    </span>
+                    <h3 className="font-urbanist text-lg font-bold leading-snug text-white">{activePhase.title}</h3>
+                  </div>
+                  <p className="mt-3 max-w-md font-urbanist text-[14px] leading-relaxed text-white/55">{activePhase.description}</p>
+                </div>
+
+                <div className="mt-7 flex flex-wrap gap-x-8 gap-y-4 border-t border-white/10 pt-6">
+                  {PLACEHOLDER_STATS.map((s) => (
+                    <div key={s.label}>
+                      <p className="font-urbanist text-2xl font-bold tracking-tight text-white sm:text-[28px]">
+                        <CountUp value={s.value} suffix={s.suffix} />
+                      </p>
+                      <p className="mt-1 font-urbanist text-[11.5px] leading-snug text-white/45">{s.label}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
           </div>
         </Reveal>
 
         <Reveal delay={140}>
-          <div className="mt-10 grid grid-cols-1 gap-8 border-y border-hairline py-8 sm:grid-cols-3">
-            {PLACEHOLDER_STATS.map((s) => (
-              <div key={s.label} className="text-center sm:border-l sm:border-hairline sm:first:border-l-0">
-                <p className="font-urbanist text-4xl font-bold tracking-tight text-ink sm:text-5xl">
-                  <CountUp value={s.value} suffix={s.suffix} />
-                </p>
-                <p className="mt-1.5 font-urbanist text-[13px] leading-snug text-ink-dim">{s.label}</p>
-              </div>
-            ))}
-          </div>
-        </Reveal>
-
-        <Reveal delay={200}>
-          <div className="mt-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-4 lg:divide-x lg:divide-hairline">
-            {PHASES.map((p) => {
-              const Icon = p.icon;
-              return (
-                <div key={p.phase} className="lg:px-6 lg:first:pl-0">
-                  <span className="mega-icon-tile flex h-11 w-11 items-center justify-center rounded-2xl" style={{ color: p.accent }}>
-                    <Icon size={18} strokeWidth={1.75} />
-                  </span>
-                  <p className="mt-4 font-urbanist text-[11px] font-semibold uppercase tracking-[0.18em]" style={{ color: p.accent }}>
-                    {p.phase}
-                  </p>
-                  <h3 className="mt-1.5 font-urbanist text-base font-bold leading-snug text-ink">{p.title}</h3>
-                  <p className="mt-1.5 font-urbanist text-[13px] leading-relaxed text-ink-dim">{p.description}</p>
-                </div>
-              );
-            })}
-          </div>
-        </Reveal>
-
-        <Reveal delay={260}>
-          <div className="mt-10 flex flex-col items-start justify-between gap-5 sm:flex-row sm:items-center">
+          <div className="mt-6 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
             <p className="font-urbanist text-[13px] text-ink-faint">
               {TOOLS_COUNT} tools across {PHASE_COUNT} AI-assisted phases — the same process used on every project.
             </p>

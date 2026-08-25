@@ -676,24 +676,23 @@ form[data-show-errors="true"] :invalid {
   50% { box-shadow: 0 0 0 14px color-mix(in srgb, var(--pulse-color) 8%, transparent); }
 }
 
-/* AI-Driven Development core visual: flow lines from the center "AI core"
-   node out to each phase icon, dashes crawling outward to read as data
-   actively moving through the pipeline rather than a static diagram. */
-@keyframes ai-flow {
-  to { stroke-dashoffset: -20; }
+/* AI + Human diagram: a slow rotating gradient ring behind the core node —
+   built as a conic-gradient "border" (padding-box trick: outer div paints
+   the gradient, an ink-filled inner div masks everything but the ring). */
+@keyframes ai-core-spin {
+  to { transform: rotate(360deg); }
 }
-.ai-flow-line {
-  animation: ai-flow 1.4s linear infinite;
+.ai-core-ring {
+  background: conic-gradient(from 0deg, transparent, rgba(255, 255, 255, 0.5), transparent 55%);
+  animation: ai-core-spin 5s linear infinite;
 }
-
-/* AI + Human visual: gentle bob on every node so the diagram feels alive,
-   staggered per-node via inline animation-delay. */
-@keyframes ai-node-float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-5px); }
-}
-.ai-node-float {
-  animation: ai-node-float 3.6s ease-in-out infinite;
+.ai-core-ring::after {
+  content: "";
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 9999px;
+  background: var(--color-ink);
 }
 
 /* Reduced motion: kill every Pass 2 loop/animation, keep content visible */
@@ -710,8 +709,7 @@ form[data-show-errors="true"] :invalid {
   .tech-tile,
   .ai-pulse,
   .ai-pulse-lg,
-  .ai-flow-line,
-  .ai-node-float {
+  .ai-core-ring {
     animation: none !important;
   }
   .connector-line {
