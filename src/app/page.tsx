@@ -1,6 +1,4 @@
-import SmoothScroll from "@/components/system/SmoothScroll";
-import CustomCursor from "@/components/system/CustomCursor";
-import Navbar from "@/components/nav/Navbar";
+import SiteShell from "@/components/system/SiteShell";
 import Hero from "@/components/hero/Hero";
 import TrustStrip from "@/components/sections/TrustStrip";
 import ServicePillars from "@/components/sections/ServicePillars";
@@ -14,49 +12,50 @@ import EngagementModels from "@/components/sections/EngagementModels";
 import Testimonials from "@/components/sections/Testimonials";
 import Locations from "@/components/sections/Locations";
 import FAQ from "@/components/sections/FAQ";
-import Footer from "@/components/sections/Footer";
-import Reveal from "@/components/system/Reveal";
 
 /**
  * PASS 2: motion layer active — Lenis smooth scroll, custom cursor
  * (desktop ≥1024px), shared reveal system, parallax (hero only),
- * magnetic CTAs (hero only). No pinning anywhere.
- * Footer is a quiet zone: simple fade-in, no cursor effects.
- * Pass 3 (video media) still pending.
+ * magnetic CTAs (hero only). No pinning anywhere. Shell (SmoothScroll,
+ * CustomCursor, Navbar, Footer) now lives in SiteShell so other real
+ * pages (Contact, ...) share it instead of re-declaring it.
  *
  * AI Spotlight and Delivery System (including its "Standards that
  * reduce rework" block) were removed per direct request — that content
  * now lives only in the dedicated Services/How We Work pages.
  *
- * FinalCtaForm (the full contact-form section) was removed per direct
- * request — FAQ's own "Still have questions?" card and the Navbar's
- * "Book a Call" cover the same conversion path without a second,
- * heavier lead-gen form right before the footer.
+ * FinalCtaForm (the full contact-form section) was removed from the
+ * homepage per direct request; that conversion path now lives at the
+ * real /contact page, which every "Book a Call" link already points to.
+ *
+ * Section order (audit pass): moved from
+ * Hero → TrustStrip → CaseStudies → About → Services → Engagement →
+ * Testimonials → Industries → TechStack → AiDev → Locations → FAQ
+ * to
+ * Hero → TrustStrip → Services → AiDev → Industries → Engagement →
+ * CaseStudies → Testimonials → TechStack → About → Locations → FAQ.
+ * Reasoning: a cold organic-search visitor needs "what do you do" and
+ * "who's it for" before "proof you can do it" and "who you are as a
+ * studio" — the previous order showed case studies and company story
+ * before the visitor knew what Codeshaper actually offers.
  */
 export default function Home() {
   return (
-    <SmoothScroll>
-      <CustomCursor />
-      <Navbar />
-      <main>
-        <Hero />
-        <TrustStrip />
-        {/* TRIAL: accordion-style Success Stories (hyperline.co reference) being evaluated against the version below */}
-        <CaseStudiesExpand />
-        {/* <CaseStudies /> */}
-        <AboutStudio />
-        <ServicePillars />
-        <EngagementModels />
-        <Testimonials />
-        <Industries />
-        <TechStack />
-        <AiDevExcellence />
-        <Locations />
-        <FAQ />
-      </main>
-      <Reveal distance={0}>
-        <Footer />
-      </Reveal>
-    </SmoothScroll>
+    <SiteShell>
+      <Hero />
+      <TrustStrip />
+      <ServicePillars />
+      <AiDevExcellence />
+      <Industries />
+      <EngagementModels />
+      {/* TRIAL: accordion-style Success Stories (hyperline.co reference) being evaluated against the version below */}
+      <CaseStudiesExpand />
+      {/* <CaseStudies /> */}
+      <Testimonials />
+      <TechStack />
+      <AboutStudio />
+      <Locations />
+      <FAQ />
+    </SiteShell>
   );
 }
