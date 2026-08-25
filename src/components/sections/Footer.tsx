@@ -1,40 +1,32 @@
+import type { CSSProperties } from "react";
 import Link from "next/link";
 import { FileText, ArrowUp, Mail, Phone } from "lucide-react";
 import { SERVICE_COLUMNS, SIMPLE_MENUS, INDUSTRIES_POPULAR, ENGAGEMENT_MODELS } from "@/lib/navigation";
 import FooterWordmark from "./FooterWordmark";
 
 /**
- * Footer — round 5. Feedback: social links needed to move to the top and
- * be bigger/more prominent, the wordmark needed to be bigger/caps/true
- * full-width, and — now explicitly authorized — placeholder partner
- * logos since none exist yet ("use dummy logos, I'll update them later").
+ * Footer — round 6. Correction on round 5's "partner logos": the user
+ * clarified they weren't asking for tech/tool partnerships (which is
+ * why round 5 used invented placeholder marks — nothing like that was
+ * confirmed real) but for review-platform badges — Codeshaper has real
+ * reviews on Google, Clutch, Upwork, and Fiverr. That's a confirmed
+ * fact from the user, not a placeholder situation, so REVIEW_PLATFORMS
+ * replaces PARTNER_LOGOS entirely and moves to right under the social
+ * row per explicit request.
  *
- * Social row moved to its own bar at the very top of the footer, icons
- * up from 32px to 44px badges — the "Connect" block that used to live in
- * the brand column (small icons + email/phone) is now just the
- * email/phone rows there; the icons themselves live in this new top row
- * instead of being duplicated in both places.
+ * Each badge is a bold wordmark in that platform's real brand color
+ * (Google's four-color letter pattern is its actual real color scheme,
+ * not a guess) rather than a hand-drawn logo mark — safer than
+ * approximating a trademarked icon by hand, and still immediately
+ * recognizable. What's still NOT included: a star rating or review
+ * count. The platforms are confirmed real; the actual scores aren't
+ * known here, and a specific number (stars, review count) is exactly
+ * the kind of fact this project doesn't invent. Add the real numbers
+ * (and swap href="#" for the real profile URLs) whenever available.
  *
- * PARTNER_LOGOS below are invented placeholder marks (abstract geometric
- * icon + a made-up name), NOT real companies' logos. That distinction
- * matters even under an explicit "use dummy, I'll update it" instruction:
- * a generic invented mark is an obvious placeholder like the address/
- * phone "— TBD" text elsewhere, but a *real* company's logo (Microsoft,
- * AWS, Clutch, etc.) shown without an actual relationship would still be
- * a false partnership claim and a trademark issue regardless of intent —
- * "placeholder" doesn't neutralize that the way it does for made-up
- * names. Same reasoning still applies to certification badges (ISO,
- * GDPR, CMMI) — those weren't asked for this round, and still aren't
- * added. Swap PARTNER_LOGOS for real logins/logos whenever they exist.
- *
- * Even columns (6 rows each — Services, Industries via
- * INDUSTRIES_POPULAR, Engagement Models, Insights) and the "— TBD"
- * email/phone placeholders are unchanged from round 4; see git history
- * for that reasoning if needed.
- *
- * The wordmark (FooterWordmark) now fits its own container edge-to-edge
- * via a measured JS ratio instead of a `clamp()` approximation, and
- * renders in caps — see that file's own header for how.
+ * Social row (top of footer, 44px badges) and the FooterWordmark
+ * (caps, full-width via measured JS fit) are unchanged from round 5.
+ * Even columns and "— TBD" contact placeholders unchanged from round 4.
  */
 const CITY_NAMES = ["Bangladesh", "Japan", "USA", "UK", "Australia", "New Zealand"];
 
@@ -52,18 +44,15 @@ const SOCIAL_LINKS: { label: string; href: string; d: string }[] = [
 ];
 
 /**
- * Placeholder partner marks — invented names + generic abstract icons,
- * NOT real companies' logos (see file header). Swap for real partner
- * logos (as <img>/<svg> assets) whenever there are actual ones to show.
+ * Real platforms (confirmed by the user), scores/counts not known —
+ * see file header. href="#" pending the real profile URLs.
  */
-const PARTNER_LOGOS: { name: string; d: string }[] = [
-  { name: "Nexora", d: "M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm0 3a7 7 0 1 1 0 14 7 7 0 0 1 0-14Z" },
-  { name: "Verox", d: "M12 2 22 12 12 22 2 12 12 2Zm0 4.2L6.2 12 12 17.8 17.8 12 12 6.2Z" },
-  { name: "Haloform", d: "M12 3 21 19H3L12 3Zm0 5.1-5.4 9.4h10.8L12 8.1Z" },
-  { name: "Quantiq", d: "M12 2 21 7v10l-9 5-9-5V7l9-5Zm0 2.3-6.8 3.8v7.8L12 19.7l6.8-3.8V8.1L12 4.3Z" },
-  { name: "Brightpath", d: "M6 3h12v12l-6 6-6-6V3Zm2 2v9.2l4 4 4-4V5H8Z" },
-  { name: "Coreflux", d: "M11 2h2v8h8v2h-8v8h-2v-8H3v-2h8V2Z" },
-];
+const REVIEW_PLATFORMS = [
+  { name: "Google", href: "#", colors: ["#4285F4", "#EA4335", "#FBBC05", "#4285F4", "#34A853", "#EA4335"] },
+  { name: "Clutch", href: "#", color: "#EF2D45" },
+  { name: "Upwork", href: "#", color: "#14A800" },
+  { name: "Fiverr", href: "#", color: "#1DBF73" },
+] as const;
 
 const colLink = "link-underline font-urbanist text-sm text-ink-dim transition-colors hover:text-ink";
 
@@ -104,6 +93,43 @@ export default function Footer() {
                 </svg>
               </a>
             ))}
+          </div>
+        </div>
+
+        {/* Reviews — real platforms, scores/counts not known, see file header */}
+        <div className="mt-8 border-b border-hairline pb-8">
+          <p className="mb-5 font-urbanist text-xs font-medium uppercase tracking-[0.25em] text-ink-faint">
+            Reviewed On
+          </p>
+          <div className="grid grid-cols-2 gap-3 sm:flex sm:flex-wrap">
+            {REVIEW_PLATFORMS.map((p) => {
+              const accent = "colors" in p ? p.colors[0] : p.color;
+              return (
+                <a
+                  key={p.name}
+                  href={p.href}
+                  className="flex items-center justify-center rounded-2xl border border-hairline px-7 py-5 transition-[transform,border-color,box-shadow] duration-300 hover:-translate-y-1 hover:border-[var(--glow-border)] hover:shadow-[0_12px_30px_var(--glow-shadow)]"
+                  style={
+                    {
+                      "--glow-border": `${accent}66`,
+                      "--glow-shadow": `${accent}26`,
+                    } as CSSProperties
+                  }
+                >
+                  {"colors" in p ? (
+                    <span className="font-urbanist text-2xl font-bold tracking-tight sm:text-3xl">
+                      {p.name.split("").map((ch, i) => (
+                        <span key={i} style={{ color: p.colors[i] }}>{ch}</span>
+                      ))}
+                    </span>
+                  ) : (
+                    <span className="font-urbanist text-2xl font-bold tracking-tight sm:text-3xl" style={{ color: p.color }}>
+                      {p.name}
+                    </span>
+                  )}
+                </a>
+              );
+            })}
           </div>
         </div>
 
@@ -227,23 +253,6 @@ export default function Footer() {
               {c}
             </Link>
           ))}
-        </div>
-
-        {/* Partner logos — placeholder marks, see file header */}
-        <div className="mt-10 border-t border-hairline pt-8">
-          <p className="mb-6 font-urbanist text-xs font-medium uppercase tracking-[0.25em] text-ink-faint">
-            Tools &amp; Partners
-          </p>
-          <div className="flex flex-wrap items-center gap-x-10 gap-y-6">
-            {PARTNER_LOGOS.map((p) => (
-              <div key={p.name} className="flex items-center gap-2 text-ink-faint opacity-70 transition-opacity duration-300 hover:opacity-100">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
-                  <path d={p.d} />
-                </svg>
-                <span className="font-urbanist text-sm font-semibold tracking-tight">{p.name}</span>
-              </div>
-            ))}
-          </div>
         </div>
 
         {/* Giant wordmark — GSAP stagger reveal + magnetic hover, see FooterWordmark.tsx */}
