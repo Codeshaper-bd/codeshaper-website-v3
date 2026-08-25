@@ -27,6 +27,13 @@ const FIT_PROBE_SIZE = 100; // px — arbitrary known base used to compute the f
  * cursor lift/scale/tint violet, falling off with distance) — see the
  * round-2 notes below for why IntersectionObserver instead of
  * ScrollTrigger, and the reduced-motion / failsafe handling.
+ *
+ * Round 4 fix: the entrance reveal needs `overflow: hidden` on the text
+ * row to mask letters sliding up from below — but the hover-lift moves
+ * letters ABOVE their resting position, and that same box was clipping
+ * them (reported as the wordmark getting "cut off" on hover). Now the
+ * reveal's `onComplete` (or immediately, under reduced motion) flips
+ * `overflow` to visible once the mask is no longer needed.
  */
 export default function FooterWordmark() {
   const reduced = usePrefersReducedMotion();
@@ -57,17 +64,35 @@ export default function FooterWordmark() {
 
   useEffect(() => {
     const letters = lettersRef.current.filter((el): el is HTMLSpanElement => Boolean(el));
-    if (!letters.length) return;
+    const container = containerRef.current;
+    if (!letters.length || !container) return;
+
+    // overflow-hidden only exists to mask the entrance slide-up; once
+    // revealed it has to come off, or the hover-lift (translateY negative,
+    // moving letters ABOVE their resting position) gets clipped by that
+    // same box — this was cutting letters off on hover.
+    const unmask = () => {
+      container.style.overflow = "visible";
+    };
 
     if (reduced) {
       gsap.set(letters, { yPercent: 0, opacity: 1, rotate: 0 });
+      unmask();
       return;
     }
 
     gsap.set(letters, { yPercent: 100, opacity: 0, rotate: 6 });
 
     const reveal = () => {
-      gsap.to(letters, { yPercent: 0, opacity: 1, rotate: 0, duration: 0.9, ease: "power4.out", stagger: 0.035 });
+      gsap.to(letters, {
+        yPercent: 0,
+        opacity: 1,
+        rotate: 0,
+        duration: 0.9,
+        ease: "power4.out",
+        stagger: 0.035,
+        onComplete: unmask,
+      });
     };
 
     const io = new IntersectionObserver(
@@ -79,7 +104,7 @@ export default function FooterWordmark() {
       },
       { threshold: 0.3 }
     );
-    if (containerRef.current) io.observe(containerRef.current);
+    io.observe(container);
     const failsafe = setTimeout(() => {
       reveal();
       io.disconnect();
