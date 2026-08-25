@@ -686,6 +686,16 @@ form[data-show-errors="true"] :invalid {
   animation: ai-flow 1.4s linear infinite;
 }
 
+/* AI + Human visual: gentle bob on every node so the diagram feels alive,
+   staggered per-node via inline animation-delay. */
+@keyframes ai-node-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+.ai-node-float {
+  animation: ai-node-float 3.6s ease-in-out infinite;
+}
+
 /* Reduced motion: kill every Pass 2 loop/animation, keep content visible */
 @media (prefers-reduced-motion: reduce) {
   .horizon-pulse,
@@ -700,7 +710,8 @@ form[data-show-errors="true"] :invalid {
   .tech-tile,
   .ai-pulse,
   .ai-pulse-lg,
-  .ai-flow-line {
+  .ai-flow-line,
+  .ai-node-float {
     animation: none !important;
   }
   .connector-line {
