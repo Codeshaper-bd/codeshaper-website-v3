@@ -192,9 +192,12 @@ export default function Navbar() {
             </div>
           </div>
         </div>
-
-        <MobileMenu open={mobileOpen} onClose={() => setMobileOpen(false)} />
       </header>
+
+      {/* Sibling of <header>, not a child — see MobileMenu.tsx's own header
+          comment for why (header's always-on transform was making it the
+          containing block for this panel's fixed positioning). */}
+      <MobileMenu open={mobileOpen} onClose={() => setMobileOpen(false)} />
     </>
   );
 }

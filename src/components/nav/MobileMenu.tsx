@@ -19,6 +19,18 @@ import { Icon, SERVICE_ICONS } from "@/lib/icons";
  * The Services accordion is sub-grouped (How We Engage / Core Services /
  * Featured / Quick Access) to mirror the desktop mega menu's content, not
  * just a flat sub-service list. Industries gets its own accordion.
+ *
+ * `theme-light` is applied on this component's own root rather than
+ * relied on from a parent. It used to be a child of Navbar's <header>,
+ * which is also `theme-light` — but header has an always-on `transform`
+ * (its scroll-hide animation, present even at translateY(0)), which
+ * makes it the containing block for any `position: fixed` descendant.
+ * This panel's `fixed inset-0 top-[84px]` was resolving against header's
+ * own small box instead of the viewport, collapsing it to ~22px tall
+ * with all its content scrolled out of view. Moving it to a sibling of
+ * <header> in Navbar.tsx fixes that, but also drops the inherited
+ * `theme-light` — reapplied here directly so this component renders
+ * correctly regardless of where it's mounted from.
  */
 export default function MobileMenu({ open, onClose }: { open: boolean; onClose: () => void }) {
   useEffect(() => {
@@ -30,7 +42,7 @@ export default function MobileMenu({ open, onClose }: { open: boolean; onClose: 
 
   return (
     <div
-      className={`fixed inset-0 top-[84px] z-40 overflow-y-auto bg-canvas transition-opacity duration-300 sm:top-[92px] lg:hidden ${
+      className={`theme-light fixed inset-0 top-[84px] z-40 overflow-y-auto bg-canvas transition-opacity duration-300 sm:top-[92px] lg:hidden ${
         open ? "opacity-100" : "pointer-events-none opacity-0"
       }`}
       aria-hidden={!open}
