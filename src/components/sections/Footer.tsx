@@ -6,33 +6,22 @@ import FooterWordmark from "./FooterWordmark";
 import Reveal from "@/components/system/Reveal";
 
 /**
- * Footer — round 7. The user confirmed more real facts: reviews (and an
- * author profile) on Envato, and real partnerships with Framer and
- * Webflow, plus BASIS membership. Envato joins REVIEW_PLATFORMS (with a
- * small "Author" tag, since that's a distinct fact from just having
- * reviews there); Framer/Webflow/BASIS get their own new
- * PARTNERS_MEMBERSHIPS row, since a technology partnership and a trade
- * association membership are a different kind of claim than "reviewed
- * on X" — same reasoning as always: real confirmed facts get real
- * badges, nothing here is invented. Colors are each brand's real color
- * where I'm confident of it (Framer's blue, Webflow's blue, Envato's
- * green are all well-documented); BASIS gets a neutral treatment
- * instead of a guessed color I'm not confident is accurate.
+ * Footer — round 8. Reviews and Partners & Memberships were two
+ * separate labeled blocks (each with its own heading, border, and
+ * vertical margin) — merged into one TRUST_BADGES row under a single
+ * heading to compact the footer's height, per explicit request. Every
+ * badge now carries a subtitle ("Reviews" added to the four platforms
+ * that didn't have one before) so the row reads consistently without
+ * needing separate group headers to tell reviews from partnerships
+ * apart — the subtitle does that job inline.
  *
- * Social icons now carry each platform's real brand color as a tinted
- * background (not just on hover) — LinkedIn blue, X black, Instagram's
- * gradient, YouTube red — so they read as substantial badges rather
- * than plain outlined circles. href="#" is still a placeholder; only
- * the *platform identity* is asserted here, not a specific followed
- * account, so this carries the same "generic real platform, unknown
- * specific profile" status as the review platforms.
+ * Badge padding tightened slightly (px-6/py-4, was px-7/py-5) since a
+ * single row now holds 8 badges instead of two rows of 5 and 3.
  *
- * FooterWordmark fix: the hover-lift was getting clipped by the same
- * overflow-hidden the entrance reveal needs for its slide-up mask — see
- * that file's own header for the fix (reported as the text "cut off"
- * on mouseover).
- *
- * Even columns and "— TBD" contact placeholders unchanged from round 4.
+ * Content/colors are unchanged from round 7 — real platforms/partners/
+ * membership the user confirmed, real brand colors where confident,
+ * BASIS neutral rather than a guessed color, no invented star ratings
+ * or review counts, href="#" pending real profile URLs.
  */
 const CITY_NAMES = ["Bangladesh", "Japan", "USA", "UK", "Australia", "New Zealand"];
 
@@ -50,26 +39,16 @@ const SOCIAL_LINKS: { label: string; href: string; color: string; d: string }[] 
 ];
 
 /**
- * Real platforms (confirmed by the user), scores/counts not known —
- * see file header. href="#" pending the real profile URLs. Envato gets
- * a "subtitle" — being an author there is a distinct fact from just
- * having reviews, worth surfacing separately.
+ * Real platforms/partners/memberships the user confirmed — scores/
+ * counts and profile URLs not known, see file header. Every entry has
+ * a subtitle so the row reads clearly without separate group headings.
  */
-const REVIEW_PLATFORMS: { name: string; href: string; color?: string; colors?: string[]; subtitle?: string }[] = [
-  { name: "Google", href: "#", colors: ["#4285F4", "#EA4335", "#FBBC05", "#4285F4", "#34A853", "#EA4335"] },
-  { name: "Clutch", href: "#", color: "#EF2D45" },
-  { name: "Upwork", href: "#", color: "#14A800" },
-  { name: "Fiverr", href: "#", color: "#1DBF73" },
+const TRUST_BADGES: { name: string; href: string; color?: string; colors?: string[]; subtitle: string }[] = [
+  { name: "Google", href: "#", colors: ["#4285F4", "#EA4335", "#FBBC05", "#4285F4", "#34A853", "#EA4335"], subtitle: "Reviews" },
+  { name: "Clutch", href: "#", color: "#EF2D45", subtitle: "Reviews" },
+  { name: "Upwork", href: "#", color: "#14A800", subtitle: "Reviews" },
+  { name: "Fiverr", href: "#", color: "#1DBF73", subtitle: "Reviews" },
   { name: "Envato", href: "#", color: "#82B540", subtitle: "Author & Reviews" },
-];
-
-/**
- * Real, confirmed partnerships/memberships — a different kind of claim
- * from "reviewed on" (see file header). Colors are each brand's real
- * color where confident (Framer, Webflow, Envato are well-documented);
- * BASIS gets a neutral treatment rather than a guessed color.
- */
-const PARTNERS_MEMBERSHIPS: { name: string; href: string; color: string; subtitle: string }[] = [
   { name: "Framer", href: "#", color: "#0055FF", subtitle: "Partner" },
   { name: "Webflow", href: "#", color: "#4353FF", subtitle: "Partner" },
   { name: "BASIS", href: "#", color: "#9ca3af", subtitle: "Member" },
@@ -127,21 +106,21 @@ export default function Footer() {
         </div>
         </Reveal>
 
-        {/* Reviews — real platforms, scores/counts not known, see file header */}
+        {/* Reviews + Partners & Memberships — merged into one compact row, see file header */}
         <Reveal delay={80}>
         <div className="mt-8 border-b border-hairline pb-8">
           <p className="mb-5 font-urbanist text-xs font-medium uppercase tracking-[0.25em] text-ink-faint">
-            Reviewed On
+            Reviews &amp; Partners
           </p>
           <div className="grid grid-cols-2 gap-3 sm:flex sm:flex-wrap">
-            {REVIEW_PLATFORMS.map((p) => {
+            {TRUST_BADGES.map((p) => {
               const colors = p.colors;
               const accent = colors ? colors[0] : p.color!;
               return (
                 <a
                   key={p.name}
                   href={p.href}
-                  className="flex flex-col items-center justify-center gap-1 rounded-2xl border border-hairline px-7 py-5 transition-[transform,border-color,box-shadow] duration-300 hover:-translate-y-1 hover:border-[var(--glow-border)] hover:shadow-[0_12px_30px_var(--glow-shadow)]"
+                  className="flex flex-col items-center justify-center gap-1 rounded-2xl border border-hairline px-6 py-4 transition-[transform,border-color,box-shadow] duration-300 hover:-translate-y-1 hover:border-[var(--glow-border)] hover:shadow-[0_12px_30px_var(--glow-shadow)]"
                   style={
                     {
                       "--glow-border": `${accent}66`,
@@ -150,55 +129,22 @@ export default function Footer() {
                   }
                 >
                   {colors ? (
-                    <span className="font-urbanist text-2xl font-bold tracking-tight sm:text-3xl">
+                    <span className="font-urbanist text-xl font-bold tracking-tight sm:text-2xl">
                       {p.name.split("").map((ch, i) => (
                         <span key={i} style={{ color: colors[i] }}>{ch}</span>
                       ))}
                     </span>
                   ) : (
-                    <span className="font-urbanist text-2xl font-bold tracking-tight sm:text-3xl" style={{ color: p.color }}>
+                    <span className="font-urbanist text-xl font-bold tracking-tight sm:text-2xl" style={{ color: p.color }}>
                       {p.name}
                     </span>
                   )}
-                  {p.subtitle && (
-                    <span className="font-urbanist text-[11px] font-medium uppercase tracking-[0.14em] text-ink-faint">
-                      {p.subtitle}
-                    </span>
-                  )}
+                  <span className="font-urbanist text-[10.5px] font-medium uppercase tracking-[0.14em] text-ink-faint">
+                    {p.subtitle}
+                  </span>
                 </a>
               );
             })}
-          </div>
-        </div>
-        </Reveal>
-
-        {/* Partners & Memberships — real, confirmed relationships, see file header */}
-        <Reveal delay={140}>
-        <div className="mt-8 border-b border-hairline pb-8">
-          <p className="mb-5 font-urbanist text-xs font-medium uppercase tracking-[0.25em] text-ink-faint">
-            Partners &amp; Memberships
-          </p>
-          <div className="grid grid-cols-3 gap-3 sm:flex sm:flex-wrap">
-            {PARTNERS_MEMBERSHIPS.map((p) => (
-              <a
-                key={p.name}
-                href={p.href}
-                className="flex flex-col items-center justify-center gap-1 rounded-2xl border border-hairline px-7 py-5 transition-[transform,border-color,box-shadow] duration-300 hover:-translate-y-1 hover:border-[var(--glow-border)] hover:shadow-[0_12px_30px_var(--glow-shadow)]"
-                style={
-                  {
-                    "--glow-border": `${p.color}66`,
-                    "--glow-shadow": `${p.color}26`,
-                  } as CSSProperties
-                }
-              >
-                <span className="font-urbanist text-2xl font-bold tracking-tight sm:text-3xl" style={{ color: p.color }}>
-                  {p.name}
-                </span>
-                <span className="font-urbanist text-[11px] font-medium uppercase tracking-[0.14em] text-ink-faint">
-                  {p.subtitle}
-                </span>
-              </a>
-            ))}
           </div>
         </div>
         </Reveal>
