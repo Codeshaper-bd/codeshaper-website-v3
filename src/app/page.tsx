@@ -8,7 +8,9 @@ import AboutStudio from "@/components/sections/AboutStudio";
 import AiSpotlight from "@/components/sections/AiSpotlight";
 import DeliverySystem from "@/components/sections/DeliverySystem";
 import CaseStudies from "@/components/sections/CaseStudies";
+import CaseStudiesExpand from "@/components/sections/CaseStudiesExpand";
 import Industries from "@/components/sections/Industries";
+import TechStack from "@/components/sections/TechStack";
 import EngagementModels from "@/components/sections/EngagementModels";
 import Testimonials from "@/components/sections/Testimonials";
 import Locations from "@/components/sections/Locations";
@@ -31,12 +33,15 @@ export default function Home() {
       <main>
         <Hero />
         <TrustStrip />
-        <CaseStudies />
+        {/* TRIAL: accordion-style Success Stories (hyperline.co reference) being evaluated against the version below */}
+        <CaseStudiesExpand />
+        {/* <CaseStudies /> */}
         <AboutStudio />
         <ServicePillars />
         <EngagementModels />
         <Testimonials />
         <Industries />
+        <TechStack />
         <AiSpotlight />
         <DeliverySystem />
         <Locations />
