@@ -1,159 +1,185 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Reveal from "@/components/system/Reveal";
 import { usePrefersReducedMotion } from "@/lib/motion";
 
 /**
- * Locations — replaces the earlier 5-anonymous-city placeholder grid with
- * the real regional footprint: Bangladesh is the delivery hub, with
- * collaboration hubs in Japan, the USA, the UK, Australia, and New
- * Zealand for timezone overlap. Grouped by region (Asia-Pacific, Americas,
- * UK & Europe, Oceania) exactly as given, rather than one flat grid, since
- * the region is part of the point (why each hub exists).
+ * Locations — round 2. Feedback: the previous 4-column region grid
+ * (Asia-Pacific/Oceania with 2 stacked cards vs. Americas/UK&Europe with
+ * 1) produced badly uneven column heights that read as broken, and the
+ * route map floated loosely on the starfield with no real interactivity.
  *
- * Street-level addresses are PLACEHOLDERS ("Street address — TBD") — same
- * convention the previous version of this file used for its anonymous
- * "[City N]" placeholders — to be swapped for the real registered address
- * per office. The country/hub role/description/best-for content is real.
+ * Consolidated into one `.glass` panel — same interactive-tab pattern
+ * that worked for AI-Driven Development: clicking/hovering a pin OR a
+ * tab highlights the other (shared `active` state), and the detail
+ * crossfades via `.lens-fade-in` instead of six cards being laid out
+ * simultaneously. Only one location's content renders at a time, so the
+ * uneven-height problem can't recur. Auto-cycles when idle; hovering the
+ * tab row pauses it, a click pins the choice — identical interaction
+ * model to AiDevExcellence, reused deliberately for consistency.
  *
- * The animated visual is a stylized flight-path arc (not a literal
- * geo-accurate flat map — this site has no mapping library, and hand-
- * approximating continent outlines would look worse than admitting the
- * abstraction) — pins ordered west→east matching real longitude, joined
- * by one continuous route with a traveling glow dot, same glow-dot motif
- * introduced in AI-Driven Development for visual consistency across the
- * site's two "network" diagrams. Sits on top of the existing starfield +
- * horizon backdrop, which is kept as-is.
+ * Street-level addresses are still PLACEHOLDERS ("Street address — TBD")
+ * — only the country-level footprint was given — swap for the real
+ * registered address per office. Country / role / description / best-for
+ * content is real.
  */
-type Location = {
+type LocationDetail = {
   country: string;
+  region: string;
+  regionNote: string;
   role: string;
   short: string;
   bestFor: string[];
+  x: number;
+  y: number;
 };
 
-type RegionGroup = {
-  region: string;
-  note: string;
-  locations: Location[];
-};
-
-const REGIONS: RegionGroup[] = [
+/** West → east, matching real longitude order — pins and tabs share this order. */
+const LOCATIONS: LocationDetail[] = [
   {
-    region: "Asia-Pacific",
-    note: "Delivery & product execution",
-    locations: [
-      {
-        country: "Bangladesh",
-        role: "Delivery hub",
-        short: "Product design, engineering, and automation delivery across web, mobile, SaaS, and commerce.",
-        bestFor: ["End-to-end builds", "Dedicated product teams", "Ongoing iteration"],
-      },
-      {
-        country: "Japan",
-        role: "Collaboration hub",
-        short: "Supports client collaboration and product planning for teams operating in Japan/APAC.",
-        bestFor: ["Product planning", "Stakeholder coordination", "Delivery alignment"],
-      },
-    ],
-  },
-  {
+    country: "USA",
     region: "Americas",
-    note: "Client proximity",
-    locations: [
-      {
-        country: "USA",
-        role: "Client collaboration hub",
-        short: "Supports discovery, planning, and working overlap for North American clients.",
-        bestFor: ["MVP sprints", "Roadmap planning", "Ongoing product iteration"],
-      },
-    ],
+    regionNote: "Client proximity",
+    role: "Client collaboration hub",
+    short: "Supports discovery, planning, and working overlap for North American clients.",
+    bestFor: ["MVP sprints", "Roadmap planning", "Ongoing product iteration"],
+    x: 6,
+    y: 38,
   },
   {
+    country: "UK",
     region: "UK & Europe",
-    note: "Client proximity",
-    locations: [
-      {
-        country: "UK",
-        role: "Client collaboration hub",
-        short: "Supports European clients with timezone overlap and project coordination.",
-        bestFor: ["Product discovery", "Sprint planning", "Delivery oversight"],
-      },
-    ],
+    regionNote: "Client proximity",
+    role: "Client collaboration hub",
+    short: "Supports European clients with timezone overlap and project coordination.",
+    bestFor: ["Product discovery", "Sprint planning", "Delivery oversight"],
+    x: 24,
+    y: 29.8,
   },
   {
+    country: "Bangladesh",
+    region: "Asia-Pacific",
+    regionNote: "Delivery & product execution",
+    role: "Delivery hub",
+    short: "Product design, engineering, and automation delivery across web, mobile, SaaS, and commerce.",
+    bestFor: ["End-to-end builds", "Dedicated product teams", "Ongoing iteration"],
+    x: 42,
+    y: 24.7,
+  },
+  {
+    country: "Japan",
+    region: "Asia-Pacific",
+    regionNote: "Delivery & product execution",
+    role: "Collaboration hub",
+    short: "Supports client collaboration and product planning for teams operating in Japan/APAC.",
+    bestFor: ["Product planning", "Stakeholder coordination", "Delivery alignment"],
+    x: 60,
+    y: 24.7,
+  },
+  {
+    country: "Australia",
     region: "Oceania",
-    note: "Timezone overlap",
-    locations: [
-      {
-        country: "Australia",
-        role: "Collaboration hub",
-        short: "Supports timezone overlap for Australia-based teams and distributed product orgs.",
-        bestFor: ["Dedicated team collaboration", "Ongoing roadmap delivery"],
-      },
-      {
-        country: "New Zealand",
-        role: "Collaboration hub",
-        short: "Supports NZ-based clients with planning, communication, and delivery coordination.",
-        bestFor: ["Product support", "Iteration cycles", "Cross-timezone teams"],
-      },
-    ],
+    regionNote: "Timezone overlap",
+    role: "Collaboration hub",
+    short: "Supports timezone overlap for Australia-based teams and distributed product orgs.",
+    bestFor: ["Dedicated team collaboration", "Ongoing roadmap delivery"],
+    x: 78,
+    y: 29.8,
+  },
+  {
+    country: "New Zealand",
+    region: "Oceania",
+    regionNote: "Timezone overlap",
+    role: "Collaboration hub",
+    short: "Supports NZ-based clients with planning, communication, and delivery coordination.",
+    bestFor: ["Product support", "Iteration cycles", "Cross-timezone teams"],
+    x: 96,
+    y: 38,
   },
 ];
 
-/** West → east, matching real longitude order. */
-const PINS = [
-  { country: "USA", x: 6, y: 74 },
-  { country: "UK", x: 24, y: 64.6 },
-  { country: "Bangladesh", x: 42, y: 58.8 },
-  { country: "Japan", x: 60, y: 58.8 },
-  { country: "Australia", x: 78, y: 64.6 },
-  { country: "New Zealand", x: 96, y: 74 },
-];
+const ROUTE_PATH = `M${LOCATIONS.map((p) => `${p.x},${p.y}`).join(" L")}`;
 
-const ROUTE_PATH = `M${PINS.map((p) => `${p.x},${p.y}`).join(" L")}`;
+function accentFor(role: string) {
+  return role === "Delivery hub" ? "#7c6cff" : "#e8b04e";
+}
 
-function RouteMap() {
+function RouteMap({ active, onPick }: { active: number; onPick: (i: number) => void }) {
   const reduced = usePrefersReducedMotion();
 
   return (
-    <div className="relative h-[190px] w-full sm:h-[220px] lg:h-[260px]">
-      <svg viewBox="0 0 100 80" preserveAspectRatio="none" className="absolute inset-0 h-full w-full" aria-hidden>
+    <div className="relative h-[170px] w-full sm:h-[210px] lg:h-[250px]">
+      <svg viewBox="0 0 100 60" preserveAspectRatio="none" className="absolute inset-0 h-full w-full" aria-hidden>
         <defs>
           <filter id="loc-map-glow" x="-200%" y="-200%" width="500%" height="500%">
             <feGaussianBlur stdDeviation="1" />
           </filter>
         </defs>
-        <path d={ROUTE_PATH} fill="none" stroke="#ffffff" strokeOpacity="0.22" strokeWidth="0.5" />
+        <path d={ROUTE_PATH} fill="none" stroke="#ffffff" strokeOpacity="0.18" strokeWidth="0.5" />
         {!reduced && (
-          <>
-            <circle r="1.2" fill="#e8b04e" filter="url(#loc-map-glow)">
-              <animateMotion dur="6s" repeatCount="indefinite" path={ROUTE_PATH} />
-            </circle>
-            <circle r="1" fill="#9db8ff" filter="url(#loc-map-glow)" opacity="0.8">
-              <animateMotion dur="6s" begin="3s" repeatCount="indefinite" path={ROUTE_PATH} />
-            </circle>
-          </>
+          <circle r="1.1" fill="#ffffff" filter="url(#loc-map-glow)" opacity="0.75">
+            <animateMotion dur="7s" repeatCount="indefinite" path={ROUTE_PATH} />
+          </circle>
         )}
       </svg>
 
-      {PINS.map((p) => (
-        <div key={p.country} className="absolute" style={{ left: `${p.x}%`, top: `${p.y}%`, transform: "translate(-50%, -50%)" }}>
-          <span
-            aria-hidden
-            className="dot-pulse block h-2.5 w-2.5 rounded-full border border-white/40 bg-white"
-            style={{ boxShadow: "0 0 10px rgba(255,255,255,0.9)" }}
-          />
-          <span className="absolute left-1/2 top-full mt-2 hidden -translate-x-1/2 whitespace-nowrap font-urbanist text-[10.5px] font-semibold uppercase tracking-[0.14em] text-white/55 sm:block">
-            {p.country}
-          </span>
-        </div>
-      ))}
+      {LOCATIONS.map((p, i) => {
+        const isActive = i === active;
+        const accent = accentFor(p.role);
+        return (
+          <button
+            key={p.country}
+            type="button"
+            onClick={() => onPick(i)}
+            onMouseEnter={() => onPick(i)}
+            aria-label={p.country}
+            className="absolute flex -translate-x-1/2 -translate-y-1/2 flex-col items-center"
+            style={{ left: `${p.x}%`, top: `${p.y}%` }}
+          >
+            <span
+              aria-hidden
+              className={isActive ? "dot-pulse block rounded-full" : "block rounded-full transition-all duration-300"}
+              style={{
+                width: isActive ? 12 : 8,
+                height: isActive ? 12 : 8,
+                backgroundColor: isActive ? accent : "#ffffff",
+                opacity: isActive ? 1 : 0.55,
+                boxShadow: isActive ? `0 0 16px ${accent}` : "0 0 6px rgba(255,255,255,0.5)",
+              }}
+            />
+            <span
+              className="absolute top-full mt-2 hidden whitespace-nowrap font-urbanist text-[10.5px] font-semibold uppercase tracking-[0.14em] transition-colors duration-300 sm:block"
+              style={{ color: isActive ? accent : "rgba(255,255,255,0.4)" }}
+            >
+              {p.country}
+            </span>
+          </button>
+        );
+      })}
     </div>
   );
 }
 
 export default function Locations() {
+  const reduced = usePrefersReducedMotion();
+  const [active, setActive] = useState(0);
+  const [autoPaused, setAutoPaused] = useState(false);
+
+  useEffect(() => {
+    if (reduced || autoPaused) return;
+    const id = setInterval(() => setActive((a) => (a + 1) % LOCATIONS.length), 3600);
+    return () => clearInterval(id);
+  }, [reduced, autoPaused]);
+
+  const pick = (i: number) => {
+    setActive(i);
+    setAutoPaused(true);
+  };
+
+  const current = LOCATIONS[active];
+  const accent = accentFor(current.role);
+
   return (
     <section
       id="locations"
@@ -162,7 +188,6 @@ export default function Locations() {
     >
       {/* ── Earth-from-space composition (CSS/SVG, static) ── */}
       <div aria-hidden className="absolute inset-0">
-        {/* deep space base + faint starfield */}
         <div
           className="absolute inset-0"
           style={{
@@ -177,7 +202,6 @@ export default function Locations() {
               "radial-gradient(1px 1px at 12% 22%, rgba(255,255,255,0.6) 50%, transparent 51%), radial-gradient(1px 1px at 34% 8%, rgba(255,255,255,0.4) 50%, transparent 51%), radial-gradient(1.5px 1.5px at 58% 30%, rgba(255,255,255,0.5) 50%, transparent 51%), radial-gradient(1px 1px at 76% 14%, rgba(255,255,255,0.35) 50%, transparent 51%), radial-gradient(1px 1px at 90% 40%, rgba(255,255,255,0.45) 50%, transparent 51%), radial-gradient(1.5px 1.5px at 22% 45%, rgba(255,255,255,0.3) 50%, transparent 51%), radial-gradient(1px 1px at 47% 18%, rgba(255,255,255,0.5) 50%, transparent 51%), radial-gradient(1px 1px at 65% 50%, rgba(255,255,255,0.3) 50%, transparent 51%)",
           }}
         />
-        {/* planet horizon arc — bottom of section; glow pulses ~10s */}
         <div
           className="horizon-pulse absolute left-1/2 top-full h-[130vw] w-[220vw] -translate-x-1/2 -translate-y-[16%] rounded-[50%] lg:-translate-y-[22%]"
           style={{
@@ -187,7 +211,6 @@ export default function Locations() {
               "0 -2px 40px rgba(255,255,255,0.14), 0 -12px 90px rgba(255,255,255,0.1), 0 -30px 180px rgba(255,255,255,0.06), 0 -60px 280px rgba(255,255,255,0.03)",
           }}
         />
-        {/* atmosphere glow line along the horizon */}
         <div
           className="absolute left-1/2 top-full h-[130vw] w-[220vw] -translate-x-1/2 -translate-y-[16%] rounded-[50%] lg:-translate-y-[22%]"
           style={{
@@ -215,54 +238,66 @@ export default function Locations() {
         </Reveal>
 
         <Reveal delay={80}>
-          <div className="mt-10">
-            <RouteMap />
+          <div className="glass mt-10 rounded-[32px] p-6 sm:p-8 lg:p-10">
+            <RouteMap active={active} onPick={pick} />
+
+            <div
+              className="mt-8 grid grid-cols-3 gap-2 border-t border-white/10 pt-8 sm:flex sm:flex-wrap sm:gap-2"
+              onMouseEnter={() => setAutoPaused(true)}
+              onMouseLeave={() => setAutoPaused(false)}
+            >
+              {LOCATIONS.map((loc, i) => {
+                const isActive = i === active;
+                const a = accentFor(loc.role);
+                return (
+                  <button
+                    key={loc.country}
+                    type="button"
+                    onMouseEnter={() => setActive(i)}
+                    onFocus={() => setActive(i)}
+                    onClick={() => pick(i)}
+                    className="flex items-center justify-center gap-2 rounded-full border px-3.5 py-2 font-urbanist text-[12.5px] font-semibold transition-[background-color,border-color,color] duration-300 sm:justify-start"
+                    style={{
+                      borderColor: isActive ? `${a}80` : "rgba(255,255,255,0.12)",
+                      backgroundColor: isActive ? `${a}1f` : "transparent",
+                      color: isActive ? a : "rgba(255,255,255,0.55)",
+                    }}
+                  >
+                    {loc.country}
+                  </button>
+                );
+              })}
+            </div>
+
+            <div key={active} className="lens-fade-in mt-7 flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
+              <div>
+                <p className="font-urbanist text-[10.5px] font-semibold uppercase tracking-[0.16em] text-white/40">
+                  {current.region}
+                  <span className="ml-1.5 font-normal text-white/25">— {current.regionNote}</span>
+                </p>
+                <div className="mt-2 flex items-center gap-2">
+                  <span className="h-1.5 w-1.5 shrink-0 rounded-full" style={{ backgroundColor: accent }} aria-hidden />
+                  <p className="font-urbanist text-[10.5px] font-semibold uppercase tracking-[0.14em] text-white/45">{current.role}</p>
+                </div>
+                <h3 className="mt-1.5 font-urbanist text-2xl font-bold tracking-tight text-white">{current.country}</h3>
+                <p className="mt-3 max-w-md font-urbanist text-[13.5px] leading-relaxed text-white/60">{current.short}</p>
+                <div className="mt-4 flex flex-wrap gap-1.5">
+                  {current.bestFor.map((tag) => (
+                    <span key={tag} className="rounded-full border border-white/15 bg-white/[0.07] px-2.5 py-1 font-urbanist text-[10.5px] text-white/70">
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              <div className="shrink-0 font-urbanist text-[11.5px] leading-relaxed text-white/35 sm:text-right">
+                Street address — TBD
+                <br />
+                {current.country}
+              </div>
+            </div>
           </div>
         </Reveal>
-
-        <div className="mt-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-4 lg:gap-6">
-          {REGIONS.map((group, gi) => (
-            <Reveal key={group.region} delay={gi * 90} className="h-full">
-              <div className="flex h-full flex-col gap-4">
-                <p className="font-urbanist text-[11px] font-semibold uppercase tracking-[0.16em] text-white/40">
-                  {group.region}
-                  <span className="ml-1.5 font-normal text-white/25">— {group.note}</span>
-                </p>
-                {group.locations.map((loc) => (
-                  <article
-                    key={loc.country}
-                    className="rounded-[20px] border border-white/[0.08] bg-white/[0.035] p-5 transition-colors duration-300 hover:border-white/20 hover:bg-white/[0.06]"
-                  >
-                    <div className="flex items-center gap-2">
-                      <span
-                        className="h-1.5 w-1.5 shrink-0 rounded-full"
-                        style={{ backgroundColor: loc.role === "Delivery hub" ? "#7c6cff" : "#e8b04e" }}
-                        aria-hidden
-                      />
-                      <p className="font-urbanist text-[10.5px] font-semibold uppercase tracking-[0.14em] text-white/45">
-                        {loc.role}
-                      </p>
-                    </div>
-                    <h3 className="mt-2 font-urbanist text-lg font-bold tracking-tight text-white">{loc.country}</h3>
-                    <p className="mt-2 font-urbanist text-[13px] leading-relaxed text-white/60">{loc.short}</p>
-                    <div className="mt-3 flex flex-wrap gap-1.5">
-                      {loc.bestFor.map((tag) => (
-                        <span key={tag} className="rounded-full border border-white/15 bg-white/[0.07] px-2.5 py-1 font-urbanist text-[10.5px] text-white/70">
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-                    <p className="mt-4 border-t border-white/[0.08] pt-3 font-urbanist text-[11.5px] leading-relaxed text-white/35">
-                      Street address — TBD
-                      <br />
-                      {loc.country}
-                    </p>
-                  </article>
-                ))}
-              </div>
-            </Reveal>
-          ))}
-        </div>
       </div>
     </section>
   );
