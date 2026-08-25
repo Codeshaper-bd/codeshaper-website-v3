@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
+import { SITE_URL, SITE_NAME } from "@/lib/site";
 
 /**
  * Typography — Urbanist, self-hosted through next/font/local so Next emits
@@ -23,11 +24,55 @@ const urbanist = localFont({
 });
 
 // SEO decision (Pass 1 §2): visible H1 stays short/human; keyword line lives here.
+const TITLE = "Product Design, Web & Mobile App Development, eCommerce & AI Automation | Codeshaper";
+const DESCRIPTION =
+  "Codeshaper helps teams design, build, modernize, and automate digital products — with weekly visibility, clean handover, and flexible engagement models.";
+
 export const metadata: Metadata = {
-  title:
-    "Product Design, Web & Mobile App Development, eCommerce & AI Automation | Codeshaper",
-  description:
-    "Codeshaper helps teams design, build, modernize, and automate digital products — with weekly visibility, clean handover, and flexible engagement models.",
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: TITLE,
+    template: `%s | ${SITE_NAME}`,
+  },
+  description: DESCRIPTION,
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    type: "website",
+    url: "/",
+    siteName: SITE_NAME,
+    title: TITLE,
+    description: DESCRIPTION,
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: TITLE,
+    description: DESCRIPTION,
+  },
+};
+
+/**
+ * Organization + WebSite JSON-LD. Only facts that are actually true are
+ * asserted here: name and (placeholder, see lib/site.ts) URL. No `logo`
+ * (nothing higher-res than the 32px favicon exists), no `sameAs` (no
+ * real social profile URLs exist anywhere in this project — see
+ * Footer.tsx — and a fake one is exactly the kind of unverifiable claim
+ * this project avoids everywhere else), no `SearchAction` (there's no
+ * on-site search to back that claim up).
+ */
+const ORG_JSON_LD = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: SITE_NAME,
+  url: SITE_URL,
+};
+
+const WEBSITE_JSON_LD = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: SITE_NAME,
+  url: SITE_URL,
 };
 
 export default function RootLayout({
@@ -43,7 +88,11 @@ export default function RootLayout({
         otherwise always mismatch server vs. client markup. It does not hide
         any other hydration issues elsewhere in the tree.
       */}
-      <body suppressHydrationWarning>{children}</body>
+      <body suppressHydrationWarning>
+        {children}
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(ORG_JSON_LD) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(WEBSITE_JSON_LD) }} />
+      </body>
     </html>
   );
 }
