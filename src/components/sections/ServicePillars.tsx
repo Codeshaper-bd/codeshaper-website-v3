@@ -9,6 +9,7 @@ import { SERVICE_COLUMNS } from "@/lib/navigation";
 import { Icon, SERVICE_ICONS } from "@/lib/icons";
 import Reveal from "@/components/system/Reveal";
 import Spotlight from "@/components/system/Spotlight";
+import { SectionEyebrow, SectionTitle, SectionDescription } from "@/components/system/SectionHeading";
 import { useMotionAllowed } from "@/lib/motion";
 import gsap from "gsap";
 
@@ -223,19 +224,13 @@ export default function ServicePillars() {
       >
         <div className="mx-auto max-w-7xl px-6 lg:px-10">
           <Reveal>
-          <p className="mb-3 inline-flex items-center gap-2.5 font-urbanist text-sm font-medium uppercase tracking-[0.25em] text-ink-dim">
-            <span className="h-1.5 w-1.5 rounded-full bg-aurora-amber" />
-            What we do
-          </p>
-          <h2
-            id="services-heading"
-            className="max-w-2xl font-urbanist text-4xl font-bold leading-tight tracking-tight text-ink sm:text-5xl"
-          >
+          <SectionEyebrow>What we do</SectionEyebrow>
+          <SectionTitle id="services-heading" size="lg" className="max-w-2xl">
             Five practices, one delivery system.
-          </h2>
-          <p className="mt-5 max-w-xl font-urbanist text-base leading-relaxed text-ink-dim">
+          </SectionTitle>
+          <SectionDescription className="mt-5 max-w-xl">
             Every project moves through the same disciplines — from first sketch to a shipped, supported product.
-          </p>
+          </SectionDescription>
         </Reveal>
 
         <div className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">

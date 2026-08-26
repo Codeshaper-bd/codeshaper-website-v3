@@ -39,6 +39,7 @@ import {
   SiWordpress,
 } from "react-icons/si";
 import Reveal from "@/components/system/Reveal";
+import { SectionEyebrow, SectionTitle, SectionDescription } from "@/components/system/SectionHeading";
 
 /**
  * Tech Stack — reworked per direct feedback on the first pass: the section
@@ -133,16 +134,11 @@ export default function TechStack() {
           <Reveal>
             <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
               <div>
-                <p className="mb-2.5 inline-flex items-center gap-2.5 font-urbanist text-[11px] font-medium uppercase tracking-[0.28em] text-ink-dim">
-                  <span className="h-1.5 w-1.5 rounded-full bg-aurora-amber" />
-                  Tech Stack
-                </p>
-                <h2 id="tech-stack-heading" className="font-urbanist text-3xl font-bold leading-tight text-ink sm:text-4xl">
-                  Modern tools, AI-ready delivery.
-                </h2>
-                <p className="mt-2.5 max-w-lg font-urbanist text-[13.5px] leading-relaxed text-ink-dim">
+                <SectionEyebrow>Tech Stack</SectionEyebrow>
+                <SectionTitle id="tech-stack-heading">Modern tools, AI-ready delivery.</SectionTitle>
+                <SectionDescription className="mt-2.5 max-w-lg">
                   We pick proven technology for the job, then connect it with AI-assisted workflows where it improves speed, clarity, or operations.
-                </p>
+                </SectionDescription>
               </div>
 
               <div className="no-scrollbar flex max-w-full shrink-0 gap-1 overflow-x-auto rounded-full border border-hairline bg-canvas-raised/80 p-1">

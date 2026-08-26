@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ChevronDown, ArrowRight } from "lucide-react";
 import Reveal from "@/components/system/Reveal";
 import CountUp from "@/components/system/CountUp";
+import { SectionEyebrow, SectionTitle, SectionDescription } from "@/components/system/SectionHeading";
 
 /**
  * FAQ — round 2. Feedback: the plain divide-y list read as basic next to
@@ -106,16 +107,11 @@ export default function FAQ() {
         <div className="grid gap-12 lg:grid-cols-[360px_1fr] lg:gap-16">
           <div>
             <Reveal>
-              <p className="mb-3 inline-flex items-center gap-2.5 font-urbanist text-[11px] font-medium uppercase tracking-[0.28em] text-ink-dim">
-                <span className="h-1.5 w-1.5 rounded-full bg-aurora-amber" />
-                FAQ
-              </p>
-              <h2 id="faq-heading" className="max-w-md font-urbanist text-3xl font-bold leading-tight tracking-tight text-ink sm:text-4xl">
-                Questions, answered.
-              </h2>
-              <p className="mt-4 max-w-sm font-urbanist text-[14.5px] leading-relaxed text-ink-dim">
+              <SectionEyebrow>FAQ</SectionEyebrow>
+              <SectionTitle id="faq-heading" className="max-w-md">Questions, answered.</SectionTitle>
+              <SectionDescription className="mt-4 max-w-sm">
                 The things clients ask before kicking off — services, process, AI, and where the team works from.
-              </p>
+              </SectionDescription>
             </Reveal>
 
             <Reveal delay={100}>

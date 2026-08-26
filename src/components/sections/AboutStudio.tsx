@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import gsap from "gsap";
 import Reveal from "@/components/system/Reveal";
+import { SectionEyebrow, SectionTitle, SectionDescription } from "@/components/system/SectionHeading";
 import { usePrefersReducedMotion, useMotionAllowed } from "@/lib/motion";
 
 /**
@@ -144,22 +145,16 @@ export default function AboutStudio() {
           </Reveal>
 
           <Reveal delay={100}>
-            <p className="mb-3 inline-flex items-center gap-2.5 font-urbanist text-sm font-medium uppercase tracking-[0.25em] text-ink-dim">
-              <span className="h-1.5 w-1.5 rounded-full bg-aurora-amber" />
-              Who we are
-            </p>
-            <h2
-              id="about-heading"
-              className="font-urbanist text-4xl font-bold leading-tight tracking-tight text-ink sm:text-5xl"
-            >
+            <SectionEyebrow>Who we are</SectionEyebrow>
+            <SectionTitle id="about-heading" size="lg">
               One team, every
               <br />
               <span className="text-ink-dim">discipline you need.</span>
-            </h2>
-            <p className="mt-5 max-w-md font-urbanist text-base leading-relaxed text-ink-dim">
+            </SectionTitle>
+            <SectionDescription className="mt-5 max-w-md">
               We're a digital product studio combining design, engineering, commerce, and AI automation under one
               roof — with weekly visibility and a clean handover at the end of every engagement.
-            </p>
+            </SectionDescription>
 
             <div className="mt-8 grid grid-cols-2 gap-x-6 border-y border-hairline sm:flex sm:gap-x-0 sm:divide-x sm:divide-hairline">
               {STATS.map((s, i) => (

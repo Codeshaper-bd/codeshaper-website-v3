@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { ArrowLeft, ArrowRight, Play, Quote } from "lucide-react";
 import Reveal from "@/components/system/Reveal";
+import { SectionEyebrow, SectionTitle, SectionDescription } from "@/components/system/SectionHeading";
 
 /**
  * Client Testimonials — after Engagement Models. Reuses the exact
@@ -271,19 +272,16 @@ export default function Testimonials() {
           <Reveal>
             <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
               <div>
-                <p className="mb-3 inline-flex items-center gap-2.5 font-urbanist text-[11px] font-medium uppercase tracking-[0.28em] text-ink-dim">
-                  <span className="h-1.5 w-1.5 rounded-full bg-aurora-amber" />
-                  Client Testimonials
-                </p>
-                <h2 ref={headingRef} id="testimonials-heading" className="font-urbanist text-4xl font-bold leading-tight tracking-tight text-ink sm:text-5xl">
+                <SectionEyebrow>Client Testimonials</SectionEyebrow>
+                <SectionTitle ref={headingRef} id="testimonials-heading" size="lg">
                   Trusted by teams who shipped with us.
-                </h2>
+                </SectionTitle>
               </div>
 
               <div className="flex items-center gap-3 self-start lg:self-end">
-                <p className="max-w-[26ch] font-urbanist text-[14px] leading-relaxed text-ink-dim">
+                <SectionDescription className="max-w-[26ch]">
                   Drag to browse — hear it directly from the people we've worked with.
-                </p>
+                </SectionDescription>
                 <div className="flex shrink-0 items-center gap-2">
                   <button
                     type="button"

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ArrowRight, ClipboardList, Code2, ShieldCheck, Rocket, Cpu, Bot, User, type LucideIcon } from "lucide-react";
 import Reveal from "@/components/system/Reveal";
 import CountUp from "@/components/system/CountUp";
+import { SectionEyebrow, SectionTitle } from "@/components/system/SectionHeading";
 import { usePrefersReducedMotion } from "@/lib/motion";
 
 /**
@@ -256,13 +257,10 @@ export default function AiDevExcellence() {
     <section className="theme-light relative bg-light-surface py-14 lg:py-16" aria-labelledby="ai-dev-heading">
       <div className="mx-auto max-w-7xl px-6 lg:px-10">
         <Reveal>
-          <p className="mb-3 inline-flex items-center gap-2.5 font-urbanist text-[11px] font-medium uppercase tracking-[0.28em] text-ink-dim">
-            <span className="h-1.5 w-1.5 rounded-full bg-aurora-amber" />
-            AI-Driven Development
-          </p>
-          <h2 id="ai-dev-heading" className="max-w-2xl font-urbanist text-3xl font-bold leading-tight tracking-tight text-ink sm:text-4xl">
+          <SectionEyebrow>AI-Driven Development</SectionEyebrow>
+          <SectionTitle id="ai-dev-heading" className="max-w-2xl">
             AI and people, working the same pipeline.
-          </h2>
+          </SectionTitle>
         </Reveal>
 
         <Reveal delay={80}>

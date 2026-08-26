@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, type CSSProperties } from "react";
 import Link from "next/link";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import Reveal from "@/components/system/Reveal";
+import { SectionEyebrow, SectionTitle, SectionDescription } from "@/components/system/SectionHeading";
 
 /**
  * Success Stories — TRIAL variant, modeled on hyperline.co's accordion
@@ -341,19 +342,16 @@ export default function CaseStudiesExpand() {
           <Reveal>
             <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
               <div>
-                <p className="mb-3 inline-flex items-center gap-2.5 font-urbanist text-[11px] font-medium uppercase tracking-[0.28em] text-ink-dim">
-                  <span className="h-1.5 w-1.5 rounded-full bg-aurora-amber" />
-                  Success Stories
-                </p>
-                <h2 ref={headingRef} id="work-expand-heading" className="font-urbanist text-4xl font-bold leading-tight tracking-tight text-ink sm:text-5xl">
+                <SectionEyebrow>Success Stories</SectionEyebrow>
+                <SectionTitle ref={headingRef} id="work-expand-heading" size="lg">
                   Work that ships, every time.
-                </h2>
+                </SectionTitle>
               </div>
 
               <div className="flex flex-col gap-4 lg:items-end">
-                <p className="max-w-sm font-urbanist text-[14px] leading-relaxed text-ink-dim">
+                <SectionDescription className="max-w-sm">
                   Product launches, premium websites, and operation-heavy platforms with clean handover from day one.
-                </p>
+                </SectionDescription>
                 <div className="flex items-center gap-2">
                   <button
                     type="button"

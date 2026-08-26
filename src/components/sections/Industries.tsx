@@ -15,6 +15,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import Reveal from "@/components/system/Reveal";
+import { SectionEyebrow, SectionTitle, SectionDescription } from "@/components/system/SectionHeading";
 
 type Industry = {
   name: string;
@@ -103,18 +104,13 @@ export default function Industries() {
         <Reveal>
           <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
             <div>
-              <p className="mb-2.5 inline-flex items-center gap-2.5 font-urbanist text-[11px] font-medium uppercase tracking-[0.28em] text-ink-dim">
-                <span className="h-1.5 w-1.5 rounded-full bg-aurora-amber" />
-                Industries
-              </p>
-              <h2 id="industries-heading" className="font-urbanist text-3xl font-bold leading-tight tracking-tight text-ink sm:text-4xl">
-                Industry workflows, built with product taste.
-              </h2>
+              <SectionEyebrow>Industries</SectionEyebrow>
+              <SectionTitle id="industries-heading">Industry workflows, built with product taste.</SectionTitle>
             </div>
             <div className="flex items-center gap-4">
-              <p className="max-w-xs font-urbanist text-[13.5px] leading-relaxed text-ink-dim">
+              <SectionDescription className="max-w-xs">
                 Adapted to what makes each business different: integrations, approvals, journeys, and handover.
-              </p>
+              </SectionDescription>
               <Link
                 href="/industries"
                 className="inline-flex w-fit shrink-0 items-center gap-2 rounded-full bg-aurora-violet px-5 py-2.5 font-urbanist text-[13px] font-semibold text-white transition-[background-color,transform] duration-300 hover:scale-[1.02] hover:bg-aurora-violet-dark"

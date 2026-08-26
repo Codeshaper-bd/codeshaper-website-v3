@@ -5,6 +5,7 @@ import type { CSSProperties } from "react";
 import type { LucideIcon } from "lucide-react";
 import { Rocket, Boxes, Users, UserPlus, Globe2, ArrowRight } from "lucide-react";
 import Reveal from "@/components/system/Reveal";
+import { SectionEyebrow, SectionTitle, SectionDescription } from "@/components/system/SectionHeading";
 
 /**
  * Engagement models — compact, single-row (on desktop) lineup of standout
@@ -112,17 +113,12 @@ export default function EngagementModels() {
         <Reveal>
           <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
             <div>
-              <p className="mb-3 inline-flex items-center gap-2.5 font-urbanist text-[11px] font-medium uppercase tracking-[0.28em] text-ink-dim">
-                <span className="h-1.5 w-1.5 rounded-full bg-aurora-amber" />
-                Engagement Models
-              </p>
-              <h2 id="engagement-heading" className="font-urbanist text-3xl font-bold tracking-tight text-ink sm:text-4xl">
-                Flexible ways to work with us.
-              </h2>
+              <SectionEyebrow>Engagement Models</SectionEyebrow>
+              <SectionTitle id="engagement-heading">Flexible ways to work with us.</SectionTitle>
             </div>
-            <p className="max-w-sm font-urbanist text-[15px] leading-relaxed text-ink-dim">
+            <SectionDescription className="max-w-sm">
               Choose the model that matches your scope certainty, timeline, and team structure.
-            </p>
+            </SectionDescription>
           </div>
         </Reveal>
 

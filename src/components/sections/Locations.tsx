@@ -3,6 +3,7 @@
 import { useEffect, useState, type ComponentType, type SVGProps } from "react";
 import { MapPin } from "lucide-react";
 import Reveal from "@/components/system/Reveal";
+import { SectionEyebrow, SectionTitle, SectionDescription } from "@/components/system/SectionHeading";
 import { usePrefersReducedMotion } from "@/lib/motion";
 import { StatueOfLibertyIcon, ClockTowerIcon, MosqueIcon, PagodaIcon, OperaHouseIcon, FernIcon } from "./LandmarkIcons";
 
@@ -258,18 +259,11 @@ export default function Locations() {
 
       <div className="relative z-10 mx-auto max-w-7xl px-6 lg:px-10">
         <Reveal>
-          <p className="mb-3 font-urbanist text-sm font-medium uppercase tracking-[0.25em] text-ink-faint">
-            Locations
-          </p>
-          <h2
-            id="locations-heading"
-            className="font-urbanist text-3xl font-bold tracking-tight text-ink sm:text-4xl"
-          >
-            Where we work from.
-          </h2>
-          <p className="mt-4 max-w-xl font-urbanist text-lg leading-relaxed text-ink-dim">
+          <SectionEyebrow>Locations</SectionEyebrow>
+          <SectionTitle id="locations-heading">Where we work from.</SectionTitle>
+          <SectionDescription className="mt-4 max-w-xl">
             One delivery hub, five collaboration hubs — timezone overlap wherever the client is.
-          </p>
+          </SectionDescription>
         </Reveal>
 
         <Reveal delay={80}>

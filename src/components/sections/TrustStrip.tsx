@@ -16,6 +16,7 @@ import { FaMicrosoft } from "react-icons/fa";
 import { SiWebflow, SiFiverr, SiUpwork, SiFramer } from "react-icons/si";
 import type { IconType } from "react-icons";
 import Reveal from "@/components/system/Reveal";
+import { SectionEyebrow } from "@/components/system/SectionHeading";
 
 /**
  * Clients & trust — back to the section's earlier composition (left-aligned
@@ -130,10 +131,7 @@ export default function TrustStrip() {
         <Reveal>
           <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
             <div>
-              <p className="mb-2.5 inline-flex items-center gap-2.5 font-urbanist text-[11px] font-medium uppercase tracking-[0.28em] text-ink-dim">
-                <span className="h-1.5 w-1.5 rounded-full bg-aurora-amber" />
-                Selected Clients
-              </p>
+              <SectionEyebrow>Selected Clients</SectionEyebrow>
               <h2 className="font-urbanist text-[24px] font-bold leading-tight tracking-tight text-ink sm:text-[32px] lg:text-[36px]">
                 The Choice Of Fast-Moving Teams
                 <br />
