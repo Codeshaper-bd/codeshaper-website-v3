@@ -30,7 +30,6 @@ export type BlogPost = {
   date: string; // ISO
   readingTime: number; // minutes
   image: string;
-  featured?: boolean;
 };
 
 export const TOPICS = [
@@ -60,7 +59,6 @@ export const BLOG_POSTS: BlogPost[] = [
     date: "2026-07-14",
     readingTime: 7,
     image: "https://picsum.photos/seed/blog-rag-support/1200/800",
-    featured: true,
     body: [
       "Most support teams already have the answer to a customer's question written down somewhere — a help doc, a Slack thread, a changelog entry. The problem isn't a lack of documentation; it's that the documentation is scattered, and a generic chatbot with no grounding will either refuse to answer or, worse, make something up.",
       "Retrieval-augmented generation (RAG) fixes this by changing what the model is allowed to answer from. Instead of relying on what it was trained on, the model is given a retrieved set of your own documents at query time and asked to answer only from those. Get the retrieval step right, and the hallucination problem mostly disappears — not because the model got smarter, but because you stopped asking it to guess.",
@@ -260,40 +258,8 @@ export function getPostBySlug(slug: string): BlogPost | undefined {
   return BLOG_POSTS.find((p) => p.slug === slug);
 }
 
-export function getFeaturedPost(): BlogPost {
-  return BLOG_POSTS.find((p) => p.featured) ?? BLOG_POSTS[0];
-}
-
 export function getRelatedPosts(post: BlogPost, count = 3): BlogPost[] {
   const sameTopic = BLOG_POSTS.filter((p) => p.slug !== post.slug && p.topic === post.topic);
   const rest = BLOG_POSTS.filter((p) => p.slug !== post.slug && p.topic !== post.topic);
   return [...sameTopic, ...rest].slice(0, count);
 }
-
-/** Curated sequences through the real posts above — reusing posts across paths is normal for a small catalog. */
-export const READING_PATHS: { title: string; description: string; slugs: string[] }[] = [
-  {
-    title: "Launch an MVP",
-    description: "Scope tightly, keep the system malleable, and know what a dedicated team should look like once you're past v1.",
-    slugs: ["mvp-sprint-scoping", "design-systems-101", "dedicated-product-team-explained"],
-  },
-  {
-    title: "Improve eCommerce conversion",
-    description: "Fix the structural issues first, then decide whether your platform is actually the bottleneck.",
-    slugs: ["cro-checklist-ecommerce", "shopify-vs-custom-storefront", "legacy-rebuild-checklist"],
-  },
-  {
-    title: "Automate your operations",
-    description: "Get documents flowing reliably, connect the systems safely, then layer in retrieval-grounded AI.",
-    slugs: ["process-automation-without-chaos", "apis-integrations-questions", "rag-for-support-teams"],
-  },
-];
-
-/** No real analytics exist yet, so this is an honest "editor's picks" list, not a fabricated most-read ranking. */
-export const EDITOR_PICKS_SLUGS: string[] = [
-  "rag-for-support-teams",
-  "mvp-sprint-scoping",
-  "legacy-rebuild-checklist",
-  "cro-checklist-ecommerce",
-  "process-automation-without-chaos",
-];

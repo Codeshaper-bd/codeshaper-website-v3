@@ -1,14 +1,9 @@
 import type { Metadata } from "next";
 import SiteShell from "@/components/system/SiteShell";
 import BlogHero from "@/components/blog/BlogHero";
-import FeaturedPost from "@/components/blog/FeaturedPost";
 import BlogBrowser from "@/components/blog/BlogBrowser";
-import TopicCollections from "@/components/blog/TopicCollections";
-import ReadingPaths from "@/components/blog/ReadingPaths";
-import NewsletterForm from "@/components/blog/NewsletterForm";
-import EditorsPicks from "@/components/blog/EditorsPicks";
 import BlogFinalCta from "@/components/blog/BlogFinalCta";
-import { BLOG_POSTS, getFeaturedPost } from "@/lib/blog";
+import { BLOG_POSTS } from "@/lib/blog";
 import { SITE_URL } from "@/lib/site";
 
 export const metadata: Metadata = {
@@ -40,8 +35,6 @@ export default async function BlogIndexPage({
   searchParams: Promise<{ topic?: string }>;
 }) {
   const { topic } = await searchParams;
-  const featured = getFeaturedPost();
-  const rest = BLOG_POSTS.filter((p) => p.slug !== featured.slug);
 
   return (
     <SiteShell>
@@ -50,12 +43,7 @@ export default async function BlogIndexPage({
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(BREADCRUMB_JSON_LD) }} />
 
         <BlogHero />
-        <FeaturedPost post={featured} />
-        <BlogBrowser posts={rest} initialTopic={topic} />
-        <TopicCollections />
-        <ReadingPaths />
-        <NewsletterForm />
-        <EditorsPicks />
+        <BlogBrowser posts={BLOG_POSTS} initialTopic={topic} />
         <BlogFinalCta />
       </div>
     </SiteShell>
