@@ -135,7 +135,7 @@ export default function EngagementModels() {
         <Reveal delay={150}>
           <div className="mt-12">
             <Link
-              href="/how-we-work/engagement"
+              href="/engagement"
               className="inline-flex items-center gap-2 rounded-full bg-aurora-violet px-7 py-3.5 font-urbanist text-sm font-semibold text-white transition-[background-color,transform] duration-300 hover:scale-[1.02] hover:bg-aurora-violet-dark"
             >
               Compare Engagement Models

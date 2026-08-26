@@ -233,7 +233,7 @@ export default function Footer() {
                     </li>
                   ))}
                   <li>
-                    <Link href="/how-we-work/engagement" className={colLink}>All engagement models →</Link>
+                    <Link href="/engagement" className={colLink}>All engagement models →</Link>
                   </li>
                 </ul>
               </div>

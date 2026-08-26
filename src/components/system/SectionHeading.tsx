@@ -22,17 +22,17 @@ export function SectionEyebrow({ children, className = "" }: { children: ReactNo
 
 export const SectionTitle = forwardRef<
   HTMLHeadingElement,
-  { children: ReactNode; id?: string; size?: "md" | "lg"; className?: string }
->(function SectionTitle({ children, id, size = "md", className = "" }, ref) {
+  { children: ReactNode; id?: string; size?: "md" | "lg"; className?: string; as?: "h1" | "h2" }
+>(function SectionTitle({ children, id, size = "md", className = "", as: Tag = "h2" }, ref) {
   const sizeCls = size === "lg" ? "text-4xl sm:text-5xl" : "text-3xl sm:text-4xl";
   return (
-    <h2
+    <Tag
       ref={ref}
       id={id}
       className={`font-urbanist font-bold leading-tight tracking-tight text-ink ${sizeCls} ${className}`}
     >
       {children}
-    </h2>
+    </Tag>
   );
 });
 
