@@ -35,7 +35,7 @@ export default function DetailPage({
 }) {
   return (
     <>
-      <section className="bg-canvas py-16 lg:py-24">
+      <section className="bg-canvas pb-16 pt-32 lg:py-24">
         <div className="mx-auto max-w-3xl px-6 lg:px-10">
           <Breadcrumbs items={breadcrumbs} />
           <span className="mb-5 flex h-12 w-12 items-center justify-center rounded-full border border-hairline text-ink-dim">

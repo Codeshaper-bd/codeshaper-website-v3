@@ -21,7 +21,7 @@ export default function LegalDoc({
   children: ReactNode;
 }) {
   return (
-    <section className="bg-canvas py-16 lg:py-24">
+    <section className="bg-canvas pb-16 pt-32 lg:py-24">
       <div className="mx-auto max-w-3xl px-6 lg:px-10">
         <Breadcrumbs items={breadcrumbs} />
         <SectionEyebrow>Legal</SectionEyebrow>

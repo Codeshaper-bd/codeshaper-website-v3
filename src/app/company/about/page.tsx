@@ -32,7 +32,7 @@ const STATS = [
 export default function AboutPage() {
   return (
     <SiteShell>
-      <section className="bg-canvas py-16 lg:py-24">
+      <section className="bg-canvas pb-16 pt-32 lg:py-24">
         <div className="mx-auto max-w-3xl px-6 lg:px-10">
           <Breadcrumbs items={[{ label: "Home", href: "/" }, { label: "Company" }, { label: "About" }]} />
           <SectionEyebrow>Company</SectionEyebrow>
