@@ -161,7 +161,7 @@ export default function BlogBrowser({ posts, initialTopic }: { posts: BlogPost[]
   };
 
   return (
-    <section id="browse" className="relative overflow-hidden bg-canvas py-14 lg:py-20">
+    <section id="browse" className="relative overflow-hidden bg-light-surface py-14 lg:py-20">
       <div
         aria-hidden
         className="absolute inset-0 opacity-[0.03]"
