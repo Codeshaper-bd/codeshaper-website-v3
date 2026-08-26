@@ -161,8 +161,14 @@ export default function BlogBrowser({ posts, initialTopic }: { posts: BlogPost[]
   };
 
   return (
-    <section id="browse" className="bg-canvas py-14 lg:py-20">
-      <div className="mx-auto max-w-7xl px-6 lg:px-10">
+    <div id="browse" className="bg-light-surface p-3 sm:p-4">
+      <section className="relative overflow-hidden rounded-[32px] bg-canvas py-14 lg:py-20">
+        <div
+          aria-hidden
+          className="absolute inset-0 opacity-[0.03]"
+          style={{ backgroundImage: "url(/media/hex-pattern-tile.svg)", backgroundSize: "112px 194px" }}
+        />
+      <div className="relative mx-auto max-w-7xl px-6 lg:px-10">
         <SectionEyebrow>Browse</SectionEyebrow>
         <SectionTitle id="browse-heading">Latest articles</SectionTitle>
         <SectionDescription className="mt-3 max-w-xl">
@@ -317,6 +323,7 @@ export default function BlogBrowser({ posts, initialTopic }: { posts: BlogPost[]
           </aside>
         </div>
       </div>
-    </section>
+      </section>
+    </div>
   );
 }
