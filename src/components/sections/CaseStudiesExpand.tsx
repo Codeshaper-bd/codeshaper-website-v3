@@ -156,7 +156,7 @@ function StoryPanel({
       onClick={onActivate}
       data-story-index={index}
       style={{ width, minWidth: width, "--card-glow": `${story.accent}35` } as CSSProperties}
-      className={`group relative h-[410px] shrink-0 cursor-pointer select-none overflow-hidden rounded-[28px] bg-[#141316] shadow-[inset_0_1px_0_rgba(255,255,255,0.09)] transition-[width,transform,box-shadow] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] sm:h-[460px] ${
+      className={`group relative h-[410px] shrink-0 cursor-pointer select-none overflow-hidden rounded-[28px] bg-[#141316] shadow-[inset_0_1px_0_rgba(255,255,255,0.09)] transition-[width,transform,box-shadow] duration-500 ease-out-expo sm:h-[460px] ${
         isActive ? "shadow-[inset_0_1px_0_rgba(255,255,255,0.09),0_30px_70px_var(--card-glow)]" : "hover:-translate-y-1 hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.09),0_20px_50px_rgba(9,9,11,0.35)]"
       }`}
     >

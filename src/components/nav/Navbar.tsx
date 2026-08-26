@@ -83,7 +83,7 @@ export default function Navbar() {
         }`}
       >
         <div
-          className={`mx-auto max-w-[1180px] rounded-full border border-hairline bg-white/95 backdrop-blur-xl transition-shadow duration-[250ms] ${
+          className={`mx-auto max-w-[1180px] rounded-full border border-hairline bg-white/95 backdrop-blur-xl transition-shadow duration-300 ${
             scrolled || openValue || mobileOpen ? "shadow-[0_8px_30px_rgba(11,15,25,0.10)]" : "shadow-none"
           }`}
         >

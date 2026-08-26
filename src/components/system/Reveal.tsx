@@ -56,7 +56,7 @@ export default function Reveal({ children, className = "", delay = 0, distance =
       style={{
         opacity: shown ? 1 : 0,
         transform: shown ? "translateY(0)" : `translateY(${distance}px)`,
-        transition: `opacity 600ms cubic-bezier(0.16,1,0.3,1) ${delay}ms, transform 600ms cubic-bezier(0.16,1,0.3,1) ${delay}ms`,
+        transition: `opacity 600ms var(--ease-out-expo) ${delay}ms, transform 600ms var(--ease-out-expo) ${delay}ms`,
       }}
     >
       {children}

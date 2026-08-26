@@ -152,7 +152,7 @@ function NodeBadge({
       style={{ left: `${x}%`, top: `${y}%`, transform: "translate(-50%, -50%)" }}
     >
       <div
-        className="relative flex items-center justify-center rounded-full border backdrop-blur-sm transition-[transform,background-color,border-color,box-shadow] duration-400"
+        className="relative flex items-center justify-center rounded-full border backdrop-blur-sm transition-[transform,background-color,border-color,box-shadow] duration-300"
         style={{
           width: size,
           height: size,
