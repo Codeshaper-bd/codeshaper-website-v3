@@ -31,9 +31,9 @@ export default function ReadingProgress({ targetId }: { targetId: string }) {
   }, [targetId]);
 
   return (
-    <div className="fixed left-0 right-0 top-0 z-[60] h-[3px] bg-transparent" aria-hidden>
+    <div className="fixed left-0 right-0 top-0 z-[60] h-[4px] bg-transparent" aria-hidden>
       <div
-        className="h-full bg-aurora-violet transition-[width] duration-150 ease-out"
+        className="h-full bg-[#7c6cff] shadow-[0_0_10px_rgba(124,108,255,0.55)] transition-[width] duration-150 ease-out"
         style={{ width: `${progress}%` }}
       />
     </div>

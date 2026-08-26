@@ -19,7 +19,7 @@ export default function PostCard({ post }: { post: BlogPost }) {
           alt=""
           className="h-full w-full object-cover transition-transform duration-500 ease-out-expo group-hover:scale-[1.06]"
         />
-        <span className="absolute left-3 top-3 rounded-full bg-white/90 px-2.5 py-1 font-urbanist text-[10.5px] font-semibold uppercase tracking-[0.08em] text-ink-mid backdrop-blur-sm">
+        <span className="absolute left-3 top-3 max-w-[calc(100%-1.5rem)] truncate whitespace-nowrap rounded-full bg-white/90 px-2.5 py-1 font-urbanist text-[10.5px] font-semibold uppercase tracking-[0.08em] text-ink-mid backdrop-blur-sm">
           {post.topic}
         </span>
       </div>

@@ -102,21 +102,23 @@ export default async function BlogPostPage({
 
         <ReadingProgress targetId={ARTICLE_CONTENT_ID} />
 
-        {/* Hero — same floating-card treatment as the blog index */}
+        {/* Hero — same floating-card treatment as the blog index, centered to match */}
         <div className="bg-light-surface p-3 sm:p-4">
-          <section className="relative overflow-hidden rounded-[32px] bg-canvas px-6 pb-10 pt-32 lg:px-10 lg:pb-12 lg:pt-28">
-            <div className="mx-auto max-w-3xl">
+          <section className="relative overflow-hidden rounded-[32px] bg-canvas px-6 pb-16 pt-32 lg:px-10 lg:pb-20 lg:pt-32">
+            <div className="mx-auto max-w-3xl text-center">
               <Reveal>
-                <Breadcrumbs
-                  items={[{ label: "Home", href: "/" }, { label: "Blog", href: "/blog" }, { label: post.title }]}
-                />
-                <p className="font-urbanist text-[12.5px] font-semibold uppercase tracking-[0.08em] text-aurora-violet">
+                <div className="flex justify-center">
+                  <Breadcrumbs
+                    items={[{ label: "Home", href: "/" }, { label: "Blog", href: "/blog" }, { label: post.title }]}
+                  />
+                </div>
+                <p className="mt-5 font-urbanist text-[12.5px] font-semibold uppercase tracking-[0.08em] text-aurora-violet">
                   {post.topic}
                 </p>
                 <h1 className="mt-3 font-urbanist text-3xl font-bold leading-tight tracking-tight text-ink sm:text-4xl">
                   {post.title}
                 </h1>
-                <div className="mt-6 flex flex-wrap items-center gap-3">
+                <div className="mt-7 flex flex-col items-center gap-3">
                   <Image
                     src="/brand/favicon.png"
                     alt=""
@@ -126,7 +128,7 @@ export default async function BlogPostPage({
                   />
                   <div className="font-urbanist text-[13.5px] leading-tight">
                     <p className="font-semibold text-ink">{post.author}</p>
-                    <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-ink-faint">
+                    <div className="mt-1 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-ink-faint">
                       <span className="inline-flex items-center gap-1.5">
                         <Calendar size={13} strokeWidth={1.75} />
                         Published {formatDate(post.date)}
@@ -155,6 +157,11 @@ export default async function BlogPostPage({
                 <img src={post.image} alt="" className="h-full w-full object-cover" />
               </div>
             </Reveal>
+
+            {/* Mobile only: TOC belongs right after the image, not trailing the whole article */}
+            <div className="mt-8 lg:hidden">
+              <TableOfContents headings={headings} />
+            </div>
           </div>
 
           <div className="mx-auto max-w-7xl px-6 py-10 lg:px-10 lg:py-14">
@@ -211,7 +218,9 @@ export default async function BlogPostPage({
               </div>
 
               <aside className="space-y-5 lg:sticky lg:top-32 lg:h-fit">
-                <TableOfContents headings={headings} />
+                <div className="hidden lg:block">
+                  <TableOfContents headings={headings} />
+                </div>
                 <div className="rounded-2xl border border-hairline-light bg-light-raised p-5">
                   <ShareButtons url={postUrl} title={post.title} />
                 </div>

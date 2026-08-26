@@ -12,6 +12,7 @@
   /* secondary text lifted from #9C9CA8 → #ADADB8 (≈8.4:1 on #0A0A0F) so menu
      links and body copy stay comfortably readable, not just AA-passing */
   --color-ink-dim: #adadb8;
+  --color-ink-mid: #c7c7d1;           /* between ink and ink-dim; dark-canvas default for the light theme's override below */
   --color-ink-faint: #8f8f9c;         /* decorative numerals/eyebrows (~6.2:1 ✓) */
   --color-light-ink: #12121a;         /* text on light, primary */
   --color-light-dim: #5b5b66;         /* text on light, secondary */
