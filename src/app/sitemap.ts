@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { SITE_URL } from "@/lib/site";
 import { SERVICE_COLUMNS, INDUSTRIES, ENGAGEMENT_MODELS } from "@/lib/navigation";
+import { BLOG_POSTS } from "@/lib/blog";
 
 /**
  * Routes not listed here (Insights, Company/Leadership, Careers, Work,
@@ -22,7 +23,15 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${SITE_URL}/services`, lastModified: now, changeFrequency: "monthly", priority: 0.9 },
     { url: `${SITE_URL}/industries`, lastModified: now, changeFrequency: "monthly", priority: 0.9 },
     { url: `${SITE_URL}/engagement`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
+    { url: `${SITE_URL}/blog`, lastModified: now, changeFrequency: "weekly", priority: 0.8 },
   ];
+
+  const blogRoutes: MetadataRoute.Sitemap = BLOG_POSTS.map((p) => ({
+    url: `${SITE_URL}/blog/${p.slug}`,
+    lastModified: new Date(p.date),
+    changeFrequency: "yearly",
+    priority: 0.6,
+  }));
 
   const serviceCategoryRoutes: MetadataRoute.Sitemap = SERVICE_COLUMNS.map((col) => ({
     url: `${SITE_URL}${col.href}`,
@@ -54,5 +63,5 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.6,
   }));
 
-  return [...staticRoutes, ...serviceCategoryRoutes, ...serviceDetailRoutes, ...industryRoutes, ...engagementRoutes];
+  return [...staticRoutes, ...serviceCategoryRoutes, ...serviceDetailRoutes, ...industryRoutes, ...engagementRoutes, ...blogRoutes];
 }
