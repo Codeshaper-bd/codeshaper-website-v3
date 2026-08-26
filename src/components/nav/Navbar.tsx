@@ -78,9 +78,25 @@ export default function Navbar() {
       />
 
       <header
-        className={`theme-light fixed inset-x-0 top-0 z-50 p-5 font-urbanist transition-transform duration-300 ease-out sm:p-7 ${
-          hidden && !forceVisible ? "-translate-y-[calc(100%+16px)]" : "translate-y-0"
-        }`}
+        className={`theme-light fixed inset-x-0 top-0 z-50 p-5 font-urbanist ease-out sm:p-7 ${
+          // The mega panels (below) are `position: fixed` descendants of this
+          // header, and a header with a live translate value becomes their
+          // containing block (same root cause as the MobileMenu fix — see its
+          // comment). Normally that's harmless since translate only changes on
+          // scroll, while the panels only open once the header is already at
+          // rest. But a keyboard user can Tab to an off-screen (scrolled-past)
+          // trigger and press Enter, which opens the panel at the exact instant
+          // forceVisible flips the header from hidden to visible — reproduced
+          // via Playwright: the panel visibly slid from top:-15px to top:126px
+          // over ~200ms, tracking the header's own reveal animation instead of
+          // appearing pinned. Snapping this specific transition instantly
+          // (no transition class at all while forceVisible) closes that window
+          // without touching the smooth scroll-hide animation, which never has
+          // a fixed-panel dependency to begin with. A Radix Viewport would be
+          // the "proper" fix, but this file's own comment above rules that out
+          // (it's a Root-wide singleton that would break the compact dropdowns).
+          forceVisible ? "" : "transition-transform duration-300"
+        } ${hidden && !forceVisible ? "-translate-y-[calc(100%+16px)]" : "translate-y-0"}`}
       >
         <div
           className={`mx-auto max-w-[1180px] rounded-full border border-hairline bg-white/95 backdrop-blur-xl transition-shadow duration-300 ${
