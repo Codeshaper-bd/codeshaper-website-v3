@@ -48,10 +48,6 @@ export default function MobileMenu({ open, onClose }: { open: boolean; onClose: 
       aria-hidden={!open}
     >
       <nav aria-label="Mobile" className="px-6 py-8">
-        <Link href="/" onClick={onClose} className="block py-4 font-urbanist text-base font-medium text-ink">
-          Home
-        </Link>
-
         <Accordion.Root type="single" collapsible className="border-t border-hairline">
           {/* Services */}
           <Accordion.Item value="services" className="border-b border-hairline">
@@ -170,8 +166,16 @@ export default function MobileMenu({ open, onClose }: { open: boolean; onClose: 
           Success Stories
         </Link>
 
+        <Link
+          href="/blog"
+          onClick={onClose}
+          className="block border-b border-hairline py-4 font-urbanist text-base font-medium text-ink"
+        >
+          Blog
+        </Link>
+
         <div className="mt-6 space-y-8">
-          {SIMPLE_MENUS.map((m) => (
+          {SIMPLE_MENUS.filter((m) => m.enabled !== false).map((m) => (
             <div key={m.id}>
               <p className="mb-3 menu-section-label font-urbanist">{m.label}</p>
               <ul className="space-y-1">

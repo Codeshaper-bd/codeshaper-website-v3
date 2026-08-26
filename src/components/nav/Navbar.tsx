@@ -120,14 +120,6 @@ export default function Navbar() {
             <div ref={rootRef} className="ml-auto mr-6 hidden lg:block">
               <Nav.Root value={openValue} onValueChange={setOpenValue} className="relative">
                 <Nav.List className="flex items-center gap-1">
-                  <Nav.Item>
-                    <Nav.Link asChild>
-                      <Link href="/" className={triggerCls}>
-                        Home
-                      </Link>
-                    </Nav.Link>
-                  </Nav.Item>
-
                   {/* Services + Industries — MEGA, each a self-positioned floating card */}
                   <Nav.Item value="services">
                     <Nav.Trigger className={triggerCls}>
@@ -171,7 +163,18 @@ export default function Navbar() {
                     </Nav.Link>
                   </Nav.Item>
 
-                  {SIMPLE_MENUS.map((m) => (
+                  {/* Standing in for the Insights dropdown (disabled — see its
+                      `enabled: false` in navigation.ts) until it has more than
+                      Blog behind it. */}
+                  <Nav.Item>
+                    <Nav.Link asChild>
+                      <Link href="/blog" className={triggerCls}>
+                        Blog
+                      </Link>
+                    </Nav.Link>
+                  </Nav.Item>
+
+                  {SIMPLE_MENUS.filter((m) => m.enabled !== false).map((m) => (
                     <DropdownItem key={m.id} menu={m} />
                   ))}
                 </Nav.List>

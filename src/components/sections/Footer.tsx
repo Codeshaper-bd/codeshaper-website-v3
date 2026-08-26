@@ -27,7 +27,12 @@ import Reveal from "@/components/system/Reveal";
 const CITY_NAMES = ["Bangladesh", "Japan", "USA", "UK", "Australia", "New Zealand"];
 
 const insights = SIMPLE_MENUS.find((m) => m.id === "insights")!;
-const insightsLinks = insights.links.filter((l) => l.label !== "Downloads");
+// Insights itself is disabled for now (see its `enabled: false` in
+// navigation.ts) — only Blog is a real page, so that's all this column
+// shows until the rest of Insights has real content behind it too.
+const insightsLinks = insights.enabled === false
+  ? insights.links.filter((l) => l.label === "Blog")
+  : insights.links.filter((l) => l.label !== "Downloads");
 const company = SIMPLE_MENUS.find((m) => m.id === "company")!;
 const companyLinks = company.links.filter((l) => l.label !== "Contact");
 
@@ -243,9 +248,9 @@ export default function Footer() {
                 </ul>
               </div>
 
-              {/* Insights */}
+              {/* Insights (or just Blog while the rest is disabled) */}
               <div className="p-6 sm:p-7">
-                <ColHead>Insights</ColHead>
+                <ColHead>{insights.enabled === false ? "Blog" : "Insights"}</ColHead>
                 <ul className="space-y-2.5">
                   {insightsLinks.map((l) => (
                     <li key={l.href}>

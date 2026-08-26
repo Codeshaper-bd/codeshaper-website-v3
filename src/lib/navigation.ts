@@ -454,13 +454,22 @@ export const SIMPLE_MENUS: {
   /** Renders a hairline divider immediately after this 0-based link index. */
   dividerAfterIndex?: number;
   links: { label: string; href: string; icon: string }[];
+  /**
+   * Set to false to hide this menu from the nav without deleting its data —
+   * Insights is disabled for now (only Blog is live; Playbooks/Webinars/
+   * Podcasts/etc. are still stubs), and Navbar/MobileMenu just renders a
+   * plain "Blog" link in its place. Flip back to true (or omit) once the
+   * rest of Insights has real content and it should return as a dropdown.
+   */
+  enabled?: boolean;
 }[] = [
   {
     id: "insights",
     label: "Insights",
+    enabled: false,
     dividerAfterIndex: 2,
     links: [
-      { label: "Blog", href: "/insights/blog", icon: "file-text" },
+      { label: "Blog", href: "/blog", icon: "file-text" },
       { label: "Playbooks", href: "/insights/playbooks", icon: "clipboard-list" },
       { label: "Research & Newsletters", href: "/insights/research-newsletters", icon: "bar-chart-2" },
       { label: "Webinars", href: "/insights/webinars", icon: "video" },
