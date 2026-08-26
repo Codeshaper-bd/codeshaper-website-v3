@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import { ArrowLeft, ArrowRight, Calendar, RefreshCw, Clock } from "lucide-react";
 import SiteShell from "@/components/system/SiteShell";
 import Breadcrumbs from "@/components/system/Breadcrumbs";
 import Reveal from "@/components/system/Reveal";
@@ -126,14 +126,20 @@ export default async function BlogPostPage({
                   />
                   <div className="font-urbanist text-[13.5px] leading-tight">
                     <p className="font-semibold text-ink">{post.author}</p>
-                    <p className="text-ink-faint">
-                      Published {formatDate(post.date)}
-                      {post.lastUpdated && post.lastUpdated !== post.date && (
-                        <> · Updated {formatDate(post.lastUpdated)}</>
-                      )}
-                      {" · "}
-                      {post.readingTime} min read
-                    </p>
+                    <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-ink-faint">
+                      <span className="inline-flex items-center gap-1.5">
+                        <Calendar size={13} strokeWidth={1.75} />
+                        Published {formatDate(post.date)}
+                      </span>
+                      <span className="inline-flex items-center gap-1.5">
+                        <RefreshCw size={13} strokeWidth={1.75} />
+                        Updated {formatDate(post.lastUpdated)}
+                      </span>
+                      <span className="inline-flex items-center gap-1.5">
+                        <Clock size={13} strokeWidth={1.75} />
+                        {post.readingTime} min read
+                      </span>
+                    </div>
                   </div>
                 </div>
               </Reveal>
@@ -141,10 +147,10 @@ export default async function BlogPostPage({
           </section>
         </div>
 
-        <div className="bg-canvas">
-          <div className="mx-auto max-w-3xl px-6 pt-8 lg:px-10">
+        <div className="bg-light-surface">
+          <div className="mx-auto max-w-7xl px-6 pt-8 lg:px-10">
             <Reveal delay={80}>
-              <div className="aspect-[16/9] overflow-hidden rounded-2xl bg-light-surface">
+              <div className="aspect-[21/9] overflow-hidden rounded-2xl bg-light-raised">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={post.image} alt="" className="h-full w-full object-cover" />
               </div>

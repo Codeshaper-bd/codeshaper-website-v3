@@ -17,7 +17,6 @@ export default function PostCard({ post }: { post: BlogPost }) {
         <img
           src={post.image}
           alt=""
-          loading="lazy"
           className="h-full w-full object-cover transition-transform duration-500 ease-out-expo group-hover:scale-[1.06]"
         />
         <span className="absolute left-3 top-3 rounded-full bg-white/90 px-2.5 py-1 font-urbanist text-[10.5px] font-semibold uppercase tracking-[0.08em] text-ink-mid backdrop-blur-sm">

@@ -12,10 +12,11 @@
  * already used for Testimonials/CaseStudiesExpand — clearly a stand-in,
  * not a real photo, until real cover art exists.
  *
- * `lastUpdated` is deliberately left unset on every post below — none
- * of them have actually been revised since publishing, so showing a
- * fake "updated" date would misrepresent freshness. The detail page
- * only renders that field when a post genuinely sets it.
+ * `lastUpdated` is set equal to `date` on every post below — none of
+ * them have actually been revised since publishing, so this is an
+ * honest "last touched" date, not a fabricated freshness signal. When
+ * a post genuinely gets revised later, update `lastUpdated` to the
+ * real revision date and it'll read as a real update.
  */
 
 export type PostFormat = "Guide" | "Checklist" | "Opinion";
@@ -43,7 +44,7 @@ export type BlogPost = {
   techTags?: string[];
   author: string;
   date: string; // ISO
-  lastUpdated?: string; // ISO — only set if genuinely revised after publishing
+  lastUpdated: string; // ISO — equals `date` until a post is genuinely revised
   readingTime: number; // minutes
   image: string;
 };
@@ -81,6 +82,7 @@ export const BLOG_POSTS: BlogPost[] = [
     techTags: ["LLM", "Vector DB", "Next.js"],
     author: "The CodeShaper Team",
     date: "2026-07-14",
+    lastUpdated: "2026-07-14",
     readingTime: 7,
     image: "https://picsum.photos/seed/blog-rag-support/1200/800",
     summaryPoints: [
@@ -149,6 +151,7 @@ export const BLOG_POSTS: BlogPost[] = [
     level: "Beginner",
     author: "The CodeShaper Team",
     date: "2026-07-02",
+    lastUpdated: "2026-07-02",
     readingTime: 6,
     image: "https://picsum.photos/seed/blog-mvp-sprint/1200/800",
     summaryPoints: [
@@ -214,6 +217,7 @@ export const BLOG_POSTS: BlogPost[] = [
     industry: "eCommerce",
     author: "The CodeShaper Team",
     date: "2026-06-20",
+    lastUpdated: "2026-06-20",
     readingTime: 5,
     image: "https://picsum.photos/seed/blog-cro-checklist/1200/800",
     summaryPoints: [
@@ -279,6 +283,7 @@ export const BLOG_POSTS: BlogPost[] = [
     techTags: ["Figma", "React"],
     author: "The CodeShaper Team",
     date: "2026-06-05",
+    lastUpdated: "2026-06-05",
     readingTime: 6,
     image: "https://picsum.photos/seed/blog-design-systems/1200/800",
     summaryPoints: [
@@ -345,6 +350,7 @@ export const BLOG_POSTS: BlogPost[] = [
     techTags: ["Shopify", "Headless"],
     author: "The CodeShaper Team",
     date: "2026-05-22",
+    lastUpdated: "2026-05-22",
     readingTime: 6,
     image: "https://picsum.photos/seed/blog-shopify-custom/1200/800",
     summaryPoints: [
@@ -409,6 +415,7 @@ export const BLOG_POSTS: BlogPost[] = [
     level: "Advanced",
     author: "The CodeShaper Team",
     date: "2026-05-08",
+    lastUpdated: "2026-05-08",
     readingTime: 7,
     image: "https://picsum.photos/seed/blog-legacy-rebuild/1200/800",
     summaryPoints: [
@@ -473,6 +480,7 @@ export const BLOG_POSTS: BlogPost[] = [
     level: "Beginner",
     author: "The CodeShaper Team",
     date: "2026-04-24",
+    lastUpdated: "2026-04-24",
     readingTime: 5,
     image: "https://picsum.photos/seed/blog-dedicated-team/1200/800",
     summaryPoints: [
@@ -538,6 +546,7 @@ export const BLOG_POSTS: BlogPost[] = [
     techTags: ["REST", "Webhooks"],
     author: "The CodeShaper Team",
     date: "2026-04-10",
+    lastUpdated: "2026-04-10",
     readingTime: 6,
     image: "https://picsum.photos/seed/blog-api-integrations/1200/800",
     summaryPoints: [
@@ -602,6 +611,7 @@ export const BLOG_POSTS: BlogPost[] = [
     level: "Intermediate",
     author: "The CodeShaper Team",
     date: "2026-03-27",
+    lastUpdated: "2026-03-27",
     readingTime: 6,
     image: "https://picsum.photos/seed/blog-process-automation/1200/800",
     summaryPoints: [
@@ -666,6 +676,7 @@ export const BLOG_POSTS: BlogPost[] = [
     level: "Beginner",
     author: "The CodeShaper Team",
     date: "2026-03-13",
+    lastUpdated: "2026-03-13",
     readingTime: 5,
     image: "https://picsum.photos/seed/blog-team-augmentation/1200/800",
     summaryPoints: [

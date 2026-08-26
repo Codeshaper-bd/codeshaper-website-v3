@@ -36,10 +36,16 @@ export function incrementView(slug: string): PostStats {
   return { views: s.views, reactions: { ...s.reactions } };
 }
 
+/**
+ * ids/labels only — no emoji here. Raw emoji characters render
+ * inconsistently across platforms/fonts (reported as showing broken/
+ * missing-glyph boxes); ViewsReactions.tsx maps each id to a proper
+ * lucide-react icon instead, same icon system as the rest of the site.
+ */
 export const REACTIONS = [
-  { id: "helpful", emoji: "👍", label: "Helpful" },
-  { id: "insightful", emoji: "💡", label: "Insightful" },
-  { id: "love", emoji: "🎉", label: "Love it" },
+  { id: "helpful", label: "Helpful" },
+  { id: "insightful", label: "Insightful" },
+  { id: "love", label: "Love it" },
 ] as const;
 
 export function addReaction(slug: string, reaction: string): PostStats {

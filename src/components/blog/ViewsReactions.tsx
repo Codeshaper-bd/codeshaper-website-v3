@@ -1,8 +1,14 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Eye } from "lucide-react";
+import { Eye, ThumbsUp, Lightbulb, PartyPopper } from "lucide-react";
 import { REACTIONS, type PostStats } from "@/lib/blogStats";
+
+const REACTION_ICONS = {
+  helpful: ThumbsUp,
+  insightful: Lightbulb,
+  love: PartyPopper,
+} as const;
 
 function reactedKey(slug: string, reactionId: string) {
   return `codeshaper:blog:reacted:${slug}:${reactionId}`;
@@ -63,6 +69,7 @@ export default function ViewsReactions({ slug }: { slug: string }) {
         {REACTIONS.map((r) => {
           const count = stats?.reactions[r.id] ?? 0;
           const active = reacted.has(r.id);
+          const Icon = REACTION_ICONS[r.id];
           return (
             <button
               key={r.id}
@@ -77,7 +84,7 @@ export default function ViewsReactions({ slug }: { slug: string }) {
                   : "border-hairline-light text-ink-dim hover:border-ink-faint hover:text-ink"
               }`}
             >
-              <span aria-hidden>{r.emoji}</span>
+              <Icon size={14} strokeWidth={1.75} aria-hidden />
               {count > 0 ? count : r.label}
             </button>
           );
