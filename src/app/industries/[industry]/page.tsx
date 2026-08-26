@@ -2,14 +2,10 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import SiteShell from "@/components/system/SiteShell";
 import DetailPage from "@/components/system/DetailPage";
-import { INDUSTRIES } from "@/lib/navigation";
-
-function findIndustry(industry: string) {
-  return INDUSTRIES.find((i) => i.href.endsWith(`/${industry}`)) ?? null;
-}
+import { INDUSTRIES, findBySlug, slugFromHref } from "@/lib/navigation";
 
 export function generateStaticParams() {
-  return INDUSTRIES.map((i) => ({ industry: i.href.split("/").pop()! }));
+  return INDUSTRIES.map((i) => ({ industry: slugFromHref(i.href) }));
 }
 
 export async function generateMetadata({
@@ -18,7 +14,7 @@ export async function generateMetadata({
   params: Promise<{ industry: string }>;
 }): Promise<Metadata> {
   const { industry } = await params;
-  const ind = findIndustry(industry);
+  const ind = findBySlug(INDUSTRIES, industry);
   if (!ind) return {};
   return {
     title: ind.label,
@@ -33,7 +29,7 @@ export default async function IndustryDetailPage({
   params: Promise<{ industry: string }>;
 }) {
   const { industry } = await params;
-  const ind = findIndustry(industry);
+  const ind = findBySlug(INDUSTRIES, industry);
   if (!ind) notFound();
 
   return (

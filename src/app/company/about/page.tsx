@@ -26,7 +26,7 @@ const STATS = [
   { value: "5", label: "Core practices" },
   { value: "10", label: "Industries served" },
   { value: "16+", label: "Clients worldwide" },
-  { value: "3", label: "Regions covered" },
+  { value: "4", label: "Regions covered" },
 ];
 
 export default function AboutPage() {

@@ -23,7 +23,7 @@ const STATS: { value: number; suffix: string; label: string }[] = [
   { value: 5, suffix: "", label: "Core practices" },
   { value: 10, suffix: "", label: "Industries served" },
   { value: 16, suffix: "+", label: "Clients worldwide" },
-  { value: 3, suffix: "", label: "Regions covered" },
+  { value: 4, suffix: "", label: "Regions covered" },
 ];
 
 function CountUpStat({ value, suffix, label, delay }: { value: number; suffix: string; label: string; delay: number }) {

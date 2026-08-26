@@ -2,19 +2,19 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import SiteShell from "@/components/system/SiteShell";
 import DetailPage from "@/components/system/DetailPage";
-import { SERVICE_COLUMNS } from "@/lib/navigation";
+import { SERVICE_COLUMNS, findBySlug, slugFromHref } from "@/lib/navigation";
 
 function findService(category: string, service: string) {
   const col = SERVICE_COLUMNS.find((c) => c.id === category);
   if (!col) return null;
-  const link = col.links.find((l) => l.href.endsWith(`/${service}`));
+  const link = findBySlug(col.links, service);
   if (!link) return null;
   return { col, link };
 }
 
 export function generateStaticParams() {
   return SERVICE_COLUMNS.flatMap((col) =>
-    col.links.map((link) => ({ category: col.id, service: link.href.split("/").pop()! }))
+    col.links.map((link) => ({ category: col.id, service: slugFromHref(link.href) }))
   );
 }
 

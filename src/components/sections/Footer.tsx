@@ -161,6 +161,11 @@ export default function Footer() {
                   wordmark still adapts correctly if this section's theme
                   ever changes. */}
               <Image src="/brand/favicon.png" alt="" width={32} height={32} className="h-7 w-7 rounded-md" />
+              {/* Lowercase-c "codeShaper" is intentional here, not the "CodeShaper"
+                  used everywhere else — this span is a live recreation of the
+                  logo lockup (matching Navbar's real logo.png image, which
+                  bakes in that exact stylization), not prose. See Navbar.tsx's
+                  matching comment on its logo image alt text. */}
               <span className="font-urbanist text-lg font-bold tracking-tight text-ink">
                 codeShaper
               </span>

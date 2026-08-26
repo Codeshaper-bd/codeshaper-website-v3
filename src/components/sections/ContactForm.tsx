@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState, type FormEvent } from "react";
-import { SERVICE_COLUMNS } from "@/lib/navigation";
+import { SERVICE_COLUMNS, INDUSTRIES as ALL_INDUSTRIES } from "@/lib/navigation";
 import Magnetic from "@/components/system/Magnetic";
 
 /**
@@ -11,10 +11,10 @@ import Magnetic from "@/components/system/Magnetic";
  * a client-only stub. See that route's own header for what's still
  * pending on the backend side (email/CRM forwarding).
  */
-const INDUSTRIES = [
-  "SaaS", "eCommerce / Retail", "Real Estate", "Logistics", "Travel",
-  "Professional Services", "FinTech", "RMG", "Other",
-];
+// Derived from the same canonical INDUSTRIES list every industries page/mega
+// menu uses, plus "Other" — was previously a separately hand-typed list that
+// had already drifted (missing two industries added elsewhere).
+const INDUSTRIES = [...ALL_INDUSTRIES.map((i) => i.label), "Other"];
 
 const TIMELINES = ["ASAP (2–4 weeks)", "This quarter", "Next quarter", "Exploring options"];
 
@@ -23,8 +23,11 @@ const inputCls =
 
 export default function ContactForm() {
   const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
+  const [errorMessage, setErrorMessage] = useState("");
   const [showErrors, setShowErrors] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
+
+  const FALLBACK_ERROR = "Something went wrong sending that — please try again.";
 
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -37,9 +40,15 @@ export default function ContactForm() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
-      if (!res.ok) throw new Error("Submission failed");
+      if (!res.ok) {
+        const body = await res.json().catch(() => null);
+        setErrorMessage(typeof body?.error === "string" ? body.error : FALLBACK_ERROR);
+        setStatus("error");
+        return;
+      }
       setStatus("success");
     } catch {
+      setErrorMessage(FALLBACK_ERROR);
       setStatus("error");
     }
   };
@@ -108,7 +117,7 @@ export default function ContactForm() {
             <textarea name="brief" rows={4} placeholder="What are you trying to build, modernize, or automate?" className={`${inputCls} resize-none`} />
           </label>
           {status === "error" && (
-            <p className="font-urbanist text-sm text-red-400">Something went wrong sending that — please try again.</p>
+            <p className="font-urbanist text-sm text-red-400">{errorMessage}</p>
           )}
           <Magnetic className="block w-full">
             <button

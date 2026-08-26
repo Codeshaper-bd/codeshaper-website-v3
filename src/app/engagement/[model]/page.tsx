@@ -2,14 +2,10 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import SiteShell from "@/components/system/SiteShell";
 import DetailPage from "@/components/system/DetailPage";
-import { ENGAGEMENT_MODELS } from "@/lib/navigation";
-
-function findModel(model: string) {
-  return ENGAGEMENT_MODELS.find((m) => m.href.endsWith(`/${model}`)) ?? null;
-}
+import { ENGAGEMENT_MODELS, findBySlug, slugFromHref } from "@/lib/navigation";
 
 export function generateStaticParams() {
-  return ENGAGEMENT_MODELS.map((m) => ({ model: m.href.split("/").pop()! }));
+  return ENGAGEMENT_MODELS.map((m) => ({ model: slugFromHref(m.href) }));
 }
 
 export async function generateMetadata({
@@ -18,7 +14,7 @@ export async function generateMetadata({
   params: Promise<{ model: string }>;
 }): Promise<Metadata> {
   const { model } = await params;
-  const m = findModel(model);
+  const m = findBySlug(ENGAGEMENT_MODELS, model);
   if (!m) return {};
   return {
     title: m.label,
@@ -33,7 +29,7 @@ export default async function EngagementDetailPage({
   params: Promise<{ model: string }>;
 }) {
   const { model } = await params;
-  const m = findModel(model);
+  const m = findBySlug(ENGAGEMENT_MODELS, model);
   if (!m) notFound();
 
   return (

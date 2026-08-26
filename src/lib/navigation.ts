@@ -1,3 +1,20 @@
+/**
+ * Finds the item whose href's last path segment exactly matches `slug`.
+ * Shared by every [dynamic]/page.tsx route below instead of each one
+ * hand-rolling its own `.find(x => x.href.endsWith('/' + slug))` — that
+ * pattern would false-match a slug that's a suffix of another (e.g.
+ * "mvp-sprint" vs a hypothetical "lite-mvp-sprint"); comparing the exact
+ * last segment doesn't have that risk.
+ */
+export function findBySlug<T extends { href: string }>(list: T[], slug: string): T | undefined {
+  return list.find((item) => item.href.split("/").pop() === slug);
+}
+
+/** The exact same last-segment extraction used by generateStaticParams for these routes. */
+export function slugFromHref(href: string): string {
+  return href.split("/").pop()!;
+}
+
 export type ServiceLink = {
   label: string;
   href: string;

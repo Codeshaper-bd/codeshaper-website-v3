@@ -116,7 +116,7 @@ function GlowLine({
         stroke={color}
         strokeWidth={active ? 0.9 : 0.5}
         strokeOpacity={active ? 0.75 : 0.22}
-        style={{ transition: "stroke-width 400ms ease, stroke-opacity 400ms ease" }}
+        style={{ transition: "stroke-width 300ms var(--ease-out-expo), stroke-opacity 300ms var(--ease-out-expo)" }}
       />
       {animate && (
         <circle r={active ? 1.4 : 0.9} fill={color} filter="url(#ai-dev-glow)" opacity={active ? 1 : 0.55}>

@@ -89,6 +89,15 @@ export default function Navbar() {
         >
           <div className="flex h-16 items-center justify-between px-6 lg:px-10">
             <Link href="/" className="flex shrink-0 items-center" aria-label="CodeShaper home">
+              {/* alt intentionally lowercase-c "codeShaper" — it describes what's
+                  literally rendered in the logo image (the wordmark's own
+                  stylization), not the brand name in prose. The Link's
+                  aria-label above is what screen readers actually announce
+                  ("CodeShaper home" takes precedence over this alt text per
+                  ARIA accname rules), so there's no real inconsistency for
+                  assistive tech — only a fallback-text nuance if the image
+                  fails to load. See Footer.tsx's matching "codeShaper" span
+                  for the same reasoning applied to its live lockup. */}
               <Image src="/brand/logo.png" alt="codeShaper" width={169} height={60} priority className="h-8 w-auto" />
             </Link>
 
