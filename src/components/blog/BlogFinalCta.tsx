@@ -1,56 +1,52 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import Reveal from "@/components/system/Reveal";
+import { SectionEyebrow, SectionTitle, SectionDescription } from "@/components/system/SectionHeading";
 
 /**
- * Same outer frame as BlogHero/BlogBrowser (bg-light-surface p-3 sm:p-4,
- * no max-width cap) so all three cards read as one consistent set —
- * full-bleed-minus-margin, same rounded corners. The card itself
- * deliberately breaks from the page's light theme for one high-contrast
- * closing moment: reuses the same dark gradient (`.mega-feature-card`,
- * defined in globals.css) already used for the nav's "Featured" card,
- * plus a soft radial glow (same technique as Hero/ContactForm's ambient
- * highlight) layered on top for more depth. Text is explicit white/
- * white-alpha classes, not the theme-token components (SectionEyebrow
- * etc. resolve to *light*-theme dark text here, which would be
- * unreadable on this card).
+ * Same outer frame as BlogHero (bg-light-surface p-3 sm:p-4, no
+ * max-width cap) so the two read as one consistent card set. The card
+ * itself is white (bg-canvas) like the rest of the page — a bordered
+ * card, not a flat continuation, so it still reads as a distinct
+ * closing moment without breaking into a different color scheme. Uses
+ * the same theme-token components as the rest of the page (unlike the
+ * earlier dark-card version, which needed explicit white/white-alpha
+ * classes) since text now sits on the page's own light theme.
  */
 export default function BlogFinalCta() {
   return (
     <div className="bg-light-surface p-3 sm:p-4">
       <Reveal>
-        <div className="mega-feature-card relative overflow-hidden rounded-[32px] px-6 py-14 text-center sm:px-12 lg:px-16 lg:py-20">
+        <div className="relative overflow-hidden rounded-[32px] border border-hairline-light bg-canvas px-6 py-14 text-center sm:px-12 lg:px-16 lg:py-20">
           <div
             aria-hidden
-            className="absolute inset-0 opacity-[0.05]"
+            className="absolute inset-0 opacity-[0.03]"
             style={{ backgroundImage: "url(/media/hex-pattern-tile.svg)", backgroundSize: "112px 194px" }}
           />
           <div
             aria-hidden
-            className="absolute left-1/2 top-0 h-[420px] w-[640px] -translate-x-1/2 -translate-y-1/3 rounded-full opacity-40 blur-3xl"
-            style={{ background: "radial-gradient(closest-side, rgba(124,108,255,0.25), transparent)" }}
+            className="absolute left-1/2 top-0 h-[420px] w-[640px] -translate-x-1/2 -translate-y-1/3 rounded-full opacity-30 blur-3xl"
+            style={{ background: "radial-gradient(closest-side, rgba(124,108,255,0.16), transparent)" }}
           />
           <div className="relative">
-            <p className="mb-4 font-urbanist text-[11px] font-semibold uppercase tracking-[0.25em] text-white/50">
-              Next step
-            </p>
-            <h2 className="mx-auto max-w-2xl font-urbanist text-3xl font-bold leading-tight tracking-tight text-white sm:text-4xl">
+            <SectionEyebrow className="mx-auto w-fit">Next step</SectionEyebrow>
+            <SectionTitle size="lg" className="mx-auto max-w-2xl">
               Have a project goal? We&apos;ll help you choose the best path.
-            </h2>
-            <p className="mx-auto mt-4 max-w-xl font-urbanist text-[15px] leading-relaxed text-white/70">
+            </SectionTitle>
+            <SectionDescription className="mx-auto mt-4 max-w-xl">
               Tell us your timeline and scope — we&apos;ll recommend the right starting model.
-            </p>
+            </SectionDescription>
             <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
               <Link
                 href="/contact"
-                className="inline-flex items-center gap-2 rounded-full bg-white px-7 py-3.5 font-urbanist text-sm font-semibold text-ink transition-transform duration-300 hover:scale-[1.02]"
+                className="inline-flex items-center gap-2 rounded-full bg-ink px-7 py-3.5 font-urbanist text-sm font-semibold text-canvas transition-transform duration-300 hover:scale-[1.02]"
               >
                 Book a Call
                 <ArrowRight size={15} strokeWidth={1.75} />
               </Link>
               <Link
                 href="/contact"
-                className="inline-flex items-center gap-2 rounded-full border border-white/25 px-7 py-3.5 font-urbanist text-sm font-semibold text-white transition-colors hover:border-white/50"
+                className="inline-flex items-center gap-2 rounded-full border border-hairline-light px-7 py-3.5 font-urbanist text-sm font-semibold text-ink-dim transition-colors hover:border-ink-faint hover:text-ink"
               >
                 Start a Project
               </Link>
