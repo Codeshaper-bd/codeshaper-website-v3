@@ -44,7 +44,7 @@ const PHASES: Phase[] = [
     title: "AI-assisted discovery",
     description: "Turns a rough brief into clear specs, flows, and a backlog faster — reviewed by the team before anything gets built.",
     icon: ClipboardList,
-    accent: "#7c6cff",
+    accent: "#8a7bff",
   },
   {
     phase: "Build",

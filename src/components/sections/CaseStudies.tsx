@@ -77,7 +77,7 @@ const REAL_STORIES: Story[] = [
       { value: "Web + App", label: "Platforms shipped" },
       { value: "Ongoing", label: "Engagement" },
     ],
-    accent: "#7c6cff",
+    accent: "#8a7bff",
     href: "/work/fennec",
   },
   {
@@ -146,7 +146,7 @@ const PLACEHOLDER_STORIES: Story[] = [
       { value: "Fleet Ops", label: "Core module" },
       { value: "Real-time", label: "Tracking" },
     ],
-    accent: "#d1487a",
+    accent: "#db5a89",
     href: "/work",
   },
 ];

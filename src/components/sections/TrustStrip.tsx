@@ -86,7 +86,7 @@ function LogoTile({ name }: { name: string }) {
   return (
     <div className="group flex shrink-0 items-center gap-3.5 rounded-2xl border border-hairline bg-canvas py-3 pl-3 pr-5 shadow-[0_1px_2px_rgba(9,9,11,0.04)] transition-all duration-300 hover:-translate-y-0.5 hover:border-aurora-violet/25 hover:shadow-[0_10px_24px_rgba(9,9,11,0.08)]">
       <span className="mega-icon-tile flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-aurora-indigo">
-        <LogoIcon size={isReal ? 20 : 17} className={isReal ? "" : "opacity-70"} />
+        <LogoIcon aria-hidden size={isReal ? 20 : 17} className={isReal ? "" : "opacity-70"} />
       </span>
       <span className="whitespace-nowrap font-urbanist text-[14px] font-semibold text-ink-dim transition-colors duration-300 group-hover:text-ink">
         {name}

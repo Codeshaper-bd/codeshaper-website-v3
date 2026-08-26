@@ -51,7 +51,7 @@ const TESTIMONIALS: Testimonial[] = [
     quote: "CodeShaper felt like an extension of our own team from day one.",
     poster: "https://picsum.photos/seed/testimonial-jordan/600/760",
     video: "/media/about-team.mp4",
-    accent: "#7c6cff",
+    accent: "#8a7bff",
   },
   {
     type: "text",
@@ -93,7 +93,7 @@ const TESTIMONIALS: Testimonial[] = [
     role: "COO, Fieldstone Labs",
     quote: "They caught issues in our process we hadn't even thought to ask about.",
     avatar: "https://picsum.photos/seed/testimonial-anya/120/120",
-    accent: "#d1487a",
+    accent: "#db5a89",
   },
 ];
 

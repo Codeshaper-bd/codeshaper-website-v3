@@ -210,8 +210,13 @@ export default function Hero() {
             muted
             loop
             playsInline
+            preload="auto"
             className="h-full w-full object-cover opacity-[0.4] grayscale"
             aria-hidden
+            // fetchpriority isn't in React's video prop types yet, but it's a
+            // standard, Chrome-supported attribute — this is the hero's LCP
+            // element, so hint the browser to fetch it eagerly.
+            {...({ fetchpriority: "high" } as Record<string, string>)}
           >
             <source src="/media/hero-video.mp4" type="video/mp4" />
             <source src="/media/hero-video.webm" type="video/webm" />

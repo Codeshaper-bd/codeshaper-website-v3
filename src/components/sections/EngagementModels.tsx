@@ -42,7 +42,7 @@ const MODELS: Model[] = [
     name: "MVP Sprint",
     fit: "Fastest lane from idea to a shippable first product.",
     icon: Rocket,
-    accent: "#7c6cff",
+    accent: "#8a7bff",
   },
   {
     name: "End-to-End Delivery",
@@ -66,7 +66,7 @@ const MODELS: Model[] = [
     name: "Global Delivery Model",
     fit: "Distributed build, single-point accountability.",
     icon: Globe2,
-    accent: "#d1487a",
+    accent: "#db5a89",
   },
 ];
 

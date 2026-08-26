@@ -57,14 +57,20 @@
   --color-canvas-raised: #f7f8fb;
   --color-panel: #ffffff;
   --color-ink: #0b0f19;
-  --color-ink-dim: #6b7280;
+  /* Was #6b7280 (4.83:1 on pure white, but only 4.39:1 on this scope's
+     actual --color-light-surface background of #f5f4f2 — fails WCAG AA's
+     4.5:1 for normal text; caught by a Lighthouse accessibility pass).
+     Darkened just enough to clear 4.5:1 against the darker of the two
+     backgrounds this token appears on. */
+  --color-ink-dim: #626873;
   /* A tone between ink and ink-dim, used by a couple of mega-menu labels
      in the reference (10.31:1 on white — safely passes). */
   --color-ink-mid: #374151;
-  /* Was #9ca3af (2.54:1 on white — fails WCAG AA). Converged with ink-dim's
-     value (4.83:1 ✓) rather than inventing a third grey that might still
-     fail; see final-review fix pass. */
-  --color-ink-faint: #6b7280;
+  /* Was #9ca3af (2.54:1 on white — fails WCAG AA), then #6b7280 (4.83:1 on
+     white but 4.39:1 on --color-light-surface — see ink-dim's note above).
+     Converged with ink-dim's corrected value rather than inventing a third
+     grey that might still fail. */
+  --color-ink-faint: #626873;
   --color-hairline: #e5e7eb;
   --color-hairline-strong: #d1d5db;
   --color-menu-label: #6b7280;

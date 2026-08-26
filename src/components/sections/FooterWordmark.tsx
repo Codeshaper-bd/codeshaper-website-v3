@@ -148,6 +148,7 @@ export default function FooterWordmark() {
         ref={containerRef}
         onMouseMove={handleMove}
         onMouseLeave={handleLeave}
+        role="img"
         aria-label="CodeShaper"
         className="m-0 inline-flex select-none overflow-hidden whitespace-nowrap font-urbanist text-[clamp(3rem,15vw,11rem)] font-black uppercase leading-[0.85] tracking-tighter text-ink"
       >

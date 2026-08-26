@@ -118,7 +118,7 @@ const LOCATIONS: LocationDetail[] = [
 const ROUTE_PATH = `M${LOCATIONS.map((p) => `${p.x},${p.y}`).join(" L")}`;
 
 function accentFor(role: string) {
-  return role === "Delivery hub" ? "#7c6cff" : "#e8b04e";
+  return role === "Delivery hub" ? "#8a7bff" : "#e8b04e";
 }
 
 function RouteMap({ active, onPick }: { active: number; onPick: (i: number) => void }) {

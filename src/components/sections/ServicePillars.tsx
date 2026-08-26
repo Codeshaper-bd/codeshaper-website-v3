@@ -34,7 +34,7 @@ function ToolStack({ id, dark = false }: { id: string; dark?: boolean }) {
             dark ? "border border-white/15 bg-white/[0.06] text-white/70" : "border border-hairline bg-canvas text-ink-dim"
           }`}
         >
-          <ToolIcon size={13} />
+          <ToolIcon aria-hidden size={13} />
         </span>
       ))}
     </div>
