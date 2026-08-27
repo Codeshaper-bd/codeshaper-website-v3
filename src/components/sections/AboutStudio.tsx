@@ -9,34 +9,35 @@ import { SectionEyebrow, SectionTitle, SectionDescription } from "@/components/s
 import { usePrefersReducedMotion, useMotionAllowed } from "@/lib/motion";
 
 /**
- * About — "who we are" section right after Services. Rebuilt from a
- * video+stats split into a fuller trust-building layout (photo collage,
- * numbered stat cards, a studio photo strip) closer to how agencies like
- * Brain Station 23 / Musemind / Vivasoft structure this section — real
- * photos and numbers standing in for "we're an actual company," not just
- * a paragraph of copy.
+ * About — "who we are" section right after Services.
+ *
+ * Round 2: the previous version was a flat bg-light-surface strip with no
+ * inner card — every other major homepage section (Hero, ServicesShowcase,
+ * CaseStudiesExpand, Testimonials, TechStack) uses the floating-card
+ * treatment (bg-light-surface outer frame + rounded-[32px] bg-canvas card),
+ * so this one read as visibly plainer/flatter than its neighbors purely by
+ * being structurally inconsistent with them — fixed by adopting the same
+ * wrapper, plus the same subtle hex-pattern texture Hero/ServicesShowcase
+ * use, a violet glow accent, and mega-icon-tile stat icons instead of bare
+ * colored ones, so it reads as part of the same design system rather than
+ * a plainer one-off.
  *
  * Every stat is still an actual structural count already established
  * elsewhere in the codebase (SERVICE_COLUMNS, INDUSTRIES, TrustStrip's
  * client list, Locations' 6-country footprint) — no founding year,
  * headcount, award count, or certification is invented, since none of
- * that exists anywhere in this codebase as verified fact. The Brain
- * Station 23 reference's "Global Accreditations" badge is deliberately
- * not reproduced for the same reason.
+ * that exists anywhere in this codebase as verified fact.
  *
- * Photos are Picsum placeholders (seeded, so they're stable across
- * renders) — the user's own real office/team photos replace these
- * directly once supplied; nothing here claims they're real yet.
- * Picsum specifically (not a keyword-searchable service like LoremFlickr)
- * — LoremFlickr's random pool turned out to include real press photos of
- * named, identifiable people (confirmed by fetching one: a CC-NC-ND-
- * licensed IMF panel photo), which would be both a license violation
- * (non-commercial-only, on a commercial site) and a false implication
- * that real strangers are CodeShaper staff. Picsum's photos are Unsplash-
- * sourced and licensed for this. Since Picsum can't be content-targeted
- * either, the random results (a sunset, a car dashboard, etc.) won't look
- * like an office — grayscale-by-default/color-on-hover treatment below
- * reads as an intentional design choice rather than "the wrong photo."
+ * Photos are Picsum placeholders (seeded, stable across renders) — real
+ * office/team photos replace these directly once supplied. Picsum
+ * specifically, not a keyword-searchable service like LoremFlickr: a live
+ * sample from LoremFlickr's pool turned out to be a real, CC-NC-ND-licensed
+ * press photo of named identifiable people, which would both violate that
+ * license on a commercial site and falsely imply real strangers are
+ * CodeShaper staff. Picsum's photos are Unsplash-sourced and commercially
+ * licensed, just not content-targetable — grayscale-by-default/color-on-
+ * hover makes the mismatch (a sunset, a car dashboard) read as an
+ * intentional editorial choice instead of the wrong photo.
  */
 const STATS: { value: number; suffix: string; label: string; icon: typeof Layers }[] = [
   { value: 5, suffix: "", label: "Core practices", icon: Layers },
@@ -50,6 +51,7 @@ const STRIP_PHOTOS = [
   "https://picsum.photos/seed/codeshaper-studio-2/500/500",
   "https://picsum.photos/seed/codeshaper-studio-3/500/500",
   "https://picsum.photos/seed/codeshaper-studio-4/500/500",
+  "https://picsum.photos/seed/codeshaper-studio-5/500/500",
 ];
 
 function CountUpStat({
@@ -99,8 +101,13 @@ function CountUpStat({
   }, [reduced, value, delay]);
 
   return (
-    <div ref={wrapRef} className="rounded-2xl border border-hairline bg-canvas p-5 transition-colors duration-300 hover:border-aurora-violet/25">
-      <Icon size={18} strokeWidth={1.75} className="text-aurora-violet" />
+    <div
+      ref={wrapRef}
+      className="group relative overflow-hidden rounded-2xl border border-hairline bg-[#fafafa] p-5 transition-[border-color,box-shadow,transform] duration-300 hover:-translate-y-0.5 hover:border-aurora-violet/25 hover:shadow-[0_16px_36px_rgba(124,108,255,0.14)]"
+    >
+      <span className="mega-icon-tile flex h-10 w-10 items-center justify-center rounded-xl text-aurora-indigo transition-colors duration-300 group-hover:text-aurora-violet">
+        <Icon size={18} strokeWidth={1.75} />
+      </span>
       <p className="mt-4 font-urbanist text-3xl font-bold tracking-tight text-ink sm:text-[34px]">
         <span ref={numRef}>0</span>
         {suffix}
@@ -160,80 +167,94 @@ function TiltFrame({ src, className, priority }: { src: string; className?: stri
 
 export default function AboutStudio() {
   return (
-    <section className="theme-light relative overflow-hidden bg-light-surface py-16 lg:py-24" aria-labelledby="about-heading">
-      <div className="mx-auto max-w-7xl px-6 lg:px-10">
-        <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
-          <Reveal>
-            <div className="relative grid grid-cols-[1fr_0.85fr] items-end gap-4">
-              <TiltFrame src="https://picsum.photos/seed/codeshaper-office-main/800/900" className="aspect-[4/5]" priority />
-              <div className="flex flex-col gap-4">
-                <TiltFrame src="https://picsum.photos/seed/codeshaper-office-team/700/500" className="aspect-[4/3]" />
-                <div className="rounded-2xl border border-hairline bg-canvas p-4 shadow-[0_16px_40px_rgba(11,15,25,0.06)]">
-                  <p className="font-urbanist text-[11px] font-semibold uppercase tracking-[0.14em] text-ink-faint">
-                    Delivery hub
-                  </p>
-                  <p className="mt-1.5 flex items-center gap-1.5 font-urbanist text-[14px] font-bold text-ink">
-                    <MapPin size={14} strokeWidth={2} className="text-aurora-violet" />
-                    Bangladesh
-                  </p>
+    <div className="bg-light-surface p-3 sm:p-4">
+      <section
+        className="theme-light relative overflow-hidden rounded-[32px] bg-canvas py-16 lg:py-24"
+        aria-labelledby="about-heading"
+      >
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 opacity-[0.025]"
+          style={{ backgroundImage: "url(/media/hex-pattern-tile.svg)", backgroundSize: "112px 194px" }}
+        />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -left-32 top-0 h-[420px] w-[420px] rounded-full opacity-50 blur-3xl"
+          style={{ background: "radial-gradient(closest-side, rgba(124,108,255,0.14), transparent)" }}
+        />
+
+        <div className="relative mx-auto max-w-7xl px-6 lg:px-10">
+          <div className="grid items-center gap-12 lg:grid-cols-[0.9fr_1fr] lg:gap-16">
+            <Reveal>
+              <div className="relative mx-auto max-w-[420px] lg:max-w-none">
+                <TiltFrame src="https://picsum.photos/seed/codeshaper-office-main/900/1100" className="aspect-[4/5]" priority />
+                <div className="absolute -bottom-8 -right-6 w-[52%] sm:-right-10">
+                  <TiltFrame src="https://picsum.photos/seed/codeshaper-office-team/700/560" className="aspect-[4/3]" />
                 </div>
+                <div className="absolute -left-5 -top-5 flex items-center gap-2.5 rounded-full border border-hairline bg-canvas px-4 py-2.5 shadow-[0_16px_36px_rgba(11,15,25,0.1)] sm:-left-7 sm:-top-7">
+                  <span className="relative flex h-2 w-2 shrink-0">
+                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-aurora-violet opacity-60" />
+                    <span className="relative inline-flex h-2 w-2 rounded-full bg-aurora-violet" />
+                  </span>
+                  <span className="font-urbanist text-[12.5px] font-semibold text-ink">Delivery hub · Bangladesh</span>
+                </div>
+              </div>
+            </Reveal>
+
+            <Reveal delay={100}>
+              <SectionEyebrow>Who we are</SectionEyebrow>
+              <SectionTitle id="about-heading" size="lg" className="max-w-lg">
+                A distributed team that works like one room.
+              </SectionTitle>
+              <SectionDescription className="mt-5 max-w-md">
+                CodeShaper brings design, engineering, commerce, and AI automation together under one roof. Our
+                delivery hub is in Bangladesh, with collaboration hubs across the US, UK, Japan, Australia, and New
+                Zealand, so there's real timezone overlap wherever a client is based.
+              </SectionDescription>
+
+              <div className="mt-8 grid grid-cols-2 gap-3">
+                {STATS.map((s, i) => (
+                  <CountUpStat key={s.label} value={s.value} suffix={s.suffix} label={s.label} icon={s.icon} delay={i * 120} />
+                ))}
+              </div>
+
+              <div className="mt-8">
+                <Link
+                  href="/company/about"
+                  className="inline-flex items-center gap-2 rounded-full bg-aurora-violet px-7 py-3.5 font-urbanist text-sm font-semibold text-white transition-[background-color,transform] duration-300 hover:scale-[1.02] hover:bg-aurora-violet-dark"
+                >
+                  About CodeShaper
+                  <ArrowRight size={15} strokeWidth={1.75} />
+                </Link>
+              </div>
+            </Reveal>
+          </div>
+
+          <Reveal delay={150}>
+            <div className="mt-20 border-t border-hairline pt-10 lg:mt-24">
+              <p className="mb-5 font-urbanist text-[11px] font-semibold uppercase tracking-[0.2em] text-ink-faint">
+                A few glimpses from the studio
+              </p>
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-5">
+                {STRIP_PHOTOS.map((src, i) => (
+                  <div
+                    key={src}
+                    className={`group aspect-square overflow-hidden rounded-2xl border border-hairline ${i === 4 ? "hidden sm:block" : ""}`}
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={src}
+                      alt=""
+                      loading="lazy"
+                      className="h-full w-full object-cover grayscale transition-[transform,filter] duration-500 ease-out-expo group-hover:scale-[1.08] group-hover:grayscale-0"
+                    />
+                  </div>
+                ))}
               </div>
             </div>
           </Reveal>
-
-          <Reveal delay={100}>
-            <SectionEyebrow>Who we are</SectionEyebrow>
-            <SectionTitle id="about-heading" size="lg">
-              A distributed team that works like one room.
-            </SectionTitle>
-            <SectionDescription className="mt-5 max-w-md">
-              CodeShaper brings design, engineering, commerce, and AI automation together under one roof. Our
-              delivery hub is in Bangladesh, with collaboration hubs across the US, UK, Japan, Australia, and New
-              Zealand, so there's real timezone overlap wherever a client is based.
-            </SectionDescription>
-
-            <div className="mt-8 grid grid-cols-2 gap-3">
-              {STATS.map((s, i) => (
-                <CountUpStat key={s.label} value={s.value} suffix={s.suffix} label={s.label} icon={s.icon} delay={i * 120} />
-              ))}
-            </div>
-
-            <div className="mt-8">
-              <Link
-                href="/company/about"
-                className="inline-flex items-center gap-2 rounded-full bg-aurora-violet px-7 py-3.5 font-urbanist text-sm font-semibold text-white transition-[background-color,transform] duration-300 hover:scale-[1.02] hover:bg-aurora-violet-dark"
-              >
-                About CodeShaper
-                <ArrowRight size={15} strokeWidth={1.75} />
-              </Link>
-            </div>
-          </Reveal>
         </div>
-
-        <Reveal delay={150}>
-          <div className="mt-14 border-t border-hairline pt-10">
-            <p className="mb-5 font-urbanist text-[11px] font-semibold uppercase tracking-[0.2em] text-ink-faint">
-              A few glimpses from the studio
-            </p>
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-              {STRIP_PHOTOS.map((src) => (
-                <div
-                  key={src}
-                  className="group aspect-square overflow-hidden rounded-2xl border border-hairline"
-                >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={src}
-                    alt=""
-                    loading="lazy"
-                    className="h-full w-full object-cover grayscale transition-[transform,filter] duration-500 ease-out-expo group-hover:scale-[1.08] group-hover:grayscale-0"
-                  />
-                </div>
-              ))}
-            </div>
-          </div>
-        </Reveal>
-      </div>
-    </section>
+      </section>
+    </div>
   );
 }
