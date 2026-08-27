@@ -99,8 +99,17 @@ export default function Industries() {
   const ActiveIcon = activeIndustry.icon;
 
   return (
-    <section className="theme-light bg-light-surface py-14 lg:py-16" aria-labelledby="industries-heading">
-      <div className="mx-auto max-w-7xl px-6 lg:px-10">
+    <div className="bg-light-surface p-3 sm:p-4">
+      <section
+        className="theme-light relative overflow-hidden rounded-[32px] bg-canvas py-16 lg:py-24"
+        aria-labelledby="industries-heading"
+      >
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 opacity-[0.025]"
+          style={{ backgroundImage: "url(/media/hex-pattern-tile.svg)", backgroundSize: "112px 194px" }}
+        />
+        <div className="relative mx-auto max-w-7xl px-6 lg:px-10">
         <Reveal>
           <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
             <div>
@@ -181,7 +190,7 @@ export default function Industries() {
                       className={`group relative flex h-full min-h-[142px] w-full flex-col overflow-hidden rounded-[20px] border p-4 text-left transition-[border-color,background-color,box-shadow,transform] duration-300 ${
                         isActive
                           ? "border-ink/15 bg-canvas shadow-[0_14px_36px_rgba(11,15,25,0.08)]"
-                          : "border-hairline bg-canvas/80 hover:-translate-y-0.5 hover:border-ink/15 hover:bg-canvas"
+                          : "border-hairline bg-[#fafafa] hover:-translate-y-0.5 hover:border-ink/15 hover:bg-canvas"
                       }`}
                     >
                       <div className="flex items-start justify-between gap-3">
@@ -210,7 +219,8 @@ export default function Industries() {
             })}
           </ul>
         </div>
-      </div>
-    </section>
+        </div>
+      </section>
+    </div>
   );
 }
