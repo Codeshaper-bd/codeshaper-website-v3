@@ -8,31 +8,29 @@ import { SectionEyebrow, SectionTitle, SectionDescription } from "@/components/s
 import { usePrefersReducedMotion } from "@/lib/motion";
 
 /**
- * AI-Driven Development — round 4. Direct feedback on round 3:
- *  - Title needs to wrap to 2 lines like the Services heading (size="lg"
- *    + a width constraint that forces the break, instead of the default
- *    md size that mostly sat on one line).
- *  - No CTA button for this section — removed entirely, along with the
- *    bottom caption row it lived in.
- *  - The "37 tools / 4 phases" line moves from that removed bottom row
- *    up into the header as a subtitle (Services/AboutStudio's own
- *    eyebrow+title+description arrangement), not floated at the bottom.
- *  - The flat `bg-ink` panel read as plain black — swapped for the same
- *    dark violet-tinted radial gradient Locations.tsx already uses
- *    (`radial-gradient(... #101024 0%, #0A0A0F ...)`) instead of
- *    inventing an unrelated color. `--color-ink` is overridden locally
- *    on the panel to this new tone (not just the background), because
- *    `.ai-core-ring::after` masks its conic-gradient ring by painting a
- *    solid `var(--color-ink)` disc over the center — scoping the
- *    variable keeps that mask, the core badge, and the panel background
- *    all sourced from one value instead of three separately-maintained
- *    colors that could drift apart.
- *  - The diagram itself ("looks bad") was rebuilt with curved
- *    (quadratic-bezier) connectors instead of rigid straight lines, in a
- *    mirrored fan (AI/Human/phase branches bend outward proportionally
- *    to their distance from center) plus a faint static orbit ring behind
- *    the whole thing for compositional grounding — it no longer floats
- *    in empty space.
+ * AI-Driven Development — round 5. Direct feedback on round 4:
+ *  - Still didn't like the dark panel after round 4 swapped flat black
+ *    for a dark violet gradient — round 5 drops the dark treatment
+ *    entirely. This is the only homepage section other than Locations
+ *    that wasn't the shared light floating-card look (bg-canvas, border-
+ *    hairline, soft shadow) every other section uses, so it's brought in
+ *    line with that instead of trying a third dark variant. The diagram/
+ *    badges/text all get light-mode colors (dark strokes and ink/ink-dim
+ *    text instead of white), and since the whole section already carries
+ *    `theme-light`, `--color-ink` resolves to its normal near-black value
+ *    on its own now — no more local override needed to keep the core
+ *    badge and `.ai-core-ring` mask in sync with the background.
+ *  - Stat row was three bare text columns with a top divider — no card,
+ *    nothing to "stand out." Rebuilt as three accent-colored cards (each
+ *    phase-family hue, bordered, radial wash, hover lift), same recipe
+ *    AboutStudio's stat chips use.
+ *  - Dropped the em dash from the subtitle and the Plan phase's
+ *    description, and rewrote the subtitle to be a concrete claim rather
+ *    than a fragment.
+ *  - The AI↔Human connector's traveling dot now runs Human → AI (was
+ *    AI → Human) — `GlowLine` takes a `reverseMotion` flag that replays
+ *    the same curve backwards for the animated dot without changing the
+ *    static line's shape.
  */
 type Phase = {
   phase: string;
@@ -46,7 +44,7 @@ const PHASES: Phase[] = [
   {
     phase: "Plan",
     title: "AI-assisted discovery",
-    description: "Turns a rough brief into clear specs, flows, and a backlog faster — reviewed by the team before anything gets built.",
+    description: "Turns a rough brief into clear specs, flows, and a backlog the team reviews before anything gets built.",
     icon: ClipboardList,
     accent: "#8a7bff",
   },
@@ -74,17 +72,17 @@ const PHASES: Phase[] = [
 ];
 
 /** PLACEHOLDER — dummy values, to be replaced with real measured numbers. */
-const PLACEHOLDER_STATS: { value: number; suffix: string; label: string }[] = [
-  { value: 70, suffix: "%", label: "Faster delivery" },
-  { value: 3, suffix: "x", label: "Faster reviews" },
-  { value: 99, suffix: "%", label: "On-time releases" },
+const PLACEHOLDER_STATS: { value: number; suffix: string; label: string; accent: string }[] = [
+  { value: 70, suffix: "%", label: "Faster delivery", accent: "#8a7bff" },
+  { value: 3, suffix: "x", label: "Faster reviews", accent: "#5b9bdb" },
+  { value: 99, suffix: "%", label: "On-time releases", accent: "#3fae82" },
 ];
 
 const TOOLS_COUNT = 37; // TECH_STACK.length in TechStack.tsx — keep in sync
 const PHASE_COUNT = PHASES.length;
 
-const AI_NODE = { label: "AI", icon: Bot, accent: "#9db8ff", x: 26, y: 16 };
-const HUMAN_NODE = { label: "Human", icon: User, accent: "#e8637e", x: 74, y: 16 };
+const AI_NODE = { label: "AI", icon: Bot, accent: "#6d8bff", x: 26, y: 16 };
+const HUMAN_NODE = { label: "Human", icon: User, accent: "#e0466e", x: 74, y: 16 };
 const CORE_POS = { x: 50, y: 44 };
 const PHASE_POS = [
   { x: 12, y: 80 },
@@ -96,15 +94,13 @@ const ORBIT_R = 34;
 
 /** Quadratic-bezier control point offset perpendicular to the segment,
  *  scaled by `bend` (signed — direction decides which way the arc bows). */
-function curvedPath(x1: number, y1: number, x2: number, y2: number, bend: number) {
+function controlPoint(x1: number, y1: number, x2: number, y2: number, bend: number) {
   const mx = (x1 + x2) / 2;
   const my = (y1 + y2) / 2;
   const dx = x2 - x1;
   const dy = y2 - y1;
   const len = Math.hypot(dx, dy) || 1;
-  const cx = mx + (-dy / len) * bend * len;
-  const cy = my + (dx / len) * bend * len;
-  return `M${x1},${y1} Q${cx},${cy} ${x2},${y2}`;
+  return { cx: mx + (-dy / len) * bend * len, cy: my + (dx / len) * bend * len };
 }
 
 function GlowLine({
@@ -116,6 +112,7 @@ function GlowLine({
   color,
   active,
   animate,
+  reverseMotion,
 }: {
   x1: number;
   y1: number;
@@ -125,8 +122,11 @@ function GlowLine({
   color: string;
   active: boolean;
   animate: boolean;
+  reverseMotion?: boolean;
 }) {
-  const d = curvedPath(x1, y1, x2, y2, bend);
+  const { cx, cy } = controlPoint(x1, y1, x2, y2, bend);
+  const d = `M${x1},${y1} Q${cx},${cy} ${x2},${y2}`;
+  const motionD = reverseMotion ? `M${x2},${y2} Q${cx},${cy} ${x1},${y1}` : d;
   return (
     <>
       <path
@@ -134,13 +134,13 @@ function GlowLine({
         fill="none"
         stroke={color}
         strokeWidth={active ? 0.9 : 0.5}
-        strokeOpacity={active ? 0.75 : 0.22}
+        strokeOpacity={active ? 0.85 : 0.35}
         strokeLinecap="round"
         style={{ transition: "stroke-width 300ms var(--ease-out-expo), stroke-opacity 300ms var(--ease-out-expo)" }}
       />
       {animate && (
-        <circle r={active ? 1.4 : 0.9} fill={color} filter="url(#ai-dev-glow)" opacity={active ? 1 : 0.55}>
-          <animateMotion dur={active ? "1.6s" : "2.6s"} repeatCount="indefinite" path={d} />
+        <circle r={active ? 1.4 : 0.9} fill={color} filter="url(#ai-dev-glow)" opacity={active ? 1 : 0.7}>
+          <animateMotion dur={active ? "1.6s" : "2.6s"} repeatCount="indefinite" path={motionD} />
         </circle>
       )}
     </>
@@ -169,14 +169,14 @@ function NodeBadge({
   return (
     <div className="absolute" style={{ left: `${x}%`, top: `${y}%`, transform: "translate(-50%, -50%)" }}>
       <div
-        className="relative flex items-center justify-center rounded-full border backdrop-blur-sm transition-[transform,background-color,border-color,box-shadow] duration-300"
+        className="relative flex items-center justify-center rounded-full border shadow-sm transition-[transform,background-color,border-color,box-shadow] duration-300"
         style={{
           width: size,
           height: size,
           color: accent,
-          borderColor: active ? `${accent}66` : "rgba(255,255,255,0.14)",
-          backgroundColor: active ? `${accent}22` : "rgba(255,255,255,0.06)",
-          boxShadow: active ? `0 0 24px ${accent}55` : "none",
+          borderColor: active ? `${accent}70` : "rgba(11,15,25,0.10)",
+          backgroundColor: active ? `${accent}1a` : "#fafafa",
+          boxShadow: active ? `0 0 22px ${accent}40` : "0 1px 2px rgba(11,15,25,0.04)",
           transform: active ? "scale(1.12)" : "scale(1)",
         }}
       >
@@ -185,7 +185,7 @@ function NodeBadge({
       {label && (
         <span
           className="absolute left-1/2 top-full mt-1.5 -translate-x-1/2 whitespace-nowrap font-urbanist text-[10px] font-semibold uppercase tracking-[0.14em] transition-colors duration-300"
-          style={{ color: active ? accent : "rgba(255,255,255,0.45)" }}
+          style={{ color: active ? accent : "rgba(11,15,25,0.42)" }}
         >
           {label}
         </span>
@@ -206,8 +206,8 @@ function AiHumanDiagram({ activeIndex }: { activeIndex: number }) {
             <feGaussianBlur stdDeviation="1.1" />
           </filter>
         </defs>
-        <circle cx={CORE_POS.x} cy={CORE_POS.y} r={ORBIT_R} fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth={0.35} strokeDasharray="0.6 2.2" />
-        <GlowLine x1={AI_NODE.x} y1={AI_NODE.y} x2={HUMAN_NODE.x} y2={HUMAN_NODE.y} bend={-0.22} color="#ffffff" active={false} animate={animate} />
+        <circle cx={CORE_POS.x} cy={CORE_POS.y} r={ORBIT_R} fill="none" stroke="rgba(11,15,25,0.09)" strokeWidth={0.35} strokeDasharray="0.6 2.2" />
+        <GlowLine x1={AI_NODE.x} y1={AI_NODE.y} x2={HUMAN_NODE.x} y2={HUMAN_NODE.y} bend={-0.22} color="#9797a6" active={false} animate={animate} reverseMotion />
         <GlowLine x1={AI_NODE.x} y1={AI_NODE.y} x2={CORE_POS.x} y2={CORE_POS.y} bend={-0.14} color={AI_NODE.accent} active={false} animate={animate} />
         <GlowLine x1={HUMAN_NODE.x} y1={HUMAN_NODE.y} x2={CORE_POS.x} y2={CORE_POS.y} bend={0.14} color={HUMAN_NODE.accent} active={false} animate={animate} />
         {PHASE_POS.map((pos, i) => (
@@ -231,8 +231,8 @@ function AiHumanDiagram({ activeIndex }: { activeIndex: number }) {
       <div className="absolute" style={{ left: `${CORE_POS.x}%`, top: `${CORE_POS.y}%`, transform: "translate(-50%, -50%)" }}>
         <div className="relative">
           {animate && <div className="ai-core-ring absolute -inset-1.5 rounded-full p-px" />}
-          <span aria-hidden className="ai-pulse-lg absolute inset-0 rounded-full" style={{ "--pulse-color": "#ffffff" } as CSSProperties} />
-          <span className="relative flex h-14 w-14 items-center justify-center rounded-full border border-white/25 bg-ink text-white shadow-[0_0_30px_rgba(255,255,255,0.18)]">
+          <span aria-hidden className="ai-pulse-lg absolute inset-0 rounded-full" style={{ "--pulse-color": "#7c6cff" } as CSSProperties} />
+          <span className="relative flex h-14 w-14 items-center justify-center rounded-full border border-hairline bg-ink text-white shadow-[0_10px_28px_rgba(11,15,25,0.22)]">
             <Cpu size={22} strokeWidth={1.5} />
           </span>
         </div>
@@ -284,29 +284,21 @@ export default function AiDevExcellence() {
               </SectionTitle>
             </div>
             <SectionDescription className="max-w-xs">
-              {TOOLS_COUNT} tools across {PHASE_COUNT} AI-assisted phases — the same process used on every project.
+              {TOOLS_COUNT} tools support {PHASE_COUNT} AI-assisted phases, the same process behind every project we ship.
             </SectionDescription>
           </div>
         </Reveal>
 
         <Reveal delay={80}>
-          <div
-            className="relative mt-10 overflow-hidden rounded-[32px] p-6 sm:p-8 lg:p-10"
-            style={
-              {
-                "--color-ink": "#120f22",
-                background: "radial-gradient(120% 100% at 22% 0%, #1c1638 0%, #120f22 55%)",
-              } as CSSProperties
-            }
-          >
+          <div className="relative mt-10 overflow-hidden rounded-[32px] border border-hairline bg-canvas p-6 shadow-[0_20px_50px_rgba(9,9,11,0.06)] sm:p-8 lg:p-10">
             <div aria-hidden className="pointer-events-none absolute inset-0 opacity-70">
               <div
                 className="absolute -left-16 -top-16 h-64 w-64 rounded-full blur-3xl"
-                style={{ background: "radial-gradient(closest-side, rgba(138,123,255,0.16), transparent)" }}
+                style={{ background: "radial-gradient(closest-side, rgba(124,108,255,0.10), transparent)" }}
               />
               <div
                 className="absolute -bottom-20 -right-10 h-72 w-72 rounded-full blur-3xl"
-                style={{ background: "radial-gradient(closest-side, rgba(91,155,219,0.12), transparent)" }}
+                style={{ background: "radial-gradient(closest-side, rgba(91,155,219,0.08), transparent)" }}
               />
             </div>
 
@@ -334,9 +326,9 @@ export default function AiDevExcellence() {
                         }}
                         className="flex items-center justify-center gap-2 rounded-full border px-4 py-2 font-urbanist text-[13px] font-semibold transition-[background-color,border-color,color] duration-300 sm:justify-start"
                         style={{
-                          borderColor: isActive ? `${p.accent}80` : "rgba(255,255,255,0.12)",
-                          backgroundColor: isActive ? `${p.accent}1f` : "transparent",
-                          color: isActive ? p.accent : "rgba(255,255,255,0.55)",
+                          borderColor: isActive ? `${p.accent}80` : "var(--color-hairline)",
+                          backgroundColor: isActive ? `${p.accent}1a` : "transparent",
+                          color: isActive ? p.accent : "var(--color-ink-dim)",
                         }}
                       >
                         <Icon size={15} strokeWidth={1.75} />
@@ -348,21 +340,30 @@ export default function AiDevExcellence() {
 
                 <div key={active} className="lens-fade-in mt-6">
                   <div className="flex items-center gap-3">
-                    <span className="flex h-9 w-9 items-center justify-center rounded-xl" style={{ backgroundColor: `${activePhase.accent}1f`, color: activePhase.accent }}>
+                    <span className="flex h-9 w-9 items-center justify-center rounded-xl" style={{ backgroundColor: `${activePhase.accent}1a`, color: activePhase.accent }}>
                       <ActiveIcon size={18} strokeWidth={1.75} />
                     </span>
-                    <h3 className="font-urbanist text-lg font-bold leading-snug text-white">{activePhase.title}</h3>
+                    <h3 className="font-urbanist text-lg font-bold leading-snug text-ink">{activePhase.title}</h3>
                   </div>
-                  <p className="mt-3 max-w-md font-urbanist text-[14px] leading-relaxed text-white/55">{activePhase.description}</p>
+                  <p className="mt-3 max-w-md font-urbanist text-[14px] leading-relaxed text-ink-dim">{activePhase.description}</p>
                 </div>
 
-                <div className="mt-7 flex flex-wrap gap-x-8 gap-y-4 border-t border-white/10 pt-6">
+                <div className="mt-7 grid grid-cols-3 gap-3">
                   {PLACEHOLDER_STATS.map((s) => (
-                    <div key={s.label}>
-                      <p className="font-urbanist text-2xl font-bold tracking-tight text-white sm:text-[28px]">
+                    <div
+                      key={s.label}
+                      className="group relative overflow-hidden rounded-2xl border border-hairline bg-[#fafafa] p-3.5 transition-[transform,box-shadow,border-color] duration-300 hover:-translate-y-0.5 hover:shadow-[0_16px_34px_var(--stat-glow)] sm:p-4"
+                      style={{ "--stat-glow": `${s.accent}22` } as CSSProperties}
+                    >
+                      <div
+                        aria-hidden
+                        className="pointer-events-none absolute inset-0 opacity-[0.06] transition-opacity duration-300 group-hover:opacity-[0.1]"
+                        style={{ background: `radial-gradient(circle at 85% 0%, ${s.accent}, transparent 65%)` }}
+                      />
+                      <p className="relative z-10 font-urbanist text-xl font-bold tracking-tight sm:text-2xl" style={{ color: s.accent }}>
                         <CountUp value={s.value} suffix={s.suffix} />
                       </p>
-                      <p className="mt-1 font-urbanist text-[11.5px] leading-snug text-white/45">{s.label}</p>
+                      <p className="relative z-10 mt-1 font-urbanist text-[11px] leading-snug text-ink-dim">{s.label}</p>
                     </div>
                   ))}
                 </div>
