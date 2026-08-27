@@ -49,6 +49,11 @@ import { SectionEyebrow, SectionTitle, SectionDescription } from "@/components/s
  * highlight (measured via refs, animated with a CSS transform) can track
  * the active row — the same "moving pill" pattern used by e.g. segmented
  * controls — instead of each button drawing its own active background.
+ *
+ * Tab list and detail panel share one bg-[#fafafa] card (a border between
+ * them, not a color difference, is what separates the two) instead of each
+ * having its own background — and the active-row highlight is a plain
+ * bg-canvas/border-hairline chip with no shadow, not a colored glow.
  */
 const TOOL_ICONS: Record<string, IconType[]> = {
   ai: [SiPython, SiLangchain, SiHuggingface, SiZapier],
@@ -131,12 +136,15 @@ export default function ServicesShowcase() {
           </Reveal>
 
           <Reveal delay={100}>
-            <div className="mt-12 grid gap-4 lg:grid-cols-[400px_1fr] lg:gap-6">
+            <div className="mt-12 overflow-hidden rounded-[28px] border border-hairline bg-[#fafafa] lg:grid lg:grid-cols-[400px_1fr]">
               {/* Left — tab list with a sliding highlight tracking the active row */}
-              <div ref={listRef} className="relative flex flex-col gap-3">
+              <div
+                ref={listRef}
+                className="relative flex flex-col gap-3 border-b border-hairline p-3 lg:border-b-0 lg:border-r"
+              >
                 <div
                   aria-hidden
-                  className="absolute inset-x-0 top-0 z-0 rounded-2xl border border-aurora-violet/20 bg-canvas shadow-[0_18px_36px_rgba(124,108,255,0.14)] transition-transform duration-300 ease-out-expo"
+                  className="absolute inset-x-3 top-3 z-0 rounded-2xl border border-hairline bg-canvas transition-transform duration-300 ease-out-expo"
                   style={{ height: TAB_HEIGHT, transform: "translateY(var(--indicator-y, 0px))" }}
                 />
                 {ORDERED_COLUMNS.map((col, i) => {
@@ -165,7 +173,7 @@ export default function ServicesShowcase() {
                       <span className="min-w-0 flex-1">
                         <span className="flex items-center gap-2">
                           <span
-                            className={`block truncate font-urbanist text-[15px] font-bold leading-snug transition-colors duration-300 ${
+                            className={`block font-urbanist text-[15px] font-bold leading-snug transition-colors duration-300 ${
                               isActive ? "text-ink" : "text-ink-dim"
                             }`}
                           >
@@ -197,7 +205,7 @@ export default function ServicesShowcase() {
                   panel renders the same height, whichever service is active. */}
               <div
                 key={active}
-                className="lens-fade-in relative flex min-h-[440px] flex-col overflow-hidden rounded-[28px] border border-hairline bg-[#fafafa] p-7 shadow-[0_1px_2px_rgba(9,9,11,0.04)] lg:p-10"
+                className="lens-fade-in relative flex min-h-[440px] flex-col overflow-hidden p-7 lg:p-10"
               >
                 <div
                   aria-hidden
