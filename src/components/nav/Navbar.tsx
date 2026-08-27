@@ -78,7 +78,7 @@ export default function Navbar() {
       />
 
       <header
-        className={`theme-light fixed inset-x-0 top-0 z-50 p-3 font-urbanist ease-out sm:p-4 ${
+        className={`theme-light fixed inset-x-0 top-[10px] z-50 p-3 font-urbanist ease-out sm:p-4 ${
           // The mega panels (below) are `position: fixed` descendants of this
           // header, and a header with a live translate value becomes their
           // containing block (same root cause as the MobileMenu fix — see its
@@ -131,7 +131,7 @@ export default function Navbar() {
                       />
                     </Nav.Trigger>
                     <Nav.Content
-                      className="mega-panel fixed left-1/2 top-[90px] z-40 w-[min(calc(100vw-32px),1200px)] -translate-x-1/2 data-[state=closed]:hidden"
+                      className="mega-panel fixed left-1/2 top-[100px] z-40 w-[min(calc(100vw-32px),1200px)] -translate-x-1/2 data-[state=closed]:hidden"
                       style={{ position: "fixed" }}
                     >
                       <MegaPanel />
@@ -148,7 +148,7 @@ export default function Navbar() {
                       />
                     </Nav.Trigger>
                     <Nav.Content
-                      className="mega-panel fixed left-1/2 top-[90px] z-40 w-[min(calc(100vw-32px),1200px)] -translate-x-1/2 data-[state=closed]:hidden"
+                      className="mega-panel fixed left-1/2 top-[100px] z-40 w-[min(calc(100vw-32px),1200px)] -translate-x-1/2 data-[state=closed]:hidden"
                       style={{ position: "fixed" }}
                     >
                       <IndustriesMegaPanel />
