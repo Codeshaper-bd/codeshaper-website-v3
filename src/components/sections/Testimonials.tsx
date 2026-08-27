@@ -16,11 +16,12 @@ import { SectionEyebrow, SectionTitle, SectionDescription } from "@/components/s
  * track's own parent rather than the raw viewport, and applies it as its
  * own padding-left).
  *
- * Background matches CaseStudies' own "floating rounded card" treatment
- * (`bg-light-surface p-3 sm:p-4` outer frame + `theme-light rounded-[32px]
- * bg-canvas` inner section) instead of a flat `bg-light-surface` section —
- * this section was missing that frame initially, which is why it looked
- * different from Success Stories despite using the same background color.
+ * Background was briefly CaseStudies' own "floating rounded card"
+ * treatment (`bg-light-surface p-3 sm:p-4` outer frame + `theme-light
+ * rounded-[32px] bg-canvas` inner section), but that white card was
+ * removed per direct request in round 3 — this section is now a flat
+ * `bg-light-surface` (#f5f4f2) section like EngagementModels, with no
+ * inner card wrapper at all.
  *
  * Cards are white with a hairline border (`bg-[#fafafa]`, `border-hairline`,
  * `hover:border-aurora-violet/20`) rather than CaseStudies' dark shell —
@@ -274,9 +275,8 @@ export default function Testimonials() {
   };
 
   return (
-    <div className="bg-light-surface p-3 sm:p-4">
-      <section className="theme-light relative overflow-hidden rounded-[32px] bg-canvas py-16 lg:py-24" aria-labelledby="testimonials-heading">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
+    <section className="theme-light relative overflow-hidden bg-light-surface py-16 lg:py-24" aria-labelledby="testimonials-heading">
+      <div className="mx-auto max-w-7xl px-6 lg:px-10">
           <Reveal>
             <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
               <div>
@@ -321,7 +321,6 @@ export default function Testimonials() {
             <div className="w-6 shrink-0 sm:w-10" aria-hidden />
           </div>
         </Reveal>
-      </section>
-    </div>
+    </section>
   );
 }
