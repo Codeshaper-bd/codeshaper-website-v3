@@ -27,7 +27,7 @@ if (typeof window !== "undefined") {
  *
  * Round 4: the stat/feature cards read as flat single-tone chips, so
  * both now follow EngagementModels' ModelCard recipe instead — rounded
- * [24-28px], a per-card radial accent wash, a gradient+ring icon tile
+ * corners, a per-card radial accent wash, a gradient+ring icon tile
  * instead of a flat-tint circle, and (on the feature cards) a large
  * ghost index numeral. The bottom photo strip was a fixed CSS grid
  * (hardcoded to exactly 5 slots, one hidden below sm:) which couldn't
@@ -36,6 +36,15 @@ if (typeof window !== "undefined") {
  * CaseStudiesExpand.tsx already use (drag on mouse, native scroll on
  * touch, click-vs-drag disambiguated via a movement threshold), so any
  * number of photos can be added later without touching the layout.
+ *
+ * Round 5: the features grid moves to a single row on desktop (fixed-
+ * height cards, same convention as EngagementModels' 5-across row,
+ * scaled to 4), the stat cards shrink to a smaller/tighter chip since
+ * they'd been sized for a 2-col span they no longer need to fill, and
+ * the "Why teams choose us" / "A few glimpses" sub-labels now reuse
+ * SectionEyebrow (dot + label) instead of an ad hoc <p>, so the whole
+ * section reads as one continuous typographic system instead of three
+ * stacked blocks each inventing its own label style.
  *
  * Every stat/feature is still an actual structural fact already
  * established elsewhere in the codebase (SERVICE_COLUMNS, INDUSTRIES,
@@ -151,25 +160,27 @@ function CountUpStat({
   return (
     <div
       ref={wrapRef}
-      className="group relative overflow-hidden rounded-[24px] border border-hairline bg-[#fafafa] p-5 transition-[border-color,box-shadow,transform] duration-300 ease-out hover:-translate-y-1 hover:border-aurora-violet/15 hover:shadow-[0_24px_50px_var(--stat-glow)]"
+      className="group relative flex items-center gap-3 overflow-hidden rounded-[18px] border border-hairline bg-[#fafafa] p-3.5 transition-[border-color,box-shadow,transform] duration-300 ease-out hover:-translate-y-0.5 hover:border-aurora-violet/15 hover:shadow-[0_16px_34px_var(--stat-glow)]"
       style={{ "--stat-glow": `${accent}26` } as CSSProperties}
     >
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0 opacity-[0.05] transition-opacity duration-300 ease-out group-hover:opacity-[0.09]"
-        style={{ background: `radial-gradient(circle at 85% 10%, ${accent}, transparent 60%)` }}
+        style={{ background: `radial-gradient(circle at 90% 0%, ${accent}, transparent 65%)` }}
       />
       <span
-        className="relative z-10 flex h-11 w-11 items-center justify-center rounded-2xl transition-transform duration-300 ease-out group-hover:scale-110"
+        className="relative z-10 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl transition-transform duration-300 ease-out group-hover:scale-110"
         style={{ background: `linear-gradient(135deg, ${accent}29, ${accent}0d)`, color: accent, boxShadow: `inset 0 0 0 1px ${accent}26` }}
       >
-        <Icon size={19} strokeWidth={1.75} />
+        <Icon size={16} strokeWidth={1.75} />
       </span>
-      <p className="relative z-10 mt-5 font-urbanist text-3xl font-bold tracking-tight text-ink sm:text-[34px]">
-        <span ref={numRef}>0</span>
-        {suffix}
-      </p>
-      <p className="relative z-10 mt-1 font-urbanist text-[13px] leading-snug text-ink-dim">{label}</p>
+      <div className="relative z-10 min-w-0">
+        <p className="font-urbanist text-xl font-bold leading-none tracking-tight text-ink">
+          <span ref={numRef}>0</span>
+          {suffix}
+        </p>
+        <p className="mt-1 font-urbanist text-[11px] leading-snug text-ink-dim">{label}</p>
+      </div>
     </div>
   );
 }
@@ -179,31 +190,33 @@ function FeatureCard({ feature, index }: { feature: (typeof FEATURES)[number]; i
   const n = String(index + 1).padStart(2, "0");
   return (
     <div
-      className="group relative overflow-hidden rounded-[28px] border border-hairline bg-[#fafafa] p-7 transition-[transform,box-shadow,border-color] duration-300 ease-out hover:-translate-y-1.5 hover:border-aurora-violet/20 hover:shadow-[0_28px_60px_var(--feat-glow)] sm:p-8"
+      className="group relative flex h-full flex-col justify-between overflow-hidden rounded-[22px] border border-hairline bg-[#fafafa] p-6 transition-[transform,box-shadow,border-color] duration-300 ease-out hover:-translate-y-1.5 hover:border-aurora-violet/20 hover:shadow-[0_24px_50px_var(--feat-glow)]"
       style={{ "--feat-glow": `${feature.accent}22` } as CSSProperties}
     >
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0 opacity-[0.06] transition-opacity duration-300 ease-out group-hover:opacity-[0.1]"
-        style={{ background: `radial-gradient(circle at 88% 12%, ${feature.accent}, transparent 60%)` }}
+        style={{ background: `radial-gradient(circle at 88% 8%, ${feature.accent}, transparent 60%)` }}
       />
       <div className="relative z-10 flex items-start justify-between">
         <span
-          className="flex h-12 w-12 items-center justify-center rounded-2xl transition-transform duration-300 ease-out group-hover:scale-110"
+          className="flex h-11 w-11 items-center justify-center rounded-2xl transition-transform duration-300 ease-out group-hover:scale-110"
           style={{ background: `linear-gradient(135deg, ${feature.accent}29, ${feature.accent}0d)`, color: feature.accent, boxShadow: `inset 0 0 0 1px ${feature.accent}26` }}
         >
-          <Icon size={20} strokeWidth={1.75} />
+          <Icon size={19} strokeWidth={1.75} />
         </span>
         <span
           aria-hidden
-          className="select-none font-urbanist text-[52px] font-extrabold leading-none tracking-tight transition-transform duration-300 ease-out group-hover:scale-105"
+          className="select-none font-urbanist text-[38px] font-extrabold leading-none tracking-tight transition-transform duration-300 ease-out group-hover:scale-105"
           style={{ color: feature.accent, opacity: 0.16 }}
         >
           {n}
         </span>
       </div>
-      <h3 className="relative z-10 mt-5 font-urbanist text-lg font-bold leading-snug text-ink sm:text-xl">{feature.title}</h3>
-      <p className="relative z-10 mt-2 font-urbanist text-[13.5px] leading-relaxed text-ink-dim">{feature.desc}</p>
+      <div className="relative z-10 mt-6">
+        <h3 className="font-urbanist text-[15px] font-bold leading-snug text-ink">{feature.title}</h3>
+        <p className="mt-1.5 font-urbanist text-[12.5px] leading-relaxed text-ink-dim">{feature.desc}</p>
+      </div>
     </div>
   );
 }
@@ -400,7 +413,7 @@ export default function AboutStudio() {
                 Zealand, so there's real timezone overlap wherever a client is based.
               </SectionDescription>
 
-              <div className="mt-8 grid grid-cols-2 gap-3">
+              <div className="mt-6 grid grid-cols-2 gap-2.5">
                 {STATS.map((s, i) => (
                   <CountUpStat
                     key={s.label}
@@ -414,7 +427,7 @@ export default function AboutStudio() {
                 ))}
               </div>
 
-              <div className="mt-8">
+              <div className="mt-7">
                 <Link
                   href="/company/about"
                   className="inline-flex items-center gap-2 rounded-full bg-aurora-violet px-7 py-3.5 font-urbanist text-sm font-semibold text-white transition-[background-color,transform] duration-300 hover:scale-[1.02] hover:bg-aurora-violet-dark"
@@ -427,11 +440,9 @@ export default function AboutStudio() {
           </div>
 
           <Reveal delay={120}>
-            <div className="mt-20 lg:mt-24">
-              <p className="mb-6 font-urbanist text-[11px] font-semibold uppercase tracking-[0.2em] text-ink-faint">
-                Why teams choose us
-              </p>
-              <div className="grid gap-4 sm:grid-cols-2">
+            <div className="mt-14 lg:mt-16">
+              <SectionEyebrow>Why teams choose us</SectionEyebrow>
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                 {FEATURES.map((f, i) => (
                   <FeatureCard key={f.title} feature={f} index={i} />
                 ))}
@@ -440,12 +451,10 @@ export default function AboutStudio() {
           </Reveal>
 
           <Reveal delay={150}>
-            <div className="mt-16 border-t border-hairline pt-10">
-              <div className="flex items-end justify-between gap-4">
-                <p className="font-urbanist text-[11px] font-semibold uppercase tracking-[0.2em] text-ink-faint">
-                  A few glimpses from the studio
-                </p>
-                <div className="hidden shrink-0 items-center gap-2 sm:flex">
+            <div className="mt-14 border-t border-hairline pt-9">
+              <div className="flex items-center justify-between gap-4">
+                <SectionEyebrow>A few glimpses from the studio</SectionEyebrow>
+                <div className="mb-3 hidden shrink-0 items-center gap-2 sm:flex">
                   <button
                     type="button"
                     aria-label="Scroll left"
