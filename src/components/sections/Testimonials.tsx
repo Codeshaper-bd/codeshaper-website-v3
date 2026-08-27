@@ -38,6 +38,14 @@ import { SectionEyebrow, SectionTitle, SectionDescription } from "@/components/s
  * testimonial recordings when available. All names/companies/quotes here
  * are explicit placeholders (clearly invented company names, not real
  * brands) per the user's own "dummy testimonial for now" request.
+ *
+ * Round 2: dropped the outer card border per direct request (the shadow
+ * + lift on hover already read as a defined card without it); kept the
+ * internal divider above the avatar row since that's a content
+ * separator, not the card boundary being removed. Title also drops
+ * size="lg" for the sitewide-standard default size (see the same change
+ * across every other homepage section's SectionTitle), with copy
+ * lengthened slightly so it still wraps to 2 lines at that smaller size.
  */
 type Testimonial =
   | { type: "text"; name: string; role: string; quote: string; avatar: string; accent: string }
@@ -100,7 +108,7 @@ const TESTIMONIALS: Testimonial[] = [
 function TextCard({ t }: { t: Extract<Testimonial, { type: "text" }> }) {
   return (
     <article
-      className="flex h-[420px] w-[300px] shrink-0 select-none flex-col overflow-hidden rounded-[28px] border border-hairline bg-[#fafafa] p-7 transition-[transform,border-color,box-shadow] duration-300 ease-out hover:-translate-y-2 hover:border-aurora-violet/20 hover:shadow-[0_32px_70px_var(--card-glow)] sm:w-[340px] sm:p-8"
+      className="flex h-[420px] w-[300px] shrink-0 select-none flex-col overflow-hidden rounded-[28px] bg-[#fafafa] p-7 transition-[transform,box-shadow] duration-300 ease-out hover:-translate-y-2 hover:shadow-[0_32px_70px_var(--card-glow)] sm:w-[340px] sm:p-8"
       style={{ "--card-glow": `${t.accent}26` } as CSSProperties}
     >
       <Quote size={30} strokeWidth={1.5} style={{ color: t.accent }} />
@@ -122,7 +130,7 @@ function VideoCard({ t }: { t: Extract<Testimonial, { type: "video" }> }) {
 
   return (
     <article
-      className="group relative h-[420px] w-[300px] shrink-0 select-none overflow-hidden rounded-[28px] border border-hairline bg-[#fafafa] transition-[transform,border-color,box-shadow] duration-300 ease-out hover:-translate-y-2 hover:border-aurora-violet/20 hover:shadow-[0_32px_70px_var(--card-glow)] sm:w-[340px]"
+      className="group relative h-[420px] w-[300px] shrink-0 select-none overflow-hidden rounded-[28px] bg-[#fafafa] transition-[transform,box-shadow] duration-300 ease-out hover:-translate-y-2 hover:shadow-[0_32px_70px_var(--card-glow)] sm:w-[340px]"
       style={{ "--card-glow": `${t.accent}26` } as CSSProperties}
     >
       {playing ? (
@@ -273,8 +281,8 @@ export default function Testimonials() {
             <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
               <div>
                 <SectionEyebrow>Client Testimonials</SectionEyebrow>
-                <SectionTitle ref={headingRef} id="testimonials-heading" size="lg">
-                  Trusted by teams who shipped with us.
+                <SectionTitle ref={headingRef} id="testimonials-heading" className="max-w-lg">
+                  Trusted by teams who've shipped real products with us.
                 </SectionTitle>
               </div>
 

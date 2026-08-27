@@ -114,7 +114,9 @@ export default function Industries() {
           <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
             <div>
               <SectionEyebrow>Industries</SectionEyebrow>
-              <SectionTitle id="industries-heading">Industry workflows, built with product taste.</SectionTitle>
+              <SectionTitle id="industries-heading" className="max-w-md">
+                Industry-specific workflows, built with real product taste.
+              </SectionTitle>
             </div>
             <div className="flex items-center gap-4">
               <SectionDescription className="max-w-xs">

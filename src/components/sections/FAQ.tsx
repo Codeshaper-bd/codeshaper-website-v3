@@ -108,7 +108,7 @@ export default function FAQ() {
           <div>
             <Reveal>
               <SectionEyebrow>FAQ</SectionEyebrow>
-              <SectionTitle id="faq-heading" className="max-w-md">Questions, answered.</SectionTitle>
+              <SectionTitle id="faq-heading">What clients ask before we start.</SectionTitle>
               <SectionDescription className="mt-4 max-w-sm">
                 The things clients ask before kicking off — services, process, AI, and where the team works from.
               </SectionDescription>

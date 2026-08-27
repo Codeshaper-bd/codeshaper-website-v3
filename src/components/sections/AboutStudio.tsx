@@ -404,7 +404,7 @@ export default function AboutStudio() {
 
             <Reveal delay={100}>
               <SectionEyebrow>Who we are</SectionEyebrow>
-              <SectionTitle id="about-heading" size="lg" className="max-w-lg">
+              <SectionTitle id="about-heading" className="max-w-sm">
                 A distributed team that works like one room.
               </SectionTitle>
               <SectionDescription className="mt-5 max-w-md">

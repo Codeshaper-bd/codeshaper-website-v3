@@ -44,12 +44,23 @@ import { useMotionAllowed } from "@/lib/motion";
  *    ServiceCard uses (`useCardTilt` — rotationX/Y via GSAP, gated on
  *    `useMotionAllowed` so it's desktop-fine-pointer only) for a more
  *    premium hover interaction than the flat lift+shadow alone.
+ *
+ * Round 3: the "uneven card heights" in the reference screenshot turned
+ * out to be exactly what was wanted — a deliberate cascading offset, not
+ * a bug to fix. Each card now sits progressively lower than the one
+ * before it (`--stagger-y` custom property, applied via `lg:mt-[...]`
+ * so it only affects the single-row desktop layout, not the stacked
+ * mobile/tablet grid). Each card also gets its own "Learn more" link to
+ * a real per-model page (hrefs pulled from ENGAGEMENT_MODELS in
+ * navigation.ts, the same data MegaPanel/MobileMenu already use for
+ * these exact 5 routes) instead of only the shared "Compare Models" CTA.
  */
 type Model = {
   name: string;
   fit: string;
   icon: LucideIcon;
   accent: string;
+  href: string;
 };
 
 const MODELS: Model[] = [
@@ -58,30 +69,35 @@ const MODELS: Model[] = [
     fit: "Fastest lane from idea to a shippable first product.",
     icon: Rocket,
     accent: "#8a7bff",
+    href: "/engagement/mvp-sprint",
   },
   {
     name: "End-to-End Delivery",
     fit: "We own the full build against an agreed scope.",
     icon: Boxes,
     accent: "#5b9bdb",
+    href: "/engagement/end-to-end-delivery",
   },
   {
     name: "Dedicated Product Team",
     fit: "A stable squad embedded on your roadmap.",
     icon: Users,
     accent: "#3fae82",
+    href: "/engagement/dedicated-team",
   },
   {
     name: "Team Augmentation",
     fit: "Specialists slot into your existing team.",
     icon: UserPlus,
     accent: "#d99a4e",
+    href: "/engagement/team-augmentation",
   },
   {
     name: "Global Delivery Model",
     fit: "Distributed build, single-point accountability.",
     icon: Globe2,
     accent: "#db5a89",
+    href: "/engagement/global-delivery",
   },
 ];
 
@@ -154,6 +170,14 @@ function ModelCard({ model, index }: { model: Model; index: number }) {
       <div className="relative z-10">
         <h3 className="font-urbanist text-lg font-bold leading-snug text-ink sm:text-xl">{model.name}</h3>
         <p className="mt-2 font-urbanist text-[13.5px] leading-relaxed text-ink-dim">{model.fit}</p>
+        <Link
+          href={model.href}
+          className="mt-4 inline-flex items-center gap-1.5 rounded-full border px-3.5 py-1.5 font-urbanist text-[12.5px] font-semibold transition-[background-color,transform] duration-300 hover:scale-[1.02]"
+          style={{ borderColor: `${model.accent}55`, color: model.accent, backgroundColor: `${model.accent}12` }}
+        >
+          Learn more
+          <ArrowRight size={12} strokeWidth={2} />
+        </Link>
       </div>
     </article>
   );
@@ -167,7 +191,9 @@ export default function EngagementModels() {
           <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
             <div>
               <SectionEyebrow>Engagement Models</SectionEyebrow>
-              <SectionTitle id="engagement-heading">Flexible ways to work with us.</SectionTitle>
+              <SectionTitle id="engagement-heading" className="max-w-md">
+                Flexible engagement models built around your roadmap.
+              </SectionTitle>
             </div>
             <div className="flex items-center gap-4">
               <SectionDescription className="max-w-xs">
@@ -184,9 +210,13 @@ export default function EngagementModels() {
           </div>
         </Reveal>
 
-        <ul className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-5">
+        <ul className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-5 lg:items-start">
           {MODELS.map((m, i) => (
-            <li key={m.name} className={i === MODELS.length - 1 ? "sm:col-span-2 lg:col-span-1" : ""}>
+            <li
+              key={m.name}
+              className={`lg:mt-[var(--stagger-y)] ${i === MODELS.length - 1 ? "sm:col-span-2 lg:col-span-1" : ""}`}
+              style={{ "--stagger-y": `${i * 28}px` } as CSSProperties}
+            >
               <Reveal delay={i * 80} className="h-full [perspective:900px]">
                 <ModelCard model={m} index={i} />
               </Reveal>

@@ -135,7 +135,9 @@ export default function TechStack() {
             <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
               <div>
                 <SectionEyebrow>Tech Stack</SectionEyebrow>
-                <SectionTitle id="tech-stack-heading">Modern tools, AI-ready delivery.</SectionTitle>
+                <SectionTitle id="tech-stack-heading" className="max-w-xs">
+                  Modern tools, AI-ready delivery.
+                </SectionTitle>
                 <SectionDescription className="mt-2.5 max-w-lg">
                   We pick proven technology for the job, then connect it with AI-assisted workflows where it improves speed, clarity, or operations.
                 </SectionDescription>

@@ -343,8 +343,8 @@ export default function CaseStudiesExpand() {
             <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
               <div>
                 <SectionEyebrow>Case Studies</SectionEyebrow>
-                <SectionTitle ref={headingRef} id="work-expand-heading" size="lg">
-                  Work that ships, every time.
+                <SectionTitle ref={headingRef} id="work-expand-heading" className="max-w-md">
+                  Case studies from products we've designed and shipped.
                 </SectionTitle>
               </div>
 

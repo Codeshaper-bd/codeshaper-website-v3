@@ -16,7 +16,7 @@ import { FaMicrosoft } from "react-icons/fa";
 import { SiWebflow, SiFiverr, SiUpwork, SiFramer } from "react-icons/si";
 import type { IconType } from "react-icons";
 import Reveal from "@/components/system/Reveal";
-import { SectionEyebrow } from "@/components/system/SectionHeading";
+import { SectionEyebrow, SectionTitle } from "@/components/system/SectionHeading";
 
 /**
  * Clients & trust — back to the section's earlier composition (left-aligned
@@ -132,11 +132,11 @@ export default function TrustStrip() {
           <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
             <div>
               <SectionEyebrow>Selected Clients</SectionEyebrow>
-              <h2 className="font-urbanist text-[24px] font-bold leading-tight tracking-tight text-ink sm:text-[32px] lg:text-[36px]">
-                The Choice Of Fast-Moving Teams
+              <SectionTitle>
+                The choice of fast-moving teams
                 <br />
-                <span className="text-ink-dim">From Startups to Global Brands</span>
-              </h2>
+                <span className="text-ink-dim">from startups to global brands.</span>
+              </SectionTitle>
             </div>
             <ul className="flex flex-wrap gap-2.5 lg:justify-end">
               {REGIONS.map((r) => (

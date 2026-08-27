@@ -260,9 +260,11 @@ export default function Locations() {
       <div className="relative z-10 mx-auto max-w-7xl px-6 lg:px-10">
         <Reveal>
           <SectionEyebrow>Locations</SectionEyebrow>
-          <SectionTitle id="locations-heading">Where we work from.</SectionTitle>
+          <SectionTitle id="locations-heading" className="max-w-md">
+            A global footprint built for real timezone overlap.
+          </SectionTitle>
           <SectionDescription className="mt-4 max-w-xl">
-            One delivery hub, five collaboration hubs — timezone overlap wherever the client is.
+            One delivery hub and five collaboration hubs, so there's working overlap wherever the client is.
           </SectionDescription>
         </Reveal>
 
