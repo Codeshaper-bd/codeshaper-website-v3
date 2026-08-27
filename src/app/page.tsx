@@ -1,7 +1,10 @@
 import SiteShell from "@/components/system/SiteShell";
 import Hero from "@/components/hero/Hero";
 import TrustStrip from "@/components/sections/TrustStrip";
-import ServicePillars from "@/components/sections/ServicePillars";
+// ServicePillars is the previous card-grid Services section — kept but
+// unmounted below, pending a side-by-side decision against ServicesShowcase.
+// import ServicePillars from "@/components/sections/ServicePillars";
+import ServicesShowcase from "@/components/sections/ServicesShowcase";
 import AboutStudio from "@/components/sections/AboutStudio";
 import CaseStudies from "@/components/sections/CaseStudies";
 import CaseStudiesExpand from "@/components/sections/CaseStudiesExpand";
@@ -44,7 +47,8 @@ export default function Home() {
     <SiteShell>
       <Hero />
       <TrustStrip />
-      <ServicePillars />
+      {/* <ServicePillars /> */}
+      <ServicesShowcase />
       <AiDevExcellence />
       <Industries />
       <EngagementModels />
