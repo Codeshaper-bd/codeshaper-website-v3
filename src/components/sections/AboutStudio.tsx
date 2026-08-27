@@ -1,32 +1,41 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import type { CSSProperties } from "react";
 import Link from "next/link";
-import { ArrowRight, Layers, Globe2, Users, MapPin } from "lucide-react";
+import { ArrowRight, Layers, Globe2, Users, MapPin, Puzzle, Clock, Boxes, Sparkles, Move } from "lucide-react";
 import gsap from "gsap";
+import { Draggable } from "gsap/Draggable";
+import { InertiaPlugin } from "gsap/InertiaPlugin";
 import Reveal from "@/components/system/Reveal";
 import { SectionEyebrow, SectionTitle, SectionDescription } from "@/components/system/SectionHeading";
-import { usePrefersReducedMotion, useMotionAllowed } from "@/lib/motion";
+import { usePrefersReducedMotion } from "@/lib/motion";
+
+if (typeof window !== "undefined") {
+  gsap.registerPlugin(Draggable, InertiaPlugin);
+}
 
 /**
  * About — "who we are" section right after Services.
  *
- * Round 2: the previous version was a flat bg-light-surface strip with no
- * inner card — every other major homepage section (Hero, ServicesShowcase,
- * CaseStudiesExpand, Testimonials, TechStack) uses the floating-card
- * treatment (bg-light-surface outer frame + rounded-[32px] bg-canvas card),
- * so this one read as visibly plainer/flatter than its neighbors purely by
- * being structurally inconsistent with them — fixed by adopting the same
- * wrapper, plus the same subtle hex-pattern texture Hero/ServicesShowcase
- * use, a violet glow accent, and mega-icon-tile stat icons instead of bare
- * colored ones, so it reads as part of the same design system rather than
- * a plainer one-off.
+ * Round 3, on top of round 2's floating-card fix: added a Vivasoft-style
+ * "why teams choose us" grid (colored icon-circle + title + description,
+ * 2-col like the reference), recolored the stat cards per-stat (same
+ * accent-tint recipe EngagementModels already uses, rather than a flat
+ * monochrome icon), and made the two collage photos draggable — GSAP's
+ * Draggable + InertiaPlugin are both free/bundled as of gsap@3.15, so no
+ * new dependency. Drag is bounded to a small radius and elastic-snaps
+ * back to its origin on release. Still gated on prefers-reduced-motion
+ * (same flag every other effect in this file checks), since the elastic
+ * snap-back is itself a motion effect some users will want off, even
+ * though the drag itself is user-initiated rather than ambient.
  *
- * Every stat is still an actual structural count already established
- * elsewhere in the codebase (SERVICE_COLUMNS, INDUSTRIES, TrustStrip's
- * client list, Locations' 6-country footprint) — no founding year,
- * headcount, award count, or certification is invented, since none of
- * that exists anywhere in this codebase as verified fact.
+ * Every stat/feature is still an actual structural fact already
+ * established elsewhere in the codebase (SERVICE_COLUMNS, INDUSTRIES,
+ * TrustStrip's client list, Locations' 6-country footprint, and
+ * EngagementModels' five models) — no founding year, headcount, award
+ * count, or certification is invented, since none of that exists
+ * anywhere in this codebase as verified fact.
  *
  * Photos are Picsum placeholders (seeded, stable across renders) — real
  * office/team photos replace these directly once supplied. Picsum
@@ -39,11 +48,38 @@ import { usePrefersReducedMotion, useMotionAllowed } from "@/lib/motion";
  * hover makes the mismatch (a sunset, a car dashboard) read as an
  * intentional editorial choice instead of the wrong photo.
  */
-const STATS: { value: number; suffix: string; label: string; icon: typeof Layers }[] = [
-  { value: 5, suffix: "", label: "Core practices", icon: Layers },
-  { value: 10, suffix: "", label: "Industries served", icon: Globe2 },
-  { value: 16, suffix: "+", label: "Clients worldwide", icon: Users },
-  { value: 6, suffix: "", label: "Countries, one team", icon: MapPin },
+const STATS: { value: number; suffix: string; label: string; icon: typeof Layers; accent: string }[] = [
+  { value: 5, suffix: "", label: "Core practices", icon: Layers, accent: "#8a7bff" },
+  { value: 10, suffix: "", label: "Industries served", icon: Globe2, accent: "#5b9bdb" },
+  { value: 16, suffix: "+", label: "Clients worldwide", icon: Users, accent: "#3fae82" },
+  { value: 6, suffix: "", label: "Countries, one team", icon: MapPin, accent: "#d99a4e" },
+];
+
+const FEATURES: { title: string; desc: string; icon: typeof Layers; accent: string }[] = [
+  {
+    title: "One team, five disciplines",
+    desc: "Design, engineering, commerce, websites, and AI automation under one roof — no vendor handoffs.",
+    icon: Puzzle,
+    accent: "#8a7bff",
+  },
+  {
+    title: "Real timezone overlap",
+    desc: "Delivery hub in Bangladesh, collaboration hubs across the US, UK, Japan, Australia, and New Zealand.",
+    icon: Clock,
+    accent: "#5b9bdb",
+  },
+  {
+    title: "An engagement model that fits",
+    desc: "From an MVP sprint to a fully dedicated team — pick the shape that matches your roadmap.",
+    icon: Boxes,
+    accent: "#3fae82",
+  },
+  {
+    title: "AI-first, not bolted on",
+    desc: "AI & automation is one of our five core practices, built into how we design and ship from day one.",
+    icon: Sparkles,
+    accent: "#d99a4e",
+  },
 ];
 
 const STRIP_PHOTOS = [
@@ -59,12 +95,14 @@ function CountUpStat({
   suffix,
   label,
   icon: Icon,
+  accent,
   delay,
 }: {
   value: number;
   suffix: string;
   label: string;
   icon: typeof Layers;
+  accent: string;
   delay: number;
 }) {
   const reduced = usePrefersReducedMotion();
@@ -103,9 +141,13 @@ function CountUpStat({
   return (
     <div
       ref={wrapRef}
-      className="group relative overflow-hidden rounded-2xl border border-hairline bg-[#fafafa] p-5 transition-[border-color,box-shadow,transform] duration-300 hover:-translate-y-0.5 hover:border-aurora-violet/25 hover:shadow-[0_16px_36px_rgba(124,108,255,0.14)]"
+      className="group relative overflow-hidden rounded-2xl border border-hairline bg-[#fafafa] p-5 transition-[border-color,box-shadow,transform] duration-300 hover:-translate-y-0.5 hover:shadow-[0_20px_44px_var(--stat-glow)]"
+      style={{ "--stat-glow": `${accent}26` } as CSSProperties}
     >
-      <span className="mega-icon-tile flex h-10 w-10 items-center justify-center rounded-xl text-aurora-indigo transition-colors duration-300 group-hover:text-aurora-violet">
+      <span
+        className="flex h-10 w-10 items-center justify-center rounded-full transition-transform duration-300 group-hover:scale-110"
+        style={{ backgroundColor: `${accent}17`, color: accent }}
+      >
         <Icon size={18} strokeWidth={1.75} />
       </span>
       <p className="mt-4 font-urbanist text-3xl font-bold tracking-tight text-ink sm:text-[34px]">
@@ -117,43 +159,74 @@ function CountUpStat({
   );
 }
 
-function TiltFrame({ src, className, priority }: { src: string; className?: string; priority?: boolean }) {
-  const interactive = useMotionAllowed();
+function FeatureCard({ feature }: { feature: (typeof FEATURES)[number] }) {
+  const Icon = feature.icon;
+  return (
+    <div
+      className="group relative flex gap-4 overflow-hidden rounded-2xl border border-hairline bg-[#fafafa] p-6 transition-[border-color,box-shadow,transform] duration-300 hover:-translate-y-0.5 hover:border-aurora-violet/20 hover:shadow-[0_20px_44px_var(--feat-glow)]"
+      style={{ "--feat-glow": `${feature.accent}22` } as CSSProperties}
+    >
+      <span
+        className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full transition-transform duration-300 group-hover:scale-110"
+        style={{ backgroundColor: `${feature.accent}17`, color: feature.accent }}
+      >
+        <Icon size={20} strokeWidth={1.75} />
+      </span>
+      <div>
+        <h3 className="font-urbanist text-base font-bold leading-snug text-ink sm:text-[17px]">{feature.title}</h3>
+        <p className="mt-1.5 font-urbanist text-[13.5px] leading-relaxed text-ink-dim">{feature.desc}</p>
+      </div>
+    </div>
+  );
+}
+
+function DraggablePhoto({
+  src,
+  className,
+  priority,
+  radius,
+}: {
+  src: string;
+  className?: string;
+  priority?: boolean;
+  radius: number;
+}) {
+  const reduced = usePrefersReducedMotion();
   const frameRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const frame = frameRef.current;
-    if (!frame || !interactive) return;
-    gsap.set(frame, { rotationX: 0, rotationY: 0 });
+    if (!frame || reduced) return;
 
-    const onMove = (e: PointerEvent) => {
-      const r = frame.getBoundingClientRect();
-      const px = (e.clientX - r.left) / r.width;
-      const py = (e.clientY - r.top) / r.height;
-      gsap.to(frame, { rotationY: (px - 0.5) * 5, rotationX: -(py - 0.5) * 5, duration: 0.7, ease: "power3.out", overwrite: "auto" });
-    };
-    const onLeave = () => gsap.to(frame, { rotationX: 0, rotationY: 0, duration: 0.7, ease: "power3.out", overwrite: "auto" });
-
-    frame.addEventListener("pointermove", onMove);
-    frame.addEventListener("pointerleave", onLeave);
+    const [inst] = Draggable.create(frame, {
+      type: "x,y",
+      bounds: { minX: -radius, maxX: radius, minY: -radius, maxY: radius },
+      inertia: true,
+      edgeResistance: 0.7,
+      onDragEnd() {
+        gsap.to(frame, { x: 0, y: 0, duration: 1, ease: "elastic.out(1, 0.55)", overwrite: "auto" });
+      },
+    });
     return () => {
-      frame.removeEventListener("pointermove", onMove);
-      frame.removeEventListener("pointerleave", onLeave);
+      inst.kill();
     };
-  }, [interactive]);
+  }, [reduced, radius]);
 
   return (
-    <div className={className} style={{ perspective: "1200px" }}>
+    <div className={className} style={{ touchAction: reduced ? undefined : "none" }}>
       <div
         ref={frameRef}
-        className="relative h-full w-full overflow-hidden rounded-3xl border border-hairline shadow-[0_24px_70px_rgba(11,15,25,0.1),0_4px_14px_rgba(11,15,25,0.05)]"
+        className={`relative h-full w-full overflow-hidden rounded-3xl border border-hairline shadow-[0_24px_70px_rgba(11,15,25,0.1),0_4px_14px_rgba(11,15,25,0.05)] ${
+          reduced ? "" : "cursor-grab active:cursor-grabbing"
+        }`}
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={src}
           alt=""
           loading={priority ? "eager" : "lazy"}
-          className="h-full w-full object-cover grayscale transition-[filter] duration-700 ease-out-expo hover:grayscale-0"
+          draggable={false}
+          className="h-full w-full select-none object-cover grayscale transition-[filter] duration-700 ease-out-expo hover:grayscale-0"
         />
         <div
           aria-hidden
@@ -166,6 +239,8 @@ function TiltFrame({ src, className, priority }: { src: string; className?: stri
 }
 
 export default function AboutStudio() {
+  const reduced = usePrefersReducedMotion();
+
   return (
     <div className="bg-light-surface p-3 sm:p-4">
       <section
@@ -187,9 +262,26 @@ export default function AboutStudio() {
           <div className="grid items-center gap-12 lg:grid-cols-[0.9fr_1fr] lg:gap-16">
             <Reveal>
               <div className="relative mx-auto max-w-[420px] lg:max-w-none">
-                <TiltFrame src="https://picsum.photos/seed/codeshaper-office-main/900/1100" className="aspect-[4/5]" priority />
+                <DraggablePhoto
+                  src="https://picsum.photos/seed/codeshaper-office-main/900/1100"
+                  className="aspect-[4/5]"
+                  radius={28}
+                  priority
+                />
                 <div className="absolute -bottom-8 -right-6 w-[52%] sm:-right-10">
-                  <TiltFrame src="https://picsum.photos/seed/codeshaper-office-team/700/560" className="aspect-[4/3]" />
+                  <DraggablePhoto
+                    src="https://picsum.photos/seed/codeshaper-office-team/700/560"
+                    className="aspect-[4/3]"
+                    radius={22}
+                  />
+                  {!reduced && (
+                    <span
+                      aria-hidden
+                      className="pointer-events-none absolute -bottom-3 -left-3 flex h-8 w-8 items-center justify-center rounded-full border border-hairline bg-canvas text-ink-dim shadow-[0_10px_24px_rgba(11,15,25,0.12)]"
+                    >
+                      <Move size={13} strokeWidth={1.75} />
+                    </span>
+                  )}
                 </div>
                 <div className="absolute -left-5 -top-5 flex items-center gap-2.5 rounded-full border border-hairline bg-canvas px-4 py-2.5 shadow-[0_16px_36px_rgba(11,15,25,0.1)] sm:-left-7 sm:-top-7">
                   <span className="relative flex h-2 w-2 shrink-0">
@@ -214,7 +306,15 @@ export default function AboutStudio() {
 
               <div className="mt-8 grid grid-cols-2 gap-3">
                 {STATS.map((s, i) => (
-                  <CountUpStat key={s.label} value={s.value} suffix={s.suffix} label={s.label} icon={s.icon} delay={i * 120} />
+                  <CountUpStat
+                    key={s.label}
+                    value={s.value}
+                    suffix={s.suffix}
+                    label={s.label}
+                    icon={s.icon}
+                    accent={s.accent}
+                    delay={i * 120}
+                  />
                 ))}
               </div>
 
@@ -230,8 +330,21 @@ export default function AboutStudio() {
             </Reveal>
           </div>
 
+          <Reveal delay={120}>
+            <div className="mt-20 lg:mt-24">
+              <p className="mb-6 font-urbanist text-[11px] font-semibold uppercase tracking-[0.2em] text-ink-faint">
+                Why teams choose us
+              </p>
+              <div className="grid gap-4 sm:grid-cols-2">
+                {FEATURES.map((f) => (
+                  <FeatureCard key={f.title} feature={f} />
+                ))}
+              </div>
+            </div>
+          </Reveal>
+
           <Reveal delay={150}>
-            <div className="mt-20 border-t border-hairline pt-10 lg:mt-24">
+            <div className="mt-16 border-t border-hairline pt-10">
               <p className="mb-5 font-urbanist text-[11px] font-semibold uppercase tracking-[0.2em] text-ink-faint">
                 A few glimpses from the studio
               </p>
