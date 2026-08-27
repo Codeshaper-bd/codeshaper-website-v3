@@ -94,7 +94,7 @@ export default function ServicesShowcase() {
   useEffect(() => {
     const list = listRef.current;
     if (!list) return;
-    list.style.setProperty("--indicator-y", `${active * (TAB_HEIGHT + 12)}px`);
+    list.style.setProperty("--indicator-y", `${active * TAB_HEIGHT}px`);
   }, [active]);
 
   const visibleLinks = activeCol.links.slice(0, MAX_VISIBLE_LINKS);
@@ -136,11 +136,15 @@ export default function ServicesShowcase() {
           </Reveal>
 
           <Reveal delay={100}>
-            <div className="mt-12 overflow-hidden rounded-[28px] border border-hairline bg-[#fafafa] lg:grid lg:grid-cols-[400px_1fr]">
-              {/* Left — tab list with a sliding highlight tracking the active row */}
+            <div className="mt-12 overflow-hidden rounded-[28px] border border-hairline bg-light-surface lg:grid lg:grid-cols-[400px_1fr]">
+              {/* Left — tab list with a sliding highlight tracking the active row.
+                  Rows sit flush (no gap) with a border-b divider between each one,
+                  instead of gapped standalone cards — the indicator's translateY
+                  math is exactly `active * TAB_HEIGHT` because of that (no gap to
+                  add per row). */}
               <div
                 ref={listRef}
-                className="relative flex flex-col gap-3 border-b border-hairline p-3 lg:border-b-0 lg:border-r"
+                className="relative flex flex-col border-b border-hairline p-3 lg:border-b-0 lg:border-r"
               >
                 <div
                   aria-hidden
@@ -158,7 +162,9 @@ export default function ServicesShowcase() {
                       onClick={() => setActive(i)}
                       aria-pressed={isActive}
                       style={{ height: TAB_HEIGHT }}
-                      className="group relative z-10 flex shrink-0 items-center gap-4 rounded-2xl px-4 text-left"
+                      className={`group relative z-10 flex shrink-0 items-center gap-4 rounded-2xl px-4 text-left ${
+                        i > 0 ? "border-t border-hairline" : ""
+                      }`}
                     >
                       <span className="w-5 shrink-0 font-urbanist text-[11px] font-semibold text-ink-faint">
                         {String(i + 1).padStart(2, "0")}
