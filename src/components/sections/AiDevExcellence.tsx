@@ -31,6 +31,14 @@ import { usePrefersReducedMotion } from "@/lib/motion";
  *    AI → Human) — `GlowLine` takes a `reverseMotion` flag that replays
  *    the same curve backwards for the animated dot without changing the
  *    static line's shape.
+ *
+ * Round 6: round 5's light-card wrapper (rounded, bordered, shadowed —
+ * the same recipe as Services/AboutStudio's panels) was itself rejected
+ * per direct request. The diagram and phase switcher now sit directly on
+ * the section's own bg-light-surface with no wrapping card at all — just
+ * the two ambient glow blobs for depth. The smaller inner elements (node
+ * badges, stat cards) keep their own border+bg since those are
+ * individual components, not the "card" being removed.
  */
 type Phase = {
   phase: string;
@@ -290,7 +298,7 @@ export default function AiDevExcellence() {
         </Reveal>
 
         <Reveal delay={80}>
-          <div className="relative mt-10 overflow-hidden rounded-[32px] border border-hairline bg-canvas p-6 shadow-[0_20px_50px_rgba(9,9,11,0.06)] sm:p-8 lg:p-10">
+          <div className="relative mt-10 overflow-hidden py-2">
             <div aria-hidden className="pointer-events-none absolute inset-0 opacity-70">
               <div
                 className="absolute -left-16 -top-16 h-64 w-64 rounded-full blur-3xl"
