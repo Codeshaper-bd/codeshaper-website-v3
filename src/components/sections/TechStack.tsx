@@ -43,12 +43,10 @@ import { SectionEyebrow, SectionTitle, SectionDescription } from "@/components/s
 
 /**
  * Tech Stack — reworked per direct feedback on the first pass: the section
- * now uses the same "floating rounded card" frame as Testimonials/
- * CaseStudies (`bg-light-surface p-3 sm:p-4` outer margin + `rounded-[32px]`
- * inner section), just kept dark inside rather than switched to
- * `theme-light` — same structural language, its own tone. That replaces
- * the previous flush-dark `bg-canvas` section and the redundant second
- * bordered panel nested inside it.
+ * uses the same "floating rounded card" frame as Testimonials/CaseStudies
+ * (`bg-light-surface p-3 sm:p-4` outer margin + `rounded-[32px]` inner
+ * section). That replaces the previous flush-dark `bg-canvas` section and
+ * the redundant second bordered panel nested inside it.
  *
  * Tiles dropped their inline description entirely (icon + name only,
  * in a small square) — closer to hyperline.co's own dense icon grid and
@@ -59,6 +57,32 @@ import { SectionEyebrow, SectionTitle, SectionDescription } from "@/components/s
  * so it can't affect the grid's row height), and hovering one tile dims
  * the rest via a `:has()` rule in globals.css — the same spotlight
  * behavior visible in the hyperline.co reference when hovering "Mollie".
+ *
+ * Round 2, direct feedback: the section was kept dark inside on purpose
+ * (see above) but that dark tone itself was rejected — converted to
+ * `theme-light` like every other section, which meant recoloring
+ * everything that assumed a near-black backdrop rather than just the
+ * outer background: the grid-line texture (white lines → dark), the
+ * category pills' hover state (`bg-white/[0.06]` → a dark-tinted
+ * equivalent), each tile's resting border/fill (`border-white/[0.07]
+ * bg-white/[0.035]` → `border-hairline bg-[#fafafa]`, matching every
+ * other card sitewide), the icon chip (flat `bg-black/25` → the shared
+ * `.mega-icon-tile` class already used elsewhere instead of a one-off
+ * value), and the bottom CTA's hover color (`bg-aurora-amber`, a
+ * decorative-only token not meant for text-bearing backgrounds →
+ * `aurora-violet-dark`, the same hover every other CTA on the site
+ * uses). The per-tile hover-reveal face keeps its own dark gradient
+ * overlay + white text on purpose — it's a self-contained popover, not
+ * part of the section's base surface, the same way Testimonials' video
+ * cards keep a dark overlay on an otherwise light card.
+ *
+ * Two TECH_STACK entries (Next.js, Vercel) had `color: "#ffffff"` — a
+ * deliberate choice for their monochrome logomarks on the old dark
+ * tile, invisible against the new light one. Switched both to
+ * `#000000`, equally on-brand for either logo and now visible on the
+ * light tile background. OpenAI's `#ffffff` was left alone — it has no
+ * icon (badge-text fallback only), and that fallback's own text color
+ * was already switched to `text-ink` above.
  */
 type Category = "All" | "Frontend" | "Backend" | "Mobile" | "Commerce" | "Cloud & Data" | "AI";
 
@@ -75,7 +99,7 @@ const CATEGORIES: Category[] = ["All", "Frontend", "Backend", "Mobile", "Commerc
 
 const TECH_STACK: Tech[] = [
   { name: "React", category: "Frontend", icon: SiReact, color: "#61DAFB", description: "Interactive web apps and product dashboards." },
-  { name: "Next.js", category: "Frontend", icon: SiNextdotjs, color: "#ffffff", description: "Fast websites, app routers, SEO, and hybrid rendering." },
+  { name: "Next.js", category: "Frontend", icon: SiNextdotjs, color: "#000000", description: "Fast websites, app routers, SEO, and hybrid rendering." },
   { name: "TypeScript", category: "Frontend", icon: SiTypescript, color: "#3178C6", description: "Safer frontends and maintainable product code." },
   { name: "Tailwind CSS", category: "Frontend", icon: SiTailwindcss, color: "#38BDF8", description: "Responsive interfaces with consistent design tokens." },
   { name: "Framer Motion", category: "Frontend", icon: SiFramer, color: "#A78BFA", description: "Polished interaction and interface motion." },
@@ -107,7 +131,7 @@ const TECH_STACK: Tech[] = [
   { name: "GraphQL", category: "Cloud & Data", icon: SiGraphql, color: "#E10098", description: "Flexible APIs for connected product surfaces." },
   { name: "Docker", category: "Cloud & Data", icon: SiDocker, color: "#2496ED", description: "Portable environments and cleaner deployment handoff." },
   { name: "Kubernetes", category: "Cloud & Data", icon: SiKubernetes, color: "#326CE5", description: "Container orchestration for scale-ready systems." },
-  { name: "Vercel", category: "Cloud & Data", icon: SiVercel, color: "#ffffff", description: "Frontend hosting, previews, and rapid delivery." },
+  { name: "Vercel", category: "Cloud & Data", icon: SiVercel, color: "#000000", description: "Frontend hosting, previews, and rapid delivery." },
   { name: "Google Cloud", category: "Cloud & Data", icon: SiGooglecloud, color: "#4285F4", description: "Cloud infrastructure, storage, compute, and data." },
   { name: "AWS", category: "Cloud & Data", color: "#FF9900", description: "Cloud hosting, serverless, storage, and infrastructure.", badge: "AWS" },
   { name: "GitHub Actions", category: "Cloud & Data", icon: SiGithubactions, color: "#A3BFFA", description: "CI/CD pipelines and quality gates." },
@@ -127,8 +151,8 @@ export default function TechStack() {
 
   return (
     <div className="bg-light-surface p-3 sm:p-4">
-      <section className="relative overflow-hidden rounded-[32px] bg-canvas py-14 lg:py-16" aria-labelledby="tech-stack-heading">
-        <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.035)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.035)_1px,transparent_1px)] bg-[size:64px_64px]" />
+      <section className="theme-light relative overflow-hidden rounded-[32px] bg-canvas py-14 lg:py-16" aria-labelledby="tech-stack-heading">
+        <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(rgba(11,15,25,0.035)_1px,transparent_1px),linear-gradient(90deg,rgba(11,15,25,0.035)_1px,transparent_1px)] bg-[size:64px_64px]" />
 
         <div className="relative mx-auto max-w-7xl px-6 lg:px-10">
           <Reveal>
@@ -151,7 +175,7 @@ export default function TechStack() {
                     aria-pressed={category === item}
                     onClick={() => setCategory(item)}
                     className={`shrink-0 rounded-full px-3.5 py-2 font-urbanist text-[12px] font-semibold transition-colors duration-200 ${
-                      category === item ? "bg-ink text-canvas" : "text-ink-dim hover:bg-white/[0.06] hover:text-ink"
+                      category === item ? "bg-ink text-canvas" : "text-ink-dim hover:bg-black/[0.04] hover:text-ink"
                     }`}
                   >
                     {item}
@@ -168,16 +192,16 @@ export default function TechStack() {
                 return (
                   <div
                     key={`${category}-${tech.name}`}
-                    className="tech-tile group relative h-[84px] overflow-hidden rounded-2xl border border-white/[0.07] bg-white/[0.035] transition-[filter,border-color,background-color,transform] duration-300 hover:-translate-y-0.5 hover:border-white/20 hover:bg-white/[0.07] sm:h-[92px]"
+                    className="tech-tile group relative h-[84px] overflow-hidden rounded-2xl border border-hairline bg-[#fafafa] transition-[filter,border-color,background-color,transform] duration-300 hover:-translate-y-0.5 hover:border-ink/15 hover:bg-canvas sm:h-[92px]"
                     style={{ "--tile-color": tech.color, animationDelay: `${(i % 18) * 22}ms` } as CSSProperties}
                   >
                     {/* resting face: icon + name */}
                     <div className="flex h-full flex-col items-center justify-center gap-2 p-2 text-center transition-opacity duration-200 group-hover:opacity-0">
-                      <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-black/25 sm:h-9 sm:w-9">
+                      <span className="mega-icon-tile flex h-8 w-8 items-center justify-center rounded-lg sm:h-9 sm:w-9">
                         {Icon ? (
                           <Icon size={18} color={tech.color} aria-hidden />
                         ) : (
-                          <span className="font-urbanist text-[9px] font-bold text-white">{tech.badge}</span>
+                          <span className="font-urbanist text-[9px] font-bold text-ink">{tech.badge}</span>
                         )}
                       </span>
                       <span className="font-urbanist text-[10.5px] font-semibold leading-tight text-ink/85">{tech.name}</span>
@@ -208,7 +232,7 @@ export default function TechStack() {
               </p>
               <Link
                 href="/services"
-                className="inline-flex w-fit shrink-0 items-center gap-2 rounded-full bg-aurora-violet px-6 py-3 font-urbanist text-sm font-semibold text-canvas transition-[background-color,transform] duration-300 hover:scale-[1.02] hover:bg-aurora-amber"
+                className="inline-flex w-fit shrink-0 items-center gap-2 rounded-full bg-aurora-violet px-6 py-3 font-urbanist text-sm font-semibold text-canvas transition-[background-color,transform] duration-300 hover:scale-[1.02] hover:bg-aurora-violet-dark"
               >
                 Match tech to service
                 <ArrowRight size={15} strokeWidth={1.75} />

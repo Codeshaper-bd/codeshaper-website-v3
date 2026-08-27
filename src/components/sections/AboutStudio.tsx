@@ -46,6 +46,13 @@ if (typeof window !== "undefined") {
  * section reads as one continuous typographic system instead of three
  * stacked blocks each inventing its own label style.
  *
+ * Round 6: removed the floating white card entirely per direct request
+ * (same change Testimonials got) — this section is now a flat
+ * bg-light-surface (#f5f4f2) section with no inner rounded/bg-canvas
+ * wrapper. The stat/feature cards' own bg-[#fafafa] still reads as a
+ * lighter card against that grey backdrop, same relationship
+ * EngagementModels' cards already have with their own flat section.
+ *
  * Every stat/feature is still an actual structural fact already
  * established elsewhere in the codebase (SERVICE_COLUMNS, INDUSTRIES,
  * TrustStrip's client list, Locations' 6-country footprint, and
@@ -351,11 +358,10 @@ export default function AboutStudio() {
   };
 
   return (
-    <div className="bg-light-surface p-3 sm:p-4">
-      <section
-        className="theme-light relative overflow-hidden rounded-[32px] bg-canvas py-16 lg:py-24"
-        aria-labelledby="about-heading"
-      >
+    <section
+      className="theme-light relative overflow-hidden bg-light-surface py-16 lg:py-24"
+      aria-labelledby="about-heading"
+    >
         <div
           aria-hidden
           className="pointer-events-none absolute inset-0 opacity-[0.025]"
@@ -495,7 +501,6 @@ export default function AboutStudio() {
             </div>
           </Reveal>
         </div>
-      </section>
-    </div>
+    </section>
   );
 }
