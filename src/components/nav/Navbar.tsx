@@ -78,7 +78,7 @@ export default function Navbar() {
       />
 
       <header
-        className={`theme-light fixed inset-x-0 top-0 z-50 p-5 font-urbanist ease-out sm:p-7 ${
+        className={`theme-light fixed inset-x-0 top-0 z-50 p-3 font-urbanist ease-out sm:p-4 ${
           // The mega panels (below) are `position: fixed` descendants of this
           // header, and a header with a live translate value becomes their
           // containing block (same root cause as the MobileMenu fix — see its
@@ -99,11 +99,11 @@ export default function Navbar() {
         } ${hidden && !forceVisible ? "-translate-y-[calc(100%+16px)]" : "translate-y-0"}`}
       >
         <div
-          className={`mx-auto max-w-7xl rounded-full border border-hairline bg-white/95 backdrop-blur-xl transition-shadow duration-300 ${
+          className={`rounded-full border border-hairline bg-white/95 backdrop-blur-xl transition-shadow duration-300 ${
             scrolled || openValue || mobileOpen ? "shadow-[0_8px_30px_rgba(11,15,25,0.10)]" : "shadow-none"
           }`}
         >
-          <div className="flex h-16 items-center justify-between px-6 lg:px-10">
+          <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6 lg:px-10">
             <Link href="/" className="flex shrink-0 items-center" aria-label="CodeShaper home">
               {/* alt intentionally lowercase-c "codeShaper" — it describes what's
                   literally rendered in the logo image (the wordmark's own
@@ -131,7 +131,7 @@ export default function Navbar() {
                       />
                     </Nav.Trigger>
                     <Nav.Content
-                      className="mega-panel fixed left-1/2 top-[102px] z-40 w-[min(calc(100vw-48px),80rem)] -translate-x-1/2 data-[state=closed]:hidden"
+                      className="mega-panel fixed left-1/2 top-[90px] z-40 w-[calc(100vw-32px)] -translate-x-1/2 data-[state=closed]:hidden"
                       style={{ position: "fixed" }}
                     >
                       <MegaPanel />
@@ -148,7 +148,7 @@ export default function Navbar() {
                       />
                     </Nav.Trigger>
                     <Nav.Content
-                      className="mega-panel fixed left-1/2 top-[102px] z-40 w-[min(calc(100vw-48px),80rem)] -translate-x-1/2 data-[state=closed]:hidden"
+                      className="mega-panel fixed left-1/2 top-[90px] z-40 w-[calc(100vw-32px)] -translate-x-1/2 data-[state=closed]:hidden"
                       style={{ position: "fixed" }}
                     >
                       <IndustriesMegaPanel />
