@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import {
@@ -34,16 +34,21 @@ import { SectionEyebrow, SectionTitle, SectionDescription } from "@/components/s
  * and its usage in page.tsx is just commented out, pending a side-by-side
  * call on which one stays.
  *
- * The list-drives-a-panel interaction mirrors Industries.tsx's own pattern
- * (hover/focus/click sets the active index, key={active} + .lens-fade-in
- * crossfades the panel, .icon-pop-in on the icon — all already-established
- * sitewide classes) and the header now uses that same section's exact
- * eyebrow/title-left, description+CTA-right layout, rather than stacking
- * everything in one left column.
+ * Two structural bugs from the previous pass, both fixed here rather than
+ * styled around:
+ *  1. Services have different sub-link counts (engineering 6, commerce 5,
+ *     the rest 4) — showing them all meant the detail panel's height (and
+ *     so the whole section's height) changed as the mouse moved down the
+ *     list. Capped to MAX_VISIBLE_LINKS with a "+N more" link instead, so
+ *     every panel renders the same 2-row grid.
+ *  2. Tab cards sized to their own content meant a two-line title (e.g.
+ *     "Experience & Product Design") made that card taller than its
+ *     neighbors. Fixed height (TAB_HEIGHT) on every card instead.
  *
- * AI & Automation leads the list — same emphasis ServicePillars gave it
- * (that file's own ORDERED_COLUMNS reorder, kept here) — and the tool-icon
- * row reuses that file's TOOL_ICONS mapping verbatim.
+ * With every tab card now a fixed, identical height, a single sliding
+ * highlight (measured via refs, animated with a CSS transform) can track
+ * the active row — the same "moving pill" pattern used by e.g. segmented
+ * controls — instead of each button drawing its own active background.
  */
 const TOOL_ICONS: Record<string, IconType[]> = {
   ai: [SiPython, SiLangchain, SiHuggingface, SiZapier],
@@ -55,8 +60,10 @@ const TOOL_ICONS: Record<string, IconType[]> = {
 
 const AI_COLUMN = SERVICE_COLUMNS.find((c) => c.id === "ai")!;
 const ORDERED_COLUMNS = [AI_COLUMN, ...SERVICE_COLUMNS.filter((c) => c.id !== "ai")];
+const MAX_VISIBLE_LINKS = 4;
+const TAB_HEIGHT = 100;
 
-function ToolRow({ id, size = 20, iconSize = 10 }: { id: string; size?: number; iconSize?: number }) {
+function ToolRow({ id, size = 22, iconSize = 11 }: { id: string; size?: number; iconSize?: number }) {
   const tools = TOOL_ICONS[id];
   if (!tools) return null;
   return (
@@ -77,6 +84,16 @@ function ToolRow({ id, size = 20, iconSize = 10 }: { id: string; size?: number; 
 export default function ServicesShowcase() {
   const [active, setActive] = useState(0);
   const activeCol = ORDERED_COLUMNS[active];
+  const listRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const list = listRef.current;
+    if (!list) return;
+    list.style.setProperty("--indicator-y", `${active * (TAB_HEIGHT + 12)}px`);
+  }, [active]);
+
+  const visibleLinks = activeCol.links.slice(0, MAX_VISIBLE_LINKS);
+  const moreCount = activeCol.links.length - visibleLinks.length;
 
   return (
     <div className="bg-light-surface p-3 sm:p-4">
@@ -115,8 +132,13 @@ export default function ServicesShowcase() {
 
           <Reveal delay={100}>
             <div className="mt-12 grid gap-4 lg:grid-cols-[400px_1fr] lg:gap-6">
-              {/* Left — tab cards */}
-              <div className="flex flex-col gap-3">
+              {/* Left — tab list with a sliding highlight tracking the active row */}
+              <div ref={listRef} className="relative flex flex-col gap-3">
+                <div
+                  aria-hidden
+                  className="absolute inset-x-0 top-0 z-0 rounded-2xl border border-aurora-violet/20 bg-canvas shadow-[0_18px_36px_rgba(124,108,255,0.14)] transition-transform duration-300 ease-out-expo"
+                  style={{ height: TAB_HEIGHT, transform: "translateY(var(--indicator-y, 0px))" }}
+                />
                 {ORDERED_COLUMNS.map((col, i) => {
                   const isActive = i === active;
                   return (
@@ -127,11 +149,8 @@ export default function ServicesShowcase() {
                       onFocus={() => setActive(i)}
                       onClick={() => setActive(i)}
                       aria-pressed={isActive}
-                      className={`group relative flex items-center gap-4 rounded-2xl border p-4 text-left transition-[border-color,background-color,box-shadow,transform] duration-300 ${
-                        isActive
-                          ? "border-aurora-violet/25 bg-canvas shadow-[0_18px_40px_rgba(124,108,255,0.16)]"
-                          : "border-hairline bg-canvas/60 hover:-translate-y-0.5 hover:border-ink/15 hover:bg-canvas"
-                      }`}
+                      style={{ height: TAB_HEIGHT }}
+                      className="group relative z-10 flex shrink-0 items-center gap-4 rounded-2xl px-4 text-left"
                     >
                       <span className="w-5 shrink-0 font-urbanist text-[11px] font-semibold text-ink-faint">
                         {String(i + 1).padStart(2, "0")}
@@ -146,7 +165,7 @@ export default function ServicesShowcase() {
                       <span className="min-w-0 flex-1">
                         <span className="flex items-center gap-2">
                           <span
-                            className={`block font-urbanist text-[15px] font-bold leading-snug transition-colors duration-300 ${
+                            className={`block truncate font-urbanist text-[15px] font-bold leading-snug transition-colors duration-300 ${
                               isActive ? "text-ink" : "text-ink-dim"
                             }`}
                           >
@@ -158,7 +177,7 @@ export default function ServicesShowcase() {
                             </span>
                           )}
                         </span>
-                        <span className="mt-1.5 block">
+                        <span className="mt-2 block">
                           <ToolRow id={col.id} />
                         </span>
                       </span>
@@ -166,9 +185,7 @@ export default function ServicesShowcase() {
                         size={15}
                         strokeWidth={1.75}
                         className={`shrink-0 transition-[transform,opacity] duration-200 ${
-                          isActive
-                            ? "translate-x-0.5 text-aurora-violet opacity-100"
-                            : "text-ink-faint opacity-0 group-hover:opacity-60"
+                          isActive ? "translate-x-0.5 text-aurora-violet opacity-100" : "text-ink-faint opacity-0"
                         }`}
                       />
                     </button>
@@ -176,22 +193,23 @@ export default function ServicesShowcase() {
                 })}
               </div>
 
-              {/* Right — detail panel */}
+              {/* Right — detail panel. Links capped to MAX_VISIBLE_LINKS so every
+                  panel renders the same height, whichever service is active. */}
               <div
                 key={active}
-                className="lens-fade-in relative flex flex-col overflow-hidden rounded-[28px] border border-hairline bg-[#fafafa] p-7 shadow-[0_1px_2px_rgba(9,9,11,0.04)] lg:p-10"
+                className="lens-fade-in relative flex min-h-[440px] flex-col overflow-hidden rounded-[28px] border border-hairline bg-[#fafafa] p-7 shadow-[0_1px_2px_rgba(9,9,11,0.04)] lg:p-10"
               >
                 <div
                   aria-hidden
                   className="pointer-events-none absolute -right-24 -top-24 h-64 w-64 rounded-full opacity-60 blur-3xl"
-                  style={{ background: "radial-gradient(closest-side, rgba(124,108,255,0.16), transparent)" }}
+                  style={{ background: "radial-gradient(closest-side, rgba(124,108,255,0.18), transparent)" }}
                 />
 
                 <div className="relative z-10 flex items-start justify-between gap-4">
                   <span className="icon-pop-in mega-icon-tile flex h-14 w-14 items-center justify-center rounded-2xl text-aurora-violet">
                     <Icon name={SERVICE_ICONS[activeCol.id]} size={24} />
                   </span>
-                  <ToolRow id={activeCol.id} size={30} iconSize={14} />
+                  <ToolRow id={activeCol.id} size={32} iconSize={15} />
                 </div>
 
                 <Link href={activeCol.href} className="group/title relative z-10 mt-6 inline-flex items-start gap-2">
@@ -211,8 +229,8 @@ export default function ServicesShowcase() {
                   {activeCol.blurb}
                 </p>
 
-                <ul className="relative z-10 mt-7 grid flex-1 content-start gap-x-8 gap-y-4 border-t border-hairline pt-6 sm:grid-cols-2">
-                  {activeCol.links.map((l) => (
+                <ul className="relative z-10 mt-7 grid gap-x-8 gap-y-4 border-t border-hairline pt-6 sm:grid-cols-2">
+                  {visibleLinks.map((l) => (
                     <li key={l.href}>
                       <Link
                         href={l.href}
@@ -231,6 +249,20 @@ export default function ServicesShowcase() {
                     </li>
                   ))}
                 </ul>
+
+                <div className="relative z-10 mt-auto flex items-center justify-between gap-4 pt-6">
+                  {moreCount > 0 ? (
+                    <Link
+                      href={activeCol.href}
+                      className="inline-flex items-center gap-1.5 font-urbanist text-[13px] font-semibold text-aurora-violet"
+                    >
+                      +{moreCount} more under {activeCol.title}
+                      <ArrowRight size={13} strokeWidth={1.75} />
+                    </Link>
+                  ) : (
+                    <span />
+                  )}
+                </div>
               </div>
             </div>
           </Reveal>
