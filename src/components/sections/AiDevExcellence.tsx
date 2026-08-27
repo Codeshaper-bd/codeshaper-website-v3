@@ -1,7 +1,28 @@
 "use client";
 
 import { useEffect, useState, type CSSProperties } from "react";
-import { ClipboardList, Code2, ShieldCheck, Rocket, Cpu, Bot, User, type LucideIcon } from "lucide-react";
+import {
+  ClipboardList,
+  Code2,
+  ShieldCheck,
+  Rocket,
+  Cpu,
+  Bot,
+  User,
+  FileSearch,
+  MessageSquare,
+  ListChecks,
+  Braces,
+  GitPullRequest,
+  CheckCircle2,
+  TestTube2,
+  Bug,
+  ClipboardCheck,
+  GitBranch,
+  RotateCcw,
+  Clock,
+  type LucideIcon,
+} from "lucide-react";
 import Reveal from "@/components/system/Reveal";
 import CountUp from "@/components/system/CountUp";
 import { SectionEyebrow, SectionTitle, SectionDescription } from "@/components/system/SectionHeading";
@@ -47,13 +68,24 @@ import { usePrefersReducedMotion } from "@/lib/motion";
  * "AI-Powered Delivery" — the old label implied AI is scoped to
  * engineering specifically, when the diagram (and SERVICE_COLUMNS) cover
  * design, commerce, and websites too, not just development.
+ *
+ * Round 8: the 3 stats were a single fixed set shown regardless of which
+ * phase was active, which made them read as generic filler rather than
+ * something the diagram's own interactivity was driving. Each phase now
+ * carries its own 3 stats (still PLACEHOLDER dummy numbers, per the same
+ * "real numbers land later" direction as before) with a matching icon,
+ * and they crossfade alongside the phase title/description in the same
+ * `key={active}` block instead of being a separate static row.
  */
+type PhaseStat = { value: number; suffix: string; label: string; icon: LucideIcon };
+
 type Phase = {
   phase: string;
   title: string;
   description: string;
   icon: LucideIcon;
   accent: string;
+  stats: [PhaseStat, PhaseStat, PhaseStat];
 };
 
 const PHASES: Phase[] = [
@@ -63,6 +95,11 @@ const PHASES: Phase[] = [
     description: "Turns a rough brief into clear specs, flows, and a backlog the team reviews before anything gets built.",
     icon: ClipboardList,
     accent: "#8a7bff",
+    stats: [
+      { value: 3, suffix: "x", label: "Faster spec drafts", icon: FileSearch },
+      { value: 70, suffix: "%", label: "Less back-and-forth", icon: MessageSquare },
+      { value: 100, suffix: "%", label: "Backlog reviewed by the team", icon: ListChecks },
+    ],
   },
   {
     phase: "Build",
@@ -70,6 +107,11 @@ const PHASES: Phase[] = [
     description: "Code generation and review speed up implementation without skipping this team's own standards.",
     icon: Code2,
     accent: "#5b9bdb",
+    stats: [
+      { value: 40, suffix: "%", label: "Less boilerplate", icon: Braces },
+      { value: 3, suffix: "x", label: "Faster code reviews", icon: GitPullRequest },
+      { value: 99, suffix: "%", label: "Style guide consistency", icon: CheckCircle2 },
+    ],
   },
   {
     phase: "Test",
@@ -77,6 +119,11 @@ const PHASES: Phase[] = [
     description: "Generated test cases and regression checks catch issues earlier, alongside the QA gates already in place.",
     icon: ShieldCheck,
     accent: "#3fae82",
+    stats: [
+      { value: 2, suffix: "x", label: "Test coverage", icon: TestTube2 },
+      { value: 70, suffix: "%", label: "Faster regression runs", icon: Bug },
+      { value: 99, suffix: "%", label: "Critical paths covered", icon: ClipboardCheck },
+    ],
   },
   {
     phase: "Release",
@@ -84,14 +131,12 @@ const PHASES: Phase[] = [
     description: "CI/CD pipelines get safer defaults and faster rollbacks, so shipping stays routine instead of risky.",
     icon: Rocket,
     accent: "#d99a4e",
+    stats: [
+      { value: 70, suffix: "%", label: "Faster delivery", icon: GitBranch },
+      { value: 3, suffix: "x", label: "Faster rollbacks", icon: RotateCcw },
+      { value: 99, suffix: "%", label: "On-time releases", icon: Clock },
+    ],
   },
-];
-
-/** PLACEHOLDER — dummy values, to be replaced with real measured numbers. */
-const PLACEHOLDER_STATS: { value: number; suffix: string; label: string; accent: string }[] = [
-  { value: 70, suffix: "%", label: "Faster delivery", accent: "#8a7bff" },
-  { value: 3, suffix: "x", label: "Faster reviews", accent: "#5b9bdb" },
-  { value: 99, suffix: "%", label: "On-time releases", accent: "#3fae82" },
 ];
 
 const TOOLS_COUNT = 37; // TECH_STACK.length in TechStack.tsx — keep in sync
@@ -362,26 +407,35 @@ export default function AiDevExcellence() {
                     <h3 className="font-urbanist text-lg font-bold leading-snug text-ink">{activePhase.title}</h3>
                   </div>
                   <p className="mt-3 max-w-md font-urbanist text-[14px] leading-relaxed text-ink-dim">{activePhase.description}</p>
-                </div>
 
-                <div className="mt-7 grid grid-cols-3 gap-3">
-                  {PLACEHOLDER_STATS.map((s) => (
-                    <div
-                      key={s.label}
-                      className="group relative overflow-hidden rounded-2xl border border-hairline bg-[#fafafa] p-3.5 transition-[transform,box-shadow,border-color] duration-300 hover:-translate-y-0.5 hover:shadow-[0_16px_34px_var(--stat-glow)] sm:p-4"
-                      style={{ "--stat-glow": `${s.accent}22` } as CSSProperties}
-                    >
-                      <div
-                        aria-hidden
-                        className="pointer-events-none absolute inset-0 opacity-[0.06] transition-opacity duration-300 group-hover:opacity-[0.1]"
-                        style={{ background: `radial-gradient(circle at 85% 0%, ${s.accent}, transparent 65%)` }}
-                      />
-                      <p className="relative z-10 font-urbanist text-xl font-bold tracking-tight sm:text-2xl" style={{ color: s.accent }}>
-                        <CountUp value={s.value} suffix={s.suffix} />
-                      </p>
-                      <p className="relative z-10 mt-1 font-urbanist text-[11px] leading-snug text-ink-dim">{s.label}</p>
-                    </div>
-                  ))}
+                  <div className="mt-7 grid grid-cols-3 gap-3">
+                    {activePhase.stats.map((s) => {
+                      const StatIcon = s.icon;
+                      return (
+                        <div
+                          key={s.label}
+                          className="group relative overflow-hidden rounded-2xl border border-hairline bg-[#fafafa] p-3.5 transition-[transform,box-shadow,border-color] duration-300 hover:-translate-y-0.5 hover:shadow-[0_16px_34px_var(--stat-glow)] sm:p-4"
+                          style={{ "--stat-glow": `${activePhase.accent}22` } as CSSProperties}
+                        >
+                          <div
+                            aria-hidden
+                            className="pointer-events-none absolute inset-0 opacity-[0.06] transition-opacity duration-300 group-hover:opacity-[0.1]"
+                            style={{ background: `radial-gradient(circle at 85% 0%, ${activePhase.accent}, transparent 65%)` }}
+                          />
+                          <span
+                            className="relative z-10 flex h-8 w-8 items-center justify-center rounded-lg"
+                            style={{ backgroundColor: `${activePhase.accent}1a`, color: activePhase.accent }}
+                          >
+                            <StatIcon size={15} strokeWidth={1.75} />
+                          </span>
+                          <p className="relative z-10 mt-2.5 font-urbanist text-xl font-bold tracking-tight sm:text-2xl" style={{ color: activePhase.accent }}>
+                            <CountUp value={s.value} suffix={s.suffix} />
+                          </p>
+                          <p className="relative z-10 mt-1 font-urbanist text-[11px] leading-snug text-ink-dim">{s.label}</p>
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
               </div>
             </div>
