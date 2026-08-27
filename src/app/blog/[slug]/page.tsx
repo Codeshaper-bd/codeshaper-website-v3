@@ -12,7 +12,6 @@ import AiSummary from "@/components/blog/AiSummary";
 import TableOfContents from "@/components/blog/TableOfContents";
 import ShareButtons from "@/components/blog/ShareButtons";
 import ViewsReactions from "@/components/blog/ViewsReactions";
-import ReadingProgress from "@/components/blog/ReadingProgress";
 import BlogFaqAccordion from "@/components/blog/BlogFaqAccordion";
 import { BLOG_POSTS, getPostBySlug, getRelatedPosts, slugifyHeading } from "@/lib/blog";
 import { SITE_URL } from "@/lib/site";
@@ -99,8 +98,6 @@ export default async function BlogPostPage({
         {FAQ_JSON_LD && (
           <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(FAQ_JSON_LD) }} />
         )}
-
-        <ReadingProgress targetId={ARTICLE_CONTENT_ID} />
 
         {/* Hero — same floating-card treatment as the blog index, centered to match */}
         <div className="bg-light-surface p-3 sm:p-4">

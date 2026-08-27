@@ -2,8 +2,6 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import { SITE_URL, SITE_NAME } from "@/lib/site";
-import Preloader from "@/components/system/Preloader";
-import PageTransition from "@/components/system/PageTransition";
 
 /**
  * Typography — Urbanist, self-hosted through next/font/local so Next emits
@@ -92,8 +90,7 @@ export default function RootLayout({
         any other hydration issues elsewhere in the tree.
       */}
       <body suppressHydrationWarning>
-        <Preloader />
-        <PageTransition>{children}</PageTransition>
+        {children}
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(ORG_JSON_LD) }} />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(WEBSITE_JSON_LD) }} />
       </body>
