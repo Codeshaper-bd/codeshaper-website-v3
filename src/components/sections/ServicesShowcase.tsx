@@ -136,12 +136,19 @@ export default function ServicesShowcase() {
           </Reveal>
 
           <Reveal delay={100}>
-            <div className="mt-12 overflow-hidden rounded-[28px] border border-hairline bg-light-surface lg:grid lg:grid-cols-[400px_1fr]">
+            <div className="mt-12 overflow-hidden rounded-bl-[28px] rounded-br-[28px] border border-hairline bg-light-surface lg:grid lg:grid-cols-[400px_1fr] lg:rounded-bl-none lg:rounded-tr-[28px]">
               {/* Left — tab list with a sliding highlight tracking the active row.
                   Rows sit flush (no gap) with a border-b divider between each one,
                   instead of gapped standalone cards — the indicator's translateY
                   math is exactly `active * TAB_HEIGHT` because of that (no gap to
-                  add per row). */}
+                  add per row).
+                  Corner radius is per-corner, not uniform: whichever side the tab
+                  list occupies (top on mobile where it stacks first, left on
+                  desktop) stays perfectly square in both layouts, so the full-
+                  width indicator/dividers never get clipped into a curve by the
+                  card's own rounding — only the detail-panel side (bottom on
+                  mobile, right on desktop) is rounded. bottom-right belongs to
+                  the panel in both layouts, so it needs no lg: override. */}
               <div
                 ref={listRef}
                 className="relative flex flex-col border-b border-hairline py-3 lg:border-b-0 lg:border-r"
