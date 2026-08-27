@@ -13,7 +13,7 @@ import EngageCard from "./EngageCard";
  */
 export default function IndustriesMegaPanel() {
   return (
-    <div className="mx-auto max-w-[1180px] p-5">
+    <div className="mx-auto max-w-7xl p-5">
       <div className="grid grid-cols-[0.95fr_1.08fr_270px] gap-4">
         <EngageCard />
 
