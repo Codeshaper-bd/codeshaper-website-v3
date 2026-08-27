@@ -144,11 +144,11 @@ export default function ServicesShowcase() {
                   add per row). */}
               <div
                 ref={listRef}
-                className="relative flex flex-col border-b border-hairline p-3 lg:border-b-0 lg:border-r"
+                className="relative flex flex-col border-b border-hairline py-3 lg:border-b-0 lg:border-r"
               >
                 <div
                   aria-hidden
-                  className="absolute inset-x-3 top-3 z-0 rounded-2xl border border-hairline bg-canvas transition-transform duration-300 ease-out-expo"
+                  className="absolute inset-x-0 top-3 z-0 border border-hairline bg-canvas transition-transform duration-300 ease-out-expo"
                   style={{ height: TAB_HEIGHT, transform: "translateY(var(--indicator-y, 0px))" }}
                 />
                 {ORDERED_COLUMNS.map((col, i) => {
@@ -162,7 +162,7 @@ export default function ServicesShowcase() {
                       onClick={() => setActive(i)}
                       aria-pressed={isActive}
                       style={{ height: TAB_HEIGHT }}
-                      className={`group relative z-10 flex shrink-0 items-center gap-4 rounded-2xl px-4 text-left ${
+                      className={`group relative z-10 flex shrink-0 items-center gap-4 rounded-2xl px-4 text-left outline-none focus-visible:ring-2 focus-visible:ring-aurora-violet/40 focus-visible:ring-offset-2 focus-visible:ring-offset-light-surface ${
                         i > 0 ? "border-t border-hairline" : ""
                       }`}
                     >
