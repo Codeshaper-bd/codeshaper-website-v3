@@ -3,7 +3,7 @@
 import { useEffect, useRef } from "react";
 import type { CSSProperties } from "react";
 import Link from "next/link";
-import { ArrowRight, Layers, Globe2, Users, MapPin, Puzzle, Clock, Boxes, Sparkles, Move } from "lucide-react";
+import { ArrowRight, ArrowLeft, Layers, Globe2, Users, MapPin, Puzzle, Clock, Boxes, Sparkles, Move } from "lucide-react";
 import gsap from "gsap";
 import { Draggable } from "gsap/Draggable";
 import { InertiaPlugin } from "gsap/InertiaPlugin";
@@ -18,17 +18,24 @@ if (typeof window !== "undefined") {
 /**
  * About — "who we are" section right after Services.
  *
- * Round 3, on top of round 2's floating-card fix: added a Vivasoft-style
- * "why teams choose us" grid (colored icon-circle + title + description,
- * 2-col like the reference), recolored the stat cards per-stat (same
- * accent-tint recipe EngagementModels already uses, rather than a flat
- * monochrome icon), and made the two collage photos draggable — GSAP's
- * Draggable + InertiaPlugin are both free/bundled as of gsap@3.15, so no
- * new dependency. Drag is bounded to a small radius and elastic-snaps
- * back to its origin on release. Still gated on prefers-reduced-motion
- * (same flag every other effect in this file checks), since the elastic
- * snap-back is itself a motion effect some users will want off, even
- * though the drag itself is user-initiated rather than ambient.
+ * Round 3 added a Vivasoft-style "why teams choose us" grid, per-stat
+ * accent colors, and made the two collage photos draggable via GSAP's
+ * Draggable + InertiaPlugin (both free/bundled as of gsap@3.15). Drag is
+ * bounded to a small radius and elastic-snaps back to its origin on
+ * release; still gated on prefers-reduced-motion since the snap-back
+ * itself is a motion effect, even though the drag is user-initiated.
+ *
+ * Round 4: the stat/feature cards read as flat single-tone chips, so
+ * both now follow EngagementModels' ModelCard recipe instead — rounded
+ * [24-28px], a per-card radial accent wash, a gradient+ring icon tile
+ * instead of a flat-tint circle, and (on the feature cards) a large
+ * ghost index numeral. The bottom photo strip was a fixed CSS grid
+ * (hardcoded to exactly 5 slots, one hidden below sm:) which couldn't
+ * take more photos and wasn't draggable — replaced with the same
+ * pointer-driven `scrollLeft` drag-to-scroll track Testimonials.tsx/
+ * CaseStudiesExpand.tsx already use (drag on mouse, native scroll on
+ * touch, click-vs-drag disambiguated via a movement threshold), so any
+ * number of photos can be added later without touching the layout.
  *
  * Every stat/feature is still an actual structural fact already
  * established elsewhere in the codebase (SERVICE_COLUMNS, INDUSTRIES,
@@ -88,6 +95,9 @@ const STRIP_PHOTOS = [
   "https://picsum.photos/seed/codeshaper-studio-3/500/500",
   "https://picsum.photos/seed/codeshaper-studio-4/500/500",
   "https://picsum.photos/seed/codeshaper-studio-5/500/500",
+  "https://picsum.photos/seed/codeshaper-studio-6/500/500",
+  "https://picsum.photos/seed/codeshaper-studio-7/500/500",
+  "https://picsum.photos/seed/codeshaper-studio-8/500/500",
 ];
 
 function CountUpStat({
@@ -141,41 +151,59 @@ function CountUpStat({
   return (
     <div
       ref={wrapRef}
-      className="group relative overflow-hidden rounded-2xl border border-hairline bg-[#fafafa] p-5 transition-[border-color,box-shadow,transform] duration-300 hover:-translate-y-0.5 hover:shadow-[0_20px_44px_var(--stat-glow)]"
+      className="group relative overflow-hidden rounded-[24px] border border-hairline bg-[#fafafa] p-5 transition-[border-color,box-shadow,transform] duration-300 ease-out hover:-translate-y-1 hover:border-aurora-violet/15 hover:shadow-[0_24px_50px_var(--stat-glow)]"
       style={{ "--stat-glow": `${accent}26` } as CSSProperties}
     >
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 opacity-[0.05] transition-opacity duration-300 ease-out group-hover:opacity-[0.09]"
+        style={{ background: `radial-gradient(circle at 85% 10%, ${accent}, transparent 60%)` }}
+      />
       <span
-        className="flex h-10 w-10 items-center justify-center rounded-full transition-transform duration-300 group-hover:scale-110"
-        style={{ backgroundColor: `${accent}17`, color: accent }}
+        className="relative z-10 flex h-11 w-11 items-center justify-center rounded-2xl transition-transform duration-300 ease-out group-hover:scale-110"
+        style={{ background: `linear-gradient(135deg, ${accent}29, ${accent}0d)`, color: accent, boxShadow: `inset 0 0 0 1px ${accent}26` }}
       >
-        <Icon size={18} strokeWidth={1.75} />
+        <Icon size={19} strokeWidth={1.75} />
       </span>
-      <p className="mt-4 font-urbanist text-3xl font-bold tracking-tight text-ink sm:text-[34px]">
+      <p className="relative z-10 mt-5 font-urbanist text-3xl font-bold tracking-tight text-ink sm:text-[34px]">
         <span ref={numRef}>0</span>
         {suffix}
       </p>
-      <p className="mt-1 font-urbanist text-[13px] leading-snug text-ink-dim">{label}</p>
+      <p className="relative z-10 mt-1 font-urbanist text-[13px] leading-snug text-ink-dim">{label}</p>
     </div>
   );
 }
 
-function FeatureCard({ feature }: { feature: (typeof FEATURES)[number] }) {
+function FeatureCard({ feature, index }: { feature: (typeof FEATURES)[number]; index: number }) {
   const Icon = feature.icon;
+  const n = String(index + 1).padStart(2, "0");
   return (
     <div
-      className="group relative flex gap-4 overflow-hidden rounded-2xl border border-hairline bg-[#fafafa] p-6 transition-[border-color,box-shadow,transform] duration-300 hover:-translate-y-0.5 hover:border-aurora-violet/20 hover:shadow-[0_20px_44px_var(--feat-glow)]"
+      className="group relative overflow-hidden rounded-[28px] border border-hairline bg-[#fafafa] p-7 transition-[transform,box-shadow,border-color] duration-300 ease-out hover:-translate-y-1.5 hover:border-aurora-violet/20 hover:shadow-[0_28px_60px_var(--feat-glow)] sm:p-8"
       style={{ "--feat-glow": `${feature.accent}22` } as CSSProperties}
     >
-      <span
-        className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full transition-transform duration-300 group-hover:scale-110"
-        style={{ backgroundColor: `${feature.accent}17`, color: feature.accent }}
-      >
-        <Icon size={20} strokeWidth={1.75} />
-      </span>
-      <div>
-        <h3 className="font-urbanist text-base font-bold leading-snug text-ink sm:text-[17px]">{feature.title}</h3>
-        <p className="mt-1.5 font-urbanist text-[13.5px] leading-relaxed text-ink-dim">{feature.desc}</p>
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 opacity-[0.06] transition-opacity duration-300 ease-out group-hover:opacity-[0.1]"
+        style={{ background: `radial-gradient(circle at 88% 12%, ${feature.accent}, transparent 60%)` }}
+      />
+      <div className="relative z-10 flex items-start justify-between">
+        <span
+          className="flex h-12 w-12 items-center justify-center rounded-2xl transition-transform duration-300 ease-out group-hover:scale-110"
+          style={{ background: `linear-gradient(135deg, ${feature.accent}29, ${feature.accent}0d)`, color: feature.accent, boxShadow: `inset 0 0 0 1px ${feature.accent}26` }}
+        >
+          <Icon size={20} strokeWidth={1.75} />
+        </span>
+        <span
+          aria-hidden
+          className="select-none font-urbanist text-[52px] font-extrabold leading-none tracking-tight transition-transform duration-300 ease-out group-hover:scale-105"
+          style={{ color: feature.accent, opacity: 0.16 }}
+        >
+          {n}
+        </span>
       </div>
+      <h3 className="relative z-10 mt-5 font-urbanist text-lg font-bold leading-snug text-ink sm:text-xl">{feature.title}</h3>
+      <p className="relative z-10 mt-2 font-urbanist text-[13.5px] leading-relaxed text-ink-dim">{feature.desc}</p>
     </div>
   );
 }
@@ -238,8 +266,76 @@ function DraggablePhoto({
   );
 }
 
+/**
+ * Same pointer-driven `scrollLeft` drag-to-scroll hook Testimonials.tsx
+ * and CaseStudiesExpand.tsx already use: mouse-only (touch keeps native
+ * scroll), a movement threshold disambiguates a genuine click from a
+ * drag via a capturing click listener.
+ */
+function useDragScroll(trackRef: React.RefObject<HTMLDivElement | null>) {
+  useEffect(() => {
+    const el = trackRef.current;
+    if (!el) return;
+
+    let dragging = false;
+    let dragged = false;
+    let startX = 0;
+    let startScroll = 0;
+
+    const onPointerDown = (e: PointerEvent) => {
+      if (e.pointerType !== "mouse") return;
+      dragging = true;
+      dragged = false;
+      startX = e.clientX;
+      startScroll = el.scrollLeft;
+      el.setPointerCapture(e.pointerId);
+      el.style.cursor = "grabbing";
+    };
+    const onPointerMove = (e: PointerEvent) => {
+      if (!dragging) return;
+      const dx = e.clientX - startX;
+      if (Math.abs(dx) > 4) dragged = true;
+      el.scrollLeft = startScroll - dx;
+    };
+    const endDrag = (e: PointerEvent) => {
+      if (!dragging) return;
+      dragging = false;
+      el.style.cursor = "grab";
+      if (el.hasPointerCapture(e.pointerId)) el.releasePointerCapture(e.pointerId);
+    };
+    const onClickCapture = (e: MouseEvent) => {
+      if (dragged) {
+        e.preventDefault();
+        e.stopPropagation();
+        dragged = false;
+      }
+    };
+
+    el.addEventListener("pointerdown", onPointerDown);
+    el.addEventListener("pointermove", onPointerMove);
+    el.addEventListener("pointerup", endDrag);
+    el.addEventListener("pointercancel", endDrag);
+    el.addEventListener("click", onClickCapture, true);
+    return () => {
+      el.removeEventListener("pointerdown", onPointerDown);
+      el.removeEventListener("pointermove", onPointerMove);
+      el.removeEventListener("pointerup", endDrag);
+      el.removeEventListener("pointercancel", endDrag);
+      el.removeEventListener("click", onClickCapture, true);
+    };
+  }, [trackRef]);
+}
+
 export default function AboutStudio() {
   const reduced = usePrefersReducedMotion();
+  const stripRef = useRef<HTMLDivElement>(null);
+  useDragScroll(stripRef);
+
+  const scrollStrip = (dir: 1 | -1) => {
+    const el = stripRef.current;
+    if (!el) return;
+    el.scrollBy({ left: dir * 320, behavior: "smooth" });
+  };
 
   return (
     <div className="bg-light-surface p-3 sm:p-4">
@@ -336,8 +432,8 @@ export default function AboutStudio() {
                 Why teams choose us
               </p>
               <div className="grid gap-4 sm:grid-cols-2">
-                {FEATURES.map((f) => (
-                  <FeatureCard key={f.title} feature={f} />
+                {FEATURES.map((f, i) => (
+                  <FeatureCard key={f.title} feature={f} index={i} />
                 ))}
               </div>
             </div>
@@ -345,24 +441,47 @@ export default function AboutStudio() {
 
           <Reveal delay={150}>
             <div className="mt-16 border-t border-hairline pt-10">
-              <p className="mb-5 font-urbanist text-[11px] font-semibold uppercase tracking-[0.2em] text-ink-faint">
-                A few glimpses from the studio
-              </p>
-              <div className="grid grid-cols-2 gap-3 sm:grid-cols-5">
-                {STRIP_PHOTOS.map((src, i) => (
+              <div className="flex items-end justify-between gap-4">
+                <p className="font-urbanist text-[11px] font-semibold uppercase tracking-[0.2em] text-ink-faint">
+                  A few glimpses from the studio
+                </p>
+                <div className="hidden shrink-0 items-center gap-2 sm:flex">
+                  <button
+                    type="button"
+                    aria-label="Scroll left"
+                    onClick={() => scrollStrip(-1)}
+                    className="flex h-9 w-9 items-center justify-center rounded-full border border-hairline bg-canvas text-ink-dim transition-colors duration-200 hover:border-ink hover:text-ink"
+                  >
+                    <ArrowLeft size={14} strokeWidth={1.75} />
+                  </button>
+                  <button
+                    type="button"
+                    aria-label="Scroll right"
+                    onClick={() => scrollStrip(1)}
+                    className="flex h-9 w-9 items-center justify-center rounded-full bg-ink text-white transition-transform duration-200 hover:scale-[1.05]"
+                  >
+                    <ArrowRight size={14} strokeWidth={1.75} />
+                  </button>
+                </div>
+              </div>
+
+              <div ref={stripRef} className="no-scrollbar mt-5 flex cursor-grab gap-3 overflow-x-auto py-1">
+                {STRIP_PHOTOS.map((src) => (
                   <div
                     key={src}
-                    className={`group aspect-square overflow-hidden rounded-2xl border border-hairline ${i === 4 ? "hidden sm:block" : ""}`}
+                    className="group aspect-square w-[150px] shrink-0 overflow-hidden rounded-2xl border border-hairline sm:w-[190px]"
                   >
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={src}
                       alt=""
                       loading="lazy"
-                      className="h-full w-full object-cover grayscale transition-[transform,filter] duration-500 ease-out-expo group-hover:scale-[1.08] group-hover:grayscale-0"
+                      draggable={false}
+                      className="h-full w-full select-none object-cover grayscale transition-[transform,filter] duration-500 ease-out-expo group-hover:scale-[1.08] group-hover:grayscale-0"
                     />
                   </div>
                 ))}
+                <div className="w-2 shrink-0" aria-hidden />
               </div>
             </div>
           </Reveal>
