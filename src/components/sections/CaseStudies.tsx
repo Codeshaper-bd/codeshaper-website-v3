@@ -78,7 +78,7 @@ const REAL_STORIES: Story[] = [
       { value: "Ongoing", label: "Engagement" },
     ],
     accent: "#8a7bff",
-    href: "/work/fennec",
+    href: "/case-studies/fennec",
   },
   {
     project: "Essentialist",
@@ -91,7 +91,7 @@ const REAL_STORIES: Story[] = [
       { value: "GSAP", label: "Motion system" },
     ],
     accent: "#d97fc4",
-    href: "/work/essentialist",
+    href: "/case-studies/essentialist",
   },
   {
     project: "Acculance",
@@ -104,7 +104,7 @@ const REAL_STORIES: Story[] = [
       { value: "Laravel / Vue", label: "Stack" },
     ],
     accent: "#5b9bdb",
-    href: "/work/acculance",
+    href: "/case-studies/acculance",
   },
 ];
 
@@ -121,7 +121,7 @@ const PLACEHOLDER_STORIES: Story[] = [
       { value: "Unified Cart", label: "Checkout flow" },
     ],
     accent: "#d99a4e",
-    href: "/work",
+    href: "/case-studies",
   },
   {
     project: "Verdant Health",
@@ -134,7 +134,7 @@ const PLACEHOLDER_STORIES: Story[] = [
       { value: "Compliance-ready", label: "Data handling" },
     ],
     accent: "#3fae82",
-    href: "/work",
+    href: "/case-studies",
   },
   {
     project: "Continuum Logistics",
@@ -147,7 +147,7 @@ const PLACEHOLDER_STORIES: Story[] = [
       { value: "Real-time", label: "Tracking" },
     ],
     accent: "#db5a89",
-    href: "/work",
+    href: "/case-studies",
   },
 ];
 
@@ -327,16 +327,16 @@ export default function CaseStudies() {
               <div>
                 <p className="mb-3 inline-flex items-center gap-2.5 font-urbanist text-[11px] font-medium uppercase tracking-[0.28em] text-ink-dim">
                   <span className="h-1.5 w-1.5 rounded-full bg-aurora-amber" />
-                  Success Stories
+                  Case Studies
                 </p>
                 <h2 ref={headingRef} id="work-heading" className="font-urbanist text-4xl font-bold leading-tight tracking-tight text-ink sm:text-5xl">
                   Work that ships, every time.
                 </h2>
                 <Link
-                  href="/work"
+                  href="/case-studies"
                   className="mt-6 inline-flex items-center gap-2 rounded-full bg-aurora-violet px-7 py-3.5 font-urbanist text-sm font-semibold text-white transition-[background-color,transform] duration-300 hover:scale-[1.02] hover:bg-aurora-violet-dark"
                 >
-                  All Success Stories
+                  All Case Studies
                   <ArrowRight size={15} strokeWidth={1.75} />
                 </Link>
               </div>

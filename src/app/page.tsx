@@ -48,7 +48,7 @@ export default function Home() {
       <AiDevExcellence />
       <Industries />
       <EngagementModels />
-      {/* TRIAL: accordion-style Success Stories (hyperline.co reference) being evaluated against the version below */}
+      {/* TRIAL: accordion-style Case Studies (hyperline.co reference) being evaluated against the version below */}
       <CaseStudiesExpand />
       {/* <CaseStudies /> */}
       <Testimonials />

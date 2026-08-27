@@ -81,7 +81,7 @@ export default function IndustriesMegaPanel() {
         </p>
         <div className="flex items-center gap-4">
           <Nav.Link asChild>
-            <Link href="/work" className="font-urbanist text-[13px] text-ink-dim transition-colors hover:text-ink">
+            <Link href="/case-studies" className="font-urbanist text-[13px] text-ink-dim transition-colors hover:text-ink">
               View Case Studies →
             </Link>
           </Nav.Link>

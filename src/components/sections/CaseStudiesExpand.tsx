@@ -58,7 +58,7 @@ const STORIES: Story[] = [
       { value: "Ongoing", label: "Engagement" },
     ],
     accent: "#8a7bff",
-    href: "/work/fennec",
+    href: "/case-studies/fennec",
   },
   {
     project: "Essentialist",
@@ -71,7 +71,7 @@ const STORIES: Story[] = [
       { value: "GSAP", label: "Motion system" },
     ],
     accent: "#d97fc4",
-    href: "/work/essentialist",
+    href: "/case-studies/essentialist",
   },
   {
     project: "Acculance",
@@ -84,7 +84,7 @@ const STORIES: Story[] = [
       { value: "Laravel / Vue", label: "Stack" },
     ],
     accent: "#5b9bdb",
-    href: "/work/acculance",
+    href: "/case-studies/acculance",
   },
   {
     project: "Northwind Commerce",
@@ -97,7 +97,7 @@ const STORIES: Story[] = [
       { value: "Unified Cart", label: "Checkout flow" },
     ],
     accent: "#d99a4e",
-    href: "/work",
+    href: "/case-studies",
   },
   {
     project: "Verdant Health",
@@ -110,7 +110,7 @@ const STORIES: Story[] = [
       { value: "Compliance-ready", label: "Data handling" },
     ],
     accent: "#3fae82",
-    href: "/work",
+    href: "/case-studies",
   },
   {
     project: "Continuum Logistics",
@@ -123,7 +123,7 @@ const STORIES: Story[] = [
       { value: "Real-time", label: "Tracking" },
     ],
     accent: "#db5a89",
-    href: "/work",
+    href: "/case-studies",
   },
 ];
 
@@ -342,7 +342,7 @@ export default function CaseStudiesExpand() {
           <Reveal>
             <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
               <div>
-                <SectionEyebrow>Success Stories</SectionEyebrow>
+                <SectionEyebrow>Case Studies</SectionEyebrow>
                 <SectionTitle ref={headingRef} id="work-expand-heading" size="lg">
                   Work that ships, every time.
                 </SectionTitle>
@@ -370,10 +370,10 @@ export default function CaseStudiesExpand() {
                     <ArrowRight size={16} strokeWidth={1.75} />
                   </button>
                   <Link
-                    href="/work"
+                    href="/case-studies"
                     className="ml-1 inline-flex items-center gap-2 rounded-full bg-aurora-violet px-5 py-2.5 font-urbanist text-sm font-semibold text-white transition-[background-color,transform] duration-300 hover:scale-[1.02] hover:bg-aurora-violet-dark"
                   >
-                    All Success Stories
+                    All Case Studies
                     <ArrowRight size={15} strokeWidth={1.75} />
                   </Link>
                 </div>

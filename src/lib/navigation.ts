@@ -441,10 +441,10 @@ export const SERVICES_FEATURED = {
 
 /** Industries mega menu — right column dark "Case Study" card. */
 export const INDUSTRIES_FEATURED = {
-  eyebrow: "FinTech · Featured",
-  body: "Rebuilt a payment platform — 3× transactions with zero-downtime migration",
-  href: "/work",
-  icon: "credit-card",
+  eyebrow: "Retail & Business Ops · Featured",
+  body: "A SaaS-ready POS, inventory, and accounting platform built for growing businesses",
+  href: "/case-studies/acculance",
+  icon: "shopping-cart",
 };
 
 /** Lucide icon name per dropdown item (rendered at 16px, 1.5px stroke). */

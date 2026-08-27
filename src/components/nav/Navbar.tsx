@@ -157,8 +157,8 @@ export default function Navbar() {
 
                   <Nav.Item>
                     <Nav.Link asChild>
-                      <Link href="/work" className={triggerCls}>
-                        Success Stories
+                      <Link href="/case-studies" className={triggerCls}>
+                        Case Studies
                       </Link>
                     </Nav.Link>
                   </Nav.Item>

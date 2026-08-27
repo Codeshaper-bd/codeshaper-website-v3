@@ -25,7 +25,6 @@ const STUB_PREFIXES = [
   "/company/locations",
   "/company/careers",
   "/insights",
-  "/work",
 ];
 
 export default function robots(): MetadataRoute.Robots {

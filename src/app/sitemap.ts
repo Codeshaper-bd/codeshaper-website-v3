@@ -2,6 +2,7 @@ import type { MetadataRoute } from "next";
 import { SITE_URL } from "@/lib/site";
 import { SERVICE_COLUMNS, INDUSTRIES, ENGAGEMENT_MODELS } from "@/lib/navigation";
 import { BLOG_POSTS } from "@/lib/blog";
+import { CASE_STUDIES } from "@/lib/caseStudies";
 
 /**
  * Routes not listed here (Insights, Company/Leadership, Careers, Work,
@@ -24,6 +25,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${SITE_URL}/industries`, lastModified: now, changeFrequency: "monthly", priority: 0.9 },
     { url: `${SITE_URL}/engagement`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
     { url: `${SITE_URL}/blog`, lastModified: now, changeFrequency: "weekly", priority: 0.8 },
+    { url: `${SITE_URL}/case-studies`, lastModified: now, changeFrequency: "weekly", priority: 0.8 },
   ];
 
   const blogRoutes: MetadataRoute.Sitemap = BLOG_POSTS.map((p) => ({
@@ -31,6 +33,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
     lastModified: new Date(p.date),
     changeFrequency: "yearly",
     priority: 0.6,
+  }));
+
+  const caseStudyRoutes: MetadataRoute.Sitemap = CASE_STUDIES.map((c) => ({
+    url: `${SITE_URL}/case-studies/${c.slug}`,
+    lastModified: now,
+    changeFrequency: "monthly",
+    priority: 0.7,
   }));
 
   const serviceCategoryRoutes: MetadataRoute.Sitemap = SERVICE_COLUMNS.map((col) => ({
@@ -63,5 +72,5 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.6,
   }));
 
-  return [...staticRoutes, ...serviceCategoryRoutes, ...serviceDetailRoutes, ...industryRoutes, ...engagementRoutes, ...blogRoutes];
+  return [...staticRoutes, ...serviceCategoryRoutes, ...serviceDetailRoutes, ...industryRoutes, ...engagementRoutes, ...blogRoutes, ...caseStudyRoutes];
 }

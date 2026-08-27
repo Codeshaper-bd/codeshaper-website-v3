@@ -159,11 +159,11 @@ export default function MobileMenu({ open, onClose }: { open: boolean; onClose: 
         </Accordion.Root>
 
         <Link
-          href="/work"
+          href="/case-studies"
           onClick={onClose}
           className="block border-b border-hairline py-4 font-urbanist text-base font-medium text-ink"
         >
-          Success Stories
+          Case Studies
         </Link>
 
         <Link
@@ -200,11 +200,11 @@ export default function MobileMenu({ open, onClose }: { open: boolean; onClose: 
 
         <div className="mt-12 flex flex-col gap-3 pb-16 sm:flex-row">
           <Link
-            href="/work"
+            href="/case-studies"
             onClick={onClose}
             className="inline-flex items-center justify-center rounded-full border border-aurora-indigo/25 px-6 py-3 font-urbanist text-sm font-medium text-ink-dim transition-colors hover:border-aurora-indigo/45 hover:text-ink"
           >
-            View Work
+            View Case Studies
           </Link>
           <Link
             href="/contact"
