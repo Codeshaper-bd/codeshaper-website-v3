@@ -54,6 +54,18 @@ import { SectionEyebrow, SectionTitle, SectionDescription } from "@/components/s
  * them, not a color difference, is what separates the two) instead of each
  * having its own background — and the active-row highlight is a plain
  * bg-canvas/border-hairline chip with no shadow, not a colored glow.
+ *
+ * The tab list used to have its own `py-3` breathing room, with the
+ * indicator offset `top-3` to match — which meant the active highlight
+ * never actually reached the card's own top/bottom edge when the first or
+ * last tab was selected (a ~12px strip of the card's own background showed
+ * above/below it instead of the highlight filling flush to the corner).
+ * Removed both: the list now has zero padding, the indicator starts at
+ * `top-0`, and its translateY math (`active * TAB_HEIGHT`) already assumed
+ * no extra offset, so this needed no other change. The buttons' own
+ * `rounded-2xl` is gone too — they're transparent so it was inert, but per
+ * direct request individual tab rows stay perfectly square; only the
+ * shared card's four outer corners (handled above) round at all.
  */
 const TOOL_ICONS: Record<string, IconType[]> = {
   ai: [SiPython, SiLangchain, SiHuggingface, SiZapier],
@@ -149,13 +161,10 @@ export default function ServicesShowcase() {
                   card's own rounding — only the detail-panel side (bottom on
                   mobile, right on desktop) is rounded. bottom-right belongs to
                   the panel in both layouts, so it needs no lg: override. */}
-              <div
-                ref={listRef}
-                className="relative flex flex-col border-b border-hairline py-3 lg:border-b-0 lg:border-r"
-              >
+              <div ref={listRef} className="relative flex flex-col border-b border-hairline lg:border-b-0 lg:border-r">
                 <div
                   aria-hidden
-                  className="absolute inset-x-0 top-3 z-0 border border-hairline bg-canvas transition-transform duration-300 ease-out-expo"
+                  className="absolute inset-x-0 top-0 z-0 border border-hairline bg-canvas transition-transform duration-300 ease-out-expo"
                   style={{ height: TAB_HEIGHT, transform: "translateY(var(--indicator-y, 0px))" }}
                 />
                 {ORDERED_COLUMNS.map((col, i) => {
@@ -169,7 +178,7 @@ export default function ServicesShowcase() {
                       onClick={() => setActive(i)}
                       aria-pressed={isActive}
                       style={{ height: TAB_HEIGHT }}
-                      className={`group relative z-10 flex shrink-0 items-center gap-4 rounded-2xl px-4 text-left outline-none focus-visible:ring-2 focus-visible:ring-aurora-violet/40 focus-visible:ring-offset-2 focus-visible:ring-offset-light-surface ${
+                      className={`group relative z-10 flex shrink-0 items-center gap-4 px-4 text-left outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-aurora-violet/40 ${
                         i > 0 ? "border-t border-hairline" : ""
                       }`}
                     >
