@@ -76,6 +76,15 @@ import { usePrefersReducedMotion } from "@/lib/motion";
  * "real numbers land later" direction as before) with a matching icon,
  * and they crossfade alongside the phase title/description in the same
  * `key={active}` block instead of being a separate static row.
+ *
+ * Round 9: the outer tinted panel from round 7 was still square-cornered
+ * (that round's "no radius" only applied while it was still competing
+ * with the earlier white-card look) — now that it's an accepted flat
+ * panel, it gets the same rounded-[32px] every other section's own
+ * panel uses. Title also drops size="lg" for the default size, matching
+ * TrustStrip/ServicesShowcase's own SectionTitle usage instead of being
+ * one step larger than its neighbors; max-width adjusted to keep the
+ * 2-line wrap at the smaller size.
  */
 type PhaseStat = { value: number; suffix: string; label: string; icon: LucideIcon };
 
@@ -340,7 +349,7 @@ export default function AiDevExcellence() {
           <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
             <div>
               <SectionEyebrow>AI-Powered Delivery</SectionEyebrow>
-              <SectionTitle id="ai-dev-heading" size="lg" className="max-w-xl">
+              <SectionTitle id="ai-dev-heading" className="max-w-md">
                 AI and people, working the same pipeline.
               </SectionTitle>
             </div>
@@ -351,7 +360,7 @@ export default function AiDevExcellence() {
         </Reveal>
 
         <Reveal delay={80}>
-          <div className="relative mt-10 overflow-hidden bg-[#eeeeec] p-6 sm:p-8 lg:p-10">
+          <div className="relative mt-10 overflow-hidden rounded-[32px] bg-[#eeeeec] p-6 sm:p-8 lg:p-10">
             <div aria-hidden className="pointer-events-none absolute inset-0 opacity-70">
               <div
                 className="absolute -left-16 -top-16 h-64 w-64 rounded-full blur-3xl"
