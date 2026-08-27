@@ -1,11 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import type { CSSProperties } from "react";
+import { useEffect, useRef, type CSSProperties } from "react";
 import type { LucideIcon } from "lucide-react";
 import { Rocket, Boxes, Users, UserPlus, Globe2, ArrowRight } from "lucide-react";
+import gsap from "gsap";
 import Reveal from "@/components/system/Reveal";
 import { SectionEyebrow, SectionTitle, SectionDescription } from "@/components/system/SectionHeading";
+import { useMotionAllowed } from "@/lib/motion";
 
 /**
  * Engagement models — compact, single-row (on desktop) lineup of standout
@@ -29,6 +31,19 @@ import { SectionEyebrow, SectionTitle, SectionDescription } from "@/components/s
  * own `i === 4 ? "sm:col-span-2 lg:col-span-1" : ""` pattern for a
  * 5-item grid — reusing that exact convention rather than inventing a
  * new one.
+ *
+ * Round 2, direct feedback:
+ *  - "Compare Engagement Models" moves from its own row below the grid
+ *    up into the header, alongside the description — same
+ *    eyebrow+title / description+CTA arrangement Services/Industries
+ *    already use, instead of a separate CTA row at the bottom.
+ *  - Cards get a clearly visible border (`border-hairline-strong`
+ *    instead of the barely-there default `border-hairline`) rather than
+ *    relying on hover to reveal any edge at all.
+ *  - Added the same pointer-driven 3D tilt ServicePillars' own
+ *    ServiceCard uses (`useCardTilt` — rotationX/Y via GSAP, gated on
+ *    `useMotionAllowed` so it's desktop-fine-pointer only) for a more
+ *    premium hover interaction than the flat lift+shadow alone.
  */
 type Model = {
   name: string;
@@ -70,13 +85,51 @@ const MODELS: Model[] = [
   },
 ];
 
+/** Same pointer-driven 3D tilt ServicePillars' ServiceCard uses. */
+function useCardTilt(cardRef: React.RefObject<HTMLElement | null>, degrees: number) {
+  const interactive = useMotionAllowed();
+  useEffect(() => {
+    const card = cardRef.current;
+    if (!card || !interactive) return;
+    gsap.set(card, { rotationX: 0, rotationY: 0, scaleX: 1, scaleY: 1 });
+
+    const onMove = (e: PointerEvent) => {
+      const r = card.getBoundingClientRect();
+      const px = (e.clientX - r.left) / r.width;
+      const py = (e.clientY - r.top) / r.height;
+      gsap.to(card, {
+        rotationY: (px - 0.5) * degrees,
+        rotationX: -(py - 0.5) * degrees,
+        duration: 0.6,
+        ease: "power3.out",
+        overwrite: "auto",
+      });
+    };
+    const onEnter = () => gsap.to(card, { scaleX: 1.015, scaleY: 1.015, duration: 0.4, ease: "power3.out", overwrite: "auto" });
+    const onLeave = () =>
+      gsap.to(card, { rotationX: 0, rotationY: 0, scaleX: 1, scaleY: 1, duration: 0.6, ease: "power3.out", overwrite: "auto" });
+
+    card.addEventListener("pointermove", onMove);
+    card.addEventListener("pointerenter", onEnter);
+    card.addEventListener("pointerleave", onLeave);
+    return () => {
+      card.removeEventListener("pointermove", onMove);
+      card.removeEventListener("pointerenter", onEnter);
+      card.removeEventListener("pointerleave", onLeave);
+    };
+  }, [interactive, cardRef, degrees]);
+}
+
 function ModelCard({ model, index }: { model: Model; index: number }) {
   const Icon = model.icon;
   const n = String(index + 1).padStart(2, "0");
+  const cardRef = useRef<HTMLElement>(null);
+  useCardTilt(cardRef, 5);
   return (
     <article
-      className="group relative flex h-[320px] flex-col justify-between overflow-hidden rounded-[28px] border border-hairline bg-[#fafafa] p-7 transition-[transform,box-shadow,border-color] duration-300 ease-out hover:-translate-y-1.5 hover:border-aurora-violet/20 hover:shadow-[0_28px_60px_var(--card-glow)] sm:p-8"
-      style={{ "--card-glow": `${model.accent}26` } as CSSProperties}
+      ref={cardRef}
+      className="group relative flex h-[320px] flex-col justify-between overflow-hidden rounded-[28px] border border-hairline-strong bg-[#fafafa] p-7 transition-[transform,box-shadow,border-color] duration-300 ease-out hover:-translate-y-1.5 hover:border-aurora-violet/30 hover:shadow-[0_28px_60px_var(--card-glow)] sm:p-8"
+      style={{ "--card-glow": `${model.accent}26`, willChange: "transform" } as CSSProperties}
     >
       {/* subtle per-card tint wash — same technique as the earlier dark version, much lower opacity for a light card */}
       <div
@@ -116,33 +169,30 @@ export default function EngagementModels() {
               <SectionEyebrow>Engagement Models</SectionEyebrow>
               <SectionTitle id="engagement-heading">Flexible ways to work with us.</SectionTitle>
             </div>
-            <SectionDescription className="max-w-sm">
-              Choose the model that matches your scope certainty, timeline, and team structure.
-            </SectionDescription>
+            <div className="flex items-center gap-4">
+              <SectionDescription className="max-w-xs">
+                Choose the model that matches your scope certainty, timeline, and team structure.
+              </SectionDescription>
+              <Link
+                href="/engagement"
+                className="inline-flex w-fit shrink-0 items-center gap-2 rounded-full bg-aurora-violet px-5 py-2.5 font-urbanist text-[13px] font-semibold text-white transition-[background-color,transform] duration-300 hover:scale-[1.02] hover:bg-aurora-violet-dark"
+              >
+                Compare Models
+                <ArrowRight size={14} strokeWidth={1.75} />
+              </Link>
+            </div>
           </div>
         </Reveal>
 
         <ul className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-5">
           {MODELS.map((m, i) => (
             <li key={m.name} className={i === MODELS.length - 1 ? "sm:col-span-2 lg:col-span-1" : ""}>
-              <Reveal delay={i * 80} className="h-full">
+              <Reveal delay={i * 80} className="h-full [perspective:900px]">
                 <ModelCard model={m} index={i} />
               </Reveal>
             </li>
           ))}
         </ul>
-
-        <Reveal delay={150}>
-          <div className="mt-12">
-            <Link
-              href="/engagement"
-              className="inline-flex items-center gap-2 rounded-full bg-aurora-violet px-7 py-3.5 font-urbanist text-sm font-semibold text-white transition-[background-color,transform] duration-300 hover:scale-[1.02] hover:bg-aurora-violet-dark"
-            >
-              Compare Engagement Models
-              <ArrowRight size={15} strokeWidth={1.75} />
-            </Link>
-          </div>
-        </Reveal>
       </div>
     </section>
   );
