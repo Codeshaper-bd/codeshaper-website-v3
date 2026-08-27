@@ -34,11 +34,19 @@ import { usePrefersReducedMotion } from "@/lib/motion";
  *
  * Round 6: round 5's light-card wrapper (rounded, bordered, shadowed —
  * the same recipe as Services/AboutStudio's panels) was itself rejected
- * per direct request. The diagram and phase switcher now sit directly on
- * the section's own bg-light-surface with no wrapping card at all — just
- * the two ambient glow blobs for depth. The smaller inner elements (node
- * badges, stat cards) keep their own border+bg since those are
- * individual components, not the "card" being removed.
+ * per direct request. The diagram and phase switcher were moved onto the
+ * section's own bg-light-surface with no wrapping card at all.
+ *
+ * Round 7: with no card AND no background distinction, that same block
+ * read as bare/unfinished (nothing wrong per se, just no reason for the
+ * eye to group the diagram + switcher as one composed thing) — user's
+ * own call, from a set of options, was a flat tinted panel: a slightly
+ * darker grey than the section background, explicitly still no border-
+ * radius, no border, no box-shadow, just a plain color block to group
+ * the content. Also renamed the eyebrow from "AI-Driven Development" to
+ * "AI-Powered Delivery" — the old label implied AI is scoped to
+ * engineering specifically, when the diagram (and SERVICE_COLUMNS) cover
+ * design, commerce, and websites too, not just development.
  */
 type Phase = {
   phase: string;
@@ -286,7 +294,7 @@ export default function AiDevExcellence() {
         <Reveal>
           <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
             <div>
-              <SectionEyebrow>AI-Driven Development</SectionEyebrow>
+              <SectionEyebrow>AI-Powered Delivery</SectionEyebrow>
               <SectionTitle id="ai-dev-heading" size="lg" className="max-w-xl">
                 AI and people, working the same pipeline.
               </SectionTitle>
@@ -298,15 +306,15 @@ export default function AiDevExcellence() {
         </Reveal>
 
         <Reveal delay={80}>
-          <div className="relative mt-10 overflow-hidden py-2">
+          <div className="relative mt-10 overflow-hidden bg-[#eeeeec] p-6 sm:p-8 lg:p-10">
             <div aria-hidden className="pointer-events-none absolute inset-0 opacity-70">
               <div
                 className="absolute -left-16 -top-16 h-64 w-64 rounded-full blur-3xl"
-                style={{ background: "radial-gradient(closest-side, rgba(124,108,255,0.10), transparent)" }}
+                style={{ background: "radial-gradient(closest-side, rgba(124,108,255,0.12), transparent)" }}
               />
               <div
                 className="absolute -bottom-20 -right-10 h-72 w-72 rounded-full blur-3xl"
-                style={{ background: "radial-gradient(closest-side, rgba(91,155,219,0.08), transparent)" }}
+                style={{ background: "radial-gradient(closest-side, rgba(91,155,219,0.10), transparent)" }}
               />
             </div>
 
