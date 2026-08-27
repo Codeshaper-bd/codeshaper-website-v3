@@ -99,7 +99,7 @@ export default function Navbar() {
         } ${hidden && !forceVisible ? "-translate-y-[calc(100%+16px)]" : "translate-y-0"}`}
       >
         <div
-          className={`mx-auto max-w-7xl rounded-full border border-hairline bg-white/95 backdrop-blur-xl transition-shadow duration-300 ${
+          className={`mx-auto max-w-[1200px] rounded-full border border-hairline bg-white/95 backdrop-blur-xl transition-shadow duration-300 ${
             scrolled || openValue || mobileOpen ? "shadow-[0_8px_30px_rgba(11,15,25,0.10)]" : "shadow-none"
           }`}
         >
@@ -131,7 +131,7 @@ export default function Navbar() {
                       />
                     </Nav.Trigger>
                     <Nav.Content
-                      className="mega-panel fixed left-1/2 top-[90px] z-40 w-[min(calc(100vw-32px),80rem)] -translate-x-1/2 data-[state=closed]:hidden"
+                      className="mega-panel fixed left-1/2 top-[90px] z-40 w-[min(calc(100vw-32px),1200px)] -translate-x-1/2 data-[state=closed]:hidden"
                       style={{ position: "fixed" }}
                     >
                       <MegaPanel />
@@ -148,7 +148,7 @@ export default function Navbar() {
                       />
                     </Nav.Trigger>
                     <Nav.Content
-                      className="mega-panel fixed left-1/2 top-[90px] z-40 w-[min(calc(100vw-32px),80rem)] -translate-x-1/2 data-[state=closed]:hidden"
+                      className="mega-panel fixed left-1/2 top-[90px] z-40 w-[min(calc(100vw-32px),1200px)] -translate-x-1/2 data-[state=closed]:hidden"
                       style={{ position: "fixed" }}
                     >
                       <IndustriesMegaPanel />
