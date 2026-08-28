@@ -21,6 +21,7 @@ import {
 import SiteShell from "@/components/system/SiteShell";
 import Breadcrumbs from "@/components/system/Breadcrumbs";
 import Reveal from "@/components/system/Reveal";
+import { SectionEyebrow, SectionTitle } from "@/components/system/SectionHeading";
 import CaseStudyCard from "@/components/case-studies/CaseStudyCard";
 import CaseStudiesFinalCta from "@/components/case-studies/CaseStudiesFinalCta";
 import { CASE_STUDIES, getCaseStudyBySlug, getRelatedCaseStudies } from "@/lib/caseStudies";
@@ -125,9 +126,6 @@ export default async function CaseStudyDetailPage({
                 <h1 className="mt-3 font-urbanist text-3xl font-bold leading-tight tracking-tight text-ink sm:text-4xl">
                   {story.headline}
                 </h1>
-                <p className="mx-auto mt-5 max-w-2xl font-urbanist text-[15.5px] leading-relaxed text-ink-dim">
-                  {story.summary}
-                </p>
                 <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
                   <Link
                     href="/contact"
@@ -144,17 +142,6 @@ export default async function CaseStudyDetailPage({
                   </Link>
                 </div>
               </Reveal>
-
-              <Reveal delay={100}>
-                <div className="mx-auto mt-10 grid max-w-2xl grid-cols-2 gap-4 sm:grid-cols-4">
-                  {story.stats.map((s) => (
-                    <div key={s.label} className="rounded-2xl border border-hairline-light bg-light-raised px-4 py-4">
-                      <p className="font-urbanist text-[15px] font-bold leading-tight text-ink">{s.value}</p>
-                      <p className="mt-1 font-urbanist text-[11.5px] leading-snug text-ink-dim">{s.label}</p>
-                    </div>
-                  ))}
-                </div>
-              </Reveal>
             </div>
           </section>
         </div>
@@ -166,6 +153,23 @@ export default async function CaseStudyDetailPage({
               <div className="aspect-[21/9] overflow-hidden rounded-2xl bg-light-raised">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={story.image} alt="" className="h-full w-full object-cover" />
+              </div>
+            </Reveal>
+
+            {/* Summary + stats — moved below the image so the hero stays a clean headline + CTA moment */}
+            <Reveal delay={140}>
+              <p className="mx-auto mt-8 max-w-2xl text-center font-urbanist text-[15.5px] leading-relaxed text-ink-dim">
+                {story.summary}
+              </p>
+            </Reveal>
+            <Reveal delay={180}>
+              <div className="mx-auto mt-6 grid max-w-2xl grid-cols-2 gap-4 sm:grid-cols-4">
+                {story.stats.map((s) => (
+                  <div key={s.label} className="rounded-2xl border border-hairline-light bg-light-raised px-4 py-4 text-center">
+                    <p className="font-urbanist text-[15px] font-bold leading-tight text-ink">{s.value}</p>
+                    <p className="mt-1 font-urbanist text-[11.5px] leading-snug text-ink-dim">{s.label}</p>
+                  </div>
+                ))}
               </div>
             </Reveal>
           </div>
@@ -422,18 +426,32 @@ export default async function CaseStudyDetailPage({
         </div>
 
         {related.length > 0 && (
-          <section className="border-t border-hairline-light bg-light-surface py-14 lg:py-16">
-            <div className="mx-auto max-w-7xl px-6 lg:px-10">
-              <p className="mb-6 font-urbanist text-[11px] font-medium uppercase tracking-[0.2em] text-ink-faint">
-                More stories like this
-              </p>
-              <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-                {related.map((s) => (
-                  <CaseStudyCard key={s.slug} story={s} />
-                ))}
+          <div className="bg-light-surface p-3 sm:p-4">
+            <section className="theme-light relative overflow-hidden rounded-[32px] bg-canvas py-14 lg:py-16" aria-labelledby="related-heading">
+              <div className="mx-auto max-w-7xl px-6 lg:px-10">
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+                  <div>
+                    <SectionEyebrow>More Stories</SectionEyebrow>
+                    <SectionTitle id="related-heading">More stories like this</SectionTitle>
+                  </div>
+                  <Link
+                    href="/case-studies"
+                    className="inline-flex w-fit items-center gap-1.5 font-urbanist text-[13.5px] font-semibold text-ink-dim transition-colors hover:text-aurora-violet"
+                  >
+                    See all case studies
+                    <ArrowRight size={14} strokeWidth={1.75} />
+                  </Link>
+                </div>
+                <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                  {related.map((s, i) => (
+                    <Reveal key={s.slug} delay={i * 70}>
+                      <CaseStudyCard story={s} />
+                    </Reveal>
+                  ))}
+                </div>
               </div>
-            </div>
-          </section>
+            </section>
+          </div>
         )}
 
         <CaseStudiesFinalCta />
