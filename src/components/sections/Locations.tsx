@@ -6,6 +6,7 @@ import Reveal from "@/components/system/Reveal";
 import { SectionEyebrow, SectionTitle, SectionDescription } from "@/components/system/SectionHeading";
 import { usePrefersReducedMotion } from "@/lib/motion";
 import { StatueOfLibertyIcon, ClockTowerIcon, MosqueIcon, PagodaIcon, OperaHouseIcon, FernIcon } from "./LandmarkIcons";
+import worldMap from "@/lib/locations-world-map.json";
 
 /**
  * Locations — round 2. Feedback: the previous 4-column region grid
@@ -49,90 +50,100 @@ import { StatueOfLibertyIcon, ClockTowerIcon, MosqueIcon, PagodaIcon, OperaHouse
  * would have flipped automatically), so the route map's pins/line, the
  * tab row, and the whole detail panel needed recoloring by hand —
  * same exercise as TechStack's own dark-to-light pass.
+ *
+ * Round 5, direct feedback: "use something like a world map" — the
+ * abstract curved line + floating circles wasn't reading as one. Pins
+ * now sit on an actual dotted world map (dotted-map, MIT-licensed, real
+ * coastline data, computed fully offline — see scripts/generate-
+ * locations-map.mjs) instead of hand-picked x/y percentages. That script
+ * runs once, geocodes each hub to a real city (New York, London, Dhaka,
+ * Tokyo, Sydney, Auckland) with dotted-map's own Mercator projection,
+ * and writes the resulting dot grid + pin coordinates to
+ * src/lib/locations-world-map.json — a plain ~50KB data file, not the
+ * ~700KB country dataset the package itself carries, so nothing heavy
+ * ships to the browser. Pins and the background dots now share the
+ * exact same coordinate space, so they're guaranteed to line up.
  */
 type LocationDetail = {
+  id: string;
   country: string;
   region: string;
   regionNote: string;
   role: string;
   short: string;
   bestFor: string[];
-  x: number;
-  y: number;
   icon: ComponentType<SVGProps<SVGSVGElement>>;
 };
 
 /** West → east, matching real longitude order — pins and tabs share this order. */
 const LOCATIONS: LocationDetail[] = [
   {
+    id: "usa",
     country: "USA",
     region: "Americas",
     regionNote: "Client proximity",
     role: "Client collaboration hub",
     short: "Supports discovery, planning, and working overlap for North American clients.",
     bestFor: ["MVP sprints", "Roadmap planning", "Ongoing product iteration"],
-    x: 6,
-    y: 38,
     icon: StatueOfLibertyIcon,
   },
   {
+    id: "uk",
     country: "UK",
     region: "UK & Europe",
     regionNote: "Client proximity",
     role: "Client collaboration hub",
     short: "Supports European clients with timezone overlap and project coordination.",
     bestFor: ["Product discovery", "Sprint planning", "Delivery oversight"],
-    x: 24,
-    y: 29.8,
     icon: ClockTowerIcon,
   },
   {
+    id: "bangladesh",
     country: "Bangladesh",
     region: "Asia-Pacific",
     regionNote: "Delivery & product execution",
     role: "Delivery hub",
     short: "Product design, engineering, and automation delivery across web, mobile, SaaS, and commerce.",
     bestFor: ["End-to-end builds", "Dedicated product teams", "Ongoing iteration"],
-    x: 42,
-    y: 24.7,
     icon: MosqueIcon,
   },
   {
+    id: "japan",
     country: "Japan",
     region: "Asia-Pacific",
     regionNote: "Delivery & product execution",
     role: "Collaboration hub",
     short: "Supports client collaboration and product planning for teams operating in Japan/APAC.",
     bestFor: ["Product planning", "Stakeholder coordination", "Delivery alignment"],
-    x: 60,
-    y: 24.7,
     icon: PagodaIcon,
   },
   {
+    id: "australia",
     country: "Australia",
     region: "Oceania",
     regionNote: "Timezone overlap",
     role: "Collaboration hub",
     short: "Supports timezone overlap for Australia-based teams and distributed product orgs.",
     bestFor: ["Dedicated team collaboration", "Ongoing roadmap delivery"],
-    x: 78,
-    y: 29.8,
     icon: OperaHouseIcon,
   },
   {
+    id: "newzealand",
     country: "New Zealand",
     region: "Oceania",
     regionNote: "Timezone overlap",
     role: "Collaboration hub",
     short: "Supports NZ-based clients with planning, communication, and delivery coordination.",
     bestFor: ["Product support", "Iteration cycles", "Cross-timezone teams"],
-    x: 96,
-    y: 38,
     icon: FernIcon,
   },
 ];
 
-const ROUTE_PATH = `M${LOCATIONS.map((p) => `${p.x},${p.y}`).join(" L")}`;
+const PIN_POS: Record<string, { x: number; y: number }> = Object.fromEntries(
+  worldMap.pins.map((p) => [p.id, { x: p.x, y: p.y }])
+);
+
+const ROUTE_PATH = `M${LOCATIONS.map((p) => `${PIN_POS[p.id].x},${PIN_POS[p.id].y}`).join(" L")}`;
 
 function accentFor(role: string) {
   return role === "Delivery hub" ? "#8a7bff" : "#e8b04e";
@@ -142,21 +153,28 @@ function RouteMap({ active, onPick }: { active: number; onPick: (i: number) => v
   const reduced = usePrefersReducedMotion();
 
   return (
-    <div className="relative h-[170px] w-full sm:h-[210px] lg:h-[250px]">
-      <svg viewBox="0 0 100 60" preserveAspectRatio="none" className="absolute inset-0 h-full w-full" aria-hidden>
+    <div className="relative mx-auto w-full max-w-2xl" style={{ aspectRatio: `${worldMap.width} / ${worldMap.height}` }}>
+      <svg
+        viewBox={`0 0 ${worldMap.width} ${worldMap.height}`}
+        className="absolute inset-0 h-full w-full"
+        aria-hidden
+      >
         <defs>
           <filter id="loc-map-glow" x="-200%" y="-200%" width="500%" height="500%">
             <feGaussianBlur stdDeviation="1" />
           </filter>
-          <linearGradient id="loc-route-gradient" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="100" y2="0">
-            {LOCATIONS.map((p, i) => (
-              <stop key={p.country} offset={`${p.x}%`} stopColor={accentFor(p.role)} />
+          <linearGradient id="loc-route-gradient" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2={worldMap.width} y2="0">
+            {LOCATIONS.map((p) => (
+              <stop key={p.id} offset={`${(PIN_POS[p.id].x / worldMap.width) * 100}%`} stopColor={accentFor(p.role)} />
             ))}
           </linearGradient>
         </defs>
-        <path d={ROUTE_PATH} fill="none" stroke="url(#loc-route-gradient)" strokeOpacity="0.45" strokeWidth="0.6" />
+        {worldMap.dots.map(([x, y]) => (
+          <circle key={`${x}-${y}`} cx={x} cy={y} r={0.42} fill="rgba(11,15,25,0.16)" />
+        ))}
+        <path d={ROUTE_PATH} fill="none" stroke="url(#loc-route-gradient)" strokeOpacity="0.55" strokeWidth="0.5" />
         {!reduced && (
-          <circle r="1.1" fill="#0b0f19" filter="url(#loc-map-glow)" opacity="0.7">
+          <circle r="1" fill="#0b0f19" filter="url(#loc-map-glow)" opacity="0.75">
             <animateMotion dur="7s" repeatCount="indefinite" path={ROUTE_PATH} />
           </circle>
         )}
@@ -166,6 +184,7 @@ function RouteMap({ active, onPick }: { active: number; onPick: (i: number) => v
         const isActive = i === active;
         const accent = accentFor(p.role);
         const Icon = p.icon;
+        const pos = PIN_POS[p.id];
         return (
           <button
             key={p.country}
@@ -174,7 +193,7 @@ function RouteMap({ active, onPick }: { active: number; onPick: (i: number) => v
             onMouseEnter={() => onPick(i)}
             aria-label={p.country}
             className="group absolute flex -translate-x-1/2 -translate-y-1/2 flex-col items-center"
-            style={{ left: `${p.x}%`, top: `${p.y}%` }}
+            style={{ left: `${(pos.x / worldMap.width) * 100}%`, top: `${(pos.y / worldMap.height) * 100}%` }}
           >
             {isActive ? (
               <span
@@ -200,12 +219,14 @@ function RouteMap({ active, onPick }: { active: number; onPick: (i: number) => v
                 <Icon width={12} height={12} strokeWidth={1.6} />
               </span>
             )}
-            <span
-              className="absolute top-full mt-2 hidden whitespace-nowrap font-urbanist text-[10.5px] font-semibold uppercase tracking-[0.14em] transition-colors duration-300 sm:block"
-              style={{ color: isActive ? accent : "rgba(11,15,25,0.4)" }}
-            >
-              {p.country}
-            </span>
+            {isActive && (
+              <span
+                className="absolute top-full mt-2 hidden whitespace-nowrap font-urbanist text-[10.5px] font-semibold uppercase tracking-[0.14em] sm:block"
+                style={{ color: accent }}
+              >
+                {p.country}
+              </span>
+            )}
           </button>
         );
       })}

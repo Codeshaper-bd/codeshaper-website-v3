@@ -11,6 +11,7 @@
   "dependencies": {
     "@radix-ui/react-accordion": "^1.2.12",
     "@radix-ui/react-navigation-menu": "^1.2.14",
+    "dotted-map": "^3.1.0",
     "gsap": "^3.12.5",
     "lenis": "^1.1.17",
     "lucide-react": "^0.545.0",
