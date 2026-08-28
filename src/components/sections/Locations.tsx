@@ -84,6 +84,34 @@ import worldMap from "@/lib/locations-world-map.json";
  * `!reduced` directly (not just the global reduced-motion stylesheet
  * override every other pulse here relies on) since it's rendered
  * conditionally rather than always-mounted-but-CSS-disabled.
+ *
+ * Round 7, direct feedback: the detail panel needed a real photo of the
+ * active country instead of a plain background. Each location now has
+ * one — a real, verified, freely-licensed landmark/cityscape photo
+ * (Statue of Liberty, Big Ben, a Dhaka skyline, Tokyo Tower, Sydney
+ * Opera House, Auckland's waterfront), sourced from Wikimedia Commons
+ * and downloaded into public/media/locations/ rather than hotlinked —
+ * every candidate was actually opened and looked at before use (not
+ * just license-checked) after an earlier session found a keyword image
+ * service returning a real identifiable press photo unannounced; a
+ * few first-choice files also turned out too low-res or badly composed
+ * once actually viewed and were swapped for better alternatives from
+ * the same photographer pool. Attribution is credited inline in each
+ * entry's `credit` field and rendered as a small caption in the
+ * panel's corner, since most of these carry a CC-BY/CC-BY-SA license
+ * that requires it (a couple are CC0/public domain and technically
+ * don't need it, but crediting everyone the same way is simpler than
+ * special-casing two entries and costs nothing).
+ *
+ * The panel's resting state is the same flat `bg-light-surface` +
+ * ink-token text it had before this round, per direct follow-up
+ * feedback — the photo, its dark gradient, and the credit caption all
+ * sit at `opacity-0` and only fade in on `:hover` (via a `group` on the
+ * panel), with every text/tag color carrying a matching `group-hover:`
+ * white/glass variant on the same element rather than swapping between
+ * two duplicated text blocks. Pure CSS, no hover state in React — the
+ * per-location crossfade (`key={active}` + `.lens-fade-in`) is a
+ * separate, independent behavior from this hover reveal.
  */
 type LocationDetail = {
   id: string;
@@ -94,6 +122,8 @@ type LocationDetail = {
   short: string;
   bestFor: string[];
   icon: ComponentType<SVGProps<SVGSVGElement>>;
+  image: string;
+  credit: string;
 };
 
 /** West → east, matching real longitude order — pins and tabs share this order. */
@@ -107,6 +137,8 @@ const LOCATIONS: LocationDetail[] = [
     short: "Supports discovery, planning, and working overlap for North American clients.",
     bestFor: ["MVP sprints", "Roadmap planning", "Ongoing product iteration"],
     icon: StatueOfLibertyIcon,
+    image: "/media/locations/usa.jpg",
+    credit: "TimothyBarkerJr, CC BY-SA 4.0, via Wikimedia Commons",
   },
   {
     id: "uk",
@@ -117,6 +149,8 @@ const LOCATIONS: LocationDetail[] = [
     short: "Supports European clients with timezone overlap and project coordination.",
     bestFor: ["Product discovery", "Sprint planning", "Delivery oversight"],
     icon: ClockTowerIcon,
+    image: "/media/locations/uk.jpg",
+    credit: "Julian Herzog, CC BY 4.0, via Wikimedia Commons",
   },
   {
     id: "bangladesh",
@@ -127,6 +161,8 @@ const LOCATIONS: LocationDetail[] = [
     short: "Product design, engineering, and automation delivery across web, mobile, SaaS, and commerce.",
     bestFor: ["End-to-end builds", "Dedicated product teams", "Ongoing iteration"],
     icon: MosqueIcon,
+    image: "/media/locations/bangladesh.jpg",
+    credit: "Silver Blue, CC BY-SA 2.0, via Wikimedia Commons",
   },
   {
     id: "japan",
@@ -137,6 +173,8 @@ const LOCATIONS: LocationDetail[] = [
     short: "Supports client collaboration and product planning for teams operating in Japan/APAC.",
     bestFor: ["Product planning", "Stakeholder coordination", "Delivery alignment"],
     icon: PagodaIcon,
+    image: "/media/locations/japan.jpg",
+    credit: "David Kernan, CC BY 4.0, via Wikimedia Commons",
   },
   {
     id: "australia",
@@ -147,6 +185,8 @@ const LOCATIONS: LocationDetail[] = [
     short: "Supports timezone overlap for Australia-based teams and distributed product orgs.",
     bestFor: ["Dedicated team collaboration", "Ongoing roadmap delivery"],
     icon: OperaHouseIcon,
+    image: "/media/locations/australia.jpg",
+    credit: "Bernard Gagnon, CC BY-SA 3.0, via Wikimedia Commons",
   },
   {
     id: "newzealand",
@@ -157,6 +197,8 @@ const LOCATIONS: LocationDetail[] = [
     short: "Supports NZ-based clients with planning, communication, and delivery coordination.",
     bestFor: ["Product support", "Iteration cycles", "Cross-timezone teams"],
     icon: FernIcon,
+    image: "/media/locations/newzealand.jpg",
+    credit: "Chiara Coetzee, CC0, via Wikimedia Commons",
   },
 ];
 
@@ -364,60 +406,91 @@ export default function Locations() {
               })}
             </div>
 
-            <div key={active} className="lens-fade-in relative mt-7 flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
+            <div
+              key={active}
+              className="group lens-fade-in relative mt-7 min-h-[300px] overflow-hidden rounded-[24px] border border-hairline bg-light-surface sm:min-h-[280px]"
+            >
+              {/* Photo + scrim only show on hover — bg-light-surface above is
+                  the resting state ("solid color like before"). Both fade in
+                  together via group-hover, and every text color below has a
+                  matching group-hover: variant so it reads correctly against
+                  either the flat resting background or the photo. */}
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={current.image}
+                alt=""
+                className="absolute inset-0 h-full w-full object-cover opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+              />
               <div
                 aria-hidden
-                className="pointer-events-none absolute -left-4 -top-10 h-40 w-40 rounded-full opacity-60 blur-3xl"
-                style={{ background: `radial-gradient(circle, ${accent}30, transparent 70%)` }}
+                className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+                style={{
+                  background:
+                    "linear-gradient(100deg, rgba(9,9,11,0.92) 0%, rgba(9,9,11,0.78) 34%, rgba(9,9,11,0.38) 58%, rgba(9,9,11,0.2) 100%)",
+                }}
               />
 
-              <div className="relative flex gap-5">
-                <div
-                  className="icon-pop-in relative flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-2xl border transition-transform duration-300 hover:scale-105 sm:h-[72px] sm:w-[72px]"
-                  style={{ borderColor: `${accent}40`, backgroundColor: `${accent}14` }}
-                >
+              <div className="relative flex h-full flex-col gap-6 p-6 pb-9 sm:flex-row sm:items-start sm:justify-between sm:p-8">
+                <div className="relative flex gap-5">
                   <div
-                    aria-hidden
-                    className="absolute inset-0"
-                    style={{ background: `radial-gradient(circle at 30% 20%, ${accent}55, transparent 70%)` }}
-                  />
-                  <CurrentIcon className="relative sm:hidden" width={26} height={26} strokeWidth={1.4} style={{ color: accent }} />
-                  <CurrentIcon className="relative hidden sm:block" width={34} height={34} strokeWidth={1.3} style={{ color: accent }} />
-                </div>
-
-                <div>
-                  <p className="font-urbanist text-[10.5px] font-semibold uppercase tracking-[0.16em] text-ink-faint">
-                    {current.region}
-                    <span className="ml-1.5 font-normal text-ink-faint/70">— {current.regionNote}</span>
-                  </p>
-                  <div className="mt-2 flex items-center gap-2">
-                    <span className="h-1.5 w-1.5 shrink-0 rounded-full" style={{ backgroundColor: accent }} aria-hidden />
-                    <p className="font-urbanist text-[10.5px] font-semibold uppercase tracking-[0.14em] text-ink-dim">{current.role}</p>
+                    className="icon-pop-in relative flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-2xl border backdrop-blur-sm transition-transform duration-300 hover:scale-105 sm:h-[72px] sm:w-[72px]"
+                    style={{ borderColor: `${accent}66`, backgroundColor: `${accent}26` }}
+                  >
+                    <div
+                      aria-hidden
+                      className="absolute inset-0"
+                      style={{ background: `radial-gradient(circle at 30% 20%, ${accent}70, transparent 70%)` }}
+                    />
+                    <CurrentIcon className="relative sm:hidden" width={26} height={26} strokeWidth={1.4} style={{ color: accent }} />
+                    <CurrentIcon className="relative hidden sm:block" width={34} height={34} strokeWidth={1.3} style={{ color: accent }} />
                   </div>
-                  <h3 className="mt-1.5 font-urbanist text-[26px] font-bold leading-tight tracking-tight text-ink">{current.country}</h3>
-                  <p className="mt-3 max-w-md font-urbanist text-[13.5px] leading-relaxed text-ink-dim">{current.short}</p>
-                  <div className="mt-4 flex flex-wrap gap-1.5">
-                    {current.bestFor.map((tag) => (
-                      <span
-                        key={tag}
-                        className="flex items-center gap-1.5 rounded-full border border-hairline bg-[#fafafa] px-2.5 py-1 font-urbanist text-[10.5px] text-ink-dim transition-colors duration-300 hover:border-ink/15 hover:bg-canvas"
-                      >
-                        <span className="h-1 w-1 shrink-0 rounded-full" style={{ backgroundColor: accent }} aria-hidden />
-                        {tag}
+
+                  <div>
+                    <p className="font-urbanist text-[10.5px] font-semibold uppercase tracking-[0.16em] text-ink-faint transition-colors duration-500 group-hover:text-white/55">
+                      {current.region}
+                      <span className="ml-1.5 font-normal text-ink-faint/70 transition-colors duration-500 group-hover:text-white/40">
+                        · {current.regionNote}
                       </span>
-                    ))}
+                    </p>
+                    <div className="mt-2 flex items-center gap-2">
+                      <span className="h-1.5 w-1.5 shrink-0 rounded-full" style={{ backgroundColor: accent }} aria-hidden />
+                      <p className="font-urbanist text-[10.5px] font-semibold uppercase tracking-[0.14em] text-ink-dim transition-colors duration-500 group-hover:text-white/75">
+                        {current.role}
+                      </p>
+                    </div>
+                    <h3 className="mt-1.5 font-urbanist text-[26px] font-bold leading-tight tracking-tight text-ink transition-colors duration-500 group-hover:text-white">
+                      {current.country}
+                    </h3>
+                    <p className="mt-3 max-w-md font-urbanist text-[13.5px] leading-relaxed text-ink-dim transition-colors duration-500 group-hover:text-white/70">
+                      {current.short}
+                    </p>
+                    <div className="mt-4 flex flex-wrap gap-1.5">
+                      {current.bestFor.map((tag) => (
+                        <span
+                          key={tag}
+                          className="flex items-center gap-1.5 rounded-full border border-hairline bg-[#fafafa] px-2.5 py-1 font-urbanist text-[10.5px] text-ink-dim transition-colors duration-500 group-hover:border-white/20 group-hover:bg-white/10 group-hover:text-white/85"
+                        >
+                          <span className="h-1 w-1 shrink-0 rounded-full" style={{ backgroundColor: accent }} aria-hidden />
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
                   </div>
+                </div>
+
+                <div className="relative flex shrink-0 items-start gap-2 font-urbanist text-[11.5px] leading-relaxed text-ink-faint transition-colors duration-500 group-hover:text-white/55 sm:text-right">
+                  <MapPin size={13} strokeWidth={1.75} className="mt-0.5 shrink-0 opacity-60 transition-opacity duration-500 group-hover:opacity-70 sm:order-2" />
+                  <span className="sm:order-1">
+                    Street address: TBD
+                    <br />
+                    {current.country}
+                  </span>
                 </div>
               </div>
 
-              <div className="relative flex shrink-0 items-start gap-2 font-urbanist text-[11.5px] leading-relaxed text-ink-faint sm:text-right">
-                <MapPin size={13} strokeWidth={1.75} className="mt-0.5 shrink-0 opacity-60 sm:order-2" />
-                <span className="sm:order-1">
-                  Street address — TBD
-                  <br />
-                  {current.country}
-                </span>
-              </div>
+              <p className="absolute inset-x-4 bottom-2 font-urbanist text-[9.5px] text-white/0 opacity-0 transition-opacity duration-500 group-hover:text-white/40 group-hover:opacity-100 sm:text-right">
+                Photo: {current.credit}
+              </p>
             </div>
           </div>
         </Reveal>
