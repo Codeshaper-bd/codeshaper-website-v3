@@ -6,7 +6,6 @@ import { usePrefersReducedMotion } from "@/lib/motion";
 
 const WORD = "CodeShaper";
 const ACCENT = "#4D5CDE"; // sampled from the real logo mark (public/brand/logo.png)
-const BASE = "#f5f4f2"; // matches --color-ink in the dark (unthemed) scope Footer lives in
 const FIT_PROBE_SIZE = 100; // px — arbitrary known base used to compute the fit ratio
 
 /**
@@ -34,17 +33,34 @@ const FIT_PROBE_SIZE = 100; // px — arbitrary known base used to compute the f
  * them (reported as the wordmark getting "cut off" on hover). Now the
  * reveal's `onComplete` (or immediately, under reduced motion) flips
  * `overflow` to visible once the mask is no longer needed.
+ *
+ * Round 5 fix: the hover/leave handlers reset un-influenced letters to
+ * a hardcoded `BASE` hex that matched `--color-ink` in whichever theme
+ * Footer happened to be in at the time this was written (dark). Once
+ * Footer moved to `theme-light`, that constant would have kept resetting
+ * hovered-then-released letters to the OLD dark theme's near-white ink
+ * color — invisible on the new light background. Reads the real resolved
+ * `text-ink` color from the container itself instead (cached in a ref
+ * after the reveal-in mount), so it's automatically correct for whichever
+ * theme this section is actually using, not whichever it used when this
+ * was last touched.
  */
 export default function FooterWordmark() {
   const reduced = usePrefersReducedMotion();
   const wrapRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLParagraphElement>(null);
   const lettersRef = useRef<(HTMLSpanElement | null)[]>([]);
+  const baseColorRef = useRef("#000000");
 
   useLayoutEffect(() => {
     const el = containerRef.current;
     const wrap = wrapRef.current;
     if (!el || !wrap) return;
+
+    // Real resolved `text-ink` color for whichever theme this section is
+    // actually in — see the round-5 note above for why this isn't a
+    // hardcoded constant.
+    baseColorRef.current = getComputedStyle(el).color;
 
     const fit = () => {
       const available = wrap.clientWidth;
@@ -128,7 +144,7 @@ export default function FooterWordmark() {
       gsap.to(el, {
         y: -influence * 18,
         scale: 1 + influence * 0.12,
-        color: influence > 0.15 ? ACCENT : BASE,
+        color: influence > 0.15 ? ACCENT : baseColorRef.current,
         duration: 0.4,
         ease: "power3.out",
         overwrite: "auto",
@@ -139,7 +155,7 @@ export default function FooterWordmark() {
   const handleLeave = () => {
     if (reduced) return;
     const letters = lettersRef.current.filter((el): el is HTMLSpanElement => Boolean(el));
-    gsap.to(letters, { y: 0, scale: 1, color: BASE, duration: 0.5, ease: "power3.out", overwrite: "auto" });
+    gsap.to(letters, { y: 0, scale: 1, color: baseColorRef.current, duration: 0.5, ease: "power3.out", overwrite: "auto" });
   };
 
   return (
