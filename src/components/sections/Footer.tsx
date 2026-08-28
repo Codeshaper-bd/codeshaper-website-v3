@@ -2,7 +2,7 @@ import type { CSSProperties } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { FileText, ArrowUp, Mail, Phone } from "lucide-react";
-import { SERVICE_COLUMNS, SIMPLE_MENUS, INDUSTRIES_POPULAR, ENGAGEMENT_MODELS } from "@/lib/navigation";
+import { SERVICE_COLUMNS, SIMPLE_MENUS, INDUSTRIES, ENGAGEMENT_MODELS } from "@/lib/navigation";
 import FooterWordmark from "./FooterWordmark";
 import Reveal from "@/components/system/Reveal";
 
@@ -56,6 +56,20 @@ import Reveal from "@/components/system/Reveal";
  * its own internal 2-column sub-grid per direct request, both because
  * it reads denser/more considered than a plain vertical list and
  * because it shortens that column to match its siblings even better.
+ *
+ * Round 10, direct feedback: the bordered/tinted panel wrapping the nav
+ * columns was itself rejected — dropped entirely, so the three columns
+ * now sit directly on the footer's own surface with nothing but gap
+ * spacing between them (no border, no background, no divide lines).
+ * Industries also switches from the 5-item `INDUSTRIES_POPULAR` list to
+ * the real 10-item `INDUSTRIES` list (the same full set the Industries
+ * mega menu and homepage section use) per direct request — in the 2-col
+ * sub-grid, 10 items fill 5 rows plus one for "All industries" — close
+ * to Services/How We Engage's own 6 rows (a couple of the longer
+ * two-word labels wrap, so it isn't pixel-exact, but with the card gone
+ * there's no shared border forcing all three to match anyway, so a
+ * little natural height variance between columns reads as normal, not
+ * broken, the same as any other footer's nav columns).
  */
 const CITY_NAMES = ["Bangladesh", "Japan", "USA", "UK", "Australia", "New Zealand"];
 
@@ -92,7 +106,7 @@ const TRUST_BADGES: { name: string; href: string; color?: string; colors?: strin
   { name: "BASIS", href: "#", color: "#9ca3af", subtitle: "Member" },
 ];
 
-const colLink = "link-underline font-urbanist text-sm text-ink-dim transition-colors hover:text-ink";
+const colLink = "link-underline font-urbanist text-[13.5px] text-ink-dim transition-colors hover:text-ink";
 
 function ColHead({ children }: { children: string }) {
   return (
@@ -213,66 +227,65 @@ export default function Footer() {
             <div className="mt-7 space-y-2">
               <p className="flex items-center gap-2 font-urbanist text-[13px] text-ink-faint">
                 <Mail size={13} strokeWidth={1.75} className="shrink-0" />
-                Email — TBD
+                Email: TBD
               </p>
               <p className="flex items-center gap-2 font-urbanist text-[13px] text-ink-faint">
                 <Phone size={13} strokeWidth={1.75} className="shrink-0" />
-                Phone — TBD
+                Phone: TBD
               </p>
             </div>
           </div>
 
-          {/* Link panel — one bordered card, divided internally instead of loose columns.
-              Three columns, not four: Blog (the only live Insights page) moved into the
-              company row below instead of anchoring its own near-empty column — see file header. */}
-          <div className="overflow-hidden rounded-[28px] border border-hairline bg-light-surface">
-            <div className="grid divide-y divide-hairline sm:grid-cols-3 sm:divide-x sm:divide-y-0">
-              {/* Services */}
-              <div className="p-6 sm:p-7">
-                <ColHead>Services</ColHead>
-                <ul className="space-y-2.5">
-                  {SERVICE_COLUMNS.map((c) => (
-                    <li key={c.id}>
-                      <Link href={c.href} className={colLink}>{c.title}</Link>
-                    </li>
-                  ))}
-                  <li>
-                    <Link href="/services" className={colLink}>All services →</Link>
+          {/* Nav columns — no card, no background, no divider lines; just
+              three columns separated by gap spacing (see file header for
+              the round-10 rationale). */}
+          <div className="grid gap-10 sm:grid-cols-[1fr_1.25fr_1fr]">
+            {/* Services */}
+            <div>
+              <ColHead>Services</ColHead>
+              <ul className="space-y-2.5">
+                {SERVICE_COLUMNS.map((c) => (
+                  <li key={c.id}>
+                    <Link href={c.href} className={colLink}>{c.title}</Link>
                   </li>
-                </ul>
-              </div>
+                ))}
+                <li>
+                  <Link href="/services" className={colLink}>All services →</Link>
+                </li>
+              </ul>
+            </div>
 
-              {/* Industries — its own 2-col sub-grid: short one-word items read
-                  denser this way, and it trims the column to 3 rows instead of 6,
-                  closer to its siblings' height. */}
-              <div className="p-6 sm:p-7">
-                <ColHead>Industries</ColHead>
-                <ul className="grid grid-cols-2 gap-x-4 gap-y-2.5">
-                  {INDUSTRIES_POPULAR.map((l) => (
-                    <li key={l.href}>
-                      <Link href={l.href} className={colLink}>{l.label}</Link>
-                    </li>
-                  ))}
-                  <li>
-                    <Link href="/industries" className={colLink}>All industries →</Link>
+            {/* Industries — the full 10-item list in its own 2-col sub-grid:
+                short one-word/two-word items read denser this way, and 10
+                items + the "all" link lands at 6 rows, matching Services
+                and How We Engage's own 6 rows exactly. */}
+            <div>
+              <ColHead>Industries</ColHead>
+              <ul className="grid grid-cols-2 gap-x-4 gap-y-2.5">
+                {INDUSTRIES.map((l) => (
+                  <li key={l.href}>
+                    <Link href={l.href} className={colLink}>{l.label}</Link>
                   </li>
-                </ul>
-              </div>
+                ))}
+                <li>
+                  <Link href="/industries" className={colLink}>All industries →</Link>
+                </li>
+              </ul>
+            </div>
 
-              {/* How We Engage */}
-              <div className="p-6 sm:p-7">
-                <ColHead>How We Engage</ColHead>
-                <ul className="space-y-2.5">
-                  {ENGAGEMENT_MODELS.map((l) => (
-                    <li key={l.href}>
-                      <Link href={l.href} className={colLink}>{l.label}</Link>
-                    </li>
-                  ))}
-                  <li>
-                    <Link href="/engagement" className={colLink}>All engagement models →</Link>
+            {/* How We Engage */}
+            <div>
+              <ColHead>How We Engage</ColHead>
+              <ul className="space-y-2.5">
+                {ENGAGEMENT_MODELS.map((l) => (
+                  <li key={l.href}>
+                    <Link href={l.href} className={colLink}>{l.label}</Link>
                   </li>
-                </ul>
-              </div>
+                ))}
+                <li>
+                  <Link href="/engagement" className={colLink}>All engagement models →</Link>
+                </li>
+              </ul>
             </div>
           </div>
         </div>
