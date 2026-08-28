@@ -13,7 +13,7 @@ import { SectionEyebrow, SectionTitle, SectionDescription } from "@/components/s
  */
 export default function CaseStudiesFinalCta() {
   return (
-    <section className="relative overflow-hidden bg-canvas px-6 py-12 sm:px-12 lg:px-16 lg:py-16" aria-labelledby="cs-cta-heading">
+    <section className="relative overflow-hidden bg-light-surface px-6 py-12 sm:px-12 lg:px-16 lg:py-16" aria-labelledby="cs-cta-heading">
       <div
         aria-hidden
         className="absolute inset-0 opacity-[0.03]"
