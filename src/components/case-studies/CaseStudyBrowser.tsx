@@ -2,11 +2,14 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { Search, X, ArrowRight } from "lucide-react";
+import { Search, X, ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
 import type { CaseStudy } from "@/lib/caseStudies";
 import { CASE_STUDY_INDUSTRIES } from "@/lib/caseStudies";
 import CaseStudyCard from "./CaseStudyCard";
 import { SectionEyebrow, SectionTitle, SectionDescription } from "@/components/system/SectionHeading";
+
+/** Same page size / control pattern as blog/BlogBrowser.tsx — only 3 real case studies exist today, so pagination stays invisible (totalPages === 1) until more are added, rather than needing to be built later. */
+const PAGE_SIZE = 5;
 
 /** The top match, shown as a large horizontal card — same treatment blog/BlogBrowser uses for its page-1 lead result. */
 function FeaturedRow({ story }: { story: CaseStudy }) {
@@ -50,6 +53,7 @@ function FeaturedRow({ story }: { story: CaseStudy }) {
 export default function CaseStudyBrowser({ stories }: { stories: CaseStudy[] }) {
   const [query, setQuery] = useState("");
   const [industry, setIndustry] = useState<string | null>(null);
+  const [page, setPage] = useState(1);
 
   const q = query.trim().toLowerCase();
 
@@ -64,14 +68,18 @@ export default function CaseStudyBrowser({ stories }: { stories: CaseStudy[] }) 
     });
   }, [stories, industry, q]);
 
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const clampedPage = Math.min(page, totalPages);
+  const pageItems = filtered.slice((clampedPage - 1) * PAGE_SIZE, clampedPage * PAGE_SIZE);
+  const featured = clampedPage === 1 ? pageItems[0] : undefined;
+  const rest = clampedPage === 1 ? pageItems.slice(1) : pageItems;
+
   const hasActiveFilters = industry !== null || q.length > 0;
   const resetAll = () => {
     setQuery("");
     setIndustry(null);
+    setPage(1);
   };
-
-  const featured = filtered[0];
-  const rest = filtered.slice(1);
 
   return (
     <section id="browse" className="relative overflow-hidden bg-light-surface py-14 lg:py-20">
@@ -92,7 +100,10 @@ export default function CaseStudyBrowser({ stories }: { stories: CaseStudy[] }) 
             <Search size={19} strokeWidth={1.75} className="pointer-events-none absolute left-5 top-1/2 -translate-y-1/2 text-ink-faint" />
             <input
               value={query}
-              onChange={(e) => setQuery(e.target.value)}
+              onChange={(e) => {
+                setQuery(e.target.value);
+                setPage(1);
+              }}
               type="text"
               placeholder='Search case studies (e.g., "POS", "membership", "mobile")'
               className="w-full rounded-2xl border border-hairline-light bg-light-raised py-4 pl-14 pr-5 font-urbanist text-[15px] text-ink shadow-[0_1px_2px_rgba(11,15,25,0.04)] outline-none transition-[border-color,box-shadow] placeholder:text-ink-faint focus:border-aurora-violet/60 focus:shadow-[0_8px_24px_rgba(124,108,255,0.12)]"
@@ -102,7 +113,10 @@ export default function CaseStudyBrowser({ stories }: { stories: CaseStudy[] }) 
           <div className="mt-5 flex flex-wrap items-center gap-2.5">
             <button
               type="button"
-              onClick={() => setIndustry(null)}
+              onClick={() => {
+                setIndustry(null);
+                setPage(1);
+              }}
               className={`shrink-0 rounded-full border px-4 py-2 font-urbanist text-[14px] font-semibold transition-colors duration-200 ${
                 industry === null
                   ? "border-ink bg-ink text-canvas"
@@ -115,7 +129,10 @@ export default function CaseStudyBrowser({ stories }: { stories: CaseStudy[] }) 
               <button
                 key={i}
                 type="button"
-                onClick={() => setIndustry((cur) => (cur === i ? null : i))}
+                onClick={() => {
+                  setIndustry((cur) => (cur === i ? null : i));
+                  setPage(1);
+                }}
                 className={`shrink-0 rounded-full border px-4 py-2 font-urbanist text-[14px] font-semibold transition-colors duration-200 ${
                   industry === i
                     ? "border-aurora-violet bg-aurora-violet/10 text-aurora-violet"
@@ -143,7 +160,7 @@ export default function CaseStudyBrowser({ stories }: { stories: CaseStudy[] }) 
             )}
           </div>
 
-          {filtered.length > 0 ? (
+          {pageItems.length > 0 ? (
             <div className="mt-6 space-y-5">
               {featured && <FeaturedRow story={featured} />}
               {rest.length > 0 && (
@@ -159,6 +176,42 @@ export default function CaseStudyBrowser({ stories }: { stories: CaseStudy[] }) 
               <p className="font-urbanist text-sm text-ink-dim">No case studies match those filters yet.</p>
               <button type="button" onClick={resetAll} className="mt-3 font-urbanist text-sm font-semibold text-aurora-violet">
                 Clear filters
+              </button>
+            </div>
+          )}
+
+          {totalPages > 1 && (
+            <div className="mt-10 flex items-center justify-center gap-2">
+              <button
+                type="button"
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
+                disabled={clampedPage === 1}
+                aria-label="Previous page"
+                className="flex h-9 w-9 items-center justify-center rounded-full border border-hairline-light text-ink-dim transition-colors hover:border-ink-faint hover:text-ink disabled:opacity-30"
+              >
+                <ChevronLeft size={16} strokeWidth={1.75} />
+              </button>
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((n) => (
+                <button
+                  key={n}
+                  type="button"
+                  onClick={() => setPage(n)}
+                  aria-current={n === clampedPage ? "page" : undefined}
+                  className={`flex h-9 w-9 items-center justify-center rounded-full font-urbanist text-[13px] font-semibold transition-colors ${
+                    n === clampedPage ? "bg-ink text-canvas" : "text-ink-dim hover:bg-light-raised"
+                  }`}
+                >
+                  {n}
+                </button>
+              ))}
+              <button
+                type="button"
+                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                disabled={clampedPage === totalPages}
+                aria-label="Next page"
+                className="flex h-9 w-9 items-center justify-center rounded-full border border-hairline-light text-ink-dim transition-colors hover:border-ink-faint hover:text-ink disabled:opacity-30"
+              >
+                <ChevronRight size={16} strokeWidth={1.75} />
               </button>
             </div>
           )}

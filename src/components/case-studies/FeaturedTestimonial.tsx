@@ -10,70 +10,62 @@ import { CASE_STUDIES } from "@/lib/caseStudies";
  * explicit placeholder names/companies, which would directly contradict
  * this page's own "proof, not promises" premise if reused here.
  *
- * Round 2: moved into the page's floating-card family (same
- * `bg-light-surface` outer gutter + `rounded-[32px] bg-canvas` shell as
- * the hero and "How we work") with a hex-pattern texture and the
- * project's own accent color washed behind the quote card, instead of
- * a single flat bordered box on a plain section — matches the direct
- * request for a more modern design. The project's real cover image now
- * sits alongside the attribution as a small rounded thumbnail (not a
- * circle) so it reads as "which project this is from," not a fabricated
- * headshot of the named person.
+ * Round 3, direct feedback: no card at all — flat `bg-light-surface`
+ * (#f5f4f2) section, same as e.g. Testimonials.tsx/EngagementModels.tsx
+ * on the homepage. Replaced the boxed quote with an editorial split:
+ * the project's real cover image (labeled with its industry/name, so
+ * it reads as "the project," not a fabricated headshot) alongside a
+ * large unboxed quote, tied together with the project's own accent
+ * color instead of a border.
  */
 export default function FeaturedTestimonial() {
   const story = CASE_STUDIES.find((c) => c.testimonial);
   if (!story?.testimonial) return null;
 
   return (
-    <div className="bg-light-surface p-3 sm:p-4">
-      <section className="relative overflow-hidden rounded-[32px] bg-canvas px-6 py-14 lg:px-10 lg:py-20" aria-labelledby="testimonial-heading">
-        <div
-          aria-hidden
-          className="absolute inset-0 opacity-[0.03]"
-          style={{ backgroundImage: "url(/media/hex-pattern-tile.svg)", backgroundSize: "112px 194px" }}
-        />
-        <div
-          aria-hidden
-          className="absolute left-1/2 top-0 h-[380px] w-[600px] -translate-x-1/2 -translate-y-1/3 rounded-full opacity-25 blur-3xl"
-          style={{ background: `radial-gradient(closest-side, ${story.accent}33, transparent)` }}
-        />
+    <section className="relative overflow-hidden bg-light-surface py-16 lg:py-24" aria-labelledby="testimonial-heading">
+      <div className="mx-auto max-w-6xl px-6 lg:px-10">
+        <Reveal>
+          <SectionEyebrow className="mx-auto w-fit">What clients say</SectionEyebrow>
+          <SectionTitle id="testimonial-heading" className="mx-auto max-w-xl text-center">
+            What clients say after delivery
+          </SectionTitle>
+        </Reveal>
 
-        <div className="relative mx-auto max-w-4xl text-center">
+        <div className="mt-12 grid items-center gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:gap-16">
           <Reveal>
-            <SectionEyebrow className="mx-auto w-fit">What clients say</SectionEyebrow>
-            <SectionTitle id="testimonial-heading" className="mx-auto max-w-xl">
-              What clients say after delivery
-            </SectionTitle>
-          </Reveal>
-
-          <Reveal delay={80}>
-            <div className="mt-8 rounded-[28px] border border-hairline-light bg-light-raised p-8 sm:p-12">
-              <Quote size={32} strokeWidth={1.5} style={{ color: story.accent }} className="mx-auto" />
-              <p className="mt-5 font-urbanist text-[19px] font-medium leading-relaxed text-ink sm:text-[22px]">
-                &ldquo;{story.testimonial.quote}&rdquo;
-              </p>
-
-              <div className="mt-7 flex items-center justify-center gap-3 border-t border-hairline-light pt-6">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={story.image} alt="" className="h-11 w-11 shrink-0 rounded-lg object-cover" />
-                <div className="text-left">
-                  <p className="font-urbanist text-[14px] font-bold text-ink">{story.testimonial.name}</p>
-                  <p className="font-urbanist text-[13px] text-ink-dim">{story.testimonial.role}</p>
-                </div>
-              </div>
-
-              <Link
-                href={`/case-studies/${story.slug}`}
-                className="mt-6 inline-flex items-center gap-1.5 rounded-full border px-5 py-2.5 font-urbanist text-[13px] font-semibold transition-[background-color,transform] duration-300 hover:scale-[1.02]"
-                style={{ borderColor: `${story.accent}55`, color: story.accent, backgroundColor: `${story.accent}12` }}
-              >
-                Read the {story.project} case study
-                <ArrowRight size={14} strokeWidth={1.75} />
-              </Link>
+            <div className="relative aspect-[4/3] overflow-hidden rounded-[28px]">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={story.image} alt="" className="h-full w-full object-cover" />
+              <span className="absolute bottom-4 left-4 rounded-full bg-white/90 px-3.5 py-1.5 font-urbanist text-[11px] font-semibold uppercase tracking-[0.06em] text-ink-mid backdrop-blur-sm">
+                {story.industry} · {story.project}
+              </span>
             </div>
           </Reveal>
+
+          <Reveal delay={100}>
+            <Quote size={36} strokeWidth={1.5} style={{ color: story.accent }} />
+            <p className="mt-5 font-urbanist text-[22px] font-medium leading-snug text-ink sm:text-[26px]">
+              &ldquo;{story.testimonial.quote}&rdquo;
+            </p>
+            <div className="mt-7 flex items-center gap-3">
+              <span aria-hidden className="h-px w-8" style={{ background: story.accent }} />
+              <div>
+                <p className="font-urbanist text-[14px] font-bold text-ink">{story.testimonial.name}</p>
+                <p className="font-urbanist text-[13px] text-ink-dim">{story.testimonial.role}</p>
+              </div>
+            </div>
+            <Link
+              href={`/case-studies/${story.slug}`}
+              className="mt-7 inline-flex items-center gap-1.5 rounded-full border px-5 py-2.5 font-urbanist text-[13px] font-semibold transition-[background-color,transform] duration-300 hover:scale-[1.02]"
+              style={{ borderColor: `${story.accent}55`, color: story.accent, backgroundColor: `${story.accent}12` }}
+            >
+              Read the {story.project} case study
+              <ArrowRight size={14} strokeWidth={1.75} />
+            </Link>
+          </Reveal>
         </div>
-      </section>
-    </div>
+      </div>
+    </section>
   );
 }
