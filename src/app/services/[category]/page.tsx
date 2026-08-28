@@ -4,8 +4,15 @@ import SiteShell from "@/components/system/SiteShell";
 import CardGridPage from "@/components/system/CardGridPage";
 import { SERVICE_COLUMNS } from "@/lib/navigation";
 
+/**
+ * "ai" is excluded here — it now has its own bespoke static route at
+ * app/services/ai/page.tsx, which Next.js's static/literal segment
+ * already takes precedence over this dynamic one for exact matches.
+ * Still generating an "ai" param here would build a duplicate static
+ * path and fail the build.
+ */
 export function generateStaticParams() {
-  return SERVICE_COLUMNS.map((col) => ({ category: col.id }));
+  return SERVICE_COLUMNS.filter((col) => col.id !== "ai").map((col) => ({ category: col.id }));
 }
 
 export async function generateMetadata({
