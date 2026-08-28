@@ -4,8 +4,15 @@ import SiteShell from "@/components/system/SiteShell";
 import DetailPage from "@/components/system/DetailPage";
 import { INDUSTRIES, findBySlug, slugFromHref } from "@/lib/navigation";
 
+/**
+ * "saas" is excluded here — it now has its own bespoke static route at
+ * app/industries/saas/page.tsx, which Next.js's static/literal segment
+ * already takes precedence over this dynamic one for exact matches.
+ * Still generating a "saas" param here would build a duplicate static
+ * path and fail the build.
+ */
 export function generateStaticParams() {
-  return INDUSTRIES.map((i) => ({ industry: slugFromHref(i.href) }));
+  return INDUSTRIES.filter((i) => slugFromHref(i.href) !== "saas").map((i) => ({ industry: slugFromHref(i.href) }));
 }
 
 export async function generateMetadata({

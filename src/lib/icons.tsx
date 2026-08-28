@@ -54,6 +54,7 @@ import {
   MessageCircle,
   Target,
   Utensils,
+  Shield,
   type LucideIcon,
 } from "lucide-react";
 
@@ -120,6 +121,7 @@ export const ICONS: Record<string, LucideIcon> = {
   "message-circle": MessageCircle,
   target: Target,
   utensils: Utensils,
+  shield: Shield,
 };
 
 /** Service column → Lucide icon (Step 3 mapping). */
