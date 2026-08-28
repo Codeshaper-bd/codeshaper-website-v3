@@ -6,6 +6,7 @@ import { ArrowLeft, ArrowRight, Calendar, RefreshCw, Clock } from "lucide-react"
 import SiteShell from "@/components/system/SiteShell";
 import Breadcrumbs from "@/components/system/Breadcrumbs";
 import Reveal from "@/components/system/Reveal";
+import { SectionEyebrow, SectionTitle } from "@/components/system/SectionHeading";
 import PostCard from "@/components/blog/PostCard";
 import BlogFinalCta from "@/components/blog/BlogFinalCta";
 import AiSummary from "@/components/blog/AiSummary";
@@ -241,18 +242,32 @@ export default async function BlogPostPage({
         </div>
 
         {related.length > 0 && (
-          <section className="border-t border-hairline-light bg-light-surface py-14 lg:py-16">
-            <div className="mx-auto max-w-7xl px-6 lg:px-10">
-              <p className="mb-6 font-urbanist text-[11px] font-medium uppercase tracking-[0.2em] text-ink-faint">
-                Similar posts
-              </p>
-              <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-                {related.map((p) => (
-                  <PostCard key={p.slug} post={p} />
-                ))}
+          <div className="bg-light-surface p-3 sm:p-4">
+            <section className="theme-light relative overflow-hidden rounded-[32px] bg-canvas py-14 lg:py-16" aria-labelledby="similar-posts-heading">
+              <div className="mx-auto max-w-7xl px-6 lg:px-10">
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+                  <div>
+                    <SectionEyebrow>More Reading</SectionEyebrow>
+                    <SectionTitle id="similar-posts-heading">Similar posts</SectionTitle>
+                  </div>
+                  <Link
+                    href="/blog"
+                    className="inline-flex w-fit items-center gap-1.5 font-urbanist text-[13.5px] font-semibold text-ink-dim transition-colors hover:text-aurora-violet"
+                  >
+                    See all articles
+                    <ArrowRight size={14} strokeWidth={1.75} />
+                  </Link>
+                </div>
+                <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                  {related.map((p, i) => (
+                    <Reveal key={p.slug} delay={i * 70}>
+                      <PostCard post={p} />
+                    </Reveal>
+                  ))}
+                </div>
               </div>
-            </div>
-          </section>
+            </section>
+          </div>
         )}
 
         <BlogFinalCta />

@@ -161,7 +161,13 @@ export default function BlogBrowser({ posts, initialTopic }: { posts: BlogPost[]
   };
 
   return (
-    <section id="browse" className="relative overflow-hidden bg-light-surface py-14 lg:py-20">
+    // No overflow-hidden here — the hex-pattern texture below is already
+    // fully inset (no bleed to clip), and overflow-hidden on any ancestor
+    // of the sidebar's `lg:sticky` <aside> silently breaks position:sticky
+    // even though it never actually scrolls itself. Confirmed the sidebar
+    // was scrolling away 1:1 with the page instead of pinning at top-32
+    // until this was removed.
+    <section id="browse" className="relative bg-light-surface py-14 lg:py-20">
       <div
         aria-hidden
         className="absolute inset-0 opacity-[0.03]"
