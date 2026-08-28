@@ -63,6 +63,27 @@ import worldMap from "@/lib/locations-world-map.json";
  * ~700KB country dataset the package itself carries, so nothing heavy
  * ships to the browser. Pins and the background dots now share the
  * exact same coordinate space, so they're guaranteed to line up.
+ *
+ * Round 6, direct feedback: the map sat directly on the grey content
+ * card — dark dots on a grey background read as flat/low-contrast. Gave
+ * the map its own white `bg-canvas` inset panel (with two soft accent
+ * glows behind it) so it reads as a distinct "screen" instead of
+ * blending into the card around it, and bumped dot opacity/size now
+ * that they have real contrast to work with. Also re-ran the generator
+ * with a `region` lat crop (-50 to 68) to drop the mostly-empty Arctic/
+ * Antarctic margins the full world map carried — every real hub sits
+ * well inside that band, so nothing relevant is lost, and the map reads
+ * as a tighter, more intentional banner instead of a tall world sheet
+ * with dead space top and bottom.
+ *
+ * Animation: the single traveling dot became two (a bright leader plus
+ * a fainter trailing "comet" a bit further back on the same path, via
+ * a second `animateMotion` with a negative `begin` offset), and the
+ * active pin now has an expanding radar-ping ring behind its existing
+ * `.dot-pulse` badge — a "broadcasting from this hub" cue, gated on
+ * `!reduced` directly (not just the global reduced-motion stylesheet
+ * override every other pulse here relies on) since it's rendered
+ * conditionally rather than always-mounted-but-CSS-disabled.
  */
 type LocationDetail = {
   id: string;
@@ -153,83 +174,108 @@ function RouteMap({ active, onPick }: { active: number; onPick: (i: number) => v
   const reduced = usePrefersReducedMotion();
 
   return (
-    <div className="relative mx-auto w-full max-w-2xl" style={{ aspectRatio: `${worldMap.width} / ${worldMap.height}` }}>
-      <svg
-        viewBox={`0 0 ${worldMap.width} ${worldMap.height}`}
-        className="absolute inset-0 h-full w-full"
+    <div className="relative overflow-hidden rounded-[20px] border border-hairline bg-canvas p-4 sm:p-6">
+      <div
         aria-hidden
-      >
-        <defs>
-          <filter id="loc-map-glow" x="-200%" y="-200%" width="500%" height="500%">
-            <feGaussianBlur stdDeviation="1" />
-          </filter>
-          <linearGradient id="loc-route-gradient" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2={worldMap.width} y2="0">
-            {LOCATIONS.map((p) => (
-              <stop key={p.id} offset={`${(PIN_POS[p.id].x / worldMap.width) * 100}%`} stopColor={accentFor(p.role)} />
-            ))}
-          </linearGradient>
-        </defs>
-        {worldMap.dots.map(([x, y]) => (
-          <circle key={`${x}-${y}`} cx={x} cy={y} r={0.42} fill="rgba(11,15,25,0.16)" />
-        ))}
-        <path d={ROUTE_PATH} fill="none" stroke="url(#loc-route-gradient)" strokeOpacity="0.55" strokeWidth="0.5" />
-        {!reduced && (
-          <circle r="1" fill="#0b0f19" filter="url(#loc-map-glow)" opacity="0.75">
-            <animateMotion dur="7s" repeatCount="indefinite" path={ROUTE_PATH} />
-          </circle>
-        )}
-      </svg>
+        className="pointer-events-none absolute -left-16 -top-16 h-64 w-64 rounded-full opacity-60 blur-3xl"
+        style={{ background: "radial-gradient(closest-side, rgba(124,108,255,0.13), transparent)" }}
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -bottom-16 -right-10 h-64 w-64 rounded-full opacity-50 blur-3xl"
+        style={{ background: "radial-gradient(closest-side, rgba(232,176,78,0.12), transparent)" }}
+      />
 
-      {LOCATIONS.map((p, i) => {
-        const isActive = i === active;
-        const accent = accentFor(p.role);
-        const Icon = p.icon;
-        const pos = PIN_POS[p.id];
-        return (
-          <button
-            key={p.country}
-            type="button"
-            onClick={() => onPick(i)}
-            onMouseEnter={() => onPick(i)}
-            aria-label={p.country}
-            className="group absolute flex -translate-x-1/2 -translate-y-1/2 flex-col items-center"
-            style={{ left: `${(pos.x / worldMap.width) * 100}%`, top: `${(pos.y / worldMap.height) * 100}%` }}
-          >
-            {isActive ? (
-              <span
-                aria-hidden
-                className="dot-pulse relative flex items-center justify-center rounded-full border backdrop-blur-sm transition-transform duration-300 group-hover:scale-105"
-                style={{
-                  width: 34,
-                  height: 34,
-                  color: accent,
-                  borderColor: `${accent}55`,
-                  backgroundColor: `${accent}22`,
-                  boxShadow: `0 0 18px ${accent}88`,
-                }}
-              >
-                <Icon width={18} height={18} strokeWidth={1.6} />
-              </span>
-            ) : (
-              <span
-                aria-hidden
-                className="relative flex items-center justify-center rounded-full border border-black/10 bg-black/[0.03] backdrop-blur-sm transition-all duration-300 group-hover:scale-110 group-hover:border-black/20 group-hover:bg-black/[0.06]"
-                style={{ width: 22, height: 22, color: "rgba(11,15,25,0.4)" }}
-              >
-                <Icon width={12} height={12} strokeWidth={1.6} />
-              </span>
-            )}
-            {isActive && (
-              <span
-                className="absolute top-full mt-2 hidden whitespace-nowrap font-urbanist text-[10.5px] font-semibold uppercase tracking-[0.14em] sm:block"
-                style={{ color: accent }}
-              >
-                {p.country}
-              </span>
-            )}
-          </button>
-        );
-      })}
+      <div className="relative mx-auto w-full max-w-2xl" style={{ aspectRatio: `${worldMap.width} / ${worldMap.height}` }}>
+        <svg
+          viewBox={`0 0 ${worldMap.width} ${worldMap.height}`}
+          className="absolute inset-0 h-full w-full"
+          aria-hidden
+        >
+          <defs>
+            <filter id="loc-map-glow" x="-200%" y="-200%" width="500%" height="500%">
+              <feGaussianBlur stdDeviation="1" />
+            </filter>
+            <linearGradient id="loc-route-gradient" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2={worldMap.width} y2="0">
+              {LOCATIONS.map((p) => (
+                <stop key={p.id} offset={`${(PIN_POS[p.id].x / worldMap.width) * 100}%`} stopColor={accentFor(p.role)} />
+              ))}
+            </linearGradient>
+          </defs>
+          {worldMap.dots.map(([x, y]) => (
+            <circle key={`${x}-${y}`} cx={x} cy={y} r={0.46} fill="rgba(11,15,25,0.18)" />
+          ))}
+          <path d={ROUTE_PATH} fill="none" stroke="url(#loc-route-gradient)" strokeOpacity="0.6" strokeWidth="0.5" />
+          {!reduced && (
+            <>
+              <circle r="0.7" fill="#0b0f19" filter="url(#loc-map-glow)" opacity="0.35">
+                <animateMotion dur="9s" begin="-1.1s" repeatCount="indefinite" path={ROUTE_PATH} />
+              </circle>
+              <circle r="1" fill="#0b0f19" filter="url(#loc-map-glow)" opacity="0.8">
+                <animateMotion dur="9s" repeatCount="indefinite" path={ROUTE_PATH} />
+              </circle>
+            </>
+          )}
+        </svg>
+
+        {LOCATIONS.map((p, i) => {
+          const isActive = i === active;
+          const accent = accentFor(p.role);
+          const Icon = p.icon;
+          const pos = PIN_POS[p.id];
+          return (
+            <button
+              key={p.country}
+              type="button"
+              onClick={() => onPick(i)}
+              onMouseEnter={() => onPick(i)}
+              aria-label={p.country}
+              className="group absolute flex -translate-x-1/2 -translate-y-1/2 flex-col items-center"
+              style={{ left: `${(pos.x / worldMap.width) * 100}%`, top: `${(pos.y / worldMap.height) * 100}%` }}
+            >
+              {isActive ? (
+                <span aria-hidden className="relative flex items-center justify-center" style={{ width: 34, height: 34 }}>
+                  {!reduced && (
+                    <span
+                      className="radar-ping absolute inset-0 rounded-full"
+                      style={{ backgroundColor: accent }}
+                    />
+                  )}
+                  <span
+                    className="dot-pulse relative flex items-center justify-center rounded-full border backdrop-blur-sm transition-transform duration-300 group-hover:scale-105"
+                    style={{
+                      width: 34,
+                      height: 34,
+                      color: accent,
+                      borderColor: `${accent}55`,
+                      backgroundColor: `${accent}22`,
+                      boxShadow: `0 0 18px ${accent}88`,
+                    }}
+                  >
+                    <Icon width={18} height={18} strokeWidth={1.6} />
+                  </span>
+                </span>
+              ) : (
+                <span
+                  aria-hidden
+                  className="relative flex items-center justify-center rounded-full border border-black/10 bg-black/[0.03] backdrop-blur-sm transition-all duration-300 group-hover:scale-110 group-hover:border-black/20 group-hover:bg-black/[0.06]"
+                  style={{ width: 22, height: 22, color: "rgba(11,15,25,0.4)" }}
+                >
+                  <Icon width={12} height={12} strokeWidth={1.6} />
+                </span>
+              )}
+              {isActive && (
+                <span
+                  className="absolute top-full mt-2 hidden whitespace-nowrap font-urbanist text-[10.5px] font-semibold uppercase tracking-[0.14em] sm:block"
+                  style={{ color: accent }}
+                >
+                  {p.country}
+                </span>
+              )}
+            </button>
+          );
+        })}
+      </div>
     </div>
   );
 }

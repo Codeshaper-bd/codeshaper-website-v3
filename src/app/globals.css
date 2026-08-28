@@ -460,18 +460,21 @@ body {
 .lift-md { transition: transform 300ms ease, box-shadow 300ms ease; }
 .lift-md:hover { transform: translateY(-4px); }
 
-/* Locations: horizon glow pulse (~10s) + staggered dot pulses */
-@keyframes horizon-pulse {
-  0%, 100% { opacity: 0.7; }
-  50% { opacity: 1; }
-}
-.horizon-pulse { animation: horizon-pulse 10s ease-in-out infinite; }
-
 @keyframes dot-pulse {
   0%, 100% { opacity: 0.7; transform: scale(1); }
   50% { opacity: 1; transform: scale(1.35); }
 }
 .dot-pulse { animation: dot-pulse 3.2s ease-in-out infinite; }
+
+/* Locations: expanding "radar" ring behind the active map pin — a
+   signal-broadcasting cue, layered behind .dot-pulse rather than
+   replacing it. */
+@keyframes radar-ping {
+  0% { transform: scale(0.6); opacity: 0.55; }
+  70% { opacity: 0; }
+  100% { transform: scale(2.3); opacity: 0; }
+}
+.radar-ping { animation: radar-ping 2.6s cubic-bezier(0, 0, 0.2, 1) infinite; }
 
 /* Client logo badges: gentle idle float, staggered per-badge via inline
    animation-delay so the row doesn't bob in unison. */
@@ -735,7 +738,7 @@ form[data-show-errors="true"] :invalid {
   .faq-panel {
     transition: none;
   }
-  .horizon-pulse,
+  .radar-ping,
   .dot-pulse,
   .typing-dot,
   .scroll-cue-dot,

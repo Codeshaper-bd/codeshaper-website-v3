@@ -15,7 +15,11 @@ const PINS = [
   { id: "newzealand", lat: -36.8485, lng: 174.7633 }, // Auckland
 ];
 
-const map = new DottedMap({ height: 70, grid: "diagonal" });
+// Cropped to a lat band that comfortably contains all 6 real hub cities
+// (southernmost Auckland ~-36.8, northernmost London ~51.5) while dropping
+// the mostly-empty Arctic/Antarctic margins the uncropped world map carried —
+// tightens the composition instead of wasting space on regions with no pins.
+const map = new DottedMap({ height: 70, grid: "diagonal", region: { lat: { min: -50, max: 68 }, lng: { min: -180, max: 180 } } });
 
 for (const pin of PINS) {
   map.addPin({ lat: pin.lat, lng: pin.lng, data: { id: pin.id } });
