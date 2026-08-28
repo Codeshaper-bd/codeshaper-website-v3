@@ -46,6 +46,12 @@ export default function MobileMenu({ open, onClose }: { open: boolean; onClose: 
         open ? "opacity-100" : "pointer-events-none opacity-0"
       }`}
       aria-hidden={!open}
+      // aria-hidden alone doesn't remove focusability — a keyboard user
+      // tabbing through the page could still land on this panel's links
+      // while it's invisible and hidden from screen readers (flagged by
+      // Lighthouse's aria-hidden-focus audit). `inert` removes it from
+      // the tab order too while closed.
+      inert={!open}
     >
       <nav aria-label="Mobile" className="px-6 py-8">
         <Accordion.Root type="single" collapsible className="border-t border-hairline">

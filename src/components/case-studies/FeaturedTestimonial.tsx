@@ -3,6 +3,7 @@ import { Quote, ArrowRight } from "lucide-react";
 import Reveal from "@/components/system/Reveal";
 import { SectionEyebrow, SectionTitle } from "@/components/system/SectionHeading";
 import { CASE_STUDIES } from "@/lib/caseStudies";
+import { textSafeAccent } from "@/lib/color";
 
 /**
  * A single real, attributed quote (Essentialist's Joan Roca) rather than a
@@ -58,7 +59,7 @@ export default function FeaturedTestimonial() {
             <Link
               href={`/case-studies/${story.slug}`}
               className="mt-7 inline-flex items-center gap-1.5 rounded-full border px-5 py-2.5 font-urbanist text-[13px] font-semibold transition-[background-color,transform] duration-300 hover:scale-[1.02]"
-              style={{ borderColor: `${story.accent}55`, color: story.accent, backgroundColor: `${story.accent}12` }}
+              style={{ borderColor: `${story.accent}55`, color: textSafeAccent(story.accent), backgroundColor: `${story.accent}12` }}
             >
               Read the {story.project} case study
               <ArrowRight size={14} strokeWidth={1.75} />

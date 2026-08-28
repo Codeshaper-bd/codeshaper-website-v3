@@ -27,6 +27,7 @@ import Reveal from "@/components/system/Reveal";
 import CountUp from "@/components/system/CountUp";
 import { SectionEyebrow, SectionTitle, SectionDescription } from "@/components/system/SectionHeading";
 import { usePrefersReducedMotion } from "@/lib/motion";
+import { textSafeAccent } from "@/lib/color";
 
 /**
  * AI-Driven Development — round 5. Direct feedback on round 4:
@@ -398,7 +399,7 @@ export default function AiDevExcellence() {
                         style={{
                           borderColor: isActive ? `${p.accent}80` : "var(--color-hairline)",
                           backgroundColor: isActive ? `${p.accent}1a` : "transparent",
-                          color: isActive ? p.accent : "var(--color-ink-dim)",
+                          color: isActive ? textSafeAccent(p.accent) : "var(--color-ink-dim)",
                         }}
                       >
                         <Icon size={15} strokeWidth={1.75} />

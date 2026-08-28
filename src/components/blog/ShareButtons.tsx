@@ -48,10 +48,10 @@ export default function ShareButtons({ url, title }: { url: string; title: strin
           </svg>
         </a>
         <a href={facebookHref} target="_blank" rel="noopener noreferrer" aria-label="Share on Facebook" className={iconBtnCls}>
-          <SiFacebook size={15} />
+          <SiFacebook size={15} aria-hidden />
         </a>
         <a href={whatsappHref} target="_blank" rel="noopener noreferrer" aria-label="Share on WhatsApp" className={iconBtnCls}>
-          <SiWhatsapp size={15} />
+          <SiWhatsapp size={15} aria-hidden />
         </a>
         <button
           type="button"
@@ -60,7 +60,7 @@ export default function ShareButtons({ url, title }: { url: string; title: strin
           title="Instagram doesn't support direct link sharing — this copies the link to paste into a post, story, or bio"
           className={iconBtnCls}
         >
-          {copied === "instagram" ? <Check size={15} className="text-aurora-violet" /> : <SiInstagram size={15} />}
+          {copied === "instagram" ? <Check size={15} className="text-aurora-violet" aria-hidden /> : <SiInstagram size={15} aria-hidden />}
         </button>
         <button type="button" onClick={() => copyLink("link")} aria-label="Copy link" className={iconBtnCls}>
           {copied === "link" ? <Check size={15} className="text-aurora-violet" /> : <Link2 size={15} />}

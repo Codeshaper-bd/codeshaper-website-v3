@@ -204,6 +204,15 @@ export default function Hero() {
             maskImage: "linear-gradient(to bottom, transparent 0%, transparent 6%, black 34%)",
           }}
         >
+          {/* fetchpriority is not a real resource-priority hint on <video> per
+              spec (Chrome ignores it there — confirmed via Lighthouse's LCP
+              discovery audit still reporting priorityHinted:false despite the
+              attribute being present) — it only works on img/link/script.
+              This is the hero's LCP element, so the actual fix is a `poster`
+              image (which DOES honor fetch priority) painted instantly while
+              the video buffers, plus a preload link so the browser's preload
+              scanner finds it in the initial HTML. */}
+          <link rel="preload" as="image" href="/media/hero-video-poster.jpg" fetchPriority="high" />
           <video
             ref={videoElRef}
             autoPlay
@@ -211,12 +220,9 @@ export default function Hero() {
             loop
             playsInline
             preload="auto"
+            poster="/media/hero-video-poster.jpg"
             className="h-full w-full object-cover opacity-[0.4] grayscale"
             aria-hidden
-            // fetchpriority isn't in React's video prop types yet, but it's a
-            // standard, Chrome-supported attribute — this is the hero's LCP
-            // element, so hint the browser to fetch it eagerly.
-            {...({ fetchpriority: "high" } as Record<string, string>)}
           >
             <source src="/media/hero-video.mp4" type="video/mp4" />
             <source src="/media/hero-video.webm" type="video/webm" />

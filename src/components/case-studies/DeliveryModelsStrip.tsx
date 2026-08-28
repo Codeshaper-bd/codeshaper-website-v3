@@ -9,6 +9,7 @@ import { Icon } from "@/lib/icons";
 import { ENGAGEMENT_MODELS, type EngagementModel } from "@/lib/navigation";
 import { SectionEyebrow, SectionTitle, SectionDescription } from "@/components/system/SectionHeading";
 import { useMotionAllowed } from "@/lib/motion";
+import { textSafeAccent } from "@/lib/color";
 
 /**
  * "How we work" — round 2. Reuses the homepage EngagementModels card
@@ -101,9 +102,10 @@ function ModelCard({ model, index }: { model: EngagementModel; index: number }) 
         <Link
           href={model.href}
           className="mt-4 inline-flex items-center gap-1.5 rounded-full border px-3.5 py-1.5 font-urbanist text-[12px] font-semibold transition-[background-color,transform] duration-300 hover:scale-[1.02]"
-          style={{ borderColor: `${accent}55`, color: accent, backgroundColor: `${accent}12` }}
+          style={{ borderColor: `${accent}55`, color: textSafeAccent(accent), backgroundColor: `${accent}12` }}
         >
           Learn more
+          <span className="sr-only"> about {model.label}</span>
           <ArrowRight size={12} strokeWidth={2} />
         </Link>
       </div>

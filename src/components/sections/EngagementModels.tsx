@@ -8,6 +8,7 @@ import gsap from "gsap";
 import Reveal from "@/components/system/Reveal";
 import { SectionEyebrow, SectionTitle, SectionDescription } from "@/components/system/SectionHeading";
 import { useMotionAllowed } from "@/lib/motion";
+import { textSafeAccent } from "@/lib/color";
 
 /**
  * Engagement models — compact, single-row (on desktop) lineup of standout
@@ -173,9 +174,10 @@ function ModelCard({ model, index }: { model: Model; index: number }) {
         <Link
           href={model.href}
           className="mt-4 inline-flex items-center gap-1.5 rounded-full border px-3.5 py-1.5 font-urbanist text-[12.5px] font-semibold transition-[background-color,transform] duration-300 hover:scale-[1.02]"
-          style={{ borderColor: `${model.accent}55`, color: model.accent, backgroundColor: `${model.accent}12` }}
+          style={{ borderColor: `${model.accent}55`, color: textSafeAccent(model.accent), backgroundColor: `${model.accent}12` }}
         >
           Learn more
+          <span className="sr-only"> about {model.name}</span>
           <ArrowRight size={12} strokeWidth={2} />
         </Link>
       </div>

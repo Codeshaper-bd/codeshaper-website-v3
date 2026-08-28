@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { Search, X, ChevronLeft, ChevronRight, ArrowRight } from "lucide-react";
 import { TOPICS, type BlogPost } from "@/lib/blog";
 import PostCard from "./PostCard";
@@ -49,7 +50,15 @@ function FeaturedRow({ post }: { post: BlogPost }) {
   );
 }
 
-export default function BlogBrowser({ posts, initialTopic }: { posts: BlogPost[]; initialTopic?: string }) {
+export default function BlogBrowser({ posts }: { posts: BlogPost[] }) {
+  // Read from the URL client-side instead of the page reading `searchParams`
+  // server-side — that made the whole /blog route opt out of static
+  // rendering, which was interfering with this page's metadata (Lighthouse
+  // consistently reported the meta description missing only on this page,
+  // among every other page audited). BlogBrowser is entirely client-driven
+  // already, so this is a purely local change.
+  const searchParams = useSearchParams();
+  const initialTopic = searchParams.get("topic") ?? undefined;
   const [query, setQuery] = useState("");
   const [topics, setTopics] = useState<Set<string>>(() => (initialTopic ? new Set([initialTopic]) : new Set()));
   const [page, setPage] = useState(1);

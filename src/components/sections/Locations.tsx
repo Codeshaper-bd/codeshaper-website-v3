@@ -5,6 +5,7 @@ import { MapPin } from "lucide-react";
 import Reveal from "@/components/system/Reveal";
 import { SectionEyebrow, SectionTitle, SectionDescription } from "@/components/system/SectionHeading";
 import { usePrefersReducedMotion } from "@/lib/motion";
+import { textSafeAccent } from "@/lib/color";
 import { StatueOfLibertyIcon, ClockTowerIcon, MosqueIcon, PagodaIcon, OperaHouseIcon, FernIcon } from "./LandmarkIcons";
 import worldMap from "@/lib/locations-world-map.json";
 
@@ -202,8 +203,26 @@ const LOCATIONS: LocationDetail[] = [
   },
 ];
 
+/**
+ * Australia and New Zealand's real geographic positions land close
+ * enough together at this map's scale that their pin buttons' touch
+ * targets overlapped (flagged by Lighthouse: "insufficient space to
+ * closest neighbor"). Nudging Australia's pin a few units up/left —
+ * away from New Zealand, still well within the Australian mainland at
+ * this projection's resolution — gives both pins real clickable
+ * separation. Applied here (not just in the button's own render) so
+ * the connecting route line and gradient stop move with it instead of
+ * pointing at a spot the dot no longer sits on.
+ */
+const PIN_NUDGE: Record<string, { dx: number; dy: number }> = {
+  australia: { dx: -5, dy: -3.5 },
+};
+
 const PIN_POS: Record<string, { x: number; y: number }> = Object.fromEntries(
-  worldMap.pins.map((p) => [p.id, { x: p.x, y: p.y }])
+  worldMap.pins.map((p) => {
+    const nudge = PIN_NUDGE[p.id] ?? { dx: 0, dy: 0 };
+    return [p.id, { x: p.x + nudge.dx, y: p.y + nudge.dy }];
+  })
 );
 
 const ROUTE_PATH = `M${LOCATIONS.map((p) => `${PIN_POS[p.id].x},${PIN_POS[p.id].y}`).join(" L")}`;
@@ -272,7 +291,14 @@ function RouteMap({ active, onPick }: { active: number; onPick: (i: number) => v
               onClick={() => onPick(i)}
               onMouseEnter={() => onPick(i)}
               aria-label={p.country}
-              className="group absolute flex -translate-x-1/2 -translate-y-1/2 flex-col items-center"
+              // p-0.5: the visible dot is 22px at rest, under the 24px
+              // touch-target minimum. Padding grows the actual hit area
+              // without shifting the visual center — translate(-50%,-50%)
+              // re-centers on the button's own (now larger) box, so the dot
+              // still lands exactly on the pin. Kept modest (not larger) so
+              // it doesn't reopen the Australia/NZ overlap the PIN_NUDGE
+              // above just fixed.
+              className="group absolute flex -translate-x-1/2 -translate-y-1/2 flex-col items-center p-0.5"
               style={{ left: `${(pos.x / worldMap.width) * 100}%`, top: `${(pos.y / worldMap.height) * 100}%` }}
             >
               {isActive ? (
@@ -395,7 +421,12 @@ export default function Locations() {
                     style={{
                       borderColor: isActive ? `${a}80` : "rgba(11,15,25,0.12)",
                       backgroundColor: isActive ? `${a}1f` : "transparent",
-                      color: isActive ? a : "rgba(11,15,25,0.55)",
+                      // Raw accent hex (violet/amber) fails 4.5:1 as literal text
+                      // on this light background — textSafeAccent derives a
+                      // darker, still-recognizable shade. Inactive gray bumped
+                      // from 0.55 to 0.62 opacity for the same reason (0.55
+                      // measured 4.13:1, just under the 4.5 requirement).
+                      color: isActive ? textSafeAccent(a) : "rgba(11,15,25,0.62)",
                       boxShadow: isActive ? `0 6px 20px ${a}33` : "none",
                     }}
                   >
@@ -448,7 +479,7 @@ export default function Locations() {
                   <div>
                     <p className="font-urbanist text-[10.5px] font-semibold uppercase tracking-[0.16em] text-ink-faint transition-colors duration-500 group-hover:text-white/55">
                       {current.region}
-                      <span className="ml-1.5 font-normal text-ink-faint/70 transition-colors duration-500 group-hover:text-white/40">
+                      <span className="ml-1.5 font-normal text-ink-faint transition-colors duration-500 group-hover:text-white/40">
                         · {current.regionNote}
                       </span>
                     </p>

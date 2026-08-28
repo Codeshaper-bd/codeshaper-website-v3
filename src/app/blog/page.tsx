@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import SiteShell from "@/components/system/SiteShell";
 import BlogHero from "@/components/blog/BlogHero";
 import BlogBrowser from "@/components/blog/BlogBrowser";
@@ -29,13 +30,7 @@ const BREADCRUMB_JSON_LD = {
   ],
 };
 
-export default async function BlogIndexPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ topic?: string }>;
-}) {
-  const { topic } = await searchParams;
-
+export default function BlogIndexPage() {
   return (
     <SiteShell>
       <div className="theme-light">
@@ -43,7 +38,9 @@ export default async function BlogIndexPage({
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(BREADCRUMB_JSON_LD) }} />
 
         <BlogHero />
-        <BlogBrowser posts={BLOG_POSTS} initialTopic={topic} />
+        <Suspense>
+          <BlogBrowser posts={BLOG_POSTS} />
+        </Suspense>
         <BlogFinalCta />
       </div>
     </SiteShell>

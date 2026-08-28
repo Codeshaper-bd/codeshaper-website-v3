@@ -57,9 +57,17 @@ const SNAPSHOT_ICON: Record<string, typeof Target> = {
   Platforms: Package,
 };
 
+/**
+ * Renders as an actual <h2> (not <p>) — this is every section's real
+ * heading within the article ("Project snapshot", "The challenge",
+ * etc.), just styled as a small uppercase eyebrow. As a <p>, the page
+ * had no h2 at all, so the h3s inside each section (e.g. "Business
+ * goals") jumped straight from h1 with nothing between — flagged by
+ * Lighthouse's heading-order audit. Same classes, so no visual change.
+ */
 function SectionLabel({ children }: { children: ReactNode }) {
   return (
-    <p className="mb-5 font-urbanist text-[11px] font-semibold uppercase tracking-[0.2em] text-ink-faint">{children}</p>
+    <h2 className="mb-5 font-urbanist text-[11px] font-semibold uppercase tracking-[0.2em] text-ink-faint">{children}</h2>
   );
 }
 
