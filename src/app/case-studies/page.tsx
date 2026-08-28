@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import SiteShell from "@/components/system/SiteShell";
 import CaseStudyHero from "@/components/case-studies/CaseStudyHero";
 import CaseStudyBrowser from "@/components/case-studies/CaseStudyBrowser";
-import ProofLevels from "@/components/case-studies/ProofLevels";
 import DeliveryModelsStrip from "@/components/case-studies/DeliveryModelsStrip";
 import FeaturedTestimonial from "@/components/case-studies/FeaturedTestimonial";
 import CaseStudiesFaq from "@/components/case-studies/CaseStudiesFaq";
@@ -36,7 +35,6 @@ export default function CaseStudiesPage() {
 
         <CaseStudyHero />
         <CaseStudyBrowser stories={CASE_STUDIES} />
-        <ProofLevels />
         <DeliveryModelsStrip />
         <FeaturedTestimonial />
         <CaseStudiesFaq />

@@ -1,14 +1,8 @@
 import Link from "next/link";
-import { ArrowRight, Gauge, Eye, FileCheck2 } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import Reveal from "@/components/system/Reveal";
 import Breadcrumbs from "@/components/system/Breadcrumbs";
 import { SectionEyebrow, SectionTitle, SectionDescription } from "@/components/system/SectionHeading";
-
-const PROOF_POINTS = [
-  { icon: Gauge, text: "Outcome-first delivery — speed, conversion, automation, reliability" },
-  { icon: Eye, text: "Weekly demos and shared project visibility" },
-  { icon: FileCheck2, text: "Clean handover — docs, source files, and ownership" },
-];
 
 export default function CaseStudyHero() {
   return (
@@ -45,16 +39,6 @@ export default function CaseStudyHero() {
                 Book a Call
               </Link>
             </div>
-          </Reveal>
-          <Reveal delay={160}>
-            <ul className="mx-auto mt-10 flex max-w-3xl flex-col flex-wrap items-center justify-center gap-3 sm:flex-row sm:gap-6">
-              {PROOF_POINTS.map((p) => (
-                <li key={p.text} className="flex items-center gap-2 font-urbanist text-[13px] text-ink-dim">
-                  <p.icon size={15} strokeWidth={1.75} className="shrink-0 text-aurora-violet" />
-                  {p.text}
-                </li>
-              ))}
-            </ul>
           </Reveal>
         </div>
       </section>
