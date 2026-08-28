@@ -1,16 +1,31 @@
 import { Quote as QuoteIcon } from "lucide-react";
 import { SectionEyebrow, SectionTitle } from "@/components/system/SectionHeading";
 import Reveal from "@/components/system/Reveal";
-import type { Quote } from "@/lib/industriesContent";
+
+export type Quote = { quote: string; name: string; role: string; accent: string };
 
 /**
- * Static 3-up quote grid — deliberately simpler than the homepage's
- * draggable Testimonials carousel (that mechanism is homepage-specific);
- * inner pages stay editorial/restrained, matching case-studies' own
- * calmer treatment. Names/companies are explicit placeholders, same
+ * Static quote grid — deliberately simpler than the homepage's draggable
+ * Testimonials carousel (that mechanism is homepage-specific); inner
+ * pages stay editorial/restrained, matching case-studies' own calmer
+ * treatment. Generalized (parameterized, decoupled from any content
+ * file's types) for reuse across bespoke inner pages. Names/companies
+ * are explicit placeholders unless the caller supplies real ones, same
  * convention as the homepage's Testimonials.tsx.
  */
-export default function IndustriesTestimonials({ id, title, items }: { id: string; title: string; items: Quote[] }) {
+export default function QuoteGrid({
+  id,
+  title,
+  items,
+  columns = 3,
+}: {
+  id: string;
+  title: string;
+  items: Quote[];
+  columns?: 2 | 3 | 4;
+}) {
+  const colCls = columns === 4 ? "sm:grid-cols-2 lg:grid-cols-4" : columns === 2 ? "sm:grid-cols-2" : "sm:grid-cols-3";
+
   return (
     <section className="bg-light-surface py-14 lg:py-20" aria-labelledby={id}>
       <div className="mx-auto max-w-6xl px-6 lg:px-10">
@@ -21,7 +36,7 @@ export default function IndustriesTestimonials({ id, title, items }: { id: strin
           </SectionTitle>
         </Reveal>
 
-        <div className="mt-10 grid gap-5 sm:grid-cols-3">
+        <div className={`mt-10 grid gap-5 ${colCls}`}>
           {items.map((t, i) => (
             <Reveal key={t.name} delay={i * 90}>
               <article className="flex h-full flex-col rounded-2xl border border-hairline-light bg-light-raised p-6">

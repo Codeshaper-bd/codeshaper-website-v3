@@ -9,8 +9,8 @@ import { SectionEyebrow, SectionTitle, SectionDescription } from "@/components/s
 import { Icon } from "@/lib/icons";
 import ContactForm from "@/components/sections/ContactForm";
 import CaseStudyCard from "@/components/case-studies/CaseStudyCard";
-import IndustriesFaq from "@/components/industries/IndustriesFaq";
-import IndustriesTestimonials from "@/components/industries/IndustriesTestimonials";
+import FaqAccordion from "@/components/system/FaqAccordion";
+import QuoteGrid from "@/components/system/QuoteGrid";
 import { CASE_STUDIES } from "@/lib/caseStudies";
 import { INDUSTRIES, ENGAGEMENT_MODELS } from "@/lib/navigation";
 import {
@@ -283,10 +283,10 @@ export default function IndustriesIndexPage() {
         </section>
 
         {/* 8. Testimonials */}
-        <IndustriesTestimonials id="hub-testimonials-heading" title="Trusted across the industries we serve." items={HUB_TESTIMONIALS} />
+        <QuoteGrid id="hub-testimonials-heading" title="Trusted across the industries we serve." items={HUB_TESTIMONIALS} />
 
         {/* 9. FAQ */}
-        <IndustriesFaq id="hub-faq-heading" title="Questions, answered" items={HUB_FAQS} />
+        <FaqAccordion id="hub-faq-heading" title="Questions, answered" items={HUB_FAQS} />
       </div>
 
       {/* 10. Final CTA — dark canvas, matches /contact's own hero exactly (ContactForm's .card-dark styling is built for this root theme, not theme-light) */}

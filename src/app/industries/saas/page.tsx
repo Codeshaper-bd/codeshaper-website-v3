@@ -7,8 +7,8 @@ import Breadcrumbs from "@/components/system/Breadcrumbs";
 import Reveal from "@/components/system/Reveal";
 import { SectionEyebrow, SectionTitle, SectionDescription } from "@/components/system/SectionHeading";
 import { Icon } from "@/lib/icons";
-import IndustriesFaq from "@/components/industries/IndustriesFaq";
-import IndustriesTestimonials from "@/components/industries/IndustriesTestimonials";
+import FaqAccordion from "@/components/system/FaqAccordion";
+import QuoteGrid from "@/components/system/QuoteGrid";
 import { getCaseStudyBySlug } from "@/lib/caseStudies";
 import {
   SAAS_SNAPSHOT,
@@ -349,10 +349,10 @@ export default function SaasIndustryPage() {
         </section>
 
         {/* 10. Testimonials */}
-        <IndustriesTestimonials id="saas-testimonials-heading" title="What SaaS teams say after shipping with us." items={SAAS_TESTIMONIALS} />
+        <QuoteGrid id="saas-testimonials-heading" title="What SaaS teams say after shipping with us." items={SAAS_TESTIMONIALS} />
 
         {/* 11. FAQ */}
-        <IndustriesFaq id="saas-faq-heading" title="SaaS questions, answered" items={SAAS_FAQS} />
+        <FaqAccordion id="saas-faq-heading" title="SaaS questions, answered" items={SAAS_FAQS} />
 
         {/* 12. Final CTA */}
         <div className="bg-light-surface p-3 sm:p-4">

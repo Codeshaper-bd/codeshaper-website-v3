@@ -4,8 +4,15 @@ import SiteShell from "@/components/system/SiteShell";
 import DetailPage from "@/components/system/DetailPage";
 import { ENGAGEMENT_MODELS, findBySlug, slugFromHref } from "@/lib/navigation";
 
+/**
+ * "mvp-sprint" is excluded here — it now has its own bespoke static
+ * route at app/engagement/mvp-sprint/page.tsx, which Next.js's
+ * static/literal segment already takes precedence over this dynamic
+ * one for exact matches. Still generating an "mvp-sprint" param here
+ * would build a duplicate static path and fail the build.
+ */
 export function generateStaticParams() {
-  return ENGAGEMENT_MODELS.map((m) => ({ model: slugFromHref(m.href) }));
+  return ENGAGEMENT_MODELS.filter((m) => slugFromHref(m.href) !== "mvp-sprint").map((m) => ({ model: slugFromHref(m.href) }));
 }
 
 export async function generateMetadata({

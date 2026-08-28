@@ -4,10 +4,17 @@ import { useState } from "react";
 import { ChevronDown } from "lucide-react";
 import { SectionEyebrow, SectionTitle } from "@/components/system/SectionHeading";
 import Reveal from "@/components/system/Reveal";
-import type { Faq } from "@/lib/industriesContent";
 
-/** Same accordion recipe as case-studies/CaseStudiesFaq.tsx, parameterized for reuse across the Industries hub + SaaS page. */
-export default function IndustriesFaq({ id, title, items }: { id: string; title: string; items: Faq[] }) {
+export type Faq = { q: string; a: string };
+
+/**
+ * Generic FAQ accordion — same recipe as case-studies/CaseStudiesFaq.tsx,
+ * generalized (parameterized by id/title/items) for reuse across any
+ * bespoke inner page (Industries, Engagement Models, ...). Kept
+ * decoupled from any one content file's types — callers just pass
+ * {q, a} objects.
+ */
+export default function FaqAccordion({ id, title, items }: { id: string; title: string; items: Faq[] }) {
   const [open, setOpen] = useState<Set<number>>(new Set([0]));
 
   const toggle = (i: number) => {
