@@ -32,6 +32,23 @@ import { StatueOfLibertyIcon, ClockTowerIcon, MosqueIcon, PagodaIcon, OperaHouse
  * as the active pin badge, the tab icons, and a hero badge in the detail
  * panel. Deliberately generic silhouettes (not claims about one specific
  * named building) where a country has no single obvious landmark.
+ *
+ * Round 4, direct feedback: the dark "Earth from space" composition
+ * (starfield + glowing horizon arc) didn't land, and the content needed
+ * to sit inside a visible rounded card. Replaced the whole thing with
+ * the sitewide floating-card pattern instead of a fourth dark attempt:
+ * `bg-light-surface p-3 sm:p-4` outer frame + `theme-light rounded-[32px]
+ * bg-canvas` section (same as Services/AboutStudio/CaseStudiesExpand),
+ * with the route map/tabs/detail content in its own `rounded-[28px]
+ * border-hairline bg-light-surface` inner card — the same "white outer
+ * section, grey inner content card" relationship ServicesShowcase
+ * already uses for its own tab+detail block. `.glass` had a
+ * `.theme-light` override already sitting unused in globals.css for
+ * exactly this conversion, but every other color in this file was a
+ * hardcoded `white/opacity` value (not the semantic `ink` tokens that
+ * would have flipped automatically), so the route map's pins/line, the
+ * tab row, and the whole detail panel needed recoloring by hand —
+ * same exercise as TechStack's own dark-to-light pass.
  */
 type LocationDetail = {
   country: string;
@@ -137,9 +154,9 @@ function RouteMap({ active, onPick }: { active: number; onPick: (i: number) => v
             ))}
           </linearGradient>
         </defs>
-        <path d={ROUTE_PATH} fill="none" stroke="url(#loc-route-gradient)" strokeOpacity="0.3" strokeWidth="0.6" />
+        <path d={ROUTE_PATH} fill="none" stroke="url(#loc-route-gradient)" strokeOpacity="0.45" strokeWidth="0.6" />
         {!reduced && (
-          <circle r="1.1" fill="#ffffff" filter="url(#loc-map-glow)" opacity="0.85">
+          <circle r="1.1" fill="#0b0f19" filter="url(#loc-map-glow)" opacity="0.7">
             <animateMotion dur="7s" repeatCount="indefinite" path={ROUTE_PATH} />
           </circle>
         )}
@@ -177,15 +194,15 @@ function RouteMap({ active, onPick }: { active: number; onPick: (i: number) => v
             ) : (
               <span
                 aria-hidden
-                className="relative flex items-center justify-center rounded-full border border-white/10 bg-white/[0.04] backdrop-blur-sm transition-all duration-300 group-hover:scale-110 group-hover:border-white/25 group-hover:bg-white/[0.08]"
-                style={{ width: 22, height: 22, color: "rgba(255,255,255,0.4)" }}
+                className="relative flex items-center justify-center rounded-full border border-black/10 bg-black/[0.03] backdrop-blur-sm transition-all duration-300 group-hover:scale-110 group-hover:border-black/20 group-hover:bg-black/[0.06]"
+                style={{ width: 22, height: 22, color: "rgba(11,15,25,0.4)" }}
               >
                 <Icon width={12} height={12} strokeWidth={1.6} />
               </span>
             )}
             <span
               className="absolute top-full mt-2 hidden whitespace-nowrap font-urbanist text-[10.5px] font-semibold uppercase tracking-[0.14em] transition-colors duration-300 sm:block"
-              style={{ color: isActive ? accent : "rgba(255,255,255,0.4)" }}
+              style={{ color: isActive ? accent : "rgba(11,15,25,0.4)" }}
             >
               {p.country}
             </span>
@@ -217,45 +234,22 @@ export default function Locations() {
   const CurrentIcon = current.icon;
 
   return (
-    <section
-      id="locations"
-      className="relative overflow-hidden bg-canvas py-16 lg:py-32"
-      aria-labelledby="locations-heading"
-    >
-      {/* ── Earth-from-space composition (CSS/SVG, static) ── */}
-      <div aria-hidden className="absolute inset-0">
+    <div className="bg-light-surface p-3 sm:p-4">
+      <section
+        id="locations"
+        className="theme-light relative overflow-hidden rounded-[32px] bg-canvas py-16 lg:py-24"
+        aria-labelledby="locations-heading"
+      >
         <div
-          className="absolute inset-0"
-          style={{
-            background:
-              "radial-gradient(120% 90% at 50% 0%, #101024 0%, #0A0A0F 55%)",
-          }}
+          aria-hidden
+          className="pointer-events-none absolute inset-0 opacity-[0.025]"
+          style={{ backgroundImage: "url(/media/hex-pattern-tile.svg)", backgroundSize: "112px 194px" }}
         />
         <div
-          className="absolute inset-0 opacity-40 max-lg:hidden"
-          style={{
-            backgroundImage:
-              "radial-gradient(1px 1px at 12% 22%, rgba(255,255,255,0.6) 50%, transparent 51%), radial-gradient(1px 1px at 34% 8%, rgba(255,255,255,0.4) 50%, transparent 51%), radial-gradient(1.5px 1.5px at 58% 30%, rgba(255,255,255,0.5) 50%, transparent 51%), radial-gradient(1px 1px at 76% 14%, rgba(255,255,255,0.35) 50%, transparent 51%), radial-gradient(1px 1px at 90% 40%, rgba(255,255,255,0.45) 50%, transparent 51%), radial-gradient(1.5px 1.5px at 22% 45%, rgba(255,255,255,0.3) 50%, transparent 51%), radial-gradient(1px 1px at 47% 18%, rgba(255,255,255,0.5) 50%, transparent 51%), radial-gradient(1px 1px at 65% 50%, rgba(255,255,255,0.3) 50%, transparent 51%)",
-          }}
+          aria-hidden
+          className="pointer-events-none absolute -right-32 top-0 h-[420px] w-[420px] rounded-full opacity-50 blur-3xl"
+          style={{ background: "radial-gradient(closest-side, rgba(124,108,255,0.14), transparent)" }}
         />
-        <div
-          className="horizon-pulse absolute left-1/2 top-full h-[130vw] w-[220vw] -translate-x-1/2 -translate-y-[16%] rounded-[50%] lg:-translate-y-[22%]"
-          style={{
-            background:
-              "radial-gradient(closest-side, #27272a 0%, #18181b 78%, #0A0A0F 100%)",
-            boxShadow:
-              "0 -2px 40px rgba(255,255,255,0.14), 0 -12px 90px rgba(255,255,255,0.1), 0 -30px 180px rgba(255,255,255,0.06), 0 -60px 280px rgba(255,255,255,0.03)",
-          }}
-        />
-        <div
-          className="absolute left-1/2 top-full h-[130vw] w-[220vw] -translate-x-1/2 -translate-y-[16%] rounded-[50%] lg:-translate-y-[22%]"
-          style={{
-            border: "1.5px solid transparent",
-            borderTopColor: "rgba(255,255,255,0.5)",
-            filter: "blur(1px)",
-          }}
-        />
-      </div>
 
       <div className="relative z-10 mx-auto max-w-7xl px-6 lg:px-10">
         <Reveal>
@@ -269,11 +263,11 @@ export default function Locations() {
         </Reveal>
 
         <Reveal delay={80}>
-          <div className="glass mt-10 rounded-[32px] p-6 shadow-[0_40px_100px_rgba(0,0,0,0.5)] sm:p-8 lg:p-10">
+          <div className="relative mt-10 rounded-[28px] border border-hairline bg-light-surface p-6 sm:p-8 lg:p-10">
             <RouteMap active={active} onPick={pick} />
 
             <div
-              className="mt-8 grid grid-cols-3 gap-2 border-t border-white/10 pt-8 sm:flex sm:flex-wrap sm:gap-2"
+              className="mt-8 grid grid-cols-3 gap-2 border-t border-hairline pt-8 sm:flex sm:flex-wrap sm:gap-2"
               onMouseEnter={() => setAutoPaused(true)}
               onMouseLeave={() => setAutoPaused(false)}
             >
@@ -290,9 +284,9 @@ export default function Locations() {
                     onClick={() => pick(i)}
                     className="flex items-center justify-center gap-2 rounded-full border px-3.5 py-2 font-urbanist text-[12.5px] font-semibold transition-[background-color,border-color,color,box-shadow,transform] duration-300 hover:-translate-y-0.5 sm:justify-start"
                     style={{
-                      borderColor: isActive ? `${a}80` : "rgba(255,255,255,0.12)",
+                      borderColor: isActive ? `${a}80` : "rgba(11,15,25,0.12)",
                       backgroundColor: isActive ? `${a}1f` : "transparent",
-                      color: isActive ? a : "rgba(255,255,255,0.55)",
+                      color: isActive ? a : "rgba(11,15,25,0.55)",
                       boxShadow: isActive ? `0 6px 20px ${a}33` : "none",
                     }}
                   >
@@ -325,21 +319,21 @@ export default function Locations() {
                 </div>
 
                 <div>
-                  <p className="font-urbanist text-[10.5px] font-semibold uppercase tracking-[0.16em] text-white/40">
+                  <p className="font-urbanist text-[10.5px] font-semibold uppercase tracking-[0.16em] text-ink-faint">
                     {current.region}
-                    <span className="ml-1.5 font-normal text-white/25">— {current.regionNote}</span>
+                    <span className="ml-1.5 font-normal text-ink-faint/70">— {current.regionNote}</span>
                   </p>
                   <div className="mt-2 flex items-center gap-2">
                     <span className="h-1.5 w-1.5 shrink-0 rounded-full" style={{ backgroundColor: accent }} aria-hidden />
-                    <p className="font-urbanist text-[10.5px] font-semibold uppercase tracking-[0.14em] text-white/45">{current.role}</p>
+                    <p className="font-urbanist text-[10.5px] font-semibold uppercase tracking-[0.14em] text-ink-dim">{current.role}</p>
                   </div>
-                  <h3 className="mt-1.5 font-urbanist text-[26px] font-bold leading-tight tracking-tight text-white">{current.country}</h3>
-                  <p className="mt-3 max-w-md font-urbanist text-[13.5px] leading-relaxed text-white/60">{current.short}</p>
+                  <h3 className="mt-1.5 font-urbanist text-[26px] font-bold leading-tight tracking-tight text-ink">{current.country}</h3>
+                  <p className="mt-3 max-w-md font-urbanist text-[13.5px] leading-relaxed text-ink-dim">{current.short}</p>
                   <div className="mt-4 flex flex-wrap gap-1.5">
                     {current.bestFor.map((tag) => (
                       <span
                         key={tag}
-                        className="flex items-center gap-1.5 rounded-full border border-white/15 bg-white/[0.07] px-2.5 py-1 font-urbanist text-[10.5px] text-white/70 transition-colors duration-300 hover:border-white/25 hover:bg-white/[0.1]"
+                        className="flex items-center gap-1.5 rounded-full border border-hairline bg-[#fafafa] px-2.5 py-1 font-urbanist text-[10.5px] text-ink-dim transition-colors duration-300 hover:border-ink/15 hover:bg-canvas"
                       >
                         <span className="h-1 w-1 shrink-0 rounded-full" style={{ backgroundColor: accent }} aria-hidden />
                         {tag}
@@ -349,7 +343,7 @@ export default function Locations() {
                 </div>
               </div>
 
-              <div className="relative flex shrink-0 items-start gap-2 font-urbanist text-[11.5px] leading-relaxed text-white/35 sm:text-right">
+              <div className="relative flex shrink-0 items-start gap-2 font-urbanist text-[11.5px] leading-relaxed text-ink-faint sm:text-right">
                 <MapPin size={13} strokeWidth={1.75} className="mt-0.5 shrink-0 opacity-60 sm:order-2" />
                 <span className="sm:order-1">
                   Street address — TBD
@@ -361,6 +355,7 @@ export default function Locations() {
           </div>
         </Reveal>
       </div>
-    </section>
+      </section>
+    </div>
   );
 }
