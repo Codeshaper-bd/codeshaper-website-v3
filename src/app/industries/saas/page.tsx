@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import Link from "next/link";
 import { ArrowRight, ArrowUpRight, Check, X } from "lucide-react";
 import SiteShell from "@/components/system/SiteShell";
@@ -21,6 +21,8 @@ import {
   SAAS_TESTIMONIALS,
   SAAS_FAQS,
   SAAS_FAQ_JSON_LD,
+  SAAS_FAQ_STATS,
+  SAAS_FAQ_CTA,
 } from "@/lib/industriesContent";
 import { findBySlug, INDUSTRIES } from "@/lib/navigation";
 import { SITE_URL } from "@/lib/site";
@@ -34,6 +36,7 @@ export const metadata: Metadata = {
 
 const IND = findBySlug(INDUSTRIES, "saas")!;
 const PROOF = getCaseStudyBySlug("acculance")!;
+const BUILT_FOR = IND.systems.concat(IND.outcome);
 
 const BREADCRUMB_JSON_LD = {
   "@context": "https://schema.org",
@@ -101,23 +104,13 @@ export default function SaasIndustryPage() {
                     See a SaaS build
                   </Link>
                 </div>
-
-                <Reveal delay={150}>
-                  <div className="mx-auto mt-12 grid max-w-2xl grid-cols-2 gap-3 sm:grid-cols-4">
-                    {IND.systems.concat(IND.outcome).map((s) => (
-                      <div key={s} className="rounded-2xl border border-hairline-light bg-light-raised px-3 py-4 text-center">
-                        <p className="font-urbanist text-[12.5px] font-semibold leading-snug text-ink">{s}</p>
-                      </div>
-                    ))}
-                  </div>
-                </Reveal>
               </div>
             </section>
           </Reveal>
         </div>
 
-        {/* 2. SaaS snapshot */}
-        <section className="bg-light-surface py-14 lg:py-20" aria-labelledby="snapshot-heading">
+        {/* 2. SaaS snapshot — enlarged, per-card accent, plus the tags moved out of the hero */}
+        <section className="bg-light-surface py-16 lg:py-24" aria-labelledby="snapshot-heading">
           <div className="mx-auto max-w-6xl px-6 lg:px-10">
             <Reveal>
               <SectionLabel>SaaS Snapshot</SectionLabel>
@@ -125,64 +118,82 @@ export default function SaasIndustryPage() {
                 Who this is for, and what actually matters.
               </SectionTitle>
             </Reveal>
-            <div className="mt-10 grid gap-5 sm:grid-cols-3">
+            <div className="mt-10 grid gap-6 sm:grid-cols-3">
               {SAAS_SNAPSHOT.map((s, i) => (
                 <Reveal key={s.title} delay={i * 80}>
-                  <div className="h-full rounded-2xl border border-hairline-light bg-light-raised p-6">
-                    <span className="flex h-10 w-10 items-center justify-center rounded-full border border-hairline-light text-ink-dim">
-                      <Icon name={s.icon} size={17} />
+                  <div
+                    className="h-full rounded-2xl border border-hairline-light bg-light-raised p-7 transition-transform duration-300 hover:-translate-y-1"
+                    style={{ borderTop: `3px solid ${s.accent}` }}
+                  >
+                    <span
+                      className="flex h-12 w-12 items-center justify-center rounded-full"
+                      style={{ backgroundColor: `${s.accent}14`, color: s.accent }}
+                    >
+                      <Icon name={s.icon} size={20} />
                     </span>
-                    <h3 className="mt-4 font-urbanist text-[15px] font-bold text-ink">{s.title}</h3>
-                    <p className="mt-2 font-urbanist text-[13.5px] leading-relaxed text-ink-dim">{s.description}</p>
+                    <h3 className="mt-5 font-urbanist text-[16px] font-bold text-ink">{s.title}</h3>
+                    <p className="mt-2.5 font-urbanist text-[14px] leading-relaxed text-ink-dim">{s.description}</p>
                   </div>
                 </Reveal>
               ))}
             </div>
-          </div>
-        </section>
-
-        {/* 3 & 4. Common problems + what changes after */}
-        <section className="border-t border-hairline-light bg-light-surface py-14 lg:py-20" aria-labelledby="problems-heading">
-          <div className="mx-auto max-w-6xl px-6 lg:px-10">
-            <Reveal>
-              <SectionLabel>Before / After</SectionLabel>
-              <SectionTitle as="h2" id="problems-heading" className="max-w-xl">
-                What most SaaS teams are dealing with — and what changes.
-              </SectionTitle>
+            <Reveal delay={150}>
+              <div className="mt-8 flex flex-wrap items-center gap-3 border-t border-hairline-light pt-8">
+                <span className="font-urbanist text-[12.5px] font-semibold uppercase tracking-[0.1em] text-ink-faint">Built for:</span>
+                {BUILT_FOR.map((s) => (
+                  <span key={s} className="rounded-full border border-hairline-light bg-light-raised px-4 py-1.5 font-urbanist text-[12.5px] font-semibold text-ink-dim">
+                    {s}
+                  </span>
+                ))}
+              </div>
             </Reveal>
-            <div className="mt-10 grid gap-6 lg:grid-cols-2">
-              <Reveal>
-                <div className="h-full rounded-2xl border border-hairline-light bg-light-raised p-6 sm:p-7">
-                  <p className="font-urbanist text-[13px] font-semibold uppercase tracking-[0.15em] text-ink-faint">Common problems</p>
-                  <ul className="mt-5 space-y-3.5">
-                    {SAAS_PROBLEMS.map((p) => (
-                      <li key={p} className="flex items-start gap-3">
-                        <X size={15} strokeWidth={2} className="mt-0.5 shrink-0 text-ink-faint" />
-                        <span className="font-urbanist text-[13.5px] leading-relaxed text-ink-dim">{p}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </Reveal>
-              <Reveal delay={100}>
-                <div className="h-full rounded-2xl border border-aurora-violet/25 bg-light-raised p-6 sm:p-7">
-                  <p className="font-urbanist text-[13px] font-semibold uppercase tracking-[0.15em] text-aurora-violet">What changes after</p>
-                  <ul className="mt-5 space-y-3.5">
-                    {SAAS_OUTCOMES.map((o) => (
-                      <li key={o} className="flex items-start gap-3">
-                        <Check size={15} strokeWidth={2} className="mt-0.5 shrink-0 text-aurora-violet" />
-                        <span className="font-urbanist text-[13.5px] leading-relaxed text-ink">{o}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </Reveal>
-            </div>
           </div>
         </section>
 
-        {/* 5. Solutions mapped to service pillars */}
-        <section className="border-t border-hairline-light bg-light-surface py-14 lg:py-20" aria-labelledby="solutions-heading">
+        {/* 3 & 4. Common problems + what changes after — floating white card */}
+        <div className="bg-light-surface p-3 sm:p-4">
+          <section className="theme-light relative overflow-hidden rounded-[32px] bg-canvas py-14 lg:py-20" aria-labelledby="problems-heading">
+            <div className="mx-auto max-w-6xl px-6 lg:px-10">
+              <Reveal>
+                <SectionLabel>Before / After</SectionLabel>
+                <SectionTitle as="h2" id="problems-heading" className="max-w-xl">
+                  What most SaaS teams are dealing with — and what changes.
+                </SectionTitle>
+              </Reveal>
+              <div className="mt-10 grid gap-6 lg:grid-cols-2">
+                <Reveal>
+                  <div className="h-full rounded-2xl border border-hairline-light bg-light-raised p-6 sm:p-7">
+                    <p className="font-urbanist text-[13px] font-semibold uppercase tracking-[0.15em] text-ink-faint">Common problems</p>
+                    <ul className="mt-5 space-y-3.5">
+                      {SAAS_PROBLEMS.map((p) => (
+                        <li key={p} className="flex items-start gap-3">
+                          <X size={15} strokeWidth={2} className="mt-0.5 shrink-0 text-ink-faint" />
+                          <span className="font-urbanist text-[13.5px] leading-relaxed text-ink-dim">{p}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </Reveal>
+                <Reveal delay={100}>
+                  <div className="h-full rounded-2xl border border-aurora-violet/25 bg-light-raised p-6 sm:p-7">
+                    <p className="font-urbanist text-[13px] font-semibold uppercase tracking-[0.15em] text-aurora-violet">What changes after</p>
+                    <ul className="mt-5 space-y-3.5">
+                      {SAAS_OUTCOMES.map((o) => (
+                        <li key={o} className="flex items-start gap-3">
+                          <Check size={15} strokeWidth={2} className="mt-0.5 shrink-0 text-aurora-violet" />
+                          <span className="font-urbanist text-[13.5px] leading-relaxed text-ink">{o}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </Reveal>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        {/* 5. Solutions mapped to service pillars — distinct per-pillar icon + accent */}
+        <section className="bg-light-surface py-14 lg:py-20" aria-labelledby="solutions-heading">
           <div className="mx-auto max-w-6xl px-6 lg:px-10">
             <Reveal>
               <SectionLabel>How We Solve It</SectionLabel>
@@ -193,9 +204,17 @@ export default function SaasIndustryPage() {
             <div className="mt-10 grid gap-5 sm:grid-cols-2">
               {SAAS_SOLUTIONS.map((s, i) => (
                 <Reveal key={s.title} delay={i * 70}>
-                  <div className="h-full rounded-2xl border border-hairline-light bg-light-raised p-6">
+                  <div
+                    className="h-full rounded-2xl border border-hairline-light bg-light-raised p-6 transition-[transform,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-[0_20px_40px_var(--sol-glow)]"
+                    style={{ "--sol-glow": `${s.accent}22` } as CSSProperties}
+                  >
                     <div className="flex items-center justify-between">
-                      <h3 className="font-urbanist text-[15.5px] font-bold text-ink">{s.title}</h3>
+                      <span
+                        className="flex h-10 w-10 items-center justify-center rounded-full"
+                        style={{ backgroundColor: `${s.accent}14`, color: s.accent }}
+                      >
+                        <Icon name={s.icon} size={17} />
+                      </span>
                       <Link
                         href={s.href}
                         className="inline-flex items-center gap-1 font-urbanist text-[12px] font-semibold text-ink-faint transition-colors hover:text-aurora-violet"
@@ -204,10 +223,11 @@ export default function SaasIndustryPage() {
                         <ArrowUpRight size={12} strokeWidth={1.75} />
                       </Link>
                     </div>
+                    <h3 className="mt-4 font-urbanist text-[15.5px] font-bold text-ink">{s.title}</h3>
                     <ul className="mt-4 space-y-2">
                       {s.items.map((it) => (
                         <li key={it} className="flex items-start gap-2.5">
-                          <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-ink-faint" />
+                          <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full" style={{ backgroundColor: s.accent }} />
                           <span className="font-urbanist text-[13.5px] leading-relaxed text-ink-dim">{it}</span>
                         </li>
                       ))}
@@ -219,33 +239,35 @@ export default function SaasIndustryPage() {
           </div>
         </section>
 
-        {/* 6. Use cases */}
-        <section className="border-t border-hairline-light bg-light-surface py-14 lg:py-20" aria-labelledby="use-cases-heading">
-          <div className="mx-auto max-w-7xl px-6 lg:px-10">
-            <Reveal>
-              <SectionLabel>Use Cases</SectionLabel>
-              <SectionTitle as="h2" id="use-cases-heading" className="max-w-xl">
-                What we actually build for SaaS teams.
-              </SectionTitle>
-            </Reveal>
-            <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-              {SAAS_USE_CASES.map((u, i) => (
-                <Reveal key={u.title} delay={i * 35}>
-                  <div className="flex h-full flex-col rounded-2xl border border-hairline-light bg-light-raised p-5">
-                    <span className="flex h-9 w-9 items-center justify-center rounded-full border border-hairline-light text-ink-dim">
-                      <Icon name={u.icon} size={16} />
-                    </span>
-                    <h3 className="mt-4 font-urbanist text-[14px] font-bold text-ink">{u.title}</h3>
-                    <p className="mt-1.5 flex-1 font-urbanist text-[12.5px] leading-relaxed text-ink-dim">{u.description}</p>
-                  </div>
-                </Reveal>
-              ))}
+        {/* 6. Use cases — floating white card */}
+        <div className="bg-light-surface p-3 sm:p-4">
+          <section className="theme-light relative overflow-hidden rounded-[32px] bg-canvas py-14 lg:py-20" aria-labelledby="use-cases-heading">
+            <div className="mx-auto max-w-7xl px-6 lg:px-10">
+              <Reveal>
+                <SectionLabel>Use Cases</SectionLabel>
+                <SectionTitle as="h2" id="use-cases-heading" className="max-w-xl">
+                  What we actually build for SaaS teams.
+                </SectionTitle>
+              </Reveal>
+              <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+                {SAAS_USE_CASES.map((u, i) => (
+                  <Reveal key={u.title} delay={i * 35}>
+                    <div className="flex h-full flex-col rounded-2xl border border-hairline-light bg-light-raised p-5 transition-[transform,border-color] duration-300 hover:-translate-y-1 hover:border-aurora-violet/30">
+                      <span className="flex h-9 w-9 items-center justify-center rounded-full bg-aurora-violet/10 text-aurora-violet">
+                        <Icon name={u.icon} size={16} />
+                      </span>
+                      <h3 className="mt-4 font-urbanist text-[14px] font-bold text-ink">{u.title}</h3>
+                      <p className="mt-1.5 flex-1 font-urbanist text-[12.5px] leading-relaxed text-ink-dim">{u.description}</p>
+                    </div>
+                  </Reveal>
+                ))}
+              </div>
             </div>
-          </div>
-        </section>
+          </section>
+        </div>
 
         {/* 7. Featured work / proof */}
-        <section className="border-t border-hairline-light bg-light-surface py-14 lg:py-20" aria-labelledby="proof-heading">
+        <section className="bg-light-surface py-14 lg:py-20" aria-labelledby="proof-heading">
           <div className="mx-auto max-w-6xl px-6 lg:px-10">
             <Reveal>
               <SectionLabel>Featured Work</SectionLabel>
@@ -257,7 +279,10 @@ export default function SaasIndustryPage() {
 
             <div className="mt-10 grid gap-8 lg:grid-cols-2">
               <Reveal>
-                <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl bg-light-raised">
+                <div
+                  className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl border border-hairline-light bg-light-raised"
+                  style={{ borderTop: `3px solid ${PROOF.accent}` }}
+                >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={PROOF.image} alt="" className="h-full w-full object-cover" />
                 </div>
@@ -269,7 +294,12 @@ export default function SaasIndustryPage() {
                     <ul className="mt-4 space-y-2.5">
                       {(PROOF.deliverables ?? []).map((d) => (
                         <li key={d} className="flex items-start gap-2.5">
-                          <Check size={14} strokeWidth={2} className="mt-0.5 shrink-0 text-aurora-violet" />
+                          <span
+                            className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full"
+                            style={{ backgroundColor: `${PROOF.accent}14`, color: PROOF.accent }}
+                          >
+                            <Check size={11} strokeWidth={2.5} />
+                          </span>
                           <span className="font-urbanist text-[13.5px] leading-relaxed text-ink-dim">{d}</span>
                         </li>
                       ))}
@@ -277,7 +307,11 @@ export default function SaasIndustryPage() {
                   </div>
                   <div className="flex flex-wrap gap-2.5">
                     {PROOF.stats.map((s) => (
-                      <span key={s.label} className="rounded-full border border-hairline-light bg-light-surface px-3.5 py-1.5 font-urbanist text-[12px] text-ink-dim">
+                      <span
+                        key={s.label}
+                        className="rounded-full border px-3.5 py-1.5 font-urbanist text-[12px] text-ink-dim"
+                        style={{ borderColor: `${PROOF.accent}40`, backgroundColor: `${PROOF.accent}0a` }}
+                      >
                         <span className="font-semibold text-ink">{s.value}</span> · {s.label}
                       </span>
                     ))}
@@ -295,35 +329,38 @@ export default function SaasIndustryPage() {
           </div>
         </section>
 
-        {/* 8. How we work */}
-        <section className="border-t border-hairline-light bg-light-surface py-14 lg:py-20" aria-labelledby="process-heading">
-          <div className="mx-auto max-w-5xl px-6 lg:px-10">
-            <Reveal>
-              <SectionLabel>How We Work</SectionLabel>
-              <SectionTitle as="h2" id="process-heading" className="max-w-xl">
-                Six steps, one accountable team.
-              </SectionTitle>
-            </Reveal>
-            <div className="mt-10 space-y-5">
-              {SAAS_PROCESS.map((step, i) => (
-                <Reveal key={step.n} delay={i * 50}>
-                  <div className="flex items-start gap-5">
-                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-ink font-urbanist text-[13px] font-bold text-canvas">
-                      {step.n}
-                    </span>
-                    <div className="border-b border-hairline-light pb-5">
-                      <h3 className="font-urbanist text-[15px] font-bold text-ink">{step.title}</h3>
-                      <p className="mt-1.5 font-urbanist text-[13.5px] leading-relaxed text-ink-dim">{step.description}</p>
+        {/* 8. How we work — floating white card, connecting timeline line */}
+        <div className="bg-light-surface p-3 sm:p-4">
+          <section className="theme-light relative overflow-hidden rounded-[32px] bg-canvas py-14 lg:py-20" aria-labelledby="process-heading">
+            <div className="mx-auto max-w-5xl px-6 lg:px-10">
+              <Reveal>
+                <SectionLabel>How We Work</SectionLabel>
+                <SectionTitle as="h2" id="process-heading" className="max-w-xl">
+                  Six steps, one accountable team.
+                </SectionTitle>
+              </Reveal>
+              <div className="relative mt-10 space-y-5">
+                <span aria-hidden className="absolute left-[17.5px] top-3 bottom-3 w-px bg-hairline-light" />
+                {SAAS_PROCESS.map((step, i) => (
+                  <Reveal key={step.n} delay={i * 50}>
+                    <div className="relative flex items-start gap-5">
+                      <span className="relative z-10 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-ink font-urbanist text-[13px] font-bold text-canvas">
+                        {step.n}
+                      </span>
+                      <div className="border-b border-hairline-light pb-5">
+                        <h3 className="font-urbanist text-[15px] font-bold text-ink">{step.title}</h3>
+                        <p className="mt-1.5 font-urbanist text-[13.5px] leading-relaxed text-ink-dim">{step.description}</p>
+                      </div>
                     </div>
-                  </div>
-                </Reveal>
-              ))}
+                  </Reveal>
+                ))}
+              </div>
             </div>
-          </div>
-        </section>
+          </section>
+        </div>
 
-        {/* 9. Tools & stack */}
-        <section className="border-t border-hairline-light bg-light-surface py-14 lg:py-20" aria-labelledby="stack-heading">
+        {/* 9. Tools & stack — distinct per-category icon + accent */}
+        <section className="bg-light-surface py-14 lg:py-20" aria-labelledby="stack-heading">
           <div className="mx-auto max-w-6xl px-6 lg:px-10">
             <Reveal>
               <SectionLabel>Tools &amp; Stack</SectionLabel>
@@ -334,9 +371,18 @@ export default function SaasIndustryPage() {
             <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
               {SAAS_STACK.map((cat, i) => (
                 <Reveal key={cat.category} delay={i * 60}>
-                  <div className="h-full rounded-2xl border border-hairline-light bg-light-raised p-6">
-                    <p className="font-urbanist text-[13px] font-semibold uppercase tracking-[0.15em] text-ink-faint">{cat.category}</p>
-                    <div className="mt-4 flex flex-wrap gap-2">
+                  <div
+                    className="h-full rounded-2xl border border-hairline-light bg-light-raised p-6 transition-transform duration-300 hover:-translate-y-1"
+                    style={{ borderTop: `3px solid ${cat.accent}` }}
+                  >
+                    <span
+                      className="flex h-10 w-10 items-center justify-center rounded-full"
+                      style={{ backgroundColor: `${cat.accent}14`, color: cat.accent }}
+                    >
+                      <Icon name={cat.icon} size={17} />
+                    </span>
+                    <p className="mt-4 font-urbanist text-[14px] font-bold text-ink">{cat.category}</p>
+                    <div className="mt-3 flex flex-wrap gap-2">
                       {cat.tools.map((t) => (
                         <span key={t} className="rounded-full border border-hairline-light bg-light-surface px-3 py-1.5 font-urbanist text-[12.5px] text-ink-dim">
                           {t}
@@ -350,11 +396,18 @@ export default function SaasIndustryPage() {
           </div>
         </section>
 
-        {/* 10. Testimonials */}
-        <QuoteGrid id="saas-testimonials-heading" title="What SaaS teams say after shipping with us." items={SAAS_TESTIMONIALS} />
+        {/* 10. Testimonials — floating white card */}
+        <QuoteGrid id="saas-testimonials-heading" title="What SaaS teams say after shipping with us." items={SAAS_TESTIMONIALS} card />
 
-        {/* 11. FAQ */}
-        <FaqAccordion id="saas-faq-heading" title="SaaS questions, answered" items={SAAS_FAQS} />
+        {/* 11. FAQ — with dummy stats + CTA */}
+        <FaqAccordion
+          id="saas-faq-heading"
+          title="SaaS questions, answered"
+          description="What SaaS teams ask before starting a project with us."
+          items={SAAS_FAQS}
+          stats={SAAS_FAQ_STATS}
+          cta={SAAS_FAQ_CTA}
+        />
 
         {/* 12. Final CTA */}
         <div className="bg-light-surface p-3 sm:p-4">

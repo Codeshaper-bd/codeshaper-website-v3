@@ -257,9 +257,9 @@ export const SAAS_FAQS: Faq[] = [
 ];
 
 export const SAAS_SNAPSHOT = [
-  { icon: "users", title: "Who we build for", description: "Early-stage founders validating a first version, and growing SaaS teams scaling past their first hundred customers." },
-  { icon: "layers", title: "What we build", description: "Multi-tenant architecture, billing and metering, role-based access, onboarding flows, and the analytics that prove it's working." },
-  { icon: "target", title: "What matters most", description: "Time-to-value for new users, retention past the trial window, and a system that doesn't need a rebuild at the next growth stage." },
+  { icon: "users", title: "Who we build for", description: "Early-stage founders validating a first version, and growing SaaS teams scaling past their first hundred customers.", accent: "#8a7bff" },
+  { icon: "layers", title: "What we build", description: "Multi-tenant architecture, billing and metering, role-based access, onboarding flows, and the analytics that prove it's working.", accent: "#5b9bdb" },
+  { icon: "target", title: "What matters most", description: "Time-to-value for new users, retention past the trial window, and a system that doesn't need a rebuild at the next growth stage.", accent: "#3fae82" },
 ];
 
 export const SAAS_PROBLEMS: string[] = [
@@ -283,28 +283,36 @@ export const SAAS_OUTCOMES: string[] = [
   "A codebase your next engineering hire can actually ramp up on quickly",
 ];
 
-export type SolutionPillar = { title: string; href: string; items: string[] };
+export type SolutionPillar = { title: string; href: string; items: string[]; icon: string; accent: string };
 
 export const SAAS_SOLUTIONS: SolutionPillar[] = [
   {
     title: "Product Engineering",
     href: "/services/engineering/saas",
     items: ["Multi-tenant architecture", "Billing, metering & entitlements", "Role-based access control", "API design & integrations"],
+    icon: "code-2",
+    accent: "#8a7bff",
   },
   {
     title: "Experience & Product Design",
     href: "/services/design/ux-ui",
     items: ["Onboarding & activation flows", "Admin & customer dashboards", "Design systems for fast iteration", "Conversion-focused pricing pages"],
+    icon: "pen-tool",
+    accent: "#5b9bdb",
   },
   {
     title: "AI & Automation",
     href: "/services/ai/agents-rag",
     items: ["In-product AI assistants", "Usage-based automation triggers", "Support & documentation search", "Anomaly detection on usage data"],
+    icon: "sparkles",
+    accent: "#3fae82",
   },
   {
     title: "Websites & Growth",
     href: "/services/websites/marketing",
     items: ["Marketing site & landing pages", "SEO-ready technical foundation", "Changelog & docs infrastructure", "Care & maintenance post-launch"],
+    icon: "globe",
+    accent: "#d99a4e",
   },
 ];
 
@@ -332,7 +340,7 @@ export const SAAS_PROCESS: ProcessStep[] = [
   { n: "6", title: "Launch & ongoing care", description: "Release, then continued iteration or maintenance — whichever cadence fits your team next." },
 ];
 
-export type ToolCategory = { category: string; tools: string[] };
+export type ToolCategory = { category: string; tools: string[]; icon: string; accent: string };
 
 function faqJsonLd(faqs: Faq[]) {
   return {
@@ -350,9 +358,21 @@ export const HUB_FAQ_JSON_LD = faqJsonLd(HUB_FAQS);
 export const SAAS_FAQ_JSON_LD = faqJsonLd(SAAS_FAQS);
 
 export const SAAS_STACK: ToolCategory[] = [
-  { category: "Frontend", tools: ["Next.js", "React", "TypeScript", "Tailwind CSS"] },
-  { category: "Backend", tools: ["Node.js", "PostgreSQL", "Redis", "Prisma"] },
-  { category: "Billing & Payments", tools: ["Stripe", "Paddle", "Usage metering"] },
-  { category: "Infra & DevOps", tools: ["AWS", "Vercel", "Docker", "GitHub Actions"] },
-  { category: "AI & Automation", tools: ["OpenAI / Anthropic APIs", "RAG pipelines", "Workflow automation"] },
+  { category: "Frontend", tools: ["Next.js", "React", "TypeScript", "Tailwind CSS"], icon: "monitor", accent: "#8a7bff" },
+  { category: "Backend", tools: ["Node.js", "PostgreSQL", "Redis", "Prisma"], icon: "code-2", accent: "#5b9bdb" },
+  { category: "Billing & Payments", tools: ["Stripe", "Paddle", "Usage metering"], icon: "credit-card", accent: "#3fae82" },
+  { category: "Infra & DevOps", tools: ["AWS", "Vercel", "Docker", "GitHub Actions"], icon: "cloud", accent: "#d99a4e" },
+  { category: "AI & Automation", tools: ["OpenAI / Anthropic APIs", "RAG pipelines", "Workflow automation"], icon: "bot", accent: "#db5a89" },
 ];
+
+export const SAAS_FAQ_STATS = [
+  { value: 6, label: "Typical weeks to a scoped MVP" },
+  { value: 40, suffix: "+", label: "SaaS features shipped to date" },
+];
+
+export const SAAS_FAQ_CTA = {
+  title: "Not sure where your product stands?",
+  description: "Tell us your stage — MVP, growth, or mid-rebuild — and we'll recommend a starting point.",
+  label: "Book a Call",
+  href: "/contact",
+};
