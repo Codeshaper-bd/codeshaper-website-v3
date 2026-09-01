@@ -4,15 +4,13 @@ import Reveal from "@/components/system/Reveal";
 import { SectionEyebrow, SectionTitle, SectionDescription } from "@/components/system/SectionHeading";
 
 /**
- * Round 2, direct feedback: the bordered white card (bg-canvas inside a
- * bg-light-surface gutter) is removed — this now sits flat on the
- * page's own #f5f4f2 (bg-light-surface), with a top border standing in
- * as the separator from whatever precedes it, same idea already
- * applied to CaseStudiesFinalCta.
+ * Round 3, direct feedback: the top-border separator (added in round 2
+ * to replace the removed bordered white card) is gone too — this is
+ * now flat, borderless, sitting on the page's own #f5f4f2 (bg-light-surface).
  */
 export default function BlogFinalCta() {
   return (
-    <section className="relative overflow-hidden border-t border-hairline-light bg-light-surface px-6 py-14 text-center sm:px-12 lg:px-16 lg:py-20">
+    <section className="relative overflow-hidden bg-light-surface px-6 py-14 text-center sm:px-12 lg:px-16 lg:py-20">
       <div
         aria-hidden
         className="absolute inset-0 opacity-[0.03]"

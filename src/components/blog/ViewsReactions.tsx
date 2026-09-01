@@ -59,13 +59,12 @@ export default function ViewsReactions({ slug }: { slug: string }) {
   };
 
   return (
-    <div className="flex flex-wrap items-center gap-4 rounded-2xl border border-hairline-light bg-light-raised px-5 py-4">
+    <div className="rounded-2xl border border-hairline-light bg-light-raised px-5 py-4">
       <span className="inline-flex items-center gap-1.5 font-urbanist text-[13px] text-ink-faint">
         <Eye size={15} strokeWidth={1.75} />
-        {stats ? stats.views.toLocaleString() : "—"} views
+        {stats ? stats.views.toLocaleString() : "—"} {stats?.views === 1 ? "view" : "views"}
       </span>
-      <div className="h-4 w-px bg-hairline-light" aria-hidden />
-      <div className="flex items-center gap-2">
+      <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-hairline-light pt-4">
         {REACTIONS.map((r) => {
           const count = stats?.reactions[r.id] ?? 0;
           const active = reacted.has(r.id);

@@ -110,37 +110,28 @@ export default async function BlogPostPage({
                     items={[{ label: "Home", href: "/" }, { label: "Blog", href: "/blog" }, { label: post.title }]}
                   />
                 </div>
-                <p className="mt-5 font-urbanist text-[12.5px] font-semibold uppercase tracking-[0.08em] text-aurora-violet">
-                  {post.topic}
-                </p>
-                <h1 className="mt-3 font-urbanist text-3xl font-bold leading-tight tracking-tight text-ink sm:text-4xl">
+                <SectionEyebrow className="mx-auto mt-5 w-fit">{post.topic}</SectionEyebrow>
+                <SectionTitle as="h1" size="lg" className="mx-auto max-w-3xl">
                   {post.title}
-                </h1>
-                <div className="mt-7 flex flex-col items-center gap-3">
-                  <Image
-                    src="/brand/favicon.png"
-                    alt=""
-                    width={32}
-                    height={32}
-                    className="h-8 w-8 rounded-full"
-                  />
-                  <div className="font-urbanist text-[13.5px] leading-tight">
-                    <p className="font-semibold text-ink">{post.author}</p>
-                    <div className="mt-1 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-ink-faint">
-                      <span className="inline-flex items-center gap-1.5">
-                        <Calendar size={13} strokeWidth={1.75} />
-                        Published {formatDate(post.date)}
-                      </span>
-                      <span className="inline-flex items-center gap-1.5">
-                        <RefreshCw size={13} strokeWidth={1.75} />
-                        Updated {formatDate(post.lastUpdated)}
-                      </span>
-                      <span className="inline-flex items-center gap-1.5">
-                        <Clock size={13} strokeWidth={1.75} />
-                        {post.readingTime} min read
-                      </span>
-                    </div>
-                  </div>
+                </SectionTitle>
+                <div className="mt-7 flex flex-wrap items-center justify-center gap-3 font-urbanist text-[13.5px] leading-tight">
+                  <Image src="/brand/favicon.png" alt="" width={30} height={30} className="h-[30px] w-[30px] shrink-0 rounded-full" />
+                  <span className="font-semibold text-ink">{post.author}</span>
+                  <span aria-hidden className="h-1 w-1 rounded-full bg-hairline-light" />
+                  <span className="inline-flex items-center gap-1.5 text-ink-faint">
+                    <Calendar size={13} strokeWidth={1.75} />
+                    Published {formatDate(post.date)}
+                  </span>
+                  <span aria-hidden className="h-1 w-1 rounded-full bg-hairline-light" />
+                  <span className="inline-flex items-center gap-1.5 text-ink-faint">
+                    <RefreshCw size={13} strokeWidth={1.75} />
+                    Updated {formatDate(post.lastUpdated)}
+                  </span>
+                  <span aria-hidden className="h-1 w-1 rounded-full bg-hairline-light" />
+                  <span className="inline-flex items-center gap-1.5 text-ink-faint">
+                    <Clock size={13} strokeWidth={1.75} />
+                    {post.readingTime} min read
+                  </span>
                 </div>
               </Reveal>
             </div>
@@ -156,20 +147,17 @@ export default async function BlogPostPage({
               </div>
             </Reveal>
 
-            {/* Mobile only: TOC belongs right after the image, not trailing the whole article */}
-            <div className="mt-8 lg:hidden">
+            {/* Mobile only: TOC + AI Summary belong right after the image, not trailing the whole article — same order as the sidebar */}
+            <div className="mt-8 space-y-5 lg:hidden">
               <TableOfContents headings={headings} />
+              <AiSummary points={post.summaryPoints} />
             </div>
           </div>
 
           <div className="mx-auto max-w-7xl px-6 py-10 lg:px-10 lg:py-14">
             <div className="grid gap-10 lg:grid-cols-[1fr_300px]">
               <div id={ARTICLE_CONTENT_ID} className="min-w-0">
-                <Reveal>
-                  <AiSummary points={post.summaryPoints} />
-                </Reveal>
-
-                <div className="prose-article mt-10 space-y-10 font-urbanist text-[16px] leading-relaxed text-ink-dim">
+                <div className="prose-article space-y-10 font-urbanist text-[16px] leading-relaxed text-ink-dim">
                   {post.sections.map((section) => (
                     <Reveal key={section.heading}>
                       <h2
@@ -216,8 +204,9 @@ export default async function BlogPostPage({
               </div>
 
               <aside className="space-y-5 lg:sticky lg:top-32 lg:h-fit">
-                <div className="hidden lg:block">
+                <div className="hidden space-y-5 lg:block">
                   <TableOfContents headings={headings} />
+                  <AiSummary points={post.summaryPoints} />
                 </div>
                 <div className="rounded-2xl border border-hairline-light bg-light-raised p-5">
                   <ShareButtons url={postUrl} title={post.title} />
