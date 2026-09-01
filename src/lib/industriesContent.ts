@@ -17,9 +17,8 @@ import { INDUSTRIES, SERVICE_COLUMNS, type IndustryLink } from "./navigation";
 export type FeaturedIndustry = IndustryLink & {
   challenge: string;
   ctaLabel: string;
+  accent: string;
 };
-
-const FEATURED_SLUGS = ["saas", "ecommerce", "fintech", "real-estate", "logistics", "travel"];
 
 function bySlug(slug: string): IndustryLink {
   const found = INDUSTRIES.find((i) => i.href.endsWith(`/${slug}`));
@@ -34,6 +33,10 @@ const CHALLENGES: Record<string, string> = {
   "real-estate": "Listings that go stale, leads that fall through the cracks between portal and CRM.",
   logistics: "Dispatch decisions made from spreadsheets, with no live visibility once a job leaves the yard.",
   travel: "Booking flows that lose people at payment, and itineraries that break the moment plans change.",
+  "professional-services": "Proposals that stall in email, with no clean way to track a deal from lead to signed.",
+  luxury: "Brand experiences that feel templated the moment a customer looks closely.",
+  rmg: "Production visibility that lives in spreadsheets, with no real-time view from floor to shipment.",
+  "restaurant-food": "Ordering, reservations, and loyalty systems that don't talk to each other across locations.",
 };
 
 const CTAS: Record<string, string> = {
@@ -43,15 +46,35 @@ const CTAS: Record<string, string> = {
   "real-estate": "Talk about your portal",
   logistics: "Talk about your operations",
   travel: "Talk about your booking flow",
+  "professional-services": "Talk about your firm's systems",
+  luxury: "Talk about your brand experience",
+  rmg: "Talk about your production systems",
+  "restaurant-food": "Talk about your operations",
 };
 
-export const FEATURED_INDUSTRIES: FeaturedIndustry[] = FEATURED_SLUGS.map((slug) => ({
-  ...bySlug(slug),
-  challenge: CHALLENGES[slug],
-  ctaLabel: CTAS[slug],
-}));
+/** One accent per industry so the 10 cards read as genuinely distinct, not the same card repeated. */
+const ACCENTS: Record<string, string> = {
+  saas: "#8a7bff",
+  ecommerce: "#5b9bdb",
+  fintech: "#3fae82",
+  "real-estate": "#d99a4e",
+  logistics: "#db5a89",
+  travel: "#d97fc4",
+  "professional-services": "#4ea8b8",
+  luxury: "#b08d57",
+  rmg: "#6b7fd7",
+  "restaurant-food": "#e0755a",
+};
 
-export const MORE_INDUSTRIES: IndustryLink[] = INDUSTRIES.filter((i) => !FEATURED_SLUGS.includes(i.href.split("/").pop()!));
+function slugOf(href: string) {
+  return href.split("/").pop()!;
+}
+
+/** All 10 industries, each with a challenge line, a CTA, and its own accent — the hub page shows every one, not a "featured 6 + more" split. */
+export const FEATURED_INDUSTRIES: FeaturedIndustry[] = INDUSTRIES.map((ind) => {
+  const slug = slugOf(ind.href);
+  return { ...ind, challenge: CHALLENGES[slug], ctaLabel: CTAS[slug], accent: ACCENTS[slug] };
+});
 
 export type UseCase = { icon: string; title: string; description: string };
 
@@ -66,45 +89,60 @@ export const USE_CASES: UseCase[] = [
   { icon: "refresh-cw", title: "Legacy modernization", description: "Incremental migration off aging platforms, with production data intact throughout." },
 ];
 
-export type VerticalExpertiseCard = { n: string; title: string; description: string };
+export type VerticalExpertiseCard = { n: string; title: string; description: string; accent: string };
 
 export const VERTICAL_EXPERTISE: VerticalExpertiseCard[] = [
   {
     n: "01",
     title: "Fewer expensive assumptions",
     description: "We already know where SaaS trials leak or where logistics dispatch breaks down — so early decisions start closer to right.",
+    accent: "#8a7bff",
   },
   {
     n: "02",
     title: "Vocabulary that matches your team's",
     description: "Discovery moves faster when we already understand your workflows, compliance constraints, and the metrics your team is measured on.",
+    accent: "#5b9bdb",
   },
   {
     n: "03",
     title: "Patterns proven under real usage",
     description: "Billing, dispatch, and booking systems we've shipped before, adapted to your specifics instead of built from a blank page.",
+    accent: "#3fae82",
   },
   {
     n: "04",
     title: "Honest scoping from day one",
     description: "We'll tell you what's a 6-week sprint and what genuinely needs a bigger engagement — before you commit budget either way.",
+    accent: "#d99a4e",
   },
 ];
 
-export type PillarMapping = { industry: string; industryHref: string; pillars: { title: string; href: string }[] };
+export type PillarMapping = { industry: string; industryHref: string; icon: string; accent: string; pillars: { title: string; href: string }[] };
 
 const PILLAR_BY_ID: Record<string, { title: string; href: string }> = Object.fromEntries(
   SERVICE_COLUMNS.map((c) => [c.id, { title: c.title, href: c.href }])
 );
 
-export const INDUSTRY_SERVICE_MAP: PillarMapping[] = [
-  { industry: "SaaS", industryHref: "/industries/saas", pillars: [PILLAR_BY_ID.engineering, PILLAR_BY_ID.ai, PILLAR_BY_ID.design] },
-  { industry: "eCommerce & Retail", industryHref: "/industries/ecommerce", pillars: [PILLAR_BY_ID.commerce, PILLAR_BY_ID.websites, PILLAR_BY_ID.design] },
-  { industry: "FinTech", industryHref: "/industries/fintech", pillars: [PILLAR_BY_ID.engineering, PILLAR_BY_ID.design, PILLAR_BY_ID.ai] },
-  { industry: "Real Estate", industryHref: "/industries/real-estate", pillars: [PILLAR_BY_ID.engineering, PILLAR_BY_ID.websites, PILLAR_BY_ID.ai] },
-  { industry: "Logistics", industryHref: "/industries/logistics", pillars: [PILLAR_BY_ID.engineering, PILLAR_BY_ID.ai, PILLAR_BY_ID.design] },
-  { industry: "Travel & Hospitality", industryHref: "/industries/travel", pillars: [PILLAR_BY_ID.websites, PILLAR_BY_ID.engineering, PILLAR_BY_ID.design] },
+const PILLAR_MAP_SLUGS: { slug: string; pillarIds: string[] }[] = [
+  { slug: "saas", pillarIds: ["engineering", "ai", "design"] },
+  { slug: "ecommerce", pillarIds: ["commerce", "websites", "design"] },
+  { slug: "fintech", pillarIds: ["engineering", "design", "ai"] },
+  { slug: "real-estate", pillarIds: ["engineering", "websites", "ai"] },
+  { slug: "logistics", pillarIds: ["engineering", "ai", "design"] },
+  { slug: "travel", pillarIds: ["websites", "engineering", "design"] },
 ];
+
+export const INDUSTRY_SERVICE_MAP: PillarMapping[] = PILLAR_MAP_SLUGS.map(({ slug, pillarIds }) => {
+  const ind = bySlug(slug);
+  return {
+    industry: ind.label,
+    industryHref: ind.href,
+    icon: ind.icon,
+    accent: ACCENTS[slug],
+    pillars: pillarIds.map((id) => PILLAR_BY_ID[id]),
+  };
+});
 
 export type Quote = { quote: string; name: string; role: string; accent: string };
 
@@ -178,6 +216,18 @@ export const HUB_FAQS: Faq[] = [
     a: "We scope compliance requirements (data residency, access logging, audit trails, etc.) during discovery, not after the build starts — it shapes the architecture from day one.",
   },
 ];
+
+export const HUB_FAQ_STATS = [
+  { value: INDUSTRIES.length, label: "Industries served" },
+  { value: 6, label: "Real, global collaboration hubs" },
+];
+
+export const HUB_FAQ_CTA = {
+  title: "Still not sure where you fit?",
+  description: "Tell us about your industry and we'll point you to the right fit — honestly, even if it's not us.",
+  label: "Book a Call",
+  href: "/contact",
+};
 
 export const SAAS_FAQS: Faq[] = [
   {

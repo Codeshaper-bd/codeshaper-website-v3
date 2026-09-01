@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import Link from "next/link";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 import SiteShell from "@/components/system/SiteShell";
@@ -7,21 +7,22 @@ import Breadcrumbs from "@/components/system/Breadcrumbs";
 import Reveal from "@/components/system/Reveal";
 import { SectionEyebrow, SectionTitle, SectionDescription } from "@/components/system/SectionHeading";
 import { Icon } from "@/lib/icons";
+import { textSafeAccent } from "@/lib/color";
 import ContactForm from "@/components/sections/ContactForm";
 import CaseStudyCard from "@/components/case-studies/CaseStudyCard";
 import FaqAccordion from "@/components/system/FaqAccordion";
 import QuoteGrid from "@/components/system/QuoteGrid";
 import { CASE_STUDIES } from "@/lib/caseStudies";
-import { INDUSTRIES, ENGAGEMENT_MODELS } from "@/lib/navigation";
 import {
   FEATURED_INDUSTRIES,
-  MORE_INDUSTRIES,
   USE_CASES,
   VERTICAL_EXPERTISE,
   INDUSTRY_SERVICE_MAP,
   HUB_TESTIMONIALS,
   HUB_FAQS,
   HUB_FAQ_JSON_LD,
+  HUB_FAQ_STATS,
+  HUB_FAQ_CTA,
 } from "@/lib/industriesContent";
 import { SITE_URL } from "@/lib/site";
 
@@ -46,13 +47,6 @@ function SectionLabel({ children }: { children: ReactNode }) {
   return <p className="mb-5 font-urbanist text-[11px] font-semibold uppercase tracking-[0.2em] text-ink-faint">{children}</p>;
 }
 
-const PROOF_STATS = [
-  { value: String(INDUSTRIES.length), label: "Industries served" },
-  { value: String(CASE_STUDIES.length), label: "Shipped case studies" },
-  { value: String(ENGAGEMENT_MODELS.length), label: "Engagement models" },
-  { value: "Weekly", label: "Demos & board visibility" },
-];
-
 export default function IndustriesIndexPage() {
   return (
     <SiteShell>
@@ -75,7 +69,9 @@ export default function IndustriesIndexPage() {
                 style={{ background: "radial-gradient(closest-side, rgba(124,108,255,0.16), transparent)" }}
               />
               <div className="relative mx-auto max-w-3xl text-center">
-                <Breadcrumbs items={[{ label: "Home", href: "/" }, { label: "Industries" }]} />
+                <div className="flex justify-center">
+                  <Breadcrumbs items={[{ label: "Home", href: "/" }, { label: "Industries" }]} />
+                </div>
                 <SectionEyebrow className="mx-auto w-fit">Industries</SectionEyebrow>
                 <SectionTitle as="h1" size="lg" id="industries-hero-heading">
                   Product work shaped by the industry you actually operate in.
@@ -99,27 +95,16 @@ export default function IndustriesIndexPage() {
                     Browse case studies
                   </Link>
                 </div>
-
-                <Reveal delay={150}>
-                  <div className="mx-auto mt-12 grid max-w-3xl grid-cols-2 gap-3 sm:grid-cols-4">
-                    {PROOF_STATS.map((s) => (
-                      <div key={s.label} className="rounded-2xl border border-hairline-light bg-light-raised px-4 py-5 text-center">
-                        <p className="font-urbanist text-2xl font-bold tracking-tight text-ink">{s.value}</p>
-                        <p className="mt-1 font-urbanist text-[11.5px] leading-snug text-ink-faint">{s.label}</p>
-                      </div>
-                    ))}
-                  </div>
-                </Reveal>
               </div>
             </section>
           </Reveal>
         </div>
 
-        {/* 2. Featured industries */}
+        {/* 2. Featured industries — all 10, each with its own accent */}
         <section className="bg-light-surface py-14 lg:py-20" aria-labelledby="featured-industries-heading">
           <div className="mx-auto max-w-7xl px-6 lg:px-10">
             <Reveal>
-              <SectionLabel>Featured Industries</SectionLabel>
+              <SectionLabel>Industries We Serve</SectionLabel>
               <SectionTitle as="h2" id="featured-industries-heading" className="max-w-xl">
                 Where we go deep, not just wide.
               </SectionTitle>
@@ -127,18 +112,25 @@ export default function IndustriesIndexPage() {
 
             <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
               {FEATURED_INDUSTRIES.map((ind, i) => (
-                <Reveal key={ind.href} delay={i * 60}>
+                <Reveal key={ind.href} delay={i * 50}>
                   <Link
                     href={ind.href}
-                    className="group flex h-full flex-col rounded-2xl border border-hairline-light bg-light-raised p-6 transition-[transform,box-shadow,border-color] duration-300 ease-out-expo hover:-translate-y-1 hover:border-aurora-violet/40 hover:shadow-[0_20px_44px_rgba(11,15,25,0.08)]"
+                    className="group flex h-full flex-col overflow-hidden rounded-2xl border border-hairline-light bg-light-raised p-6 transition-[transform,box-shadow] duration-300 ease-out-expo hover:-translate-y-1 hover:shadow-[0_20px_44px_var(--ind-glow)]"
+                    style={{ "--ind-glow": `${ind.accent}22`, borderTop: `3px solid ${ind.accent}` } as CSSProperties}
                   >
-                    <span className="flex h-11 w-11 items-center justify-center rounded-full border border-hairline-light text-ink-dim transition-colors duration-300 group-hover:border-aurora-violet/50 group-hover:text-aurora-violet">
+                    <span
+                      className="flex h-11 w-11 items-center justify-center rounded-full transition-transform duration-300 group-hover:scale-110"
+                      style={{ backgroundColor: `${ind.accent}14`, color: ind.accent }}
+                    >
                       <Icon name={ind.icon} size={18} />
                     </span>
                     <h3 className="mt-5 font-urbanist text-lg font-bold tracking-tight text-ink">{ind.label}</h3>
                     <p className="mt-2 font-urbanist text-[13px] font-medium text-ink-faint">{ind.desc}</p>
                     <p className="mt-3 flex-1 font-urbanist text-[13.5px] leading-relaxed text-ink-dim">{ind.challenge}</p>
-                    <span className="mt-5 inline-flex items-center gap-1.5 border-t border-hairline-light pt-4 font-urbanist text-[13px] font-semibold text-ink-mid transition-colors duration-300 group-hover:text-aurora-violet">
+                    <span
+                      className="mt-5 inline-flex items-center gap-1.5 border-t border-hairline-light pt-4 font-urbanist text-[13px] font-semibold"
+                      style={{ color: textSafeAccent(ind.accent) }}
+                    >
                       {ind.ctaLabel}
                       <ArrowRight size={13} strokeWidth={1.75} className="transition-transform duration-300 group-hover:translate-x-0.5" />
                     </span>
@@ -146,53 +138,38 @@ export default function IndustriesIndexPage() {
                 </Reveal>
               ))}
             </div>
+          </div>
+        </section>
 
-            {/* 3. More industries */}
-            <Reveal delay={100}>
-              <div className="mt-10 flex flex-wrap items-center gap-3 border-t border-hairline-light pt-8">
-                <span className="font-urbanist text-[13px] font-medium text-ink-faint">Also serving:</span>
-                {MORE_INDUSTRIES.map((ind) => (
-                  <Link
-                    key={ind.href}
-                    href={ind.href}
-                    className="inline-flex items-center gap-2 rounded-full border border-hairline-light px-4 py-2 font-urbanist text-[13px] font-medium text-ink-dim transition-colors duration-300 hover:border-aurora-violet/50 hover:text-ink"
-                  >
-                    <Icon name={ind.icon} size={13} />
-                    {ind.label}
-                  </Link>
+        {/* 3. What we build — floating white card */}
+        <div className="bg-light-surface p-3 sm:p-4">
+          <section className="theme-light relative overflow-hidden rounded-[32px] bg-canvas py-14 lg:py-20" aria-labelledby="use-cases-heading">
+            <div className="mx-auto max-w-7xl px-6 lg:px-10">
+              <Reveal>
+                <SectionLabel>What We Build</SectionLabel>
+                <SectionTitle as="h2" id="use-cases-heading" className="max-w-xl">
+                  The same systems, wherever the industry changes.
+                </SectionTitle>
+              </Reveal>
+              <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                {USE_CASES.map((u, i) => (
+                  <Reveal key={u.title} delay={i * 40}>
+                    <div className="flex h-full flex-col rounded-2xl border border-hairline-light bg-light-raised p-5 transition-[transform,border-color] duration-300 hover:-translate-y-1 hover:border-aurora-violet/30">
+                      <span className="flex h-9 w-9 items-center justify-center rounded-full bg-aurora-violet/10 text-aurora-violet">
+                        <Icon name={u.icon} size={16} />
+                      </span>
+                      <h3 className="mt-4 font-urbanist text-[14.5px] font-bold text-ink">{u.title}</h3>
+                      <p className="mt-1.5 flex-1 font-urbanist text-[13px] leading-relaxed text-ink-dim">{u.description}</p>
+                    </div>
+                  </Reveal>
                 ))}
               </div>
-            </Reveal>
-          </div>
-        </section>
-
-        {/* 4. What we build */}
-        <section className="border-t border-hairline-light bg-light-surface py-14 lg:py-20" aria-labelledby="use-cases-heading">
-          <div className="mx-auto max-w-7xl px-6 lg:px-10">
-            <Reveal>
-              <SectionLabel>What We Build</SectionLabel>
-              <SectionTitle as="h2" id="use-cases-heading" className="max-w-xl">
-                The same systems, wherever the industry changes.
-              </SectionTitle>
-            </Reveal>
-            <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              {USE_CASES.map((u, i) => (
-                <Reveal key={u.title} delay={i * 40}>
-                  <div className="flex h-full flex-col rounded-2xl border border-hairline-light bg-light-raised p-5">
-                    <span className="flex h-9 w-9 items-center justify-center rounded-full border border-hairline-light text-ink-dim">
-                      <Icon name={u.icon} size={16} />
-                    </span>
-                    <h3 className="mt-4 font-urbanist text-[14.5px] font-bold text-ink">{u.title}</h3>
-                    <p className="mt-1.5 flex-1 font-urbanist text-[13px] leading-relaxed text-ink-dim">{u.description}</p>
-                  </div>
-                </Reveal>
-              ))}
             </div>
-          </div>
-        </section>
+          </section>
+        </div>
 
-        {/* 5. Why vertical expertise matters */}
-        <section className="border-t border-hairline-light bg-light-surface py-14 lg:py-20" aria-labelledby="expertise-heading">
+        {/* 4. Why vertical expertise matters — ghost-numeral cards, visually distinct from the bordered-icon cards elsewhere on this page */}
+        <section className="bg-light-surface py-14 lg:py-20" aria-labelledby="expertise-heading">
           <div className="mx-auto max-w-5xl px-6 lg:px-10">
             <Reveal>
               <SectionLabel>Why It Matters</SectionLabel>
@@ -203,10 +180,19 @@ export default function IndustriesIndexPage() {
             <div className="mt-10 grid gap-5 sm:grid-cols-2">
               {VERTICAL_EXPERTISE.map((v, i) => (
                 <Reveal key={v.n} delay={i * 70}>
-                  <div className="rounded-2xl border border-hairline-light bg-light-raised p-6">
-                    <span className="font-urbanist text-[13px] font-bold tabular-nums text-aurora-violet">{v.n}</span>
-                    <h3 className="mt-3 font-urbanist text-[16px] font-bold text-ink">{v.title}</h3>
-                    <p className="mt-2 font-urbanist text-[13.5px] leading-relaxed text-ink-dim">{v.description}</p>
+                  <div className="group relative overflow-hidden rounded-2xl border border-hairline-light bg-light-raised p-6">
+                    <span
+                      aria-hidden
+                      className="absolute -right-3 -top-6 select-none font-urbanist text-[100px] font-extrabold leading-none tracking-tight transition-transform duration-300 ease-out group-hover:scale-105"
+                      style={{ color: v.accent, opacity: 0.1 }}
+                    >
+                      {v.n}
+                    </span>
+                    <div className="relative z-10">
+                      <span className="h-1.5 w-6 rounded-full" style={{ backgroundColor: v.accent, display: "block" }} aria-hidden />
+                      <h3 className="mt-4 font-urbanist text-[16px] font-bold text-ink">{v.title}</h3>
+                      <p className="mt-2 font-urbanist text-[13.5px] leading-relaxed text-ink-dim">{v.description}</p>
+                    </div>
                   </div>
                 </Reveal>
               ))}
@@ -214,46 +200,56 @@ export default function IndustriesIndexPage() {
           </div>
         </section>
 
-        {/* 6. Industry -> service pillar mapping */}
-        <section className="border-t border-hairline-light bg-light-surface py-14 lg:py-20" aria-labelledby="pillar-map-heading">
-          <div className="mx-auto max-w-5xl px-6 lg:px-10">
-            <Reveal>
-              <SectionLabel>How It Maps</SectionLabel>
-              <SectionTitle as="h2" id="pillar-map-heading" className="max-w-xl">
-                Which services actually apply to your industry.
-              </SectionTitle>
-            </Reveal>
-            <Reveal delay={80}>
-              <div className="mt-10 overflow-hidden rounded-[24px] border border-hairline-light bg-light-raised">
+        {/* 5. Industry -> service pillar mapping — floating white card */}
+        <div className="bg-light-surface p-3 sm:p-4">
+          <section className="theme-light relative overflow-hidden rounded-[32px] bg-canvas py-14 lg:py-20" aria-labelledby="pillar-map-heading">
+            <div className="mx-auto max-w-5xl px-6 lg:px-10">
+              <Reveal>
+                <SectionLabel>How It Maps</SectionLabel>
+                <SectionTitle as="h2" id="pillar-map-heading" className="max-w-xl">
+                  Which services actually apply to your industry.
+                </SectionTitle>
+              </Reveal>
+              <div className="mt-10 grid gap-4 sm:grid-cols-2">
                 {INDUSTRY_SERVICE_MAP.map((row, i) => (
-                  <div
-                    key={row.industry}
-                    className={`flex flex-col gap-3 px-6 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-8 ${i > 0 ? "border-t border-hairline-light" : ""}`}
-                  >
-                    <Link href={row.industryHref} className="font-urbanist text-[15px] font-bold text-ink transition-colors hover:text-aurora-violet">
-                      {row.industry}
-                    </Link>
-                    <div className="flex flex-wrap gap-2">
-                      {row.pillars.map((p) => (
-                        <Link
-                          key={p.href}
-                          href={p.href}
-                          className="inline-flex items-center gap-1 rounded-full border border-hairline-light px-3 py-1.5 font-urbanist text-[12px] font-medium text-ink-dim transition-colors hover:border-aurora-violet/50 hover:text-ink"
+                  <Reveal key={row.industry} delay={i * 60}>
+                    <div
+                      className="h-full rounded-2xl border border-hairline-light bg-light-raised p-5 transition-[transform,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-[0_16px_36px_var(--map-glow)]"
+                      style={{ "--map-glow": `${row.accent}22` } as CSSProperties}
+                    >
+                      <div className="flex items-center gap-3">
+                        <span
+                          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full"
+                          style={{ backgroundColor: `${row.accent}14`, color: row.accent }}
                         >
-                          {p.title}
-                          <ArrowUpRight size={11} strokeWidth={1.75} />
+                          <Icon name={row.icon} size={17} />
+                        </span>
+                        <Link href={row.industryHref} className="font-urbanist text-[15px] font-bold text-ink transition-colors hover:text-aurora-violet">
+                          {row.industry}
                         </Link>
-                      ))}
+                      </div>
+                      <div className="mt-4 flex flex-wrap gap-2">
+                        {row.pillars.map((p) => (
+                          <Link
+                            key={p.href}
+                            href={p.href}
+                            className="inline-flex items-center gap-1 rounded-full border border-hairline-light px-3 py-1.5 font-urbanist text-[12px] font-medium text-ink-dim transition-colors hover:border-aurora-violet/50 hover:text-ink"
+                          >
+                            {p.title}
+                            <ArrowUpRight size={11} strokeWidth={1.75} />
+                          </Link>
+                        ))}
+                      </div>
                     </div>
-                  </div>
+                  </Reveal>
                 ))}
               </div>
-            </Reveal>
-          </div>
-        </section>
+            </div>
+          </section>
+        </div>
 
-        {/* 7. Proof / case studies */}
-        <section className="border-t border-hairline-light bg-light-surface py-14 lg:py-20" aria-labelledby="proof-heading">
+        {/* 6. Proof / case studies */}
+        <section className="bg-light-surface py-14 lg:py-20" aria-labelledby="proof-heading">
           <div className="mx-auto max-w-7xl px-6 lg:px-10">
             <Reveal>
               <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
@@ -282,14 +278,21 @@ export default function IndustriesIndexPage() {
           </div>
         </section>
 
-        {/* 8. Testimonials */}
-        <QuoteGrid id="hub-testimonials-heading" title="Trusted across the industries we serve." items={HUB_TESTIMONIALS} />
+        {/* 7. Client voices — floating white card */}
+        <QuoteGrid id="hub-testimonials-heading" title="Trusted across the industries we serve." items={HUB_TESTIMONIALS} card />
 
-        {/* 9. FAQ */}
-        <FaqAccordion id="hub-faq-heading" title="Questions, answered" items={HUB_FAQS} />
+        {/* 8. FAQ — with stats + CTA */}
+        <FaqAccordion
+          id="hub-faq-heading"
+          title="Questions, answered"
+          description="What clients ask before starting a project with us."
+          items={HUB_FAQS}
+          stats={HUB_FAQ_STATS}
+          cta={HUB_FAQ_CTA}
+        />
       </div>
 
-      {/* 10. Final CTA — dark canvas, matches /contact's own hero exactly (ContactForm's .card-dark styling is built for this root theme, not theme-light) */}
+      {/* 9. Final CTA — dark canvas, matches /contact's own hero exactly (ContactForm's .card-dark styling is built for this root theme, not theme-light) */}
       <section className="relative overflow-hidden bg-canvas py-16 lg:py-24" aria-labelledby="industries-cta-heading">
         <div
           aria-hidden

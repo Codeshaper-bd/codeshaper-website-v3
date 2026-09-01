@@ -69,7 +69,9 @@ export default function ServicesIndexPage() {
                 style={{ background: "radial-gradient(closest-side, rgba(124,108,255,0.16), transparent)" }}
               />
               <div className="relative mx-auto max-w-3xl text-center">
-                <Breadcrumbs items={[{ label: "Home", href: "/" }, { label: "Services" }]} />
+                <div className="flex justify-center">
+                  <Breadcrumbs items={[{ label: "Home", href: "/" }, { label: "Services" }]} />
+                </div>
                 <SectionEyebrow className="mx-auto w-fit">Services</SectionEyebrow>
                 <SectionTitle as="h1" size="lg" id="services-hero-heading">
                   Digital product design, engineering, commerce &amp; AI automation — built for scale.

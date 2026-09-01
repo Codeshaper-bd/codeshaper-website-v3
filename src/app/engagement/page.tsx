@@ -78,7 +78,9 @@ export default function EngagementIndexPage() {
                 style={{ background: "radial-gradient(closest-side, rgba(124,108,255,0.16), transparent)" }}
               />
               <div className="relative mx-auto max-w-3xl text-center">
-                <Breadcrumbs items={[{ label: "Home", href: "/" }, { label: "Engagement Models" }]} />
+                <div className="flex justify-center">
+                  <Breadcrumbs items={[{ label: "Home", href: "/" }, { label: "Engagement Models" }]} />
+                </div>
                 <SectionEyebrow className="mx-auto w-fit">How We Work</SectionEyebrow>
                 <SectionTitle as="h1" size="lg" id="engagement-hero-heading">
                   Flexible engagement models for predictable delivery.

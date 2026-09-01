@@ -74,7 +74,9 @@ export default function AiAutomationPage() {
                 style={{ background: "radial-gradient(closest-side, rgba(124,108,255,0.16), transparent)" }}
               />
               <div className="relative mx-auto max-w-3xl text-center">
-                <Breadcrumbs items={[{ label: "Home", href: "/" }, { label: "Services", href: "/services" }, { label: "AI & Automation" }]} />
+                <div className="flex justify-center">
+                  <Breadcrumbs items={[{ label: "Home", href: "/" }, { label: "Services", href: "/services" }, { label: "AI & Automation" }]} />
+                </div>
                 <span className="mx-auto mb-5 flex h-12 w-12 items-center justify-center rounded-full border border-hairline-light text-ink-dim">
                   <Icon name={SERVICE_ICONS.ai} size={20} />
                 </span>

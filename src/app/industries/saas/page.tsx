@@ -71,7 +71,9 @@ export default function SaasIndustryPage() {
                 style={{ background: "radial-gradient(closest-side, rgba(124,108,255,0.16), transparent)" }}
               />
               <div className="relative mx-auto max-w-3xl text-center">
-                <Breadcrumbs items={[{ label: "Home", href: "/" }, { label: "Industries", href: "/industries" }, { label: "SaaS" }]} />
+                <div className="flex justify-center">
+                  <Breadcrumbs items={[{ label: "Home", href: "/" }, { label: "Industries", href: "/industries" }, { label: "SaaS" }]} />
+                </div>
                 <span className="mx-auto mb-5 flex h-12 w-12 items-center justify-center rounded-full border border-hairline-light text-ink-dim">
                   <Icon name={IND.icon} size={20} />
                 </span>
