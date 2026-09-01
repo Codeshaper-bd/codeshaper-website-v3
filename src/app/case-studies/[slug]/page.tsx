@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
@@ -17,6 +17,14 @@ import {
   MessageSquareQuote,
   Quote,
   Sparkles,
+  Rocket,
+  Eye,
+  FileText,
+  LifeBuoy,
+  Layers,
+  Handshake,
+  Boxes,
+  Code2,
 } from "lucide-react";
 import SiteShell from "@/components/system/SiteShell";
 import Breadcrumbs from "@/components/system/Breadcrumbs";
@@ -56,6 +64,27 @@ const SNAPSHOT_ICON: Record<string, typeof Target> = {
   "Tech stack": Sparkles,
   Platforms: Package,
 };
+
+/** Keyword match on the stat's own label — data is free text per case study, so this stays a heuristic with a sane fallback rather than a hardcoded per-label map. */
+function statIcon(label: string): typeof Target {
+  const l = label.toLowerCase();
+  if (l.includes("launch")) return Rocket;
+  if (l.includes("demo") || l.includes("review")) return Eye;
+  if (l.includes("publish")) return FileText;
+  if (l.includes("care") || l.includes("maintenance")) return LifeBuoy;
+  if (l.includes("platform")) return Layers;
+  if (l.includes("engagement")) return Handshake;
+  if (l.includes("module") || l.includes("pos") || l.includes("inventory") || l.includes("accounting")) return Boxes;
+  if (l.includes("stack")) return Code2;
+  return Sparkles;
+}
+
+/** Business/User/Engineering goals each get a distinct color + icon so the 3 cards read as different categories, not 3 identical gray boxes. */
+const GOAL_GROUPS: { key: "business" | "user" | "engineering"; title: string; icon: typeof Target; accent: string }[] = [
+  { key: "business", title: "Business goals", icon: Target, accent: "#8a7bff" },
+  { key: "user", title: "User goals", icon: Users, accent: "#5b9bdb" },
+  { key: "engineering", title: "Engineering goals", icon: Code2, accent: "#3fae82" },
+];
 
 /**
  * Renders as an actual <h2> (not <p>) — this is every section's real
@@ -172,12 +201,25 @@ export default async function CaseStudyDetailPage({
             </Reveal>
             <Reveal delay={180}>
               <div className="mx-auto mt-6 grid max-w-2xl grid-cols-2 gap-4 sm:grid-cols-4">
-                {story.stats.map((s) => (
-                  <div key={s.label} className="rounded-2xl border border-hairline-light bg-light-raised px-4 py-4 text-center">
-                    <p className="font-urbanist text-[15px] font-bold leading-tight text-ink">{s.value}</p>
-                    <p className="mt-1 font-urbanist text-[11.5px] leading-snug text-ink-dim">{s.label}</p>
-                  </div>
-                ))}
+                {story.stats.map((s) => {
+                  const Icon = statIcon(s.label);
+                  return (
+                    <div
+                      key={s.label}
+                      className="group rounded-2xl border border-hairline-light bg-light-raised px-4 py-5 text-center transition-[transform,box-shadow,border-color] duration-300 hover:-translate-y-1 hover:border-transparent hover:shadow-[0_20px_40px_var(--stat-glow)]"
+                      style={{ "--stat-glow": `${story.accent}26` } as CSSProperties}
+                    >
+                      <span
+                        className="mx-auto flex h-10 w-10 items-center justify-center rounded-full transition-transform duration-300 group-hover:scale-110"
+                        style={{ backgroundColor: `${story.accent}14`, color: story.accent }}
+                      >
+                        <Icon size={17} strokeWidth={1.75} />
+                      </span>
+                      <p className="mt-3 font-urbanist text-[16px] font-bold leading-tight text-ink">{s.value}</p>
+                      <p className="mt-1 font-urbanist text-[11.5px] leading-snug text-ink-dim">{s.label}</p>
+                    </div>
+                  );
+                })}
               </div>
             </Reveal>
           </div>
@@ -246,22 +288,34 @@ export default async function CaseStudyDetailPage({
                 <div className="mt-14">
                   <SectionLabel>What success looked like</SectionLabel>
                   <div className="grid gap-5 sm:grid-cols-3">
-                    {([
-                      ["Business goals", story.goals.business],
-                      ["User goals", story.goals.user],
-                      ["Engineering goals", story.goals.engineering],
-                    ] as const).map(([title, items]) => (
-                      <div key={title} className="rounded-2xl border border-hairline-light bg-light-raised p-5">
-                        <h3 className="font-urbanist text-[14px] font-bold text-ink">{title}</h3>
-                        <ul className="mt-3 space-y-2">
-                          {items.map((it) => (
-                            <li key={it} className="font-urbanist text-[13px] leading-relaxed text-ink-dim">
-                              {it}
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    ))}
+                    {GOAL_GROUPS.map((g, i) => {
+                      const items = story.goals![g.key];
+                      const Icon = g.icon;
+                      return (
+                        <Reveal key={g.key} delay={i * 70}>
+                          <div
+                            className="h-full overflow-hidden rounded-2xl border border-hairline-light bg-light-raised p-5 transition-[transform,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-[0_20px_40px_var(--goal-glow)]"
+                            style={{ "--goal-glow": `${g.accent}22`, borderTop: `3px solid ${g.accent}` } as CSSProperties}
+                          >
+                            <span
+                              className="flex h-9 w-9 items-center justify-center rounded-full"
+                              style={{ backgroundColor: `${g.accent}14`, color: g.accent }}
+                            >
+                              <Icon size={16} strokeWidth={1.75} />
+                            </span>
+                            <h3 className="mt-3.5 font-urbanist text-[14px] font-bold text-ink">{g.title}</h3>
+                            <ul className="mt-3 space-y-2.5">
+                              {items.map((it) => (
+                                <li key={it} className="flex items-start gap-2.5">
+                                  <span aria-hidden className="mt-1.5 h-1 w-1 shrink-0 rounded-full" style={{ backgroundColor: g.accent }} />
+                                  <span className="font-urbanist text-[13px] leading-relaxed text-ink-dim">{it}</span>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        </Reveal>
+                      );
+                    })}
                   </div>
                 </div>
               </Reveal>
@@ -273,10 +327,18 @@ export default async function CaseStudyDetailPage({
                 <div className="mt-14">
                   <SectionLabel>What we delivered</SectionLabel>
                   <div className="grid gap-3 sm:grid-cols-2">
-                    {story.deliverables.map((d) => (
-                      <div key={d} className="flex items-start gap-3 rounded-xl border border-hairline-light bg-light-raised px-4 py-3.5">
-                        <Package size={15} strokeWidth={1.75} className="mt-0.5 shrink-0 text-aurora-violet" />
-                        <span className="font-urbanist text-[13.5px] leading-relaxed text-ink">{d}</span>
+                    {story.deliverables.map((d, i) => (
+                      <div
+                        key={d}
+                        className="group flex items-start gap-3.5 rounded-xl border border-hairline-light bg-light-raised px-4 py-4 transition-[border-color,transform] duration-300 hover:-translate-y-0.5 hover:border-aurora-violet/30"
+                      >
+                        <span
+                          className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full font-urbanist text-[11px] font-bold transition-colors duration-300"
+                          style={{ backgroundColor: `${story.accent}14`, color: story.accent }}
+                        >
+                          {String(i + 1).padStart(2, "0")}
+                        </span>
+                        <span className="mt-0.5 font-urbanist text-[13.5px] leading-relaxed text-ink">{d}</span>
                       </div>
                     ))}
                   </div>
@@ -289,10 +351,11 @@ export default async function CaseStudyDetailPage({
               <Reveal>
                 <div className="mt-14">
                   <SectionLabel>How we approached it</SectionLabel>
-                  <ol className="space-y-3">
+                  <ol className="relative space-y-3">
+                    <span aria-hidden className="absolute left-[13.5px] top-3 bottom-3 w-px bg-hairline-light" />
                     {story.approach.map((step, i) => (
-                      <li key={step} className="flex items-start gap-4 rounded-xl border border-hairline-light bg-light-raised px-5 py-4">
-                        <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-ink font-urbanist text-[12px] font-bold text-canvas">
+                      <li key={step} className="relative flex items-start gap-4 rounded-xl border border-hairline-light bg-light-raised px-5 py-4 transition-[border-color,transform] duration-300 hover:-translate-y-0.5 hover:border-aurora-violet/30">
+                        <span className="relative z-10 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-ink font-urbanist text-[12px] font-bold text-canvas">
                           {i + 1}
                         </span>
                         <span className="mt-0.5 font-urbanist text-[14px] leading-relaxed text-ink-dim">{step}</span>
@@ -315,18 +378,28 @@ export default async function CaseStudyDetailPage({
                 <div className="mt-14">
                   <SectionLabel>Key decisions we made</SectionLabel>
                   <div className="space-y-4">
-                    {story.solutions.map((s) => (
-                      <div key={s.problem} className="rounded-2xl border border-hairline-light bg-light-raised p-6">
-                        <div className="flex items-start gap-3">
-                          <Lightbulb size={16} strokeWidth={1.75} className="mt-0.5 shrink-0 text-aurora-violet" />
-                          <p className="font-urbanist text-[14px] font-semibold text-ink">{s.problem}</p>
+                    {story.solutions.map((s, i) => (
+                      <Reveal key={s.problem} delay={i * 60}>
+                        <div className="overflow-hidden rounded-2xl border border-hairline-light bg-light-raised transition-[border-color,transform] duration-300 hover:-translate-y-0.5 hover:border-aurora-violet/30">
+                          <div className="flex items-start gap-3 p-6 pb-0">
+                            <span
+                              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full"
+                              style={{ backgroundColor: `${story.accent}14`, color: story.accent }}
+                            >
+                              <Lightbulb size={16} strokeWidth={1.75} />
+                            </span>
+                            <p className="mt-1.5 font-urbanist text-[15px] font-bold leading-snug text-ink">{s.problem}</p>
+                          </div>
+                          <p className="px-6 pt-3 font-urbanist text-[14px] leading-relaxed text-ink-dim">{s.decision}</p>
+                          <p
+                            className="mx-6 mb-6 mt-4 rounded-lg py-3 pl-4 pr-4 font-urbanist text-[13px] leading-relaxed text-ink-dim"
+                            style={{ borderLeft: `3px solid ${story.accent}`, backgroundColor: `${story.accent}0a` }}
+                          >
+                            <span className="font-semibold text-ink">Why it worked: </span>
+                            {s.whyItWorked}
+                          </p>
                         </div>
-                        <p className="mt-3 font-urbanist text-[14px] leading-relaxed text-ink-dim">{s.decision}</p>
-                        <p className="mt-3 border-t border-hairline-light pt-3 font-urbanist text-[13px] leading-relaxed text-ink-faint">
-                          <span className="font-semibold text-ink-dim">Why it worked: </span>
-                          {s.whyItWorked}
-                        </p>
-                      </div>
+                      </Reveal>
                     ))}
                   </div>
                 </div>
@@ -337,33 +410,41 @@ export default async function CaseStudyDetailPage({
             {story.results && (story.results.operational?.length || story.results.qualitative?.length) && (
               <Reveal>
                 <div className="mt-14">
-                  <SectionLabel>Results & impact</SectionLabel>
+                  <SectionLabel>Results &amp; impact</SectionLabel>
                   <div className="grid gap-5 sm:grid-cols-2">
                     {story.results.operational && story.results.operational.length > 0 && (
-                      <div className="rounded-2xl border border-hairline-light bg-light-raised p-6">
-                        <span className="flex h-10 w-10 items-center justify-center rounded-xl border border-hairline-light text-aurora-violet">
+                      <div
+                        className="rounded-2xl border border-hairline-light bg-light-raised p-6 transition-transform duration-300 hover:-translate-y-1"
+                        style={{ borderTop: `3px solid ${story.accent}` }}
+                      >
+                        <span
+                          className="flex h-10 w-10 items-center justify-center rounded-xl"
+                          style={{ backgroundColor: `${story.accent}14`, color: story.accent }}
+                        >
                           <ClipboardCheck size={17} strokeWidth={1.75} />
                         </span>
                         <h3 className="mt-4 font-urbanist text-[14px] font-bold text-ink">Operational proof</h3>
-                        <ul className="mt-3 space-y-2">
+                        <ul className="mt-3 space-y-2.5">
                           {story.results.operational.map((r) => (
-                            <li key={r} className="font-urbanist text-[13.5px] leading-relaxed text-ink-dim">
-                              {r}
+                            <li key={r} className="flex items-start gap-2.5">
+                              <CheckCircle2 size={14} strokeWidth={1.75} className="mt-0.5 shrink-0" style={{ color: story.accent }} />
+                              <span className="font-urbanist text-[13.5px] leading-relaxed text-ink-dim">{r}</span>
                             </li>
                           ))}
                         </ul>
                       </div>
                     )}
                     {story.results.qualitative && story.results.qualitative.length > 0 && (
-                      <div className="rounded-2xl border border-hairline-light bg-light-raised p-6">
-                        <span className="flex h-10 w-10 items-center justify-center rounded-xl border border-hairline-light text-aurora-violet">
+                      <div className="rounded-2xl border border-hairline-light bg-light-raised p-6 transition-transform duration-300 hover:-translate-y-1" style={{ borderTop: "3px solid #d99a4e" }}>
+                        <span className="flex h-10 w-10 items-center justify-center rounded-xl" style={{ backgroundColor: "#d99a4e14", color: "#d99a4e" }}>
                           <MessageSquareQuote size={17} strokeWidth={1.75} />
                         </span>
                         <h3 className="mt-4 font-urbanist text-[14px] font-bold text-ink">Qualitative outcomes</h3>
-                        <ul className="mt-3 space-y-2">
+                        <ul className="mt-3 space-y-2.5">
                           {story.results.qualitative.map((r) => (
-                            <li key={r} className="font-urbanist text-[13.5px] leading-relaxed text-ink-dim">
-                              {r}
+                            <li key={r} className="flex items-start gap-2.5">
+                              <CheckCircle2 size={14} strokeWidth={1.75} className="mt-0.5 shrink-0 text-[#d99a4e]" />
+                              <span className="font-urbanist text-[13.5px] leading-relaxed text-ink-dim">{r}</span>
                             </li>
                           ))}
                         </ul>
@@ -402,23 +483,6 @@ export default async function CaseStudyDetailPage({
                   </p>
                   <p className="mt-5 font-urbanist text-[13.5px] font-bold text-ink">{story.testimonial.name}</p>
                   <p className="font-urbanist text-[12.5px] text-ink-dim">{story.testimonial.role}</p>
-                </div>
-              </Reveal>
-            )}
-
-            {/* What's next */}
-            {story.whatsNext && story.whatsNext.length > 0 && (
-              <Reveal>
-                <div className="mt-14">
-                  <SectionLabel>What&apos;s next</SectionLabel>
-                  <ul className="space-y-3">
-                    {story.whatsNext.map((n) => (
-                      <li key={n} className="flex items-start gap-3">
-                        <ArrowRight size={15} strokeWidth={1.75} className="mt-1 shrink-0 text-aurora-violet" />
-                        <span className="font-urbanist text-[14.5px] leading-relaxed text-ink-dim">{n}</span>
-                      </li>
-                    ))}
-                  </ul>
                 </div>
               </Reveal>
             )}
