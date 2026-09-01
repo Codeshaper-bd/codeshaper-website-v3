@@ -33,6 +33,7 @@ import { SectionEyebrow, SectionTitle } from "@/components/system/SectionHeading
 import CaseStudyCard from "@/components/case-studies/CaseStudyCard";
 import CaseStudiesFinalCta from "@/components/case-studies/CaseStudiesFinalCta";
 import { CASE_STUDIES, getCaseStudyBySlug, getRelatedCaseStudies } from "@/lib/caseStudies";
+import { textSafeAccent } from "@/lib/color";
 import { SITE_URL } from "@/lib/site";
 
 export function generateStaticParams() {
@@ -334,7 +335,7 @@ export default async function CaseStudyDetailPage({
                       >
                         <span
                           className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full font-urbanist text-[11px] font-bold transition-colors duration-300"
-                          style={{ backgroundColor: `${story.accent}14`, color: story.accent }}
+                          style={{ backgroundColor: `${story.accent}14`, color: textSafeAccent(story.accent) }}
                         >
                           {String(i + 1).padStart(2, "0")}
                         </span>

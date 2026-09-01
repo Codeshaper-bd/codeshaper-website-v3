@@ -2,6 +2,7 @@ import type { CSSProperties } from "react";
 import { Quote as QuoteIcon } from "lucide-react";
 import { SectionEyebrow, SectionTitle } from "@/components/system/SectionHeading";
 import Reveal from "@/components/system/Reveal";
+import { textSafeAccent } from "@/lib/color";
 
 export type Quote = { quote: string; name: string; role: string; accent: string };
 
@@ -57,7 +58,7 @@ export default function QuoteGrid({
               <div className="mt-5 flex items-center gap-3 border-t border-hairline-light pt-4">
                 <span
                   className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full font-urbanist text-[13px] font-bold"
-                  style={{ backgroundColor: `${t.accent}14`, color: t.accent }}
+                  style={{ backgroundColor: `${t.accent}14`, color: textSafeAccent(t.accent) }}
                   aria-hidden
                 >
                   {t.name.charAt(0)}
