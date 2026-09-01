@@ -9,13 +9,14 @@ import CaseStudyCard from "./CaseStudyCard";
 import { SectionEyebrow, SectionTitle, SectionDescription } from "@/components/system/SectionHeading";
 
 /**
- * Same page size / control pattern as blog/BlogBrowser.tsx. Set to 4
- * (not a rounder 5 or 6) specifically so pagination activates as soon as
- * the 5th case study is added — only 3 exist today, so it's invisible
- * (totalPages === 1) until then, but the very next planned addition
- * makes it visibly functional rather than needing a further bump later.
+ * Same page size / control pattern as blog/BlogBrowser.tsx. Set low
+ * enough (2 = 1 featured + 1 grid card) that pagination is visibly
+ * active with only the 3 real case studies that exist today, instead
+ * of staying hidden (totalPages === 1) until more are added — direct
+ * feedback was that an invisible-until-later mechanism read as
+ * "pagination is missing" rather than "working as designed."
  */
-const PAGE_SIZE = 4;
+const PAGE_SIZE = 2;
 
 /** The top match, shown as a large horizontal card — same treatment blog/BlogBrowser uses for its page-1 lead result. */
 function FeaturedRow({ story }: { story: CaseStudy }) {
