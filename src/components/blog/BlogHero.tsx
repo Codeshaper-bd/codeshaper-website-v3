@@ -35,13 +35,21 @@ export default function BlogHero() {
             </SectionDescription>
           </Reveal>
           <Reveal delay={100}>
-            <Link
-              href="#browse"
-              className="mt-8 inline-flex items-center gap-2 rounded-full border border-aurora-violet/70 px-6 py-3 font-urbanist text-sm font-semibold text-ink transition-colors hover:border-aurora-violet"
-            >
-              Browse Articles
-              <ArrowRight size={15} strokeWidth={1.75} />
-            </Link>
+            <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+              <Link
+                href="/contact"
+                className="inline-flex items-center gap-2 rounded-full bg-ink px-7 py-3.5 font-urbanist text-sm font-semibold text-canvas transition-transform duration-300 hover:scale-[1.02]"
+              >
+                Book a Call
+                <ArrowRight size={15} strokeWidth={1.75} />
+              </Link>
+              <Link
+                href="#browse"
+                className="inline-flex items-center gap-2 rounded-full border border-hairline-light px-7 py-3.5 font-urbanist text-sm font-semibold text-ink-dim transition-colors hover:border-ink-faint hover:text-ink"
+              >
+                Browse Articles
+              </Link>
+            </div>
           </Reveal>
         </div>
       </section>
