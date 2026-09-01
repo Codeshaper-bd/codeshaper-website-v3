@@ -12,7 +12,16 @@ import { forwardRef, type ReactNode } from "react";
 export function SectionEyebrow({ children, className = "" }: { children: ReactNode; className?: string }) {
   return (
     <p
-      className={`mb-3 inline-flex items-center gap-2.5 font-urbanist text-[11px] font-medium uppercase tracking-[0.28em] text-ink-dim ${className}`}
+      // `flex` (block-level), not `inline-flex` — every centered usage
+      // sitewide passes `mx-auto w-fit` expecting margin-auto centering,
+      // but auto margins only center block-level boxes per spec; on an
+      // inline-level box (inline-flex) they're a no-op. That silently left
+      // ~16 "centered" eyebrows sitting flush left instead, one row above
+      // a genuinely centered heading. `flex` + `w-fit` still shrinks to
+      // content width, so left-aligned usages (the majority, with no
+      // override) render pixel-identical to before — flex-start is the
+      // default justify-content either way.
+      className={`mb-3 flex w-fit items-center gap-2.5 font-urbanist text-[11px] font-medium uppercase tracking-[0.28em] text-ink-dim ${className}`}
     >
       <span className="h-1.5 w-1.5 rounded-full bg-aurora-amber" />
       {children}

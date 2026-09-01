@@ -8,8 +8,14 @@ import { CASE_STUDY_INDUSTRIES } from "@/lib/caseStudies";
 import CaseStudyCard from "./CaseStudyCard";
 import { SectionEyebrow, SectionTitle, SectionDescription } from "@/components/system/SectionHeading";
 
-/** Same page size / control pattern as blog/BlogBrowser.tsx — only 3 real case studies exist today, so pagination stays invisible (totalPages === 1) until more are added, rather than needing to be built later. */
-const PAGE_SIZE = 5;
+/**
+ * Same page size / control pattern as blog/BlogBrowser.tsx. Set to 4
+ * (not a rounder 5 or 6) specifically so pagination activates as soon as
+ * the 5th case study is added — only 3 exist today, so it's invisible
+ * (totalPages === 1) until then, but the very next planned addition
+ * makes it visibly functional rather than needing a further bump later.
+ */
+const PAGE_SIZE = 4;
 
 /** The top match, shown as a large horizontal card — same treatment blog/BlogBrowser uses for its page-1 lead result. */
 function FeaturedRow({ story }: { story: CaseStudy }) {
