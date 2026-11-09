@@ -55,13 +55,23 @@ import {
   Target,
   Utensils,
   Shield,
+  Network,
+  FlaskConical,
+  Server,
+  Database,
+  Lock,
+  Activity,
+  LayoutTemplate,
+  Brush,
+  Search,
+  Cpu,
   type LucideIcon,
 } from "lucide-react";
 
 /**
  * Single Lucide icon registry so every icon in the nav renders from the same
  * library at a consistent stroke. Keys match the `icon` fields in
- * lib/navigation.ts and SERVICE_ICONS below.
+ * lib/navigation.ts and src/data/services.ts.
  */
 export const ICONS: Record<string, LucideIcon> = {
   "pen-tool": PenTool,
@@ -122,15 +132,17 @@ export const ICONS: Record<string, LucideIcon> = {
   target: Target,
   utensils: Utensils,
   shield: Shield,
-};
-
-/** Service column → Lucide icon (Step 3 mapping). */
-export const SERVICE_ICONS: Record<string, string> = {
-  design: "pen-tool",
-  engineering: "code-2",
-  websites: "globe",
-  commerce: "shopping-bag",
-  ai: "sparkles",
+  // service structure (src/data/services.ts)
+  network: Network,
+  "flask-conical": FlaskConical,
+  server: Server,
+  database: Database,
+  lock: Lock,
+  activity: Activity,
+  "layout-template": LayoutTemplate,
+  brush: Brush,
+  search: Search,
+  cpu: Cpu,
 };
 
 export function Icon({

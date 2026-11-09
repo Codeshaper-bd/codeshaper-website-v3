@@ -6,22 +6,25 @@ import SiteShell from "@/components/system/SiteShell";
 import Breadcrumbs from "@/components/system/Breadcrumbs";
 import Reveal from "@/components/system/Reveal";
 import { SectionEyebrow, SectionTitle, SectionDescription } from "@/components/system/SectionHeading";
-import { Icon, SERVICE_ICONS } from "@/lib/icons";
+import { Icon } from "@/lib/icons";
 import ContactForm from "@/components/sections/ContactForm";
 import FaqAccordion from "@/components/system/FaqAccordion";
 import CaseStudyCard from "@/components/case-studies/CaseStudyCard";
-import { SERVICE_COLUMNS, ENGAGEMENT_MODELS, INDUSTRIES } from "@/lib/navigation";
+import { INDUSTRIES } from "@/lib/navigation";
+import { SERVICE_GROUPS, groupDescriptor, groupSections, servicePath } from "@/data/services";
+import { pageMetadata } from "@/lib/pageMetadata";
 import { CASE_STUDIES } from "@/lib/caseStudies";
 import { WHAT_YOU_GET, MODEL_OVERVIEWS } from "@/lib/engagementContent";
 import { TRUST_STATS, TRUST_QUOTE, STARTER_PATHS, PILLAR_OUTCOMES, SERVICES_FAQS } from "@/lib/servicesContent";
 import { SITE_URL } from "@/lib/site";
 
-export const metadata: Metadata = {
-  title: "Services",
+export const metadata: Metadata = pageMetadata({
+  title: "AI Engineering & Software Development Services | CodeShaper",
+  // REVIEW
   description:
-    "Product design, engineering, websites, commerce, and AI automation — five practices, one delivery system, one accountable team.",
-  alternates: { canonical: "/services" },
-};
+    "AI agents, software development, AI integration, UI/UX design, websites and commerce: production-ready systems that integrate with the tools you already use.",
+  path: "/services",
+});
 
 const BREADCRUMB_JSON_LD = {
   "@context": "https://schema.org",
@@ -74,12 +77,11 @@ export default function ServicesIndexPage() {
                 </div>
                 <SectionEyebrow className="mx-auto w-fit">Services</SectionEyebrow>
                 <SectionTitle as="h1" size="lg" id="services-hero-heading">
-                  Digital product design, engineering, commerce &amp; AI automation — built for scale.
+                  AI engineering &amp; software development services, built for production.
                 </SectionTitle>
                 <SectionDescription className="mx-auto mt-5 max-w-2xl">
-                  We help teams launch and improve SaaS platforms, web &amp; mobile apps, eCommerce experiences, and
-                  internal business systems — through UX/UI design, product engineering, and automation, with weekly
-                  visibility and a clean handover.
+                  We build reliable, production-ready AI and software systems that integrate with the tools you
+                  already use — with human approval, logging, testing, and monitoring built in, not bolted on.
                 </SectionDescription>
                 <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
                   <Link
@@ -144,28 +146,28 @@ export default function ServicesIndexPage() {
         <section className="border-t border-hairline-light bg-light-surface py-14 lg:py-20" aria-labelledby="pillars-heading">
           <div className="mx-auto max-w-7xl px-6 lg:px-10">
             <Reveal>
-              <SectionLabel>Service Pillars</SectionLabel>
+              <SectionLabel>Service Groups</SectionLabel>
               <SectionTitle as="h2" id="pillars-heading" className="max-w-xl">
-                Services built around how modern products ship.
+                Five service groups, one delivery system.
               </SectionTitle>
               <SectionDescription className="mt-4 max-w-2xl">
-                Pick a pillar based on your goal — ship a new product, improve conversion, modernize systems, or
-                automate workflows.
+                Pick a group based on your goal — automate a workflow, ship a new product, connect AI to your
+                systems, improve the experience, or grow your website and store.
               </SectionDescription>
             </Reveal>
             <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-              {SERVICE_COLUMNS.map((col, i) => (
-                <Reveal key={col.id} delay={i * 60}>
+              {SERVICE_GROUPS.map((group, i) => (
+                <Reveal key={group.slug} delay={i * 60}>
                   <Link
-                    href={`#pillar-${col.id}`}
+                    href={`#pillar-${group.slug}`}
                     className="group flex h-full flex-col rounded-2xl border border-hairline-light bg-light-raised p-6 transition-[transform,box-shadow,border-color] duration-300 ease-out-expo hover:-translate-y-1 hover:border-aurora-violet/40 hover:shadow-[0_20px_44px_rgba(11,15,25,0.08)]"
                   >
                     <span className="flex h-11 w-11 items-center justify-center rounded-full border border-hairline-light text-ink-dim transition-colors duration-300 group-hover:border-aurora-violet/50 group-hover:text-aurora-violet">
-                      <Icon name={SERVICE_ICONS[col.id]} size={18} />
+                      <Icon name={group.icon} size={18} />
                     </span>
-                    <h3 className="mt-5 font-urbanist text-lg font-bold tracking-tight text-ink">{col.title}</h3>
-                    <p className="mt-2 flex-1 font-urbanist text-[13.5px] leading-relaxed text-ink-dim">{col.blurb}</p>
-                    <p className="mt-4 font-urbanist text-[12px] text-ink-faint">{col.tags}</p>
+                    <h3 className="mt-5 font-urbanist text-lg font-bold tracking-tight text-ink">{group.name}</h3>
+                    <p className="mt-2 flex-1 font-urbanist text-[13.5px] leading-relaxed text-ink-dim">{group.focus}</p>
+                    <p className="mt-4 font-urbanist text-[12px] text-ink-faint">{groupDescriptor(group)}</p>
                   </Link>
                 </Reveal>
               ))}
@@ -219,39 +221,46 @@ export default function ServicesIndexPage() {
           </div>
         </section>
 
-        {/* 5-9. The 5 pillars, in depth */}
-        {SERVICE_COLUMNS.map((col) => (
+        {/* 5-9. The 5 service groups, in depth — every service in each */}
+        {SERVICE_GROUPS.map((group, gi) => (
           <section
-            key={col.id}
-            id={`pillar-${col.id}`}
+            key={group.slug}
+            id={`pillar-${group.slug}`}
             className="border-t border-hairline-light bg-light-surface py-14 lg:py-20"
-            aria-labelledby={`pillar-${col.id}-heading`}
+            aria-labelledby={`pillar-${group.slug}-heading`}
           >
             <div className="mx-auto max-w-7xl px-6 lg:px-10">
               <Reveal>
                 <SectionLabel>
-                  Pillar {col.number} · {col.title}
+                  {String(gi + 1).padStart(2, "0")} · {group.name}
                 </SectionLabel>
-                <SectionTitle as="h2" id={`pillar-${col.id}-heading`} className="max-w-2xl">
-                  {col.blurb}
+                <SectionTitle as="h2" id={`pillar-${group.slug}-heading`} className="max-w-2xl">
+                  {group.focus}
                 </SectionTitle>
               </Reveal>
 
               <div className="mt-10 grid gap-8 lg:grid-cols-[1.1fr_1fr]">
-                <div className="grid gap-4 sm:grid-cols-2">
-                  {col.links.map((link, i) => (
-                    <Reveal key={link.href} delay={i * 60}>
-                      <Link
-                        href={link.href}
-                        className="group flex h-full flex-col rounded-2xl border border-hairline-light bg-light-raised p-5 transition-colors duration-300 hover:border-aurora-violet/40"
-                      >
-                        <span className="flex h-9 w-9 items-center justify-center rounded-full border border-hairline-light text-ink-dim transition-colors duration-300 group-hover:border-aurora-violet/50 group-hover:text-aurora-violet">
-                          <Icon name={link.icon} size={16} />
-                        </span>
-                        <h3 className="mt-3 font-urbanist text-[14px] font-bold text-ink">{link.label}</h3>
-                        <p className="mt-1.5 flex-1 font-urbanist text-[12.5px] leading-relaxed text-ink-dim">{link.desc}</p>
-                      </Link>
-                    </Reveal>
+                <div className="space-y-8">
+                  {groupSections(group).map((section) => (
+                    <div key={section.name ?? group.slug}>
+                      {section.name && <SectionLabel>{section.name}</SectionLabel>}
+                      <div className="grid gap-4 sm:grid-cols-2">
+                        {section.services.map((svc, i) => (
+                          <Reveal key={svc.slug} delay={i * 60}>
+                            <Link
+                              href={servicePath(svc.slug)}
+                              className="group flex h-full flex-col rounded-2xl border border-hairline-light bg-light-raised p-5 transition-colors duration-300 hover:border-aurora-violet/40"
+                            >
+                              <span className="flex h-9 w-9 items-center justify-center rounded-full border border-hairline-light text-ink-dim transition-colors duration-300 group-hover:border-aurora-violet/50 group-hover:text-aurora-violet">
+                                <Icon name={svc.icon} size={16} />
+                              </span>
+                              <h3 className="mt-3 font-urbanist text-[14px] font-bold text-ink">{svc.menuLabel}</h3>
+                              <p className="mt-1.5 flex-1 font-urbanist text-[12.5px] leading-relaxed text-ink-dim">{svc.summary}</p>
+                            </Link>
+                          </Reveal>
+                        ))}
+                      </div>
+                    </div>
                   ))}
                 </div>
 
@@ -259,7 +268,7 @@ export default function ServicesIndexPage() {
                   <div className="h-full rounded-2xl border border-hairline-light bg-light-raised p-6">
                     <p className="font-urbanist text-[13px] font-semibold uppercase tracking-[0.15em] text-ink-faint">Common outcomes</p>
                     <ul className="mt-4 space-y-2.5">
-                      {(PILLAR_OUTCOMES[col.id] ?? []).map((o) => (
+                      {PILLAR_OUTCOMES[group.slug].map((o) => (
                         <li key={o} className="flex items-start gap-2.5">
                           <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-aurora-violet" />
                           <span className="font-urbanist text-[13px] leading-relaxed text-ink-dim">{o}</span>
@@ -267,10 +276,10 @@ export default function ServicesIndexPage() {
                       ))}
                     </ul>
                     <Link
-                      href={col.href}
+                      href={servicePath(group.slug)}
                       className="mt-6 inline-flex items-center gap-1.5 border-t border-hairline-light pt-5 font-urbanist text-[13px] font-semibold text-ink-mid transition-colors hover:text-aurora-violet"
                     >
-                      Explore {col.title}
+                      Explore {group.name}
                       <ArrowRight size={13} strokeWidth={1.75} />
                     </Link>
                   </div>

@@ -3,14 +3,21 @@
 import Link from "next/link";
 import * as Nav from "@radix-ui/react-navigation-menu";
 import { ArrowRight } from "lucide-react";
-import { SERVICE_COLUMNS, SERVICES_QUICK_ACCESS, SERVICES_FEATURED } from "@/lib/navigation";
-import { Icon, SERVICE_ICONS } from "@/lib/icons";
+import {
+  SERVICE_GROUPS,
+  SERVICES_QUICK_ACCESS,
+  SERVICES_FEATURED,
+  MEGA_MENU_FOOTER,
+  groupDescriptor,
+  servicePath,
+} from "@/data/services";
+import { Icon } from "@/lib/icons";
 import EngageCard from "./EngageCard";
 
 /**
  * Services mega panel — 3 columns, everything visible at once (no
  * click-through, no active-pillar state). Left: How We Engage (shared with
- * Industries). Center: the 5 practices as a flat list. Right: a featured
+ * Industries). Center: the 5 service groups as a flat list. Right: a featured
  * AI callout + quick-access chips. Footer: count + two links.
  */
 export default function MegaPanel() {
@@ -23,26 +30,26 @@ export default function MegaPanel() {
         <div className="menu-col min-w-0">
           <p className="mega-col-label mb-3 px-1">Core Services</p>
           <ul>
-            {SERVICE_COLUMNS.map((col) => (
-              <li key={col.id}>
+            {SERVICE_GROUPS.map((group) => (
+              <li key={group.slug}>
                 <Nav.Link asChild>
-                  <Link href={col.href} className="mega-row group flex items-center gap-3.5 rounded-xl p-2.5">
+                  <Link href={servicePath(group.slug)} className="mega-row group flex items-center gap-3.5 rounded-xl p-2.5">
                     <span className="mega-icon-tile flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-aurora-indigo">
-                      <Icon name={SERVICE_ICONS[col.id]} size={17} />
+                      <Icon name={group.icon} size={17} />
                     </span>
                     <span className="min-w-0 flex-1">
                       <span className="flex items-center gap-2">
                         <span className="mega-row-name font-urbanist text-base font-semibold leading-snug text-ink transition-colors duration-150">
-                          {col.title}
+                          {group.name}
                         </span>
-                        {col.flagship && (
+                        {group.flagship && (
                           <span className="shrink-0 rounded-full border border-hairline px-1.5 py-px font-urbanist text-[10px] leading-tight text-aurora-amber-dark">
                             New
                           </span>
                         )}
                       </span>
                       <span className="mt-0.5 block truncate font-urbanist text-[13px] leading-snug text-ink-dim">
-                        {col.tags}
+                        {groupDescriptor(group)}
                       </span>
                     </span>
                     <ArrowRight
@@ -92,9 +99,9 @@ export default function MegaPanel() {
       {/* Footer bar */}
       <div className="mt-5 flex flex-wrap items-center justify-between gap-4 rounded-2xl bg-canvas-raised px-5 py-3.5">
         <p className="font-urbanist text-[12.5px] text-ink-dim">
-          <span className="font-semibold text-ink">5 services</span>
+          <span className="font-semibold text-ink">{MEGA_MENU_FOOTER.count}</span>
           <span className="mx-2 inline-block h-[3px] w-[3px] rounded-full bg-hairline-strong align-middle" aria-hidden />
-          Full-stack digital product studio
+          {MEGA_MENU_FOOTER.tagline}
         </p>
         <div className="flex items-center gap-4">
           <Nav.Link asChild>

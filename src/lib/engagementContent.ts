@@ -1,4 +1,4 @@
-import { ENGAGEMENT_MODELS, type EngagementModel } from "./navigation";
+import { getEngagementModel, type EngagementModel } from "@/data/services";
 
 /**
  * Rich content for the Engagement Models hub (/engagement) and the
@@ -12,13 +12,13 @@ import { ENGAGEMENT_MODELS, type EngagementModel } from "./navigation";
  * ("Use placeholders until you add real metrics" / "anonymized until
  * you publish the real"). Not tied to any of the 3 real case studies in
  * caseStudies.ts, since none of those are actually tagged as MVP
- * Sprint / Team Augmentation engagements — inventing that link would
+ * Sprint / IT Staff Augmentation engagements — inventing that link would
  * misattribute a real client's project to a delivery model they didn't
  * use.
  */
 
 function bySlug(slug: string): EngagementModel {
-  const found = ENGAGEMENT_MODELS.find((m) => m.href.endsWith(`/${slug}`));
+  const found = getEngagementModel(slug);
   if (!found) throw new Error(`Unknown engagement model slug: ${slug}`);
   return found;
 }
@@ -47,7 +47,7 @@ export type ComparisonRow = {
 export const COMPARISON_TABLE: ComparisonRow[] = [
   {
     href: bySlug("mvp-sprint").href,
-    model: "MVP Sprint",
+    model: bySlug("mvp-sprint").label,
     bestFor: "Launch a focused v1 fast",
     speed: "1–2 weeks",
     involvement: "Medium–High",
@@ -58,7 +58,7 @@ export const COMPARISON_TABLE: ComparisonRow[] = [
   },
   {
     href: bySlug("end-to-end-delivery").href,
-    model: "End-to-End Delivery",
+    model: bySlug("end-to-end-delivery").label,
     bestFor: "Full build with one accountable partner",
     speed: "1–3 weeks",
     involvement: "Medium",
@@ -68,8 +68,8 @@ export const COMPARISON_TABLE: ComparisonRow[] = [
     commitment: "2–6+ months",
   },
   {
-    href: bySlug("dedicated-team").href,
-    model: "Dedicated Product Team",
+    href: bySlug("hire-dedicated-developers").href,
+    model: bySlug("hire-dedicated-developers").label,
     bestFor: "Ongoing roadmap delivery",
     speed: "1–2 weeks",
     involvement: "Medium",
@@ -79,8 +79,8 @@ export const COMPARISON_TABLE: ComparisonRow[] = [
     commitment: "3+ months",
   },
   {
-    href: bySlug("team-augmentation").href,
-    model: "Team Augmentation",
+    href: bySlug("staff-augmentation").href,
+    model: bySlug("staff-augmentation").label,
     bestFor: "Fill skill gaps quickly",
     speed: "3–10 days",
     involvement: "High",
@@ -90,9 +90,9 @@ export const COMPARISON_TABLE: ComparisonRow[] = [
     commitment: "Flexible",
   },
   {
-    href: bySlug("global-delivery").href,
-    model: "Global Delivery Model",
-    bestFor: "Scale delivery with strong overlap + efficient scaling",
+    href: bySlug("offshore-development-center").href,
+    model: bySlug("offshore-development-center").label,
+    bestFor: "A long-term offshore team with strong overlap",
     speed: "1–2 weeks",
     involvement: "Medium",
     certainty: "Evolving",
@@ -118,21 +118,21 @@ export const DECISION_QUIZ: QuizQuestion[] = [
     choices: [
       { label: "Weeks", primary: "mvp-sprint", reason: "A tight timeline is exactly what MVP Sprint is built for — scope locked, shipped in 4–12 weeks." },
       { label: "Months", primary: "end-to-end-delivery", reason: "A multi-month build fits End-to-End Delivery's milestone-based ownership model." },
-      { label: "Ongoing", primary: "dedicated-team", secondary: "global-delivery", reason: "Ongoing work is what a Dedicated Product Team (or Global Delivery at scale) is built to sustain." },
+      { label: "Ongoing", primary: "hire-dedicated-developers", secondary: "offshore-development-center", reason: "Ongoing work is what a Dedicated Development Team (or an Offshore Development Center at scale) is built to sustain." },
     ],
   },
   {
     question: "How clear is your scope?",
     choices: [
       { label: "Clear", primary: "mvp-sprint", secondary: "end-to-end-delivery", reason: "Clear scope means we can commit to fixed milestones instead of open-ended discovery." },
-      { label: "Evolving", primary: "dedicated-team", reason: "Evolving scope fits a retainer model that adapts sprint to sprint, not a fixed contract." },
+      { label: "Evolving", primary: "hire-dedicated-developers", reason: "Evolving scope fits a retainer model that adapts sprint to sprint, not a fixed contract." },
       { label: "Not sure yet", primary: "end-to-end-delivery", reason: "We'd start with a short discovery phase before locking in a delivery model." },
     ],
   },
   {
     question: "Do you have internal delivery leadership?",
     choices: [
-      { label: "Yes, we lead delivery", primary: "team-augmentation", reason: "With your own delivery lead in place, we simply plug engineers into your existing process." },
+      { label: "Yes, we lead delivery", primary: "staff-augmentation", reason: "With your own delivery lead in place, we simply plug engineers into your existing process." },
       { label: "No, we need that owned for us", primary: "end-to-end-delivery", reason: "Without in-house delivery leadership, End-to-End Delivery gives you one accountable owner for the whole build." },
     ],
   },
@@ -156,25 +156,26 @@ export const MODEL_OVERVIEWS: ModelOverview[] = [
     ctaLabel: "Explore End-to-End Delivery",
   },
   {
-    ...bySlug("dedicated-team"),
-    oneLiner: "A stable squad aligned to your roadmap — consistent output every sprint.",
+    ...bySlug("hire-dedicated-developers"),
+    oneLiner: "A stable team aligned to your roadmap — consistent output every sprint.",
     bestFor: ["Ongoing feature delivery", "Scaling product velocity"],
     startTime: "1–2 weeks",
-    ctaLabel: "Explore Dedicated Product Team",
+    ctaLabel: "Explore Dedicated Development Team",
   },
   {
-    ...bySlug("team-augmentation"),
+    ...bySlug("staff-augmentation"),
     oneLiner: "Add vetted engineers/designers to your team — fast and integration-ready.",
     bestFor: ["Skill gaps or delivery surge", "Hiring freeze / short-term capacity"],
     startTime: "3–10 days",
-    ctaLabel: "Explore Team Augmentation",
+    ctaLabel: "Explore IT Staff Augmentation",
   },
   {
-    ...bySlug("global-delivery"),
-    oneLiner: "Scalable delivery with strong overlap, clear rituals, and quality gates.",
+    ...bySlug("offshore-development-center"),
+    // REVIEW
+    oneLiner: "Your own long-term offshore team — hired, onboarded, and run by us, with clear rituals and quality gates.",
     bestFor: ["Continuous delivery without local hiring", "Cost efficiency with structure"],
     startTime: "1–2 weeks",
-    ctaLabel: "Explore Global Delivery",
+    ctaLabel: "Explore Offshore Development Center",
   },
 ];
 
@@ -195,15 +196,15 @@ export type Faq = { q: string; a: string };
 export type Quote = { quote: string; name: string; role: string; accent: string };
 
 export const HUB_FAQS: Faq[] = [
-  { q: "How quickly can we start?", a: "Team Augmentation can often start within 3–10 days; other models typically start within 1–3 weeks, depending on role availability and how ready the scope is." },
+  { q: "How quickly can we start?", a: "IT Staff Augmentation can often start within 3–10 days; other models typically start within 1–3 weeks, depending on role availability and how ready the scope is." },
   { q: "How do you handle scope changes?", a: "We keep changes transparent — trade-offs, priorities, and timeline impact are discussed openly rather than absorbed silently or refused outright." },
-  { q: "Can we scale the team up or down?", a: "Yes, especially under Team Augmentation, Dedicated Product Team, and Global Delivery — team size is designed to flex with your roadmap." },
+  { q: "Can we scale the team up or down?", a: "Yes, especially with IT Staff Augmentation, a Dedicated Development Team, or an Offshore Development Center — team size is designed to flex with your roadmap." },
   { q: "What if we need a replacement for a team member?", a: "We handle transitions with proper handover and overlap, so a role change doesn't stall your delivery cadence." },
   { q: "Do we own the IP and source code?", a: "Yes, always. Source, design assets, and documentation are handed over as part of every engagement's standard close-out." },
   { q: "What tools do you work with?", a: "Jira, Notion, Slack, GitHub, and Figma are our defaults — we're also glad to work inside your existing toolset." },
   { q: "How do you report progress?", a: "Weekly demos, a shared backlog, and a visible decision log — progress is something you can see, not something we describe after the fact." },
   { q: "What pricing model is best for us?", a: "It depends on how clear your scope is: fixed-scope for locked requirements, milestone or T&M for evolving ones, and retainer for ongoing work. We'll recommend one on the first call." },
-  { q: "Do you offer post-launch support?", a: "Yes — Care & Maintenance and Dedicated Product Team engagements both exist specifically for the work after v1 ships." },
+  { q: "Do you offer post-launch support?", a: "Yes — Website Maintenance & Support and a Dedicated Development Team both exist specifically for the work after v1 ships." },
   { q: "How do we keep communication fast across time zones?", a: "Weekly demo overlap windows, async written updates, and a single accountable point of contact keep cross-timezone work from turning into blind spots." },
 ];
 
@@ -218,22 +219,22 @@ export type ProofCard = { model: string; href: string; title: string; body: stri
 
 export const HUB_PROOF: ProofCard[] = [
   {
-    model: "MVP Sprint",
-    href: "/engagement/mvp-sprint",
+    model: bySlug("mvp-sprint").label,
+    href: bySlug("mvp-sprint").href,
     title: "Shipped an MVP in 8 weeks",
     body: "Built core flows, admin, and integrations for a SaaS product under a locked scope.",
     outcome: "Faster launch, a validated roadmap for v2.",
   },
   {
-    model: "Dedicated Product Team",
-    href: "/engagement/dedicated-team",
+    model: bySlug("hire-dedicated-developers").label,
+    href: bySlug("hire-dedicated-developers").href,
     title: "Ongoing delivery for 6+ months",
     body: "A stable squad shipping improvements every sprint for a growing platform.",
     outcome: "Steady velocity, reduced backlog pressure.",
   },
   {
-    model: "Team Augmentation",
-    href: "/engagement/team-augmentation",
+    model: bySlug("staff-augmentation").label,
+    href: bySlug("staff-augmentation").href,
     title: "Scaled a team by 3 engineers for 4 months",
     body: "Embedded into the client's existing workflow to accelerate delivery without hiring.",
     outcome: "Cleared priority backlog, shipped key releases.",

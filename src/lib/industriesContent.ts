@@ -1,4 +1,5 @@
-import { INDUSTRIES, SERVICE_COLUMNS, type IndustryLink } from "./navigation";
+import { INDUSTRIES, type IndustryLink } from "./navigation";
+import { getGroup, servicePath, type ServiceGroupSlug } from "@/data/services";
 
 /**
  * Rich content for the Industries Hub (/industries) and the bespoke SaaS
@@ -120,17 +121,18 @@ export const VERTICAL_EXPERTISE: VerticalExpertiseCard[] = [
 
 export type PillarMapping = { industry: string; industryHref: string; icon: string; accent: string; pillars: { title: string; href: string }[] };
 
-const PILLAR_BY_ID: Record<string, { title: string; href: string }> = Object.fromEntries(
-  SERVICE_COLUMNS.map((c) => [c.id, { title: c.title, href: c.href }])
-);
+/** A service group as a { title, href } pill — name and route come from src/data/services.ts. */
+function groupPill(slug: ServiceGroupSlug): { title: string; href: string } {
+  return { title: getGroup(slug)!.name, href: servicePath(slug) };
+}
 
-const PILLAR_MAP_SLUGS: { slug: string; pillarIds: string[] }[] = [
-  { slug: "saas", pillarIds: ["engineering", "ai", "design"] },
-  { slug: "ecommerce", pillarIds: ["commerce", "websites", "design"] },
-  { slug: "fintech", pillarIds: ["engineering", "design", "ai"] },
-  { slug: "real-estate", pillarIds: ["engineering", "websites", "ai"] },
-  { slug: "logistics", pillarIds: ["engineering", "ai", "design"] },
-  { slug: "travel", pillarIds: ["websites", "engineering", "design"] },
+const PILLAR_MAP_SLUGS: { slug: string; pillarIds: ServiceGroupSlug[] }[] = [
+  { slug: "saas", pillarIds: ["ai-software-development", "ai-agents-automation", "ui-ux-product-design"] },
+  { slug: "ecommerce", pillarIds: ["websites-commerce", "ai-agents-automation", "ui-ux-product-design"] },
+  { slug: "fintech", pillarIds: ["ai-software-development", "ai-integration-infrastructure", "ui-ux-product-design"] },
+  { slug: "real-estate", pillarIds: ["ai-software-development", "websites-commerce", "ai-agents-automation"] },
+  { slug: "logistics", pillarIds: ["ai-software-development", "ai-agents-automation", "ai-integration-infrastructure"] },
+  { slug: "travel", pillarIds: ["websites-commerce", "ai-software-development", "ui-ux-product-design"] },
 ];
 
 export const INDUSTRY_SERVICE_MAP: PillarMapping[] = PILLAR_MAP_SLUGS.map(({ slug, pillarIds }) => {
@@ -140,7 +142,7 @@ export const INDUSTRY_SERVICE_MAP: PillarMapping[] = PILLAR_MAP_SLUGS.map(({ slu
     industryHref: ind.href,
     icon: ind.icon,
     accent: ACCENTS[slug],
-    pillars: pillarIds.map((id) => PILLAR_BY_ID[id]),
+    pillars: pillarIds.map(groupPill),
   };
 });
 
@@ -205,7 +207,7 @@ export const HUB_FAQS: Faq[] = [
   },
   {
     q: "Do you work with our existing engineering team?",
-    a: "Yes — Team Augmentation and Dedicated Product Team are both built for that; our people slot into your process instead of replacing it.",
+    a: "Yes — IT Staff Augmentation and a Dedicated Development Team are both built for that; our people slot into your process instead of replacing it.",
   },
   {
     q: "Who owns the code and IP?",
@@ -252,7 +254,7 @@ export const SAAS_FAQS: Faq[] = [
   },
   {
     q: "Can you help after launch, not just build and leave?",
-    a: "Yes — Care & Maintenance and Dedicated Product Team engagements both exist specifically for the ongoing work after v1 ships.",
+    a: "Yes — LLMOps & AI Observability, Website Maintenance & Support, and a Dedicated Development Team all exist specifically for the ongoing work after v1 ships.",
   },
 ];
 
@@ -287,30 +289,29 @@ export type SolutionPillar = { title: string; href: string; items: string[]; ico
 
 export const SAAS_SOLUTIONS: SolutionPillar[] = [
   {
-    title: "Product Engineering",
-    href: "/services/engineering/saas",
+    ...groupPill("ai-software-development"),
+    href: servicePath("saas-development"),
     items: ["Multi-tenant architecture", "Billing, metering & entitlements", "Role-based access control", "API design & integrations"],
     icon: "code-2",
     accent: "#8a7bff",
   },
   {
-    title: "Experience & Product Design",
-    href: "/services/design/ux-ui",
+    ...groupPill("ui-ux-product-design"),
+    href: servicePath("ui-ux-design"),
     items: ["Onboarding & activation flows", "Admin & customer dashboards", "Design systems for fast iteration", "Conversion-focused pricing pages"],
     icon: "pen-tool",
     accent: "#5b9bdb",
   },
   {
-    title: "AI & Automation",
-    href: "/services/ai/agents-rag",
+    ...groupPill("ai-agents-automation"),
     items: ["In-product AI assistants", "Usage-based automation triggers", "Support & documentation search", "Anomaly detection on usage data"],
     icon: "sparkles",
     accent: "#3fae82",
   },
   {
-    title: "Websites & Growth",
-    href: "/services/websites/marketing",
-    items: ["Marketing site & landing pages", "SEO-ready technical foundation", "Changelog & docs infrastructure", "Care & maintenance post-launch"],
+    ...groupPill("websites-commerce"),
+    href: servicePath("website-development"),
+    items: ["Marketing site & landing pages", "SEO & AI search-ready foundation", "Changelog & docs infrastructure", "Maintenance & support post-launch"],
     icon: "globe",
     accent: "#d99a4e",
   },
@@ -362,7 +363,7 @@ export const SAAS_STACK: ToolCategory[] = [
   { category: "Backend", tools: ["Node.js", "PostgreSQL", "Redis", "Prisma"], icon: "code-2", accent: "#5b9bdb" },
   { category: "Billing & Payments", tools: ["Stripe", "Paddle", "Usage metering"], icon: "credit-card", accent: "#3fae82" },
   { category: "Infra & DevOps", tools: ["AWS", "Vercel", "Docker", "GitHub Actions"], icon: "cloud", accent: "#d99a4e" },
-  { category: "AI & Automation", tools: ["OpenAI / Anthropic APIs", "RAG pipelines", "Workflow automation"], icon: "bot", accent: "#db5a89" },
+  { category: "AI Agents & Automation", tools: ["OpenAI / Anthropic APIs", "RAG pipelines", "Workflow automation"], icon: "bot", accent: "#db5a89" },
 ];
 
 export const SAAS_FAQ_STATS = [

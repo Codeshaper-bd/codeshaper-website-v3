@@ -15,294 +15,11 @@ export function slugFromHref(href: string): string {
   return href.split("/").pop()!;
 }
 
-export type ServiceLink = {
-  label: string;
-  href: string;
-  /** Lucide icon key (see lib/icons.tsx) */
-  icon: string;
-  /** 3–5 word clarifier shown under the label in the mega menu */
-  desc: string;
-  /** One real paragraph — used as the intro copy on this service's own detail page */
-  longDescription: string;
-};
-
-export type ServiceColumn = {
-  id: string;
-  blurb: string;
-  number: string;
-  title: string;
-  href: string;
-  flagship?: boolean;
-  /** Comma/dot-joined one-line summary shown in the Services mega menu's Core Services list */
-  tags: string;
-  links: ServiceLink[];
-};
-
-export const SERVICE_COLUMNS: ServiceColumn[] = [
-  {
-    id: "design",
-    blurb: "UX/UI, product strategy, and design systems built for real shipping.",
-    number: "01",
-    title: "Experience & Product Design",
-    href: "/services/design",
-    tags: "Discovery · UX/UI · AI UX · systems · audits · handoff",
-    links: [
-      {
-        label: "UX/UI Design & Prototyping",
-        href: "/services/design/ux-ui",
-        icon: "layout-dashboard",
-        desc: "Flows, screens, clickable prototypes",
-        longDescription:
-          "We map user flows, design high-fidelity screens, and build clickable prototypes you can test with real users before a single line of production code is written.",
-      },
-      {
-        label: "Product Discovery & Strategy",
-        href: "/services/design/discovery",
-        icon: "compass",
-        desc: "Scope, roadmap, success metrics",
-        longDescription:
-          "A focused discovery phase turns a rough idea into a scoped roadmap — clear priorities, success metrics, and a plan the whole team can build against.",
-      },
-      {
-        label: "Design Systems",
-        href: "/services/design/design-systems",
-        icon: "component",
-        desc: "Reusable, documented components",
-        longDescription:
-          "A documented library of reusable components, tokens, and patterns so design and engineering stay in sync as the product grows past its first release.",
-      },
-      {
-        label: "Conversion Rate Optimization",
-        href: "/services/design/cro",
-        icon: "trending-up",
-        desc: "Test, measure, lift conversion",
-        longDescription:
-          "We audit funnels, run structured A/B tests, and ship data-backed changes to lift signup, checkout, and activation conversion.",
-      },
-    ],
-  },
-  {
-    id: "engineering",
-    blurb: "Scalable engineering for web, mobile, SaaS, and business platforms.",
-    number: "02",
-    title: "Product Engineering",
-    href: "/services/engineering",
-    tags: "Web apps · mobile · SaaS · MVP · portals · APIs · modernization",
-    links: [
-      {
-        label: "Web Application",
-        href: "/services/engineering/web",
-        icon: "monitor",
-        desc: "Dashboards and customer portals",
-        longDescription: "Custom web applications — admin dashboards, customer portals, and internal tools — built on a modern, maintainable stack.",
-      },
-      {
-        label: "Mobile Application",
-        href: "/services/engineering/mobile",
-        icon: "smartphone",
-        desc: "iOS, Android, cross-platform",
-        longDescription: "Native iOS/Android or cross-platform mobile apps, built for performance and shipped through App Store and Play Store review without surprises.",
-      },
-      {
-        label: "SaaS Development",
-        href: "/services/engineering/saas",
-        icon: "layers",
-        desc: "Multi-tenant, billing, roles",
-        longDescription: "Multi-tenant SaaS architecture — billing, roles and permissions, and usage metering — built to support your first hundred customers and beyond.",
-      },
-      {
-        label: "Business Applications & Portals",
-        href: "/services/engineering/business-apps",
-        icon: "building-2",
-        desc: "Internal tools that fit ops",
-        longDescription: "Internal tools and portals shaped around how your team actually works, replacing spreadsheets and manual handoffs with a system that fits your operations.",
-      },
-      {
-        label: "Rebuild & Modernization",
-        href: "/services/engineering/modernization",
-        icon: "refresh-cw",
-        desc: "Legacy to a modern stack",
-        longDescription: "We migrate legacy applications to a modern, supportable stack — incrementally, with production data intact and downtime kept to a minimum.",
-      },
-      {
-        label: "APIs & Integrations",
-        href: "/services/engineering/apis",
-        icon: "plug",
-        desc: "Connect the systems you run",
-        longDescription: "Custom APIs and third-party integrations that connect the tools you already run — CRM, payments, ERP — into one coherent system.",
-      },
-    ],
-  },
-  {
-    id: "websites",
-    blurb: "High-performance marketing sites that rank, load fast, and convert.",
-    number: "03",
-    title: "Websites & Growth",
-    href: "/services/websites",
-    tags: "Premium sites · WordPress · landing pages · SEO · care",
-    links: [
-      {
-        label: "Marketing Websites",
-        href: "/services/websites/marketing",
-        icon: "globe",
-        desc: "Fast, rankable, on-brand",
-        longDescription: "Marketing websites built for speed and search from day one — clean semantic markup, fast Core Web Vitals, and a design that matches your brand.",
-      },
-      {
-        label: "Landing Pages",
-        href: "/services/websites/landing-pages",
-        icon: "file-text",
-        desc: "Campaign-ready, built to test",
-        longDescription: "Campaign landing pages built to launch fast and test easily, so you can validate messaging and offers before committing budget at scale.",
-      },
-      {
-        label: "Redesign & Replatforming",
-        href: "/services/websites/replatforming",
-        icon: "wand-2",
-        desc: "Move platforms without downtime",
-        longDescription: "We move sites between platforms — WordPress, Webflow, headless CMS — without losing SEO rankings or breaking production during the switch.",
-      },
-      {
-        label: "Care & Maintenance",
-        href: "/services/websites/care",
-        icon: "life-buoy",
-        desc: "Updates, monitoring, support",
-        longDescription: "Ongoing updates, uptime monitoring, and support after launch, so your site stays fast, secure, and current without needing an in-house team.",
-      },
-    ],
-  },
-  {
-    id: "commerce",
-    blurb: "Shopify, WooCommerce, and custom commerce focused on conversion + operations.",
-    number: "04",
-    title: "Commerce Experiences",
-    href: "/services/commerce",
-    tags: "Shopify · Woo · headless · marketplace · B2B · checkout · ERP",
-    links: [
-      {
-        label: "Shopify Development",
-        href: "/services/commerce/shopify",
-        icon: "shopping-bag",
-        desc: "Themes, apps, headless builds",
-        longDescription: "Custom Shopify themes, private apps, and headless storefronts built for stores that have outgrown off-the-shelf templates.",
-      },
-      {
-        label: "WooCommerce Development",
-        href: "/services/commerce/woocommerce",
-        icon: "shopping-cart",
-        desc: "WordPress commerce at scale",
-        longDescription: "WooCommerce builds tuned for performance at scale — the flexibility of WordPress commerce without the plugin bloat that slows most stores down.",
-      },
-      {
-        label: "Marketplace Development",
-        href: "/services/commerce/marketplace",
-        icon: "store",
-        desc: "Multi-vendor platforms",
-        longDescription: "Multi-vendor marketplace platforms — vendor onboarding, split payments, and moderation — built to handle real transaction volume.",
-      },
-      {
-        label: "Custom Commerce Builds",
-        href: "/services/commerce/custom",
-        icon: "package",
-        desc: "Bespoke checkout and ops",
-        longDescription: "Fully custom commerce builds for businesses whose checkout, inventory, or fulfillment logic doesn't fit an off-the-shelf platform.",
-      },
-      {
-        label: "Apps & Plugins",
-        href: "/services/commerce/apps-plugins",
-        icon: "puzzle",
-        desc: "Extend your storefront",
-        longDescription: "Custom apps and plugins that extend your existing storefront with the exact feature a template can't provide, without a full platform rebuild.",
-      },
-    ],
-  },
-  {
-    id: "ai",
-    blurb: "Practical AI and automation that reduces manual work and speeds decisions.",
-    number: "05",
-    title: "AI & Automation",
-    href: "/services/ai",
-    flagship: true,
-    tags: "Strategy · agents · RAG · automation · LLM tools · guardrails · MCP",
-    links: [
-      {
-        label: "AI Strategy & Implementation",
-        href: "/services/ai/strategy",
-        icon: "brain",
-        desc: "Where AI actually pays off",
-        longDescription: "We start by identifying where AI actually saves time or money in your workflow, then implement it — no strategy decks without a shipped result.",
-      },
-      {
-        label: "Custom AI Agents & RAG Workflows",
-        href: "/services/ai/agents-rag",
-        icon: "bot",
-        desc: "Grounded, tool-using agents",
-        longDescription: "AI agents grounded in your own data and tools — not open-ended chatbots — built to complete real tasks with guardrails around what they can do.",
-      },
-      {
-        label: "Process & Document Automation",
-        href: "/services/ai/automation",
-        icon: "workflow",
-        desc: "Capture → review → approve",
-        longDescription: "Automating repetitive document and approval workflows — capture, review, approve — so your team spends less time on manual data entry.",
-      },
-      {
-        label: "Knowledge Base & LLM Integrations",
-        href: "/services/ai/llm-integrations",
-        icon: "book-open",
-        desc: "Answers from your own docs",
-        longDescription: "LLM-powered search and Q&A grounded in your own documentation, so answers come from your actual knowledge base, not a generic model's guess.",
-      },
-    ],
-  },
-];
-
-/** "How We Engage" — shared, identical content in both the Services and Industries mega menus. */
-export type EngagementModel = {
-  label: string;
-  href: string;
-  icon: string;
-  desc: string;
-  longDescription: string;
-};
-
-export const ENGAGEMENT_MODELS: EngagementModel[] = [
-  {
-    label: "MVP Sprint",
-    href: "/engagement/mvp-sprint",
-    icon: "zap",
-    desc: "Idea → product in 6–10 weeks",
-    longDescription: "A focused 6–10 week sprint to take a validated idea to a working, launchable product — scoped tightly enough to actually ship on time.",
-  },
-  {
-    label: "End-to-End Delivery",
-    href: "/engagement/end-to-end-delivery",
-    icon: "layers",
-    desc: "Full-cycle product ownership",
-    longDescription: "We own the full delivery cycle — design, engineering, QA, and launch — so you get one accountable team instead of coordinating several vendors.",
-  },
-  {
-    label: "Dedicated Product Team",
-    href: "/engagement/dedicated-team",
-    icon: "users",
-    desc: "Embedded team, your roadmap",
-    longDescription: "An embedded, dedicated team that works your roadmap and your sprint cadence, functioning as an extension of your own product org.",
-  },
-  {
-    label: "Team Augmentation",
-    href: "/engagement/team-augmentation",
-    icon: "user-plus",
-    desc: "Engineers who ramp fast",
-    longDescription: "Individual engineers or designers who slot into your existing team and process, ramping fast without adding management overhead.",
-  },
-  {
-    label: "Global Delivery",
-    href: "/engagement/global-delivery",
-    icon: "globe",
-    desc: "Near-shore + offshore hybrid",
-    longDescription: "A hybrid near-shore/offshore delivery model that keeps timezone overlap with your team while managing cost across the full project.",
-  },
-];
+/*
+ * Services, service groups, How We Engage, the Services mega menu's
+ * featured card and quick-access chips all live in src/data/services.ts
+ * (the single source of truth for the service structure).
+ */
 
 /** Industries mega menu — "Industries We Serve" center column. */
 export type IndustryLink = {
@@ -411,16 +128,6 @@ export const INDUSTRIES: IndustryLink[] = [
   },
 ];
 
-/** Services mega menu — right column "Quick access" chips. */
-export const SERVICES_QUICK_ACCESS: { label: string; href: string }[] = [
-  { label: "MVP Sprint", href: "/engagement/mvp-sprint" },
-  { label: "AI Agents", href: "/services/ai/agents-rag" },
-  { label: "RAG Systems", href: "/services/ai/llm-integrations" },
-  { label: "Design Systems", href: "/services/design/design-systems" },
-  { label: "Shopify Plus", href: "/services/commerce/shopify" },
-  { label: "Team Aug", href: "/engagement/team-augmentation" },
-];
-
 /** Industries mega menu — right column "Popular verticals" chips. */
 export const INDUSTRIES_POPULAR: { label: string; href: string }[] = [
   { label: "SaaS", href: "/industries/saas" },
@@ -429,15 +136,6 @@ export const INDUSTRIES_POPULAR: { label: string; href: string }[] = [
   { label: "Luxury", href: "/industries/luxury" },
   { label: "Travel", href: "/industries/travel" },
 ];
-
-/** Services mega menu — right column dark "Featured" card. */
-export const SERVICES_FEATURED = {
-  eyebrow: "AI & Automation · New",
-  title: "AI Agents & RAG Pipelines",
-  desc: "Production-ready AI workflows for real teams, not just demos.",
-  href: "/services/ai/agents-rag",
-  icon: "bot",
-};
 
 /** Industries mega menu — right column dark "Case Study" card. */
 export const INDUSTRIES_FEATURED = {
@@ -481,15 +179,19 @@ export const SIMPLE_MENUS: {
   {
     id: "company",
     label: "Company",
-    dividerAfterIndex: 4,
+    dividerAfterIndex: 0,
     links: [
       { label: "About", href: "/company/about", icon: "building-2" },
-      { label: "Leadership Team", href: "/company/leadership", icon: "users" },
-      { label: "Life at CodeShaper", href: "/company/life", icon: "sparkles" },
-      { label: "Clients & Partners", href: "/company/clients", icon: "handshake" },
-      { label: "Locations", href: "/company/locations", icon: "map-pin" },
+      // Hidden until these pages are real (they currently render the
+      // "coming soon" stub from app/[...slug]/page.tsx). Uncomment each
+      // one as its page is built, and restore dividerAfterIndex: 4 once
+      // all four sit between About and Contact again.
+      // { label: "Leadership Team", href: "/company/leadership", icon: "users" },
+      // { label: "Life at CodeShaper", href: "/company/life", icon: "sparkles" },
+      // { label: "Clients & Partners", href: "/company/clients", icon: "handshake" },
+      // { label: "Locations", href: "/company/locations", icon: "map-pin" },
       { label: "Contact", href: "/contact", icon: "message-circle" },
-      { label: "Careers", href: "/company/careers", icon: "target" },
+      // { label: "Careers", href: "/company/careers", icon: "target" },
     ],
   },
 ];

@@ -21,7 +21,7 @@ export const CASE_STUDIES_FAQS: { q: string; a: string }[] = [
   },
   {
     q: "Can you work with our existing team?",
-    a: "Yes — Team Augmentation and Dedicated Product Team are both built for that: our people slot into your process rather than replacing it.",
+    a: "Yes — IT Staff Augmentation and a Dedicated Development Team are both built for that: our people slot into your process rather than replacing it.",
   },
 ];
 

@@ -27,7 +27,7 @@ import { SITE_URL } from "@/lib/site";
 export const metadata: Metadata = {
   title: "How We Work — Engagement Models",
   description:
-    "Flexible engagement models for predictable delivery — MVP Sprint, End-to-End Delivery, Dedicated Product Team, Team Augmentation, or Global Delivery.",
+    "Flexible engagement models for predictable delivery — MVP Sprint, End-to-End Delivery, a Dedicated Development Team, IT Staff Augmentation, or an Offshore Development Center.",
   alternates: { canonical: "/engagement" },
 };
 

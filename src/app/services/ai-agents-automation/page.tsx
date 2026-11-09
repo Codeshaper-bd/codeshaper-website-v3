@@ -1,15 +1,21 @@
 import type { Metadata } from "next";
-import type { ReactNode } from "react";
-import Link from "next/link";
-import { ArrowRight, ArrowUpRight, Check, X } from "lucide-react";
+import { Check, X } from "lucide-react";
 import SiteShell from "@/components/system/SiteShell";
-import Breadcrumbs from "@/components/system/Breadcrumbs";
 import Reveal from "@/components/system/Reveal";
-import { SectionEyebrow, SectionTitle, SectionDescription } from "@/components/system/SectionHeading";
-import { Icon, SERVICE_ICONS } from "@/lib/icons";
+import { SectionTitle } from "@/components/system/SectionHeading";
+import { Icon } from "@/lib/icons";
 import FaqAccordion from "@/components/system/FaqAccordion";
 import QuoteGrid from "@/components/system/QuoteGrid";
-import { SERVICE_COLUMNS } from "@/lib/navigation";
+import {
+  ServicesHero,
+  ServiceCardGrid,
+  BookCallCta,
+  JsonLd,
+  SectionLabel,
+  breadcrumbJsonLd,
+} from "@/components/services/ServicePageParts";
+import { getGroup, servicesInGroup, servicePath } from "@/data/services";
+import { pageMetadata } from "@/lib/pageMetadata";
 import {
   AI_SNAPSHOT,
   AI_USE_CASES,
@@ -21,26 +27,25 @@ import {
   AI_TESTIMONIALS,
   AI_FAQS,
 } from "@/lib/servicesContent";
-import { SITE_URL } from "@/lib/site";
 
-const COL = SERVICE_COLUMNS.find((c) => c.id === "ai")!;
+/**
+ * Flagship group page for AI Agents & Automation. Unlike the other four
+ * groups (generic template at app/services/[slug]), this one keeps its
+ * bespoke sections — snapshot, use cases, fit, process, guardrails,
+ * stack, testimonials, FAQ — around the standard group hero, services
+ * grid, and Book a Call CTA. /services/ai 301-redirects here
+ * (next.config.ts).
+ */
+const GROUP = getGroup("ai-agents-automation")!;
+const PATH = servicePath(GROUP.slug);
 
-export const metadata: Metadata = {
-  title: "AI & Automation Services",
-  description:
-    "AI strategy, custom AI agents, RAG workflows, and process automation — practical AI that creates operational leverage, not hype.",
-  alternates: { canonical: "/services/ai" },
-};
+export const metadata: Metadata = pageMetadata({ title: GROUP.metaTitle, description: GROUP.metaDescription, path: PATH });
 
-const BREADCRUMB_JSON_LD = {
-  "@context": "https://schema.org",
-  "@type": "BreadcrumbList",
-  itemListElement: [
-    { "@type": "ListItem", position: 1, name: "Home", item: SITE_URL },
-    { "@type": "ListItem", position: 2, name: "Services", item: `${SITE_URL}/services` },
-    { "@type": "ListItem", position: 3, name: "AI & Automation", item: `${SITE_URL}/services/ai` },
-  ],
-};
+const CRUMBS = [
+  { label: "Home", href: "/" },
+  { label: "Services", href: "/services" },
+  { label: GROUP.name, href: PATH },
+];
 
 const FAQ_JSON_LD = {
   "@context": "https://schema.org",
@@ -48,65 +53,24 @@ const FAQ_JSON_LD = {
   mainEntity: AI_FAQS.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })),
 };
 
-function SectionLabel({ children }: { children: ReactNode }) {
-  return <p className="mb-5 font-urbanist text-[11px] font-semibold uppercase tracking-[0.2em] text-ink-faint">{children}</p>;
-}
-
-export default function AiAutomationPage() {
+export default function AiAgentsAutomationPage() {
   return (
     <SiteShell>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(BREADCRUMB_JSON_LD) }} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(FAQ_JSON_LD) }} />
+      <JsonLd data={breadcrumbJsonLd(CRUMBS)} />
+      <JsonLd data={FAQ_JSON_LD} />
 
       <div className="theme-light">
         {/* 1. Hero */}
-        <div className="bg-light-surface p-3 sm:p-4">
-          <Reveal distance={0}>
-            <section className="relative overflow-hidden rounded-[32px] bg-canvas px-6 pb-16 pt-32 lg:px-10 lg:pb-20 lg:pt-32" aria-labelledby="ai-hero-heading">
-              <div
-                aria-hidden
-                className="absolute inset-0 opacity-[0.03]"
-                style={{ backgroundImage: "url(/media/hex-pattern-tile.svg)", backgroundSize: "112px 194px" }}
-              />
-              <div
-                aria-hidden
-                className="absolute left-1/2 top-0 h-[420px] w-[640px] -translate-x-1/2 -translate-y-1/3 rounded-full opacity-30 blur-3xl"
-                style={{ background: "radial-gradient(closest-side, rgba(124,108,255,0.16), transparent)" }}
-              />
-              <div className="relative mx-auto max-w-3xl text-center">
-                <div className="flex justify-center">
-                  <Breadcrumbs items={[{ label: "Home", href: "/" }, { label: "Services", href: "/services" }, { label: "AI & Automation" }]} />
-                </div>
-                <span className="mx-auto mb-5 flex h-12 w-12 items-center justify-center rounded-full border border-hairline-light text-ink-dim">
-                  <Icon name={SERVICE_ICONS.ai} size={20} />
-                </span>
-                <SectionEyebrow className="mx-auto w-fit">Services · AI &amp; Automation</SectionEyebrow>
-                <SectionTitle as="h1" size="lg" id="ai-hero-heading">
-                  AI automation, custom agents, RAG &amp; workflow automation.
-                </SectionTitle>
-                <SectionDescription className="mx-auto mt-5 max-w-2xl">
-                  We use AI where it creates operational leverage — supporting teams with faster workflows, grounded
-                  search, and automation across the tools they already run. Practical, not hype.
-                </SectionDescription>
-                <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-                  <Link
-                    href="/contact"
-                    className="inline-flex items-center gap-2 rounded-full bg-ink px-7 py-3.5 font-urbanist text-sm font-semibold text-canvas transition-transform duration-300 hover:scale-[1.02]"
-                  >
-                    Talk about your workflow
-                    <ArrowRight size={15} strokeWidth={1.75} />
-                  </Link>
-                  <Link
-                    href="/services"
-                    className="inline-flex items-center gap-2 rounded-full border border-hairline-light px-7 py-3.5 font-urbanist text-sm font-semibold text-ink-dim transition-colors hover:border-ink-faint hover:text-ink"
-                  >
-                    See all services
-                  </Link>
-                </div>
-              </div>
-            </section>
-          </Reveal>
-        </div>
+        <ServicesHero
+          id="ai-hero-heading"
+          breadcrumbs={[CRUMBS[0], CRUMBS[1], { label: GROUP.name }]}
+          icon={GROUP.icon}
+          eyebrow="Services"
+          title={GROUP.name}
+          intro={GROUP.focus}
+          primary={{ label: "Book a Call", href: "/contact" }}
+          secondary={{ label: "See all services", href: "/services" }}
+        />
 
         {/* 2. Snapshot */}
         <section className="bg-light-surface py-14 lg:py-20" aria-labelledby="snapshot-heading">
@@ -133,34 +97,16 @@ export default function AiAutomationPage() {
           </div>
         </section>
 
-        {/* 3. What's included */}
+        {/* 3. What's included — the group's services */}
         <section className="border-t border-hairline-light bg-light-surface py-14 lg:py-20" aria-labelledby="includes-heading">
           <div className="mx-auto max-w-6xl px-6 lg:px-10">
             <Reveal>
               <SectionLabel>What's Included</SectionLabel>
               <SectionTitle as="h2" id="includes-heading" className="max-w-xl">
-                Four ways we work with AI &amp; automation.
+                AI agent &amp; automation services, built for production.
               </SectionTitle>
             </Reveal>
-            <div className="mt-10 grid gap-5 sm:grid-cols-2">
-              {COL.links.map((link, i) => (
-                <Reveal key={link.href} delay={i * 70}>
-                  <Link
-                    href={link.href}
-                    className="group flex h-full flex-col rounded-2xl border border-hairline-light bg-light-raised p-6 transition-colors duration-300 hover:border-aurora-violet/40"
-                  >
-                    <div className="flex items-center justify-between">
-                      <span className="flex h-10 w-10 items-center justify-center rounded-full border border-hairline-light text-ink-dim transition-colors duration-300 group-hover:border-aurora-violet/50 group-hover:text-aurora-violet">
-                        <Icon name={link.icon} size={17} />
-                      </span>
-                      <ArrowUpRight size={15} strokeWidth={1.75} className="text-ink-faint transition-colors group-hover:text-aurora-violet" />
-                    </div>
-                    <h3 className="mt-4 font-urbanist text-[15.5px] font-bold text-ink">{link.label}</h3>
-                    <p className="mt-2 flex-1 font-urbanist text-[13.5px] leading-relaxed text-ink-dim">{link.longDescription}</p>
-                  </Link>
-                </Reveal>
-              ))}
-            </div>
+            <ServiceCardGrid services={servicesInGroup(GROUP.slug)} />
           </div>
         </section>
 
@@ -310,49 +256,13 @@ export default function AiAutomationPage() {
         <QuoteGrid id="ai-testimonials-heading" title="What teams say after automating with us." items={AI_TESTIMONIALS} />
 
         {/* 10. FAQ */}
-        <FaqAccordion id="ai-faq-heading" title="AI & Automation questions, answered" items={AI_FAQS} />
+        <FaqAccordion id="ai-faq-heading" title={`${GROUP.name} questions, answered`} items={AI_FAQS} />
 
         {/* 11. Final CTA */}
-        <div className="bg-light-surface p-3 sm:p-4">
-          <Reveal>
-            <div className="relative overflow-hidden rounded-[32px] border border-hairline-light bg-canvas px-6 py-14 text-center sm:px-12 lg:px-16 lg:py-20">
-              <div
-                aria-hidden
-                className="absolute inset-0 opacity-[0.03]"
-                style={{ backgroundImage: "url(/media/hex-pattern-tile.svg)", backgroundSize: "112px 194px" }}
-              />
-              <div
-                aria-hidden
-                className="absolute left-1/2 top-0 h-[420px] w-[640px] -translate-x-1/2 -translate-y-1/3 rounded-full opacity-30 blur-3xl"
-                style={{ background: "radial-gradient(closest-side, rgba(124,108,255,0.16), transparent)" }}
-              />
-              <div className="relative">
-                <SectionEyebrow className="mx-auto w-fit">Next step</SectionEyebrow>
-                <SectionTitle size="lg" className="mx-auto max-w-2xl">
-                  Have a workflow worth automating?
-                </SectionTitle>
-                <SectionDescription className="mx-auto mt-4 max-w-xl">
-                  Tell us what's manual today — we'll map where AI actually helps, and where it doesn't.
-                </SectionDescription>
-                <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-                  <Link
-                    href="/contact"
-                    className="inline-flex items-center gap-2 rounded-full bg-ink px-7 py-3.5 font-urbanist text-sm font-semibold text-canvas transition-transform duration-300 hover:scale-[1.02]"
-                  >
-                    Book a Call
-                    <ArrowRight size={15} strokeWidth={1.75} />
-                  </Link>
-                  <Link
-                    href="/services"
-                    className="inline-flex items-center gap-2 rounded-full border border-hairline-light px-7 py-3.5 font-urbanist text-sm font-semibold text-ink-dim transition-colors hover:border-ink-faint hover:text-ink"
-                  >
-                    See all services
-                  </Link>
-                </div>
-              </div>
-            </div>
-          </Reveal>
-        </div>
+        <BookCallCta
+          title="Have a workflow worth automating?"
+          description="Tell us what's manual today — we'll map where AI actually helps, and where it doesn't."
+        />
       </div>
     </SiteShell>
   );

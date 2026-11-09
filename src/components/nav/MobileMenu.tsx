@@ -4,21 +4,24 @@ import { useEffect } from "react";
 import Link from "next/link";
 import * as Accordion from "@radix-ui/react-accordion";
 import { ArrowRight, Plus } from "lucide-react";
+import { SIMPLE_MENUS, INDUSTRIES } from "@/lib/navigation";
 import {
-  SERVICE_COLUMNS,
-  SIMPLE_MENUS,
+  SERVICE_GROUPS,
   ENGAGEMENT_MODELS,
   SERVICES_QUICK_ACCESS,
   SERVICES_FEATURED,
-  INDUSTRIES,
-} from "@/lib/navigation";
-import { Icon, SERVICE_ICONS } from "@/lib/icons";
+  groupSections,
+  servicePath,
+} from "@/data/services";
+import { Icon } from "@/lib/icons";
 
 /**
  * Mobile navigation (<1024px): full-screen takeover + Radix Accordion.
  * The Services accordion is sub-grouped (How We Engage / Core Services /
- * Featured / Quick Access) to mirror the desktop mega menu's content, not
- * just a flat sub-service list. Industries gets its own accordion.
+ * Featured / Quick Access) to mirror the desktop mega menu's content.
+ * Core Services nests one accordion per service group, each listing that
+ * group's overview page plus every service in it (Websites & Commerce
+ * split by subgroup). Industries gets its own accordion.
  *
  * `theme-light` is applied on this component's own root rather than
  * relied on from a parent. It used to be a child of Navbar's <header>,
@@ -81,27 +84,65 @@ export default function MobileMenu({ open, onClose }: { open: boolean; onClose: 
               </ul>
 
               <p className="menu-section-label mb-2 font-urbanist">Core Services</p>
-              <ul className="mb-4">
-                {SERVICE_COLUMNS.map((col) => (
-                  <li key={col.id}>
-                    <Link
-                      href={col.href}
-                      onClick={onClose}
-                      className="flex items-center gap-3 py-2 font-urbanist text-sm text-ink-dim"
-                    >
-                      <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md border border-hairline bg-canvas-raised text-aurora-indigo">
-                        <Icon name={SERVICE_ICONS[col.id]} size={14} />
-                      </span>
-                      {col.title}
-                      {col.flagship && (
-                        <span className="rounded-full border border-hairline px-1.5 py-px font-urbanist text-[10px] text-aurora-amber-dark">
-                          New
+              <Accordion.Root type="single" collapsible className="mb-4">
+                {SERVICE_GROUPS.map((group) => (
+                  <Accordion.Item key={group.slug} value={group.slug}>
+                    <Accordion.Header>
+                      <Accordion.Trigger className="group flex w-full items-center gap-3 py-2 text-left font-urbanist text-sm text-ink-dim">
+                        <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md border border-hairline bg-canvas-raised text-aurora-indigo">
+                          <Icon name={group.icon} size={14} />
                         </span>
-                      )}
-                    </Link>
-                  </li>
+                        <span className="flex-1">
+                          {group.name}
+                          {group.flagship && (
+                            <span className="ml-2 rounded-full border border-hairline px-1.5 py-px font-urbanist text-[10px] text-aurora-amber-dark">
+                              New
+                            </span>
+                          )}
+                        </span>
+                        <Plus
+                          size={14}
+                          strokeWidth={1.5}
+                          className="shrink-0 text-ink-faint transition-transform duration-300 group-data-[state=open]:rotate-45"
+                          aria-hidden
+                        />
+                      </Accordion.Trigger>
+                    </Accordion.Header>
+                    <Accordion.Content className="overflow-hidden pb-2 pl-10">
+                      <Link
+                        href={servicePath(group.slug)}
+                        onClick={onClose}
+                        className="inline-flex items-center gap-1.5 py-1.5 font-urbanist text-[13px] font-semibold text-aurora-violet"
+                      >
+                        {group.name} overview
+                        <ArrowRight size={12} strokeWidth={1.75} />
+                      </Link>
+                      {groupSections(group).map((section) => (
+                        <div key={section.name ?? group.slug}>
+                          {section.name && (
+                            <p className="mb-0.5 mt-2 font-urbanist text-[11px] font-medium uppercase tracking-[0.16em] text-ink-faint">
+                              {section.name}
+                            </p>
+                          )}
+                          <ul>
+                            {section.services.map((svc) => (
+                              <li key={svc.slug}>
+                                <Link
+                                  href={servicePath(svc.slug)}
+                                  onClick={onClose}
+                                  className="block py-1.5 font-urbanist text-[13px] text-ink-dim"
+                                >
+                                  {svc.menuLabel}
+                                </Link>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      ))}
+                    </Accordion.Content>
+                  </Accordion.Item>
                 ))}
-              </ul>
+              </Accordion.Root>
 
               <p className="menu-section-label mb-2 font-urbanist">Featured</p>
               <Link

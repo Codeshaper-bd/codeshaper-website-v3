@@ -160,7 +160,7 @@ const LOCATIONS: LocationDetail[] = [
     regionNote: "Delivery & product execution",
     role: "Delivery hub",
     short: "Product design, engineering, and automation delivery across web, mobile, SaaS, and commerce.",
-    bestFor: ["End-to-end builds", "Dedicated product teams", "Ongoing iteration"],
+    bestFor: ["End-to-end builds", "Dedicated development teams", "Ongoing iteration"],
     icon: MosqueIcon,
     image: "/media/locations/bangladesh.jpg",
     credit: "Silver Blue, CC BY-SA 2.0, via Wikimedia Commons",

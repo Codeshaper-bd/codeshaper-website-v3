@@ -80,7 +80,7 @@ export const CASE_STUDIES: CaseStudy[] = [
     summary:
       "Essentialist is a luxury travel membership brand for high-income travelers in the US & EU. CodeShaper delivered the full launch — marketing website, membership application flow, CMS operations, and ongoing care — so the team could grow applications and publish content faster without engineering bottlenecks.",
     industry: "Luxury Travel",
-    services: ["UX/UI & Prototyping", "Websites & Growth"],
+    services: ["UI/UX Design", "Website Design & Development", "Website Maintenance"],
     engagementModel: "End-to-End Delivery",
     tech: ["WordPress", "GSAP", "Custom Frontend"],
     platforms: "Marketing Website + Application Flow",
@@ -208,7 +208,7 @@ export const CASE_STUDIES: CaseStudy[] = [
     summary:
       "Fennec brings venues, guests, events, and memberships together in a single connected platform — a web app for operators and a mobile app for guests, built and supported as an ongoing engagement.",
     industry: "Nightlife & Hospitality",
-    services: ["Product Engineering", "Product Discovery"],
+    services: ["Custom Web Apps", "Mobile App Development", "Product Discovery & Strategy"],
     tech: ["Web App", "Mobile App"],
     platforms: "Web + Mobile",
     image: "https://picsum.photos/seed/fennec-nightlife/1200/800",
@@ -242,7 +242,7 @@ export const CASE_STUDIES: CaseStudy[] = [
     summary:
       "Acculance unifies point-of-sale, inventory, and accounting into one platform, built on Laravel and Vue for businesses that have outgrown spreadsheets and disconnected tools.",
     industry: "Retail & Business Ops",
-    services: ["Product Engineering", "SaaS Development"],
+    services: ["SaaS Development", "Custom Web Apps"],
     tech: ["Laravel", "Vue"],
     platforms: "Web (Admin + POS)",
     image: "https://picsum.photos/seed/acculance-pos/1200/800",

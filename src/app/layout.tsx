@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import { SITE_URL, SITE_NAME } from "@/lib/site";
+import { COMPANY_POSITIONING } from "@/data/services";
 
 /**
  * Typography — Urbanist, self-hosted through next/font/local so Next emits
@@ -24,9 +25,10 @@ const urbanist = localFont({
 });
 
 // SEO decision (Pass 1 §2): visible H1 stays short/human; keyword line lives here.
-const TITLE = "Product Design, Web & Mobile App Development, eCommerce & AI Automation | CodeShaper";
+const TITLE = `${COMPANY_POSITIONING} | ${SITE_NAME}`;
+// REVIEW
 const DESCRIPTION =
-  "CodeShaper helps teams design, build, modernize, and automate digital products — with weekly visibility, clean handover, and flexible engagement models.";
+  "CodeShaper is an AI engineering & software development company building reliable, production-ready AI and software that integrates with your existing tools.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -67,6 +69,7 @@ const ORG_JSON_LD = {
   name: SITE_NAME,
   url: SITE_URL,
   logo: `${SITE_URL}/brand/logo.png`,
+  description: DESCRIPTION,
 };
 
 const WEBSITE_JSON_LD = {

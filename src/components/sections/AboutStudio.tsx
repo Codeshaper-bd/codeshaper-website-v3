@@ -54,7 +54,7 @@ if (typeof window !== "undefined") {
  * EngagementModels' cards already have with their own flat section.
  *
  * Every stat/feature is still an actual structural fact already
- * established elsewhere in the codebase (SERVICE_COLUMNS, INDUSTRIES,
+ * established elsewhere in the codebase (SERVICE_GROUPS, INDUSTRIES,
  * TrustStrip's client list, Locations' 6-country footprint, and
  * EngagementModels' five models) — no founding year, headcount, award
  * count, or certification is invented, since none of that exists
@@ -72,7 +72,7 @@ if (typeof window !== "undefined") {
  * intentional editorial choice instead of the wrong photo.
  */
 const STATS: { value: number; suffix: string; label: string; icon: typeof Layers; accent: string }[] = [
-  { value: 5, suffix: "", label: "Core practices", icon: Layers, accent: "#8a7bff" },
+  { value: 5, suffix: "", label: "Service groups", icon: Layers, accent: "#8a7bff" },
   { value: 10, suffix: "", label: "Industries served", icon: Globe2, accent: "#5b9bdb" },
   { value: 16, suffix: "+", label: "Clients worldwide", icon: Users, accent: "#3fae82" },
   { value: 6, suffix: "", label: "Countries, one team", icon: MapPin, accent: "#d99a4e" },
@@ -99,7 +99,7 @@ const FEATURES: { title: string; desc: string; icon: typeof Layers; accent: stri
   },
   {
     title: "AI-first, not bolted on",
-    desc: "AI & automation is one of our five core practices, built into how we design and ship from day one.",
+    desc: "AI Agents & Automation is our flagship service group, built into how we design and ship from day one.",
     icon: Sparkles,
     accent: "#d99a4e",
   },

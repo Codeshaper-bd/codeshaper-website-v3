@@ -8,7 +8,7 @@ import Reveal from "@/components/system/Reveal";
 import { SectionEyebrow, SectionTitle, SectionDescription } from "@/components/system/SectionHeading";
 import { Icon } from "@/lib/icons";
 import FaqAccordion from "@/components/system/FaqAccordion";
-import { findBySlug, ENGAGEMENT_MODELS } from "@/lib/navigation";
+import { getEngagementModel } from "@/data/services";
 import {
   MVP_BENEFITS,
   MVP_AI_EDGE,
@@ -35,7 +35,7 @@ export const metadata: Metadata = {
   alternates: { canonical: "/engagement/mvp-sprint" },
 };
 
-const MODEL = findBySlug(ENGAGEMENT_MODELS, "mvp-sprint")!;
+const MODEL = getEngagementModel("mvp-sprint")!;
 
 const BREADCRUMB_JSON_LD = {
   "@context": "https://schema.org",

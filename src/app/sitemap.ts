@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { SITE_URL } from "@/lib/site";
-import { SERVICE_COLUMNS, INDUSTRIES, ENGAGEMENT_MODELS } from "@/lib/navigation";
+import { INDUSTRIES } from "@/lib/navigation";
+import { SERVICE_GROUPS, SERVICES, ENGAGEMENT_MODELS, servicePath } from "@/data/services";
 import { BLOG_POSTS } from "@/lib/blog";
 import { CASE_STUDIES } from "@/lib/caseStudies";
 
@@ -10,9 +11,11 @@ import { CASE_STUDIES } from "@/lib/caseStudies";
  * `robots.ts`'s STUB_PREFIXES) — listing a stub here would tell Google
  * to crawl and index a near-empty "coming soon" page, which is worse
  * for SEO than not listing it at all. Add each route here as it gets a
- * real page built. Services/Industries/Engagement leaf URLs are derived
- * from the same navigation data the mega menus render, so this can't
- * drift out of sync with what actually exists.
+ * real page built — including the Company pages hidden from the menus
+ * (Leadership, Life, Clients, Locations, Careers). Service group, service,
+ * and engagement URLs are derived from src/data/services.ts, the same
+ * data the menus and routes render, so this can't drift out of sync with
+ * what actually exists.
  */
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();
@@ -42,21 +45,19 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.7,
   }));
 
-  const serviceCategoryRoutes: MetadataRoute.Sitemap = SERVICE_COLUMNS.map((col) => ({
-    url: `${SITE_URL}${col.href}`,
+  const serviceGroupRoutes: MetadataRoute.Sitemap = SERVICE_GROUPS.map((group) => ({
+    url: `${SITE_URL}${servicePath(group.slug)}`,
     lastModified: now,
     changeFrequency: "monthly",
     priority: 0.8,
   }));
 
-  const serviceDetailRoutes: MetadataRoute.Sitemap = SERVICE_COLUMNS.flatMap((col) =>
-    col.links.map((link) => ({
-      url: `${SITE_URL}${link.href}`,
-      lastModified: now,
-      changeFrequency: "monthly" as const,
-      priority: 0.6,
-    }))
-  );
+  const serviceDetailRoutes: MetadataRoute.Sitemap = SERVICES.map((svc) => ({
+    url: `${SITE_URL}${servicePath(svc.slug)}`,
+    lastModified: now,
+    changeFrequency: "monthly",
+    priority: 0.6,
+  }));
 
   const industryRoutes: MetadataRoute.Sitemap = INDUSTRIES.map((ind) => ({
     url: `${SITE_URL}${ind.href}`,
@@ -72,5 +73,5 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.6,
   }));
 
-  return [...staticRoutes, ...serviceCategoryRoutes, ...serviceDetailRoutes, ...industryRoutes, ...engagementRoutes, ...blogRoutes, ...caseStudyRoutes];
+  return [...staticRoutes, ...serviceGroupRoutes, ...serviceDetailRoutes, ...industryRoutes, ...engagementRoutes, ...blogRoutes, ...caseStudyRoutes];
 }

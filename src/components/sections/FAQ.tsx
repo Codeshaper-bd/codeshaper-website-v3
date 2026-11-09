@@ -6,6 +6,13 @@ import { ChevronDown, ArrowRight } from "lucide-react";
 import Reveal from "@/components/system/Reveal";
 import CountUp from "@/components/system/CountUp";
 import { SectionEyebrow, SectionTitle, SectionDescription } from "@/components/system/SectionHeading";
+import { SERVICE_GROUPS } from "@/data/services";
+
+/** "A, B, C, D, and E" — the five group names, in locked order. */
+function listGroups(): string {
+  const names = SERVICE_GROUPS.map((g) => g.name);
+  return `${names.slice(0, -1).join(", ")}, and ${names[names.length - 1]}`;
+}
 
 /**
  * FAQ — round 2. Feedback: the plain divide-y list read as basic next to
@@ -15,8 +22,8 @@ import { SectionEyebrow, SectionTitle, SectionDescription } from "@/components/s
  * rather than a bare chevron.
  *
  * Two-column split: left is eyebrow/heading/intro + two real stats (5
- * core practices, 6 global hubs — both structural counts already
- * established elsewhere: SERVICE_COLUMNS.length in navigation.ts,
+ * service groups, 6 global hubs — both structural counts already
+ * established elsewhere: SERVICE_GROUPS.length in data/services.ts,
  * LOCATIONS.length in Locations.tsx) + a dark "still have questions"
  * card reusing the same /contact route as the Navbar's own "Book a
  * Call". Right is the accordion itself, now one bordered card with
@@ -28,17 +35,19 @@ import { SectionEyebrow, SectionTitle, SectionDescription } from "@/components/s
  * FAQPage JSON-LD block so search engines can pick them up as rich
  * results. Added two more grounded questions (redesign/existing
  * products, industries) to widen topical coverage — both answers are
- * real service-line facts (ServicePillars' "Redesign & Replatforming",
- * the 10-entry INDUSTRIES list), not invented claims.
+ * real service-line facts (the modernization/migration/maintenance
+ * services in data/services.ts, the 10-entry INDUSTRIES list), not
+ * invented claims.
  */
 const FAQS: { q: string; a: string }[] = [
   {
     q: "What services does CodeShaper offer?",
-    a: "Five core practices: Experience & Product Design, Product Engineering, Websites & Growth, Commerce Experiences, and AI & Automation — see Services for the full breakdown of each.",
+    // REVIEW
+    a: `We're an AI engineering and software development company with five service groups: ${listGroups()}. We also provide dedicated development teams, IT staff augmentation, and offshore development centers if you'd rather extend your own team. See Services for the full breakdown of each.`,
   },
   {
     q: "Which engagement model fits our project?",
-    a: "It depends on where you're starting from: an MVP Sprint for a fast first build, End-to-End Delivery when we own the whole scope, a Dedicated Product Team or Team Augmentation to extend yours, or a Global Delivery Model for a distributed build with one accountable team. Tell us where you are and we'll recommend a fit.",
+    a: "It depends on where you're starting from: an MVP Sprint for a fast first build, End-to-End Delivery when we own the whole scope, a Dedicated Development Team or IT Staff Augmentation to extend yours, or an Offshore Development Center for a long-term team we set up and run for you. Tell us where you are and we'll recommend a fit.",
   },
   {
     q: "How do you use AI in the development process?",
@@ -46,7 +55,7 @@ const FAQS: { q: string; a: string }[] = [
   },
   {
     q: "Can you redesign or maintain an existing product?",
-    a: "Yes — Redesign & Replatforming is one of our standing services, covering platform migrations, UI refreshes, and ongoing maintenance without a ground-up rebuild.",
+    a: "Yes — Legacy Software Modernization, eCommerce Migration, and Website Maintenance & Support cover platform migrations, UI refreshes, and ongoing upkeep without a ground-up rebuild.",
   },
   {
     q: "What industries do you have experience in?",
@@ -58,7 +67,7 @@ const FAQS: { q: string; a: string }[] = [
   },
   {
     q: "Do you work with early-stage startups or only larger companies?",
-    a: "Both. MVP Sprint and Dedicated Product Team engagements suit early-stage teams moving fast; End-to-End Delivery and the Global Delivery Model suit larger, more established organizations with more scope to cover.",
+    a: "Both. MVP Sprint and Dedicated Development Team engagements suit early-stage teams moving fast; End-to-End Delivery and an Offshore Development Center suit larger, more established organizations with more scope to cover.",
   },
   {
     q: "How do we get started?",
@@ -67,7 +76,7 @@ const FAQS: { q: string; a: string }[] = [
 ];
 
 const STATS: { value: number; suffix: string; label: string }[] = [
-  { value: 5, suffix: "", label: "Core practices" },
+  { value: SERVICE_GROUPS.length, suffix: "", label: "Service groups" },
   { value: 6, suffix: "", label: "Global hubs" },
 ];
 

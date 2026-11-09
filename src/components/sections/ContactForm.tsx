@@ -1,7 +1,8 @@
 "use client";
 
 import { useRef, useState, type FormEvent } from "react";
-import { SERVICE_COLUMNS, INDUSTRIES as ALL_INDUSTRIES } from "@/lib/navigation";
+import { INDUSTRIES as ALL_INDUSTRIES } from "@/lib/navigation";
+import { SERVICE_GROUPS } from "@/data/services";
 import Magnetic from "@/components/system/Magnetic";
 
 /**
@@ -87,8 +88,8 @@ export default function ContactForm() {
             <span className="mb-1.5 block font-urbanist text-xs font-medium text-ink-dim">Service interest</span>
             <select required name="service" defaultValue="" className={inputCls}>
               <option value="" disabled>Select a service…</option>
-              {SERVICE_COLUMNS.map((s) => (
-                <option key={s.id} value={s.id}>{s.title}</option>
+              {SERVICE_GROUPS.map((g) => (
+                <option key={g.slug} value={g.slug}>{g.name}</option>
               ))}
             </select>
           </label>

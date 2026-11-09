@@ -53,7 +53,7 @@ export const TOPICS = [
   "Product Strategy",
   "UX/UI",
   "Commerce",
-  "AI & Automation",
+  "AI Agents & Automation",
   "Web Engineering",
   "Integrations",
 ] as const;
@@ -75,7 +75,7 @@ export const BLOG_POSTS: BlogPost[] = [
     title: "RAG for Support Teams: Turning Docs into Answers Without Chaos",
     excerpt:
       "Retrieval-augmented generation sounds abstract until you frame it correctly: it's a way to make your existing documentation answer questions, not a replacement for it.",
-    topic: "AI & Automation",
+    topic: "AI Agents & Automation",
     format: "Guide",
     level: "Intermediate",
     industry: "SaaS",
@@ -606,7 +606,7 @@ export const BLOG_POSTS: BlogPost[] = [
     title: "Process Automation Without the Chaos: Capture, Review, Approve",
     excerpt:
       "The automation projects that actually stick follow a simple shape: capture the input reliably, keep a human in the loop where judgment matters, and automate the parts that don't need one.",
-    topic: "AI & Automation",
+    topic: "AI Agents & Automation",
     format: "Guide",
     level: "Intermediate",
     author: "The CodeShaper Team",

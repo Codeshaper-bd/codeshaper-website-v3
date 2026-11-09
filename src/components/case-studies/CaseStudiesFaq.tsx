@@ -8,7 +8,7 @@ import Reveal from "@/components/system/Reveal";
 import CountUp from "@/components/system/CountUp";
 import { CASE_STUDIES_FAQS as FAQS } from "@/lib/caseStudiesFaq";
 import { CASE_STUDIES } from "@/lib/caseStudies";
-import { ENGAGEMENT_MODELS } from "@/lib/navigation";
+import { ENGAGEMENT_MODELS } from "@/data/services";
 
 /**
  * Round 2: brought up to the same bar as the homepage FAQ.tsx (and this

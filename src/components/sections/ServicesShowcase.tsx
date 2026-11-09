@@ -13,18 +13,20 @@ import {
   SiTypescript,
   SiWordpress,
   SiWebflow,
-  SiGoogleanalytics,
   SiShopify,
   SiWoocommerce,
-  SiStripe,
+  SiDocker,
+  SiKubernetes,
+  SiPostgresql,
+  SiTerraform,
   SiPython,
   SiLangchain,
   SiHuggingface,
   SiZapier,
 } from "react-icons/si";
 import type { IconType } from "react-icons";
-import { SERVICE_COLUMNS } from "@/lib/navigation";
-import { Icon, SERVICE_ICONS } from "@/lib/icons";
+import { SERVICE_GROUPS, groupDescriptor, servicePath, servicesInGroup } from "@/data/services";
+import { Icon } from "@/lib/icons";
 import Reveal from "@/components/system/Reveal";
 import { SectionEyebrow, SectionTitle, SectionDescription } from "@/components/system/SectionHeading";
 
@@ -36,14 +38,19 @@ import { SectionEyebrow, SectionTitle, SectionDescription } from "@/components/s
  *
  * Two structural bugs from the previous pass, both fixed here rather than
  * styled around:
- *  1. Services have different sub-link counts (engineering 6, commerce 5,
- *     the rest 4) — showing them all meant the detail panel's height (and
+ *  1. Groups have different service counts (5 to 12) — showing them all
+ *     meant the detail panel's height (and
  *     so the whole section's height) changed as the mouse moved down the
  *     list. Capped to MAX_VISIBLE_LINKS with a "+N more" link instead, so
  *     every panel renders the same 2-row grid.
  *  2. Tab cards sized to their own content meant a two-line title (e.g.
- *     "Experience & Product Design") made that card taller than its
+ *     "AI Integration & Infrastructure") made that card taller than its
  *     neighbors. Fixed height (TAB_HEIGHT) on every card instead.
+ *
+ *  3. The panel must not outgrow the 5 × TAB_HEIGHT tab list, or a gap
+ *     opens under the last tab. The group descriptor line is truncated to
+ *     one line and each service summary clamped to one line for that
+ *     reason — the full text lives on the group/service pages.
  *
  * With every tab card now a fixed, identical height, a single sliding
  * highlight (measured via refs, animated with a CSS transform) can track
@@ -67,16 +74,31 @@ import { SectionEyebrow, SectionTitle, SectionDescription } from "@/components/s
  * direct request individual tab rows stay perfectly square; only the
  * shared card's four outer corners (handled above) round at all.
  */
+/** Tool logos per service group, keyed by group slug. */
 const TOOL_ICONS: Record<string, IconType[]> = {
-  ai: [SiPython, SiLangchain, SiHuggingface, SiZapier],
-  design: [SiFigma, SiSketch, SiFramer],
-  engineering: [SiReact, SiNextdotjs, SiNodedotjs, SiTypescript],
-  websites: [SiWordpress, SiWebflow, SiGoogleanalytics],
-  commerce: [SiShopify, SiWoocommerce, SiStripe],
+  "ai-agents-automation": [SiPython, SiLangchain, SiHuggingface, SiZapier],
+  "ai-software-development": [SiReact, SiNextdotjs, SiNodedotjs, SiTypescript],
+  "ai-integration-infrastructure": [SiDocker, SiKubernetes, SiPostgresql, SiTerraform],
+  "ui-ux-product-design": [SiFigma, SiSketch, SiFramer],
+  "websites-commerce": [SiWordpress, SiWebflow, SiShopify, SiWoocommerce],
 };
 
-const AI_COLUMN = SERVICE_COLUMNS.find((c) => c.id === "ai")!;
-const ORDERED_COLUMNS = [AI_COLUMN, ...SERVICE_COLUMNS.filter((c) => c.id !== "ai")];
+/** SERVICE_GROUPS is already in locked order, with AI Agents & Automation first (the default tab). */
+const ORDERED_COLUMNS = SERVICE_GROUPS.map((group) => ({
+  id: group.slug,
+  title: group.name,
+  href: servicePath(group.slug),
+  icon: group.icon,
+  flagship: group.flagship,
+  tags: groupDescriptor(group),
+  blurb: group.focus,
+  links: servicesInGroup(group.slug).map((svc) => ({
+    label: svc.menuLabel,
+    href: servicePath(svc.slug),
+    icon: svc.icon,
+    desc: svc.summary,
+  })),
+}));
 const MAX_VISIBLE_LINKS = 4;
 const TAB_HEIGHT = 100;
 
@@ -134,7 +156,7 @@ export default function ServicesShowcase() {
               </div>
               <div className="flex items-center gap-4">
                 <SectionDescription className="max-w-xs">
-                  Five disciplines working together, from your first sketch to a shipped, supported product.
+                  Five service groups, one team — production-ready AI and software that works with the tools you already use.
                 </SectionDescription>
                 <Link
                   href="/services"
@@ -190,7 +212,7 @@ export default function ServicesShowcase() {
                           isActive ? "bg-aurora-violet text-white" : "mega-icon-tile text-aurora-indigo"
                         }`}
                       >
-                        <Icon name={SERVICE_ICONS[col.id]} size={18} />
+                        <Icon name={col.icon} size={18} />
                       </span>
                       <span className="min-w-0 flex-1">
                         <span className="flex items-center gap-2">
@@ -237,7 +259,7 @@ export default function ServicesShowcase() {
 
                 <div className="relative z-10 flex items-start justify-between gap-4">
                   <span className="icon-pop-in mega-icon-tile flex h-14 w-14 items-center justify-center rounded-2xl text-aurora-violet">
-                    <Icon name={SERVICE_ICONS[activeCol.id]} size={24} />
+                    <Icon name={activeCol.icon} size={24} />
                   </span>
                   <ToolRow id={activeCol.id} size={32} iconSize={15} />
                 </div>
@@ -252,7 +274,7 @@ export default function ServicesShowcase() {
                     className="mt-2 shrink-0 text-ink-faint transition-transform duration-200 group-hover/title:translate-x-1 group-hover/title:text-aurora-violet"
                   />
                 </Link>
-                <p className="relative z-10 mt-1.5 max-w-lg font-urbanist text-[12.5px] font-medium uppercase tracking-[0.06em] text-ink-faint">
+                <p className="relative z-10 mt-1.5 max-w-lg truncate font-urbanist text-[12.5px] font-medium uppercase tracking-[0.06em] text-ink-faint">
                   {activeCol.tags}
                 </p>
                 <p className="relative z-10 mt-4 max-w-lg font-urbanist text-[15px] leading-relaxed text-ink-dim">
@@ -273,7 +295,7 @@ export default function ServicesShowcase() {
                           <span className="block text-[14px] font-semibold text-ink-dim transition-colors duration-200 group-hover/row:text-ink">
                             {l.label}
                           </span>
-                          <span className="block text-[12.5px] font-normal leading-snug text-ink-faint">{l.desc}</span>
+                          <span className="line-clamp-1 text-[12.5px] font-normal leading-snug text-ink-faint">{l.desc}</span>
                         </span>
                       </Link>
                     </li>

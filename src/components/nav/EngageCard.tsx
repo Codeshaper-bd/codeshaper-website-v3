@@ -1,7 +1,7 @@
 import Link from "next/link";
 import * as Nav from "@radix-ui/react-navigation-menu";
 import { ArrowRight } from "lucide-react";
-import { ENGAGEMENT_MODELS } from "@/lib/navigation";
+import { ENGAGEMENT_MODELS } from "@/data/services";
 import { Icon } from "@/lib/icons";
 
 /**

@@ -2,7 +2,8 @@ import type { CSSProperties } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { FileText, ArrowUp, Mail, Phone } from "lucide-react";
-import { SERVICE_COLUMNS, SIMPLE_MENUS, INDUSTRIES, ENGAGEMENT_MODELS } from "@/lib/navigation";
+import { SIMPLE_MENUS, INDUSTRIES } from "@/lib/navigation";
+import { SERVICE_GROUPS, ENGAGEMENT_MODELS, servicePath } from "@/data/services";
 import FooterWordmark from "./FooterWordmark";
 import Reveal from "@/components/system/Reveal";
 
@@ -82,7 +83,13 @@ const blogLink = insights.links.find((l) => l.label === "Blog")!;
 const company = SIMPLE_MENUS.find((m) => m.id === "company")!;
 const companyLinks = [...company.links.filter((l) => l.label !== "Contact"), blogLink];
 
-/** Placeholder hrefs — no real social profile URLs exist yet for this project. */
+/**
+ * HIDDEN UNTIL REAL: every href below is still "#" — no real social
+ * profile URLs exist yet. Entries with href "#" are not rendered (see
+ * `isLive`), and the whole "Follow CodeShaper" row is hidden while none
+ * are live. To publish one, replace its "#" with the real profile URL —
+ * nothing else needs to change.
+ */
 const SOCIAL_LINKS: { label: string; href: string; color: string; d: string }[] = [
   { label: "LinkedIn", href: "#", color: "#0A66C2", d: "M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5ZM3 9h4v12H3V9Zm7 0h3.8v1.7h.05c.53-1 1.83-2.05 3.77-2.05 4.03 0 4.78 2.65 4.78 6.1V21h-4v-5.6c0-1.34-.02-3.06-1.87-3.06-1.87 0-2.16 1.46-2.16 2.96V21h-4V9Z" },
   { label: "X", href: "#", color: "#0b0f19", d: "M3 3h4.6l4 5.8L16.2 3H21l-6.9 8.9L21.4 21h-4.6l-4.4-6.3L6.6 21H2l7.3-9.3L3 3Z" },
@@ -94,6 +101,11 @@ const SOCIAL_LINKS: { label: string; href: string; color: string; d: string }[] 
  * Real platforms/partners/memberships the user confirmed — scores/
  * counts and profile URLs not known, see file header. Every entry has
  * a subtitle so the row reads clearly without separate group headings.
+ *
+ * HIDDEN UNTIL REAL: same rule as SOCIAL_LINKS — badges whose href is
+ * still "#" aren't rendered, and the "Reviews & Partners" row is hidden
+ * while none are live. Fill in a real review/partner profile URL to
+ * publish that badge.
  */
 const TRUST_BADGES: { name: string; href: string; color?: string; colors?: string[]; subtitle: string }[] = [
   { name: "Google", href: "#", colors: ["#4285F4", "#EA4335", "#FBBC05", "#4285F4", "#34A853", "#EA4335"], subtitle: "Reviews" },
@@ -105,6 +117,18 @@ const TRUST_BADGES: { name: string; href: string; color?: string; colors?: strin
   { name: "Webflow", href: "#", color: "#4353FF", subtitle: "Partner" },
   { name: "BASIS", href: "#", color: "#9ca3af", subtitle: "Member" },
 ];
+
+/** A footer link is shown only once it has a real destination (not the "#" placeholder). */
+const isLive = (l: { href: string }) => l.href !== "#";
+const LIVE_SOCIAL_LINKS = SOCIAL_LINKS.filter(isLive);
+const LIVE_TRUST_BADGES = TRUST_BADGES.filter(isLive);
+
+/**
+ * The 3 hiring pages sit under Services; How We Engage keeps the two
+ * project-delivery models (/engagement/*), so nothing is listed twice.
+ */
+const HIRING_MODELS = ENGAGEMENT_MODELS.filter((m) => !m.href.startsWith("/engagement/"));
+const DELIVERY_MODELS = ENGAGEMENT_MODELS.filter((m) => m.href.startsWith("/engagement/"));
 
 const colLink = "link-underline font-urbanist text-[13.5px] text-ink-dim transition-colors hover:text-ink";
 
@@ -129,13 +153,14 @@ export default function Footer() {
 
       <div className="relative mx-auto max-w-7xl px-6 lg:px-10">
         {/* Social row — top of the footer, large standout badges */}
+        {LIVE_SOCIAL_LINKS.length > 0 && (
         <Reveal>
         <div className="flex flex-col gap-5 border-b border-hairline pb-8 sm:flex-row sm:items-center sm:justify-between">
           <p className="font-urbanist text-xs font-medium uppercase tracking-[0.25em] text-ink-faint">
             Follow CodeShaper
           </p>
           <div className="flex items-center gap-3">
-            {SOCIAL_LINKS.map((s) => (
+            {LIVE_SOCIAL_LINKS.map((s) => (
               <a
                 key={s.label}
                 href={s.href}
@@ -158,15 +183,17 @@ export default function Footer() {
           </div>
         </div>
         </Reveal>
+        )}
 
         {/* Reviews + Partners & Memberships — merged into one compact row, see file header */}
+        {LIVE_TRUST_BADGES.length > 0 && (
         <Reveal delay={80}>
-        <div className="mt-8 border-b border-hairline pb-8">
+        <div className={`${LIVE_SOCIAL_LINKS.length > 0 ? "mt-8" : ""} border-b border-hairline pb-8`}>
           <p className="mb-5 font-urbanist text-xs font-medium uppercase tracking-[0.25em] text-ink-faint">
             Reviews &amp; Partners
           </p>
           <div className="grid grid-cols-2 gap-3 sm:flex sm:flex-wrap">
-            {TRUST_BADGES.map((p) => {
+            {LIVE_TRUST_BADGES.map((p) => {
               const colors = p.colors;
               const accent = colors ? colors[0] : p.color!;
               return (
@@ -201,8 +228,9 @@ export default function Footer() {
           </div>
         </div>
         </Reveal>
+        )}
 
-        <div className="mt-10 grid gap-10 lg:grid-cols-[280px_1fr] lg:gap-8">
+        <div className={`${LIVE_SOCIAL_LINKS.length + LIVE_TRUST_BADGES.length > 0 ? "mt-10" : ""} grid gap-10 lg:grid-cols-[280px_1fr] lg:gap-8`}>
           {/* Brand */}
           <div>
             <Link href="/" className="flex items-center" aria-label="CodeShaper home">
@@ -212,8 +240,9 @@ export default function Footer() {
               <Image src="/brand/logo.png" alt="codeShaper" width={169} height={60} className="h-8 w-auto" />
             </Link>
             <p className="mt-4 max-w-xs font-urbanist text-sm leading-relaxed text-ink-faint">
-              Product design, web &amp; mobile engineering, commerce, and AI
-              automation, with weekly visibility and clean handover.
+              AI engineering &amp; software development company. Reliable,
+              production-ready AI and software that works with the tools you
+              already use.
             </p>
             <Link
               href="/company/about"
@@ -244,9 +273,14 @@ export default function Footer() {
             <div>
               <ColHead>Services</ColHead>
               <ul className="space-y-2.5">
-                {SERVICE_COLUMNS.map((c) => (
-                  <li key={c.id}>
-                    <Link href={c.href} className={colLink}>{c.title}</Link>
+                {SERVICE_GROUPS.map((g) => (
+                  <li key={g.slug}>
+                    <Link href={servicePath(g.slug)} className={colLink}>{g.name}</Link>
+                  </li>
+                ))}
+                {HIRING_MODELS.map((m) => (
+                  <li key={m.href}>
+                    <Link href={m.href} className={colLink}>{m.label}</Link>
                   </li>
                 ))}
                 <li>
@@ -277,7 +311,7 @@ export default function Footer() {
             <div>
               <ColHead>How We Engage</ColHead>
               <ul className="space-y-2.5">
-                {ENGAGEMENT_MODELS.map((l) => (
+                {DELIVERY_MODELS.map((l) => (
                   <li key={l.href}>
                     <Link href={l.href} className={colLink}>{l.label}</Link>
                   </li>
@@ -302,7 +336,7 @@ export default function Footer() {
         {/* Cities row → Locations section */}
         <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-2">
           {CITY_NAMES.map((c) => (
-            <Link key={c} href="#locations" className="font-urbanist text-xs text-ink-faint transition-colors hover:text-ink">
+            <Link key={c} href="/#locations" className="font-urbanist text-xs text-ink-faint transition-colors hover:text-ink">
               {c}
             </Link>
           ))}

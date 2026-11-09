@@ -67,7 +67,7 @@ import { textSafeAccent } from "@/lib/color";
  * radius, no border, no box-shadow, just a plain color block to group
  * the content. Also renamed the eyebrow from "AI-Driven Development" to
  * "AI-Powered Delivery" — the old label implied AI is scoped to
- * engineering specifically, when the diagram (and SERVICE_COLUMNS) cover
+ * engineering specifically, when the diagram (and SERVICE_GROUPS) cover
  * design, commerce, and websites too, not just development.
  *
  * Round 8: the 3 stats were a single fixed set shown regardless of which

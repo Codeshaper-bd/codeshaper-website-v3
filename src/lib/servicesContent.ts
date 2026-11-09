@@ -1,9 +1,10 @@
 /**
- * Rich content for the Services Hub (/services) and the bespoke AI &
- * Automation pillar page (/services/ai) — everything the thin
- * `SERVICE_COLUMNS` data in navigation.ts doesn't carry. Same
- * separation industriesContent.ts / engagementContent.ts have from
- * navigation.ts.
+ * Rich content for the Services Hub (/services) and the bespoke AI
+ * Agents & Automation group page (/services/ai-agents-automation) —
+ * everything the service structure in src/data/services.ts doesn't
+ * carry. Every service link here is built from that file's slugs via
+ * `link()`, which throws on an unknown slug, so these can't point at a
+ * page that doesn't exist.
  *
  * The hub's "Trust Strip" deliberately does NOT use the source brief's
  * literal numbers ("Founded 2021 · Team 20+ · 300+ projects delivered
@@ -16,11 +17,24 @@
  * inventing company history.
  */
 
+import { getEngagementModel, getGroup, getService, servicePath, type ServiceGroupSlug } from "@/data/services";
+
+/** A chip/link to a service or group page, labelled with its menu label. */
+function link(slug: string): { label: string; href: string } {
+  const svc = getService(slug);
+  if (svc) return { label: svc.menuLabel, href: servicePath(slug) };
+  const group = getGroup(slug);
+  if (group) return { label: group.name, href: servicePath(slug) };
+  const model = getEngagementModel(slug);
+  if (model) return { label: model.label, href: model.href };
+  throw new Error(`servicesContent: unknown service/group/engagement slug "${slug}"`);
+}
+
 export type TrustStat = { icon: string; value: string; label: string };
 
 export const TRUST_STATS: TrustStat[] = [
   { icon: "map-pin", value: "6", label: "Collaboration hubs — Bangladesh, USA, UK, Japan, Australia & NZ" },
-  { icon: "layers", value: "5", label: "Service pillars, one delivery system" },
+  { icon: "layers", value: "5", label: "Service groups, one delivery system" },
   { icon: "handshake", value: "5", label: "Engagement models to fit any scope" },
   { icon: "clipboard-list", value: "Weekly", label: "Demos + shared board on every engagement" },
 ];
@@ -33,54 +47,20 @@ export const TRUST_QUOTE = {
 export type StarterPath = { goal: string; steps: { label: string; href: string }[] };
 
 export const STARTER_PATHS: StarterPath[] = [
-  {
-    goal: "Launch a new MVP",
-    steps: [
-      { label: "Product Discovery", href: "/services/design/discovery" },
-      { label: "MVP Sprint", href: "/engagement/mvp-sprint" },
-      { label: "Product Engineering", href: "/services/engineering" },
-    ],
-  },
-  {
-    goal: "Scale an existing SaaS",
-    steps: [
-      { label: "Product Engineering", href: "/services/engineering" },
-      { label: "APIs & Integrations", href: "/services/engineering/apis" },
-      { label: "Design Systems", href: "/services/design/design-systems" },
-    ],
-  },
-  {
-    goal: "Increase website conversion",
-    steps: [
-      { label: "CRO", href: "/services/design/cro" },
-      { label: "Landing Pages", href: "/services/websites/landing-pages" },
-      { label: "Redesign & Replatforming", href: "/services/websites/replatforming" },
-    ],
-  },
-  {
-    goal: "Grow eCommerce revenue",
-    steps: [
-      { label: "Shopify Development", href: "/services/commerce/shopify" },
-      { label: "CRO", href: "/services/design/cro" },
-      { label: "Care & Maintenance", href: "/services/websites/care" },
-    ],
-  },
-  {
-    goal: "Reduce manual operations",
-    steps: [
-      { label: "Process & Document Automation", href: "/services/ai/automation" },
-      { label: "APIs & Integrations", href: "/services/engineering/apis" },
-    ],
-  },
+  { goal: "Launch a new MVP", steps: [link("product-discovery"), link("mvp-sprint"), link("mvp-development")] },
+  { goal: "Automate a manual business process", steps: [link("ai-consulting"), link("ai-workflow-automation"), link("llmops")] },
+  { goal: "Connect AI to your existing systems", steps: [link("ai-integration"), link("rag-development"), link("ai-security-governance")] },
+  { goal: "Scale an existing SaaS", steps: [link("saas-development"), link("cloud-devops"), link("design-systems")] },
+  { goal: "Grow eCommerce revenue", steps: [link("shopify-development"), link("cro"), link("seo-aeo")] },
 ];
 
-/** Short, honest capability framing per pillar — not metrics, just what tends to improve. */
-export const PILLAR_OUTCOMES: Record<string, string[]> = {
-  design: ["Clearer flows", "Faster dev handoff", "Consistent UI", "Better conversion foundations"],
-  engineering: ["Maintainable code", "Integration-ready", "Clear ownership", "Built to operate, not just ship"],
-  websites: ["Fast load times", "SEO-ready foundation", "Content teams can self-serve", "Built for iteration"],
-  commerce: ["Conversion-focused", "Operationally sound", "Built to scale", "Maintainable past launch"],
-  ai: ["Faster workflows", "Grounded, not generic answers", "Human-in-the-loop by default", "Measurable time saved"],
+/** Short, honest capability framing per service group — not metrics, just what tends to improve. */
+export const PILLAR_OUTCOMES: Record<ServiceGroupSlug, string[]> = {
+  "ai-agents-automation": ["Less manual work", "Human approval where it matters", "Every action logged", "Measurable time saved"],
+  "ai-software-development": ["Maintainable code", "Tested before every release", "Built to scale", "Clean handover"],
+  "ai-integration-infrastructure": ["Works with your existing systems", "Secure data access", "Monitored in production", "Grounded, not generic answers"],
+  "ui-ux-product-design": ["Clearer flows", "Accessible by default", "Faster dev handoff", "Consistent UI"],
+  "websites-commerce": ["Found in Google and AI search", "Fast load times", "Higher conversion", "Content teams can self-serve"],
 };
 
 export type Faq = { q: string; a: string };
@@ -89,13 +69,13 @@ export type Quote = { quote: string; name: string; role: string; accent: string 
 export const SERVICES_FAQS: Faq[] = [
   { q: "Which service should I start with?", a: "Whatever matches your immediate goal — use the \"Help me choose\" paths above, or book a call and we'll recommend a starting point directly." },
   { q: "Can we start with a small MVP or pilot?", a: "Yes — MVP Sprint exists specifically for that: a focused, time-boxed way to validate before committing to a larger build." },
-  { q: "Do you handle integrations with our existing tools?", a: "Yes — APIs & Integrations is one of our most common engagements: payments, CRM, ERP, shipping, and analytics platforms." },
+  { q: "Do you handle integrations with our existing tools?", a: "Yes — Enterprise AI & Business Systems Integration is one of our most common engagements: CRM, ERP, helpdesk, payments, and data platforms." },
   { q: "How do you estimate scope and timeline?", a: "After a short discovery conversation, we share a scoped estimate with clear assumptions — journeys, integrations, and platform scope all factor in." },
   { q: "Who owns the IP and source code?", a: "You do, always. Source, design assets, and documentation are handed over as part of every engagement's standard close-out." },
-  { q: "Do you provide ongoing support after launch?", a: "Yes — Care & Maintenance and Dedicated Product Team engagements both exist specifically for the work after v1 ships." },
+  { q: "Do you provide ongoing support after launch?", a: "Yes — Website Maintenance & Support, LLMOps & AI Observability, and a Dedicated Development Team all exist specifically for the work after v1 ships." },
 ];
 
-/** AI & Automation pillar page content */
+/** AI Agents & Automation group page content */
 
 export const AI_SNAPSHOT = [
   { icon: "target", title: "Who this is for", description: "Teams with a specific, repetitive workflow to speed up — not a general appetite for \"adding AI\" somewhere." },

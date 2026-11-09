@@ -4,26 +4,26 @@ import { ArrowRight } from "lucide-react";
 import SiteShell from "@/components/system/SiteShell";
 import Breadcrumbs from "@/components/system/Breadcrumbs";
 import { SectionEyebrow, SectionTitle, SectionDescription } from "@/components/system/SectionHeading";
-import { SERVICE_COLUMNS, ENGAGEMENT_MODELS } from "@/lib/navigation";
-import { Icon, SERVICE_ICONS } from "@/lib/icons";
+import { SERVICE_GROUPS, ENGAGEMENT_MODELS, servicePath } from "@/data/services";
+import { Icon } from "@/lib/icons";
 
 export const metadata: Metadata = {
   title: "About",
   description:
-    "CodeShaper is a digital product studio combining design, engineering, commerce, and AI automation under one roof — with weekly visibility and clean handover.",
+    "CodeShaper is an AI engineering & software development company building reliable, production-ready AI and software that integrates with your existing tools.",
   alternates: { canonical: "/company/about" },
 };
 
 /**
  * Stats reused from AboutStudio.tsx (the homepage "who we are" section) —
  * same source, same discipline: every number here is an actual structural
- * count already established elsewhere in the codebase (SERVICE_COLUMNS,
+ * count already established elsewhere in the codebase (SERVICE_GROUPS,
  * INDUSTRIES, Locations' REGIONS), not an invented headcount or founding
  * year. Kept in sync manually since this page and the homepage section
  * serve different layouts.
  */
 const STATS = [
-  { value: "5", label: "Core practices" },
+  { value: String(SERVICE_GROUPS.length), label: "Service groups" },
   { value: "10", label: "Industries served" },
   { value: "16+", label: "Clients worldwide" },
   { value: "4", label: "Regions covered" },
@@ -37,11 +37,12 @@ export default function AboutPage() {
           <Breadcrumbs items={[{ label: "Home", href: "/" }, { label: "Company" }, { label: "About" }]} />
           <SectionEyebrow>Company</SectionEyebrow>
           <SectionTitle as="h1" size="lg">
-            Design, engineering, and AI — under one roof.
+            AI engineering &amp; software development, under one roof.
           </SectionTitle>
           <SectionDescription className="mt-5">
-            CodeShaper is a digital product studio combining design, engineering, commerce, and AI automation under
-            one roof — with weekly visibility and a clean handover at the end of every engagement.
+            CodeShaper is an AI engineering &amp; software development company. We build reliable, production-ready
+            AI and software systems that integrate with the tools you already use — with human approval, logging,
+            testing, and monitoring built in, and a clean handover at the end of every engagement.
           </SectionDescription>
 
           <dl className="mt-10 grid grid-cols-2 gap-x-6 gap-y-6 border-y border-hairline py-8 sm:grid-cols-4">
@@ -62,18 +63,18 @@ export default function AboutPage() {
             What we do
           </p>
           <div className="grid gap-4 sm:grid-cols-2">
-            {SERVICE_COLUMNS.map((col) => (
+            {SERVICE_GROUPS.map((group) => (
               <Link
-                key={col.id}
-                href={col.href}
+                key={group.slug}
+                href={servicePath(group.slug)}
                 className="group flex items-start gap-3 rounded-xl border border-hairline p-4 transition-colors duration-300 hover:border-aurora-violet/50"
               >
                 <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-hairline text-ink-dim">
-                  <Icon name={SERVICE_ICONS[col.id]} size={16} />
+                  <Icon name={group.icon} size={16} />
                 </span>
                 <span>
-                  <span className="block font-urbanist text-[14px] font-semibold text-ink">{col.title}</span>
-                  <span className="mt-0.5 block font-urbanist text-[12.5px] leading-relaxed text-ink-dim">{col.blurb}</span>
+                  <span className="block font-urbanist text-[14px] font-semibold text-ink">{group.name}</span>
+                  <span className="mt-0.5 block font-urbanist text-[12.5px] leading-relaxed text-ink-dim">{group.focus}</span>
                 </span>
               </Link>
             ))}
