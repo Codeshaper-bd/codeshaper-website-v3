@@ -204,7 +204,7 @@ function StoryCard({ story }: { story: Story }) {
           ))}
         </div>
 
-        <Link href={story.href} draggable={false} data-cursor="none" className="group/link mt-6 inline-flex w-fit items-center gap-3">
+        <Link href={story.href} draggable={false} className="group/link mt-6 inline-flex w-fit items-center gap-3">
           <span
             className="flex h-9 w-9 items-center justify-center rounded-full border border-white/20 text-white transition-colors duration-200 group-hover/link:border-transparent group-hover/link:bg-[var(--hover-bg)] group-hover/link:text-[#141316]"
             style={{ "--hover-bg": story.accent } as CSSProperties}

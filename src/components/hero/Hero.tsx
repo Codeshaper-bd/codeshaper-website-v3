@@ -1,345 +1,168 @@
-"use client";
-
-import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { SplitText } from "gsap/SplitText";
-import Magnetic from "@/components/system/Magnetic";
-import HeroRings from "./HeroRings";
-import { usePrefersReducedMotion, useMotionAllowed } from "@/lib/motion";
-
-gsap.registerPlugin(ScrollTrigger, SplitText);
+import { ArrowRight, Star } from "lucide-react";
+import { FcGoogle } from "react-icons/fc";
+import { SiEnvato } from "react-icons/si";
+import type { IconType } from "react-icons";
+import { heroInter } from "./heroFont";
+import { PALETTES, paletteDelay } from "./heroPalette";
+import HeroGlobe from "./HeroGlobe";
 
 /**
- * Hero — full-bleed video, centered copy, GSAP-driven, inset rounded card.
+ * Hero: centred copy above a flowing light that rises from the bottom
+ * centre of the card and moves through five palettes, endlessly.
  *
- * The whole section sits inset from the viewport edge (margin from the
- * dark page canvas around it) with rounded corners, clipped via
- * overflow-hidden — a floating card rather than an edge-to-edge banner.
+ * Built for smoothness on any device: every palette is its own pre-painted
+ * gradient layer, and only opacity/transform animate (compositor work, no
+ * per-frame repaint). See globals.css "Hero: flowing light" for timing.
  *
- * Layer stack (back → front):
- *   1. #ffffff base (theme-light)
- *   2. AI-themed background video (public/media/hero-video.*, TEMPORARY —
- *      currently a placeholder pending a licensed replacement, see the
- *      source's own commit) — desaturated at encode time so it stays
- *      within the site's monochrome palette, faded at the top edge so
- *      it stays quiet behind the floating navbar, GSAP pointer-parallax
- *   3. decorative concentric rings — GSAP breathing pulse
- *   4. radial glow "mark" — GSAP pointer-parallax + scroll rotate/scale/fade
- *   5. hex texture — GSAP pointer-parallax (subtlest layer)
- *   6. copy scrim (keeps headline legible over the video)
- *   7. copy: eyebrow, headline (SplitText masked word reveal), subhead, CTAs
+ * Layout is content-driven, not full-screen: responsive top padding
+ * (shrinks on short viewports) sets the gap under the navigation, and the
+ * bottom padding reserves room for the light below the actions.
  *
- * Every animated property here is GSAP-owned: a single entrance timeline
- * (badge → SplitText-split headline words, staggered → subhead → CTAs),
- * gsap.quickTo()
- * driving the background layers' pointer-parallax, and the existing
- * ScrollTrigger scrub for the scroll pull-back. Reduced motion: everything
- * renders in its final state immediately, no timeline, no parallax loop,
- * no scroll scrub, no video autoplay motion beyond its own native loop
- * (muted, paused via the same `reduced` check).
+ * Hero copy uses Inter (heroFont.ts); the header and the rest of the site
+ * stay on Urbanist. `theme-light` scopes the site's light tokens here, which
+ * also gives the global :focus-visible ring a dark, visible colour.
+ *
+ * No client JS, so this is a server component. Copy, CTA labels and
+ * destinations are unchanged.
  */
 const EYEBROW = "AI Automation · Digital Products · Scalable Platforms";
-const TITLE_LINE_1 = "From AI automation to scalable";
-const TITLE_LINE_2 = "digital products, we build the future.";
 const SUBTITLE =
   "We design and engineer AI solutions, digital products, and scalable platforms that transform the way businesses operate and grow.";
 
-export default function Hero() {
-  const reduced = usePrefersReducedMotion();
-  const interactive = useMotionAllowed();
-  const sectionRef = useRef<HTMLElement>(null);
-  const copyRef = useRef<HTMLDivElement>(null);
-  const meshRef = useRef<HTMLDivElement>(null);
-  const videoElRef = useRef<HTMLVideoElement>(null);
-  const markRef = useRef<HTMLDivElement>(null);
-  const hexRef = useRef<HTMLDivElement>(null);
-  const badgeRef = useRef<HTMLParagraphElement>(null);
-  const headlineRef = useRef<HTMLHeadingElement>(null);
-  const subRef = useRef<HTMLParagraphElement>(null);
-  const ctaRef = useRef<HTMLDivElement>(null);
-  const [scrolled, setScrolled] = useState(false);
 
-  // respect reduced motion: pause the background video's own loop, not just our GSAP tweens
-  useEffect(() => {
-    const video = videoElRef.current;
-    if (!video) return;
-    if (reduced) video.pause();
-    else video.play().catch(() => {});
-  }, [reduced]);
+/** Monochrome fractal noise, tiled (≈0.5KB inline, no request). */
+const NOISE = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`;
 
-  // slow continuous "Ken Burns" zoom on the video itself — independent of the
-  // wrapper's own scroll-scrub scale, so the two never contend for one property
-  useEffect(() => {
-    if (reduced || !videoElRef.current) return;
-    const ctx = gsap.context(() => {
-      gsap.to(videoElRef.current, {
-        scale: 1.06,
-        duration: 18,
-        repeat: -1,
-        yoyo: true,
-        ease: "sine.inOut",
-      });
-    });
-    return () => ctx.revert();
-  }, [reduced]);
+/**
+ * Ratings shown under the actions. Figures as published on codeshaper.net
+ * (Google: 5.0 from 45 reviews; Envato Elite Author: 4.9 from 149 reviews).
+ * Update these by hand when the review counts change.
+ */
+const RATINGS: { source: string; icon: IconType; iconColor?: string; title: string; score: string; detail: string }[] = [
+  { source: "google", icon: FcGoogle, title: "5.0", score: "5.0", detail: "45 Google reviews" },
+  { source: "envato", icon: SiEnvato, iconColor: "#81b441", title: "Elite Author · 4.9", score: "4.9", detail: "149 Envato reviews" },
+];
 
-  // center the mark via GSAP (not CSS) so it composes with the scroll-scrub's
-  // rotate/scale and the pointer-parallax below in one GSAP-owned transform.
-  // Must run before any other effect creates a gsap.context() touching this
-  // element — usePrefersReducedMotion() flips false→true shortly after mount
-  // (SSR-safe initial value), which re-runs the scroll-scrub effect below and
-  // reverts its context; that revert restores the *whole* transform cache to
-  // its pre-context snapshot, so centering has to already be in that snapshot.
-  useEffect(() => {
-    if (markRef.current) gsap.set(markRef.current, { xPercent: -50, yPercent: -50 });
-  }, []);
-
-  // entrance choreography — one GSAP timeline: badge, then headline words
-  // masked-slide-up via GSAP's own SplitText (mask: "words" auto-wraps each
-  // word in an overflow:clip mask — the official version of what was
-  // hand-rolled here before), then subhead, then CTAs.
-  // Reduced motion: skip the split entirely — plain, unsplit text is
-  // already fully visible with no JS involved.
-  useEffect(() => {
-    if (reduced || !sectionRef.current || !headlineRef.current) return;
-    const ctx = gsap.context(() => {
-      const split = SplitText.create(headlineRef.current, { type: "words", mask: "words" });
-      gsap
-        .timeline({ defaults: { ease: "expo.out" }, delay: 0.15 })
-        .from(badgeRef.current, { opacity: 0, y: 18, duration: 0.6 })
-        .from(split.words, { yPercent: 115, duration: 0.85, stagger: 0.055 }, "-=0.35")
-        .from(subRef.current, { opacity: 0, y: 18, duration: 0.6 }, "-=0.55")
-        .from(ctaRef.current, { opacity: 0, y: 16, duration: 0.55 }, "-=0.4");
-    }, sectionRef);
-    return () => ctx.revert();
-  }, [reduced]);
-
-  // scroll-scrubbed camera pull-back (no pin)
-  useEffect(() => {
-    if (reduced || !sectionRef.current) return;
-    const ctx = gsap.context(() => {
-      const st = {
-        trigger: sectionRef.current!,
-        start: "top top",
-        end: "bottom top",
-        scrub: 0.6,
-      } as const;
-
-      gsap.to(copyRef.current, {
-        y: -90,
-        opacity: 0,
-        filter: "blur(6px)",
-        ease: "none",
-        scrollTrigger: st,
-      });
-      gsap.to(meshRef.current, {
-        scale: 1.12,
-        opacity: 0.25,
-        ease: "none",
-        scrollTrigger: st,
-      });
-      gsap.to(markRef.current, {
-        rotate: -14,
-        scale: 1.25,
-        opacity: 0,
-        ease: "none",
-        scrollTrigger: st,
-      });
-    }, sectionRef);
-    return () => ctx.revert();
-  }, [reduced]);
-
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 40);
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-
-  // pointer parallax across background depth layers (desktop only)
-  useEffect(() => {
-    if (!interactive || !sectionRef.current) return;
-    const section = sectionRef.current;
-
-    const setMeshX = gsap.quickTo(meshRef.current, "x", { duration: 1.2, ease: "power3.out" });
-    const setMeshY = gsap.quickTo(meshRef.current, "y", { duration: 1.2, ease: "power3.out" });
-    const setMarkX = gsap.quickTo(markRef.current, "x", { duration: 0.9, ease: "power3.out" });
-    const setMarkY = gsap.quickTo(markRef.current, "y", { duration: 0.9, ease: "power3.out" });
-    const setHexX = gsap.quickTo(hexRef.current, "x", { duration: 1.4, ease: "power3.out" });
-    const setHexY = gsap.quickTo(hexRef.current, "y", { duration: 1.4, ease: "power3.out" });
-
-    const onMove = (e: MouseEvent) => {
-      const r = section.getBoundingClientRect();
-      const mx = (e.clientX - r.left) / r.width - 0.5;
-      const my = (e.clientY - r.top) / r.height - 0.5;
-      setMeshX(mx * 14);
-      setMeshY(my * 10);
-      setMarkX(mx * 34);
-      setMarkY(my * 24);
-      setHexX(mx * 6);
-      setHexY(my * 4);
-    };
-    window.addEventListener("mousemove", onMove, { passive: true });
-    return () => window.removeEventListener("mousemove", onMove);
-  }, [interactive]);
-
+function Stars() {
   return (
-    <div className="bg-light-surface p-3 sm:p-4">
+    <span aria-hidden className="flex gap-[1px] text-[#f5a524]">
+      {[0, 1, 2, 3, 4].map((i) => (
+        <Star key={i} size={12} fill="currentColor" strokeWidth={0} />
+      ))}
+    </span>
+  );
+}
+
+/** Shared control styling: 48px height, equal padding, same type and arrow. */
+const cta =
+  "group inline-flex h-12 flex-1 basis-[150px] items-center justify-center gap-2 whitespace-nowrap rounded-full px-6 text-[15px] font-semibold tracking-[-0.005em] transition-[background-color,border-color,box-shadow,transform] duration-200 active:scale-[0.98] sm:flex-none";
+
+export default function Hero() {
+  return (
+    <div className="bg-white p-3 sm:p-4">
       <section
-        ref={sectionRef}
-        className="theme-light relative flex min-h-[calc(100svh-24px)] flex-col items-center justify-center overflow-hidden rounded-[32px] bg-canvas sm:min-h-[calc(100svh-32px)]"
+        aria-labelledby="hero-heading"
+        className={`theme-light relative isolate flex flex-col overflow-hidden rounded-[28px] bg-[#ffffff] sm:rounded-[32px] lg:min-h-[calc(100svh-32px)] ${heroInter.className}`}
       >
-        {/* 2 — AI-themed background video: ambient depth, pointer-parallax layer 1.
-            Pre-desaturated at encode time (not just a CSS filter) so it stays
-            within the site's monochrome palette; the video element itself
-            carries a slow continuous GSAP zoom (Ken Burns), independent of
-            the wrapper's own scroll-scrub scale below. */}
-        <div
-          ref={meshRef}
-          className="absolute inset-[-4%]"
-          style={{
-            WebkitMaskImage: "linear-gradient(to bottom, transparent 0%, transparent 6%, black 34%)",
-            maskImage: "linear-gradient(to bottom, transparent 0%, transparent 6%, black 34%)",
-          }}
-        >
-          {/* fetchpriority is not a real resource-priority hint on <video> per
-              spec (Chrome ignores it there — confirmed via Lighthouse's LCP
-              discovery audit still reporting priorityHinted:false despite the
-              attribute being present) — it only works on img/link/script.
-              This is the hero's LCP element, so the actual fix is a `poster`
-              image (which DOES honor fetch priority) painted instantly while
-              the video buffers, plus a preload link so the browser's preload
-              scanner finds it in the initial HTML. */}
-          <link rel="preload" as="image" href="/media/hero-video-poster.jpg" fetchPriority="high" />
-          <video
-            ref={videoElRef}
-            autoPlay
-            muted
-            loop
-            playsInline
-            preload="auto"
-            poster="/media/hero-video-poster.jpg"
-            className="h-full w-full object-cover opacity-[0.4] grayscale"
-            aria-hidden
-          >
-            <source src="/media/hero-video.mp4" type="video/mp4" />
-            <source src="/media/hero-video.webm" type="video/webm" />
-          </video>
-          {/* soft vignette: adds depth without breaking the monochrome palette */}
+        {/* flowing light (decorative; never intercepts pointer events) */}
+        <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
+          <div className="hg-flow absolute -inset-x-[8%] -bottom-[4%] top-0">
+            <div className="absolute inset-0">
+              {PALETTES.map((p, i) => (
+                <div
+                  key={i}
+                  className="hg-layer"
+                  style={{ background: p.gradient, animationDelay: paletteDelay(i) }}
+                />
+              ))}
+            </div>
+            {/* a soft highlight wave travelling across the light */}
+            <div
+              className="hg-sheen absolute inset-x-0 bottom-0 h-[60%]"
+              style={{
+                background:
+                  "radial-gradient(ellipse 34% 70% at 50% 100%, rgba(255,255,255,0.42), rgba(255,255,255,0) 70%)",
+              }}
+            />
+          </div>
+          {/* keeps the reading area calm: the light fades out well below the copy */}
+          <div className="absolute inset-x-0 top-0 h-[40%] bg-gradient-to-b from-[#ffffff] via-[#ffffff]/75 to-transparent" />
+          {/* film grain: static SVG noise tile, overlay-blended so it only
+              textures the coloured light and vanishes on the white top */}
           <div
-            aria-hidden
-            className="absolute inset-0"
-            style={{
-              background:
-                "radial-gradient(120% 100% at 50% 38%, transparent 44%, rgba(9,9,11,0.09) 100%)",
-            }}
+            className="absolute inset-0 opacity-[0.4] mix-blend-overlay"
+            style={{ backgroundImage: NOISE, backgroundSize: "180px 180px" }}
           />
         </div>
 
-        {/* decorative concentric rings — bottom-left, GSAP breathing pulse */}
-        <HeroRings />
-
-        {/* 3 — radial glow "mark": pointer-parallax layer 2 + scroll rotate/scale/fade */}
-        <div
-          ref={markRef}
-          aria-hidden
-          className="hero-mark pointer-events-none absolute left-1/2 top-1/2 h-[min(72vh,640px)] w-[min(72vh,640px)]"
-          style={{
-            background:
-              "radial-gradient(closest-side, rgba(9,9,11,0.08), rgba(9,9,11,0.03) 55%, transparent 72%)",
-          }}
-        />
-
-        {/* 4 — hex texture: pointer-parallax layer 3 (subtlest) */}
-        <div
-          ref={hexRef}
-          aria-hidden
-          className="absolute inset-0 text-ink opacity-[0.03]"
-          style={{ backgroundImage: "url(/media/hex-pattern-tile.svg)", backgroundSize: "112px 194px" }}
-        />
-
-        {/* 6 — copy */}
-        <div
-          ref={copyRef}
-          className="relative z-10 mx-auto w-full max-w-4xl px-6 py-24 text-center lg:px-10"
-        >
-          {/* copy scrim: keeps the headline readable over the video. Sized to
-              copyRef's own box (not vh/vw units) so it tracks the actual text
-              content at every breakpoint/aspect-ratio instead of drifting out
-              of alignment on tall or narrow viewports. Also doubles as cover
-              for the TEMPORARY placeholder video's centered stock watermark
-              (baked into every frame, not just an intro card — confirmed by
-              sampling the clip) — kept at its original strength for that
-              reason; the "more visible video" request is answered by the top
-              mask below instead, which only affects the watermark-free band
-              behind the navbar. */}
-          <div
-            aria-hidden
-            className="pointer-events-none absolute -inset-10 -z-10 sm:-inset-16 lg:-inset-24"
-            style={{
-              background:
-                "radial-gradient(42% 48% at 50% 50%, rgba(255,255,255,0.86) 0%, rgba(255,255,255,0.5) 55%, transparent 90%)",
-            }}
-          />
-
-          <p
-            ref={badgeRef}
-            className="mb-7 inline-flex items-center gap-2.5 rounded-full border border-hairline bg-canvas/40 px-4 py-1.5 font-urbanist text-[11px] uppercase tracking-[0.28em] text-ink-dim backdrop-blur-sm"
-          >
-            <span className="h-1.5 w-1.5 rounded-full bg-aurora-amber dot-pulse" />
-            {EYEBROW}
+        <div className="mx-auto flex w-full max-w-[1040px] flex-col items-center px-5 xl:max-w-[1240px] pb-10 pt-[120px] text-center sm:px-8 sm:pt-[136px] lg:pb-8 lg:pt-[clamp(124px,17vh,160px)]">
+          {/* Eyebrow: plain, balanced two-line label on phones; subtle pill from sm */}
+          <p className="max-w-[300px] text-balance text-[11px] font-medium uppercase leading-[1.6] tracking-[0.1em] text-[#525a6c] sm:inline-flex sm:max-w-none sm:items-center sm:gap-2 sm:rounded-full sm:border sm:border-[#0b0f19]/[0.08] sm:bg-white/70 sm:px-3.5 sm:py-1.5 sm:text-[12px] sm:leading-none sm:tracking-[0.12em] sm:backdrop-blur-sm">
+            <span aria-hidden className="hidden h-[5px] w-[5px] shrink-0 rounded-full bg-[#7c5cff]/80 sm:block" />
+            <span className="hero-shimmer">{EYEBROW}</span>
           </p>
 
+          {/* two lines from lg (explicit breaks); natural wrapping below */}
           <h1
-            ref={headlineRef}
-            className="font-urbanist text-[32px] font-bold leading-[1.14] tracking-tight text-ink sm:text-[42px] lg:text-[52px]"
+            id="hero-heading"
+            className="mt-6 text-balance text-[clamp(34px,9.6vw,42px)] font-[560] leading-[1.1] tracking-[-0.025em] text-[#0b0f19] sm:mt-7 sm:text-[48px] lg:text-[52px] xl:text-[58px] 2xl:text-[64px]"
           >
-            {TITLE_LINE_1}
-            <br />
-            {TITLE_LINE_2}
+            <span className="lg:block lg:whitespace-nowrap">From AI automation to scalable </span>
+            <span className="lg:block lg:whitespace-nowrap">
+              digital products, <span className="text-[#363d4f]">we build the future.</span>
+            </span>
           </h1>
 
-          <p
-            ref={subRef}
-            className="mx-auto mt-7 max-w-2xl font-urbanist text-base leading-relaxed text-ink-dim"
-          >
+          <p className="mt-6 max-w-[600px] text-[17px] leading-[1.65] tracking-[-0.005em] text-[#383f50] sm:mt-7 sm:text-[18px] lg:text-[19px]">
             {SUBTITLE}
           </p>
 
-          <div ref={ctaRef} className="mt-9 flex flex-wrap items-center justify-center gap-5">
-            <Magnetic>
-              <Link
-                href="/contact"
-                className="inline-flex items-center gap-2 rounded-full bg-aurora-violet px-8 py-4 font-urbanist text-sm font-semibold text-white shadow-[0_8px_24px_rgba(9,9,11,0.16)] transition-[background-color,transform,box-shadow] duration-300 hover:scale-[1.02] hover:bg-aurora-violet-dark hover:shadow-[0_12px_32px_rgba(9,9,11,0.22)]"
-              >
-                Book a Call
-                <ArrowRight size={15} strokeWidth={1.75} />
-              </Link>
-            </Magnetic>
-
+          <div className="mt-8 flex w-full max-w-[380px] flex-wrap items-center justify-center gap-3 sm:max-w-none">
+            <Link
+              href="/contact"
+              className={`${cta} bg-[#0b0f19] text-white shadow-[0_1px_2px_rgba(11,15,25,0.18),0_4px_12px_-6px_rgba(11,15,25,0.35)] hover:bg-[#262b3a]`}
+            >
+              Book a Call
+              <ArrowRight size={16} strokeWidth={2} aria-hidden className="transition-transform duration-200 group-hover:translate-x-0.5" />
+            </Link>
             <Link
               href="/services"
-              className="inline-flex items-center gap-2 rounded-full border border-hairline-strong bg-white px-8 py-4 font-urbanist text-sm font-semibold text-ink shadow-[0_4px_16px_rgba(9,9,11,0.06)] transition-[border-color,transform,box-shadow] duration-300 hover:scale-[1.02] hover:border-ink/40 hover:shadow-[0_8px_24px_rgba(9,9,11,0.1)]"
+              className={`${cta} border border-[#0b0f19]/[0.12] bg-white/85 text-[#0b0f19] backdrop-blur-sm hover:border-[#0b0f19]/25 hover:bg-white`}
             >
               Explore Services
-              <ArrowRight size={15} strokeWidth={1.75} />
+              <ArrowRight size={16} strokeWidth={2} aria-hidden className="transition-transform duration-200 group-hover:translate-x-0.5" />
             </Link>
           </div>
+
+          {/* ratings: a quiet capsule so it reads on every gradient state.
+              Phones: a two-column card, each rating centred with its stars
+              on their own line. From sm: one row with a hairline divider. */}
+          <ul
+            aria-label="Client ratings"
+            className="mt-8 grid w-full max-w-[340px] grid-cols-2 divide-x divide-[#0b0f19]/10 rounded-2xl border border-[#0b0f19]/[0.07] bg-white/75 py-3 backdrop-blur-sm sm:mt-9 sm:flex sm:w-auto sm:max-w-none sm:divide-x-0 sm:rounded-full sm:px-5 sm:py-2.5"
+          >
+            {RATINGS.map((r, i) => (
+              <li key={r.source} className="flex flex-col items-center gap-1 px-2 text-center sm:flex-row sm:gap-2.5 sm:px-0 sm:text-left">
+                {i > 0 && <span aria-hidden className="mx-5 hidden h-7 w-px bg-[#0b0f19]/10 sm:block" />}
+                <r.icon size={20} aria-hidden className="shrink-0" style={r.iconColor ? { color: r.iconColor } : undefined} />
+                <span className="leading-tight">
+                  <span className="flex flex-col items-center gap-1 text-[13px] font-semibold text-[#0b0f19] sm:flex-row sm:gap-1.5 sm:text-[14px]">
+                    {r.title}
+                    <Stars />
+                    <span className="sr-only">Rated {r.score} out of 5</span>
+                  </span>
+                  <span className="mt-0.5 block text-[11.5px] text-[#4b5263] sm:mt-0 sm:text-[12.5px]">{r.detail}</span>
+                </span>
+              </li>
+            ))}
+          </ul>
         </div>
 
-        {!reduced && (
-          <div
-            aria-hidden
-            className="pointer-events-none absolute bottom-10 left-1/2 hidden -translate-x-1/2 flex-col items-center gap-2 transition-opacity duration-500 lg:flex"
-            style={{ opacity: scrolled ? 0 : 1 }}
-          >
-            <span className="relative block h-12 w-px overflow-hidden bg-hairline">
-              <span className="scroll-cue-dot absolute left-1/2 top-0 block h-1.5 w-1.5 -translate-x-1/2 rounded-full bg-aurora-violet" />
-            </span>
-          </div>
-        )}
+        {/* globe: pinned to the bottom edge, cropped by the card */}
+        <div className="mt-auto">
+          <HeroGlobe />
+        </div>
       </section>
     </div>
   );

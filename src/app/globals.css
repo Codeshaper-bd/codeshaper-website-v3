@@ -122,19 +122,6 @@ body {
   color: var(--color-ink);
 }
 
-/* Hide native cursor only when custom cursor is active (fine pointers only) */
-[data-custom-cursor="true"],
-[data-custom-cursor="true"] * {
-  cursor: none !important;
-}
-
-@media (prefers-reduced-motion: reduce), (pointer: coarse) {
-  [data-custom-cursor="true"],
-  [data-custom-cursor="true"] * {
-    cursor: auto !important;
-  }
-}
-
 /* ── Surfaces & elevation (v3 §4) ────────────────────────── */
 .panel {
   border: 1px solid var(--color-hairline);
@@ -383,12 +370,6 @@ body {
 }
 
 /* ════════ PASS 2 — motion layer ════════ */
-
-/* Custom cursor suspension over text fields (native caret returns) */
-[data-cursor-suspend],
-[data-cursor-suspend] * {
-  cursor: auto !important;
-}
 
 /* Mega menu panel entrance: translateY(-8px→0) + fade, 200ms; columns
    stagger 40ms after the panel lands. Radix drives data-state. */
@@ -762,5 +743,134 @@ form[data-show-errors="true"] :invalid {
   .lift-md:hover,
   .menu-link:hover {
     transform: none;
+  }
+}
+
+/* ── Navbar: bottom dock (desktop) + app chrome (mobile) ─────
+   src/components/nav/. The dock rises from below once the hero is passed
+   and sinks away when scrolling back. Its surface is an ancestor of the
+   fixed mega panels, so the entrance animation uses fill-mode none: no
+   transform lingers afterwards to become their containing block. */
+@keyframes nav-dock-in {
+  from { opacity: 0; transform: translateY(36px) scale(0.94); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes nav-dock-out {
+  from { opacity: 1; transform: none; }
+  to { opacity: 0; transform: translateY(36px) scale(0.96); }
+}
+@keyframes nav-dock-item {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes nav-top-in {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: none; }
+}
+.nav-dock-in {
+  animation: nav-dock-in 620ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.nav-dock-in .dock-item {
+  animation: nav-dock-item 520ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: calc(140ms + var(--i, 0) * 40ms);
+}
+.nav-dock-out {
+  animation: nav-dock-out 260ms cubic-bezier(0.4, 0, 1, 1) forwards;
+}
+.nav-top-in {
+  animation: nav-top-in 420ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav-dock-in,
+  .nav-dock-in .dock-item,
+  .nav-dock-out,
+  .nav-top-in {
+    animation-duration: 1ms !important;
+    animation-delay: 0ms !important;
+  }
+}
+
+/* ── Hero: flowing light (src/components/hero/Hero.tsx) ──────
+   Five pre-painted palette layers rising from the bottom centre. Only
+   opacity and transform animate (compositor-only, no per-frame repaint):
+     · .hg-layer  — palettes take turns over a 40s cycle (8s each). The
+       incoming layer fades in while the outgoing one stays fully opaque,
+       then the outgoing fades out underneath, so there's never a pale dip.
+     · .hg-flow   — the whole light slowly drifts and breathes.
+     · .hg-sheen  — a soft highlight wave travels across the light.
+   Each layer is opaque (its last stop is the page colour), which keeps
+   crossfades clean. Reduced motion: the first palette, still. */
+.hg-layer {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  animation: hg-cycle 40s linear infinite both;
+  will-change: opacity;
+}
+@keyframes hg-cycle {
+  0% { opacity: 0; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  6% { opacity: 1; }
+  26% { opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  32% { opacity: 0; }
+  100% { opacity: 0; }
+}
+.hg-flow {
+  animation: hg-flow 24s ease-in-out infinite;
+  will-change: transform;
+  transform-origin: 50% 100%;
+}
+@keyframes hg-flow {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1, 1); }
+  33% { transform: translate3d(-2.5%, 1%, 0) scale(1.05, 1.02); }
+  66% { transform: translate3d(2.5%, -1.5%, 0) scale(1.02, 1.07); }
+}
+.hg-sheen {
+  animation: hg-sheen 15s ease-in-out infinite alternate;
+  will-change: transform;
+}
+@keyframes hg-sheen {
+  from { transform: translate3d(-28%, 0, 0); }
+  to { transform: translate3d(28%, 0, 0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hg-layer,
+  .hg-flow,
+  .hg-sheen {
+    animation: none;
+  }
+  .hg-layer:first-child {
+    opacity: 1;
+  }
+}
+
+/* Hero eyebrow: a light sweeps across the text, then rests (≈1.9s sweep,
+   1.3s pause). Text is drawn by the clipped gradient; the base stop is the
+   eyebrow's normal colour, so a still frame reads as plain text.
+   Reduced motion: no sweep. */
+.hero-shimmer {
+  background-image: linear-gradient(
+    100deg,
+    #525a6c 0%,
+    #525a6c 42%,
+    #7c5cff 50%,
+    #525a6c 58%,
+    #525a6c 100%
+  );
+  background-size: 260% 100%;
+  background-position: 100% 0;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: hero-shimmer 3.2s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+}
+@keyframes hero-shimmer {
+  0% { background-position: 100% 0; }
+  60%, 100% { background-position: 0% 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-shimmer {
+    animation: none;
+    background-position: 0% 0;
   }
 }

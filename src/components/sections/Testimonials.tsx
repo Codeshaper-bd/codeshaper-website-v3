@@ -157,7 +157,6 @@ function VideoCard({ t }: { t: Extract<Testimonial, { type: "video" }> }) {
           <button
             type="button"
             aria-label={`Play testimonial from ${t.name}`}
-            data-cursor="none"
             onClick={() => setPlaying(true)}
             className="absolute left-1/2 top-1/2 flex h-16 w-16 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-white/30 bg-white/10 text-white backdrop-blur-md transition-[transform,background-color,border-color] duration-300 ease-out hover:scale-110 hover:border-transparent hover:bg-[var(--hover-bg)]"
             style={{ "--hover-bg": t.accent } as CSSProperties}

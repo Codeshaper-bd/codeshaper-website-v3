@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import * as Nav from "@radix-ui/react-navigation-menu";
@@ -10,64 +10,166 @@ import { Icon } from "@/lib/icons";
 import MegaPanel from "./MegaPanel";
 import IndustriesMegaPanel from "./IndustriesMegaPanel";
 import MobileMenu from "./MobileMenu";
+import MobileTabBar from "./MobileTabBar";
 import Magnetic from "@/components/system/Magnetic";
-
-const HIDE_THRESHOLD = 96; // px scrolled before the bar is allowed to hide
-const DIRECTION_SLOP = 6; // px of scroll delta before a direction registers
 
 /**
  * Header.
  *
- * Menu shapes (deliberately different):
- *  · Services, Industries → full-width MEGA panel. Each Nav.Content
- *    self-positions as a fixed floating card — deliberately NOT using a
- *    shared Radix Viewport, since NavigationMenu.Viewport is a Root-wide
- *    singleton that portals ALL Content through one surface once present,
- *    which would also swallow the compact dropdowns below and break their
- *    own trigger-anchored positioning.
- *  · Everything else → compact dropdown anchored under its own trigger
- *    (rendered inside the Item, so it positions itself and stays small)
+ * Desktop (≥1024px) has two states of ONE navigation (one Radix root, so
+ * menus, ids and focus behave identically in both):
  *
- * Bar: light from first paint (white/95 + blur), gains a hairline shadow after
- * 80px (250ms). Links get a 2px underline scaling in from the left; the open
- * item stays highlighted. "Book a Call" is a solid flat pill, darkens on
- * hover, magnetic on desktop. Scrim only appears for the mega panel.
+ *  · top  — full-width (container-fluid) bar at the top of the document.
+ *           No background, border, shadow or blur; it sits on the hero and
+ *           scrolls away with it (absolute, not fixed), so it never floats
+ *           over content.
+ *  · dock — once the page's first section (the hero) has scrolled past,
+ *           the navigation rises from the bottom of the viewport as a
+ *           compact floating dock. Scrolling back up sinks the dock and the
+ *           full bar is waiting at the top again.
+ *
+ * The switch is a short choreography, not a jump: the outgoing dock sinks
+ * (nav-dock-out), the mode flips, the incoming state animates in
+ * (nav-dock-in with staggered items, or nav-top-in). Because the top bar
+ * is already off-screen when docking happens, it reads as the nav leaving
+ * the top and arriving at the bottom.
+ *
+ * Mega panels (Services, Industries) are `position: fixed` and placed from
+ * the live bar position: below the bar at the top, above the dock when
+ * docked. Nothing between them and the viewport carries a transform or
+ * filter once animations finish, so they always resolve against the
+ * viewport. Compact dropdowns open downward at the top, upward in the dock.
+ *
+ * Mobile (<1024px): a minimal transparent top bar (logo + Book a Call)
+ * that scrolls away, plus an iOS-style bottom tab bar and bottom sheet
+ * (MobileTabBar, MobileMenu).
  */
+const DESKTOP = "(min-width: 1024px)";
+const DOCK_MIN_SCROLL = 160; // never dock while the top bar could still be on screen
+const DOCK_AT = 0.35; // dock once the hero's bottom passes 35% of the viewport
+
 const triggerCls =
   "nav-underline group flex select-none items-center gap-1 rounded px-3 py-2 font-urbanist text-base font-semibold text-ink-dim outline-none transition-colors hover:text-ink focus-visible:text-ink data-[state=open]:text-ink";
+const dockTriggerCls =
+  "group flex select-none items-center gap-1 rounded-xl px-3 py-2 font-urbanist text-[15px] font-semibold text-ink-dim outline-none transition-colors hover:bg-[#f2f3f6] hover:text-ink focus-visible:bg-[#f2f3f6] focus-visible:text-ink data-[state=open]:bg-[#f2f3f6] data-[state=open]:text-ink";
+
+type Mode = "top" | "dock";
+type Phase = "idle" | "entering" | "leaving";
 
 export default function Navbar() {
-  const [scrolled, setScrolled] = useState(false);
-  const [hidden, setHidden] = useState(false);
+  const [mode, setMode] = useState<Mode>("top");
+  const [phase, setPhase] = useState<Phase>("idle");
   const [openValue, setOpenValue] = useState("");
-  const [mobileOpen, setMobileOpen] = useState(false);
-  const rootRef = useRef<HTMLDivElement>(null);
-  const lastY = useRef(0);
+  const [sheet, setSheet] = useState<null | "menu" | "services">(null);
+  const barRef = useRef<HTMLDivElement>(null);
+  const wantDock = useRef(false);
+  const modeRef = useRef<Mode>("top");
+  modeRef.current = mode;
 
-  // Floating bar: always visible near the top; once scrolled past the
-  // threshold it hides while scrolling down (more room to read) and
-  // reappears the moment the user scrolls back up.
+  // ── dock decision ────────────────────────────────────────────
   useEffect(() => {
-    lastY.current = window.scrollY;
-    const onScroll = () => {
-      const y = window.scrollY;
-      setScrolled(y > 80);
-      if (y < HIDE_THRESHOLD) {
-        setHidden(false);
-      } else if (y > lastY.current + DIRECTION_SLOP) {
-        setHidden(true);
-      } else if (y < lastY.current - DIRECTION_SLOP) {
-        setHidden(false);
-      }
-      lastY.current = y;
+    const mq = window.matchMedia(DESKTOP);
+    let raf = 0;
+    let heroBottom = 0;
+
+    const measure = () => {
+      const hero = document.querySelector("main")?.firstElementChild as HTMLElement | null;
+      heroBottom = hero ? hero.getBoundingClientRect().bottom + window.scrollY : 0;
     };
-    onScroll();
+
+    const evaluate = () => {
+      raf = 0;
+      const y = window.scrollY;
+      const dock =
+        mq.matches && y > DOCK_MIN_SCROLL && y > heroBottom - window.innerHeight * DOCK_AT;
+      if (dock === wantDock.current) return;
+      wantDock.current = dock;
+      setOpenValue(""); // never carry an open menu across a mode change
+      if (!mq.matches) {
+        // below desktop the dock is display:none, so its exit animation
+        // would never end: reset straight to the top bar
+        setMode("top");
+        setPhase("idle");
+      } else if (dock) {
+        setMode("dock");
+        setPhase("entering");
+      } else if (modeRef.current === "dock") {
+        setPhase("leaving"); // the dock sinks first; onAnimationEnd flips the mode
+      }
+    };
+    const onScroll = () => {
+      if (!raf) raf = requestAnimationFrame(evaluate);
+    };
+    const onResize = () => {
+      measure();
+      onScroll();
+    };
+
+    measure();
+    evaluate();
     window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    window.addEventListener("resize", onResize);
+    mq.addEventListener("change", onResize);
+    // page content (images, fonts) can change the hero's height after load
+    const ro = new ResizeObserver(onResize);
+    ro.observe(document.body);
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onResize);
+      mq.removeEventListener("change", onResize);
+      ro.disconnect();
+    };
   }, []);
 
+  const onBarAnimationEnd = (e: React.AnimationEvent) => {
+    if (e.target !== e.currentTarget) return; // ignore the staggered items
+    if (phase === "leaving") {
+      setMode("top");
+      // the bar is only worth animating in if it's actually on screen
+      setPhase(window.scrollY < 140 ? "entering" : "idle");
+    } else if (phase === "entering") {
+      setPhase("idle");
+    }
+  };
+
+  // ── mega panel placement (fixed, from the live bar position) ──
+  const placePanels = useCallback(() => {
+    const bar = barRef.current;
+    if (!bar) return;
+    const r = bar.getBoundingClientRect();
+    const root = document.documentElement;
+    root.style.setProperty("--nav-panel-top", `${Math.round(r.bottom + 12)}px`);
+    root.style.setProperty("--nav-panel-bottom", `${Math.round(window.innerHeight - r.top + 12)}px`);
+  }, []);
+  useLayoutEffect(() => {
+    if (openValue) placePanels();
+  }, [openValue, mode, placePanels]);
+
+  // At the top the bar scrolls with the page while the panel is fixed, so
+  // close an open menu once the page moves away from it.
+  useEffect(() => {
+    if (!openValue || mode !== "top") return;
+    const startY = window.scrollY;
+    const onScroll = () => {
+      if (Math.abs(window.scrollY - startY) > 48) setOpenValue("");
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [openValue, mode]);
+
   const megaOpen = openValue === "services" || openValue === "industries";
-  const forceVisible = Boolean(openValue) || mobileOpen;
+  const docked = mode === "dock";
+  const megaPos = docked
+    ? "bottom-[var(--nav-panel-bottom,96px)] max-h-[calc(100vh-var(--nav-panel-bottom,96px)-24px)] overflow-y-auto"
+    : "top-[var(--nav-panel-top,100px)]";
+  const tc = docked ? dockTriggerCls : triggerCls;
+
+  const animCls =
+    phase === "leaving" ? "nav-dock-out" : phase === "entering" ? (docked ? "nav-dock-in" : "nav-top-in") : "";
+
+  // Staggered dock items get --i; the top bar ignores it.
+  const item = (i: number) => (docked ? { className: "dock-item", style: { "--i": i } as CSSProperties } : {});
 
   return (
     <>
@@ -78,86 +180,86 @@ export default function Navbar() {
       />
 
       <header
-        className={`theme-light fixed inset-x-0 top-[10px] z-50 p-3 font-urbanist ease-out sm:p-4 ${
-          // The mega panels (below) are `position: fixed` descendants of this
-          // header, and a header with a live translate value becomes their
-          // containing block (same root cause as the MobileMenu fix — see its
-          // comment). Normally that's harmless since translate only changes on
-          // scroll, while the panels only open once the header is already at
-          // rest. But a keyboard user can Tab to an off-screen (scrolled-past)
-          // trigger and press Enter, which opens the panel at the exact instant
-          // forceVisible flips the header from hidden to visible — reproduced
-          // via Playwright: the panel visibly slid from top:-15px to top:126px
-          // over ~200ms, tracking the header's own reveal animation instead of
-          // appearing pinned. Snapping this specific transition instantly
-          // (no transition class at all while forceVisible) closes that window
-          // without touching the smooth scroll-hide animation, which never has
-          // a fixed-panel dependency to begin with. A Radix Viewport would be
-          // the "proper" fix, but this file's own comment above rules that out
-          // (it's a Root-wide singleton that would break the compact dropdowns).
-          forceVisible ? "" : "transition-transform duration-300"
-        } ${hidden && !forceVisible ? "-translate-y-[calc(100%+16px)]" : "translate-y-0"}`}
+        className={`theme-light z-50 font-urbanist ${
+          docked
+            ? "pointer-events-none fixed inset-x-0 bottom-5 hidden justify-center px-4 lg:flex"
+            : "absolute inset-x-0 top-[10px] px-3 sm:px-4"
+        }`}
       >
         <div
-          className={`mx-auto max-w-[1200px] rounded-full border border-hairline bg-white/95 backdrop-blur-xl transition-shadow duration-300 ${
-            scrolled || openValue || mobileOpen ? "shadow-[0_8px_30px_rgba(11,15,25,0.10)]" : "shadow-none"
-          }`}
+          ref={barRef}
+          onAnimationEnd={onBarAnimationEnd}
+          className={
+            docked
+              ? `pointer-events-auto rounded-[20px] border border-[#e3e5eb] bg-white shadow-[0_1px_2px_rgba(11,15,25,0.05),0_16px_48px_-8px_rgba(11,15,25,0.22)] ${animCls}`
+              : `mx-auto w-full ${animCls}`
+          }
         >
-          <div className="flex h-16 items-center justify-between px-6 lg:px-10">
-            <Link href="/" className="flex shrink-0 items-center" aria-label="CodeShaper home">
-              {/* alt intentionally lowercase-c "codeShaper" — it describes what's
-                  literally rendered in the logo image (the wordmark's own
-                  stylization), not the brand name in prose. The Link's
-                  aria-label above is what screen readers actually announce
-                  ("CodeShaper home" takes precedence over this alt text per
-                  ARIA accname rules), so there's no real inconsistency for
-                  assistive tech — only a fallback-text nuance if the image
-                  fails to load. See Footer.tsx's matching "codeShaper" span
-                  for the same reasoning applied to its live lockup. */}
-              <Image src="/brand/logo.png" alt="codeShaper" width={169} height={60} priority className="h-8 w-auto" />
+          <div
+            className={
+              docked
+                ? "flex h-[60px] items-center gap-1 pl-2.5 pr-2"
+                : "flex h-16 items-center justify-between px-3 sm:px-5 lg:px-8 xl:px-12"
+            }
+          >
+            <Link
+              href="/"
+              aria-label="CodeShaper home"
+              {...item(0)}
+              className={`flex shrink-0 items-center ${docked ? "dock-item mr-1 rounded-xl p-1.5 transition-colors hover:bg-[#f2f3f6]" : ""}`}
+            >
+              {docked ? (
+                <Image src="/brand/favicon.png" alt="" width={32} height={32} className="h-8 w-8 rounded-[9px]" />
+              ) : (
+                // alt intentionally lowercase-c "codeShaper": it describes the
+                // wordmark as rendered; the Link's aria-label is what screen
+                // readers announce (see Footer.tsx for the same reasoning).
+                <Image src="/brand/logo.png" alt="codeShaper" width={169} height={60} priority className="h-10 w-auto" />
+              )}
             </Link>
 
-            <div ref={rootRef} className="ml-auto mr-6 hidden lg:block">
-              <Nav.Root value={openValue} onValueChange={setOpenValue} className="relative">
-                <Nav.List className="flex items-center gap-1">
-                  {/* Services + Industries — MEGA, each a self-positioned floating card */}
-                  <Nav.Item value="services">
-                    <Nav.Trigger className={triggerCls}>
+            {docked && <span aria-hidden className="dock-item mx-1 h-6 w-px bg-[#e6e8ee]" style={{ "--i": 1 } as CSSProperties} />}
+
+            <div className={docked ? "block" : "ml-auto mr-8 hidden lg:block"}>
+              <Nav.Root value={openValue} onValueChange={setOpenValue}>
+                <Nav.List className={`flex items-center ${docked ? "gap-0.5" : "gap-1"}`}>
+                  <Nav.Item value="services" {...item(2)}>
+                    <Nav.Trigger className={tc}>
                       Services
                       <ChevronDown
                         size={13}
                         strokeWidth={1.75}
-                        className="transition-transform duration-200 group-data-[state=open]:rotate-180"
+                        className={`transition-transform duration-200 ${docked ? "rotate-180 group-data-[state=open]:rotate-0" : "group-data-[state=open]:rotate-180"}`}
                       />
                     </Nav.Trigger>
                     <Nav.Content
-                      className="mega-panel fixed left-1/2 top-[100px] z-40 w-[min(calc(100vw-32px),1200px)] -translate-x-1/2 data-[state=closed]:hidden"
+                      className={`mega-panel fixed left-1/2 z-40 w-[min(calc(100vw-32px),1200px)] -translate-x-1/2 data-[state=closed]:hidden ${megaPos}`}
                       style={{ position: "fixed" }}
                     >
                       <MegaPanel />
                     </Nav.Content>
                   </Nav.Item>
 
-                  <Nav.Item value="industries">
-                    <Nav.Trigger className={triggerCls}>
+                  <Nav.Item value="industries" {...item(3)}>
+                    <Nav.Trigger className={tc}>
                       Industries
                       <ChevronDown
                         size={13}
                         strokeWidth={1.75}
-                        className="transition-transform duration-200 group-data-[state=open]:rotate-180"
+                        className={`transition-transform duration-200 ${docked ? "rotate-180 group-data-[state=open]:rotate-0" : "group-data-[state=open]:rotate-180"}`}
                       />
                     </Nav.Trigger>
                     <Nav.Content
-                      className="mega-panel fixed left-1/2 top-[100px] z-40 w-[min(calc(100vw-32px),1200px)] -translate-x-1/2 data-[state=closed]:hidden"
+                      className={`mega-panel fixed left-1/2 z-40 w-[min(calc(100vw-32px),1200px)] -translate-x-1/2 data-[state=closed]:hidden ${megaPos}`}
                       style={{ position: "fixed" }}
                     >
                       <IndustriesMegaPanel />
                     </Nav.Content>
                   </Nav.Item>
 
-                  <Nav.Item>
+                  <Nav.Item {...item(4)}>
                     <Nav.Link asChild>
-                      <Link href="/case-studies" className={triggerCls}>
+                      <Link href="/case-studies" className={tc}>
                         Case Studies
                       </Link>
                     </Nav.Link>
@@ -166,63 +268,61 @@ export default function Navbar() {
                   {/* Standing in for the Insights dropdown (disabled — see its
                       `enabled: false` in navigation.ts) until it has more than
                       Blog behind it. */}
-                  <Nav.Item>
+                  <Nav.Item {...item(5)}>
                     <Nav.Link asChild>
-                      <Link href="/blog" className={triggerCls}>
+                      <Link href="/blog" className={tc}>
                         Blog
                       </Link>
                     </Nav.Link>
                   </Nav.Item>
 
-                  {SIMPLE_MENUS.filter((m) => m.enabled !== false).map((m) => (
-                    <DropdownItem key={m.id} menu={m} />
+                  {SIMPLE_MENUS.filter((m) => m.enabled !== false).map((m, i) => (
+                    <DropdownItem key={m.id} menu={m} docked={docked} triggerClassName={tc} order={6 + i} />
                   ))}
                 </Nav.List>
-
               </Nav.Root>
             </div>
 
-            <div className="flex items-center gap-3">
-              <Magnetic>
+            {docked && <span aria-hidden className="dock-item mx-1.5 h-6 w-px bg-[#e6e8ee]" style={{ "--i": 7 } as CSSProperties} />}
+
+            <div {...item(8)} className={`flex items-center gap-3 ${docked ? "dock-item" : ""}`}>
+              {docked ? (
                 <Link
                   href="/contact"
-                  className="hidden rounded-full bg-aurora-violet px-5 py-2 font-urbanist text-base font-semibold text-white transition-[background-color,transform] duration-300 hover:scale-[1.02] hover:bg-aurora-violet-dark sm:inline-block"
+                  className="inline-flex h-10 items-center rounded-[12px] bg-aurora-violet px-4 font-urbanist text-[15px] font-semibold text-white transition-colors duration-200 hover:bg-aurora-violet-dark"
                 >
                   Book a Call
                 </Link>
-              </Magnetic>
-              <button
-                className="flex h-10 w-10 flex-col items-center justify-center gap-1.5 lg:hidden"
-                aria-label={mobileOpen ? "Close menu" : "Open menu"}
-                aria-expanded={mobileOpen}
-                onClick={() => setMobileOpen((v) => !v)}
-              >
-                <span
-                  className={`h-0.5 w-5 bg-ink transition-transform duration-300 ${mobileOpen ? "translate-y-1 rotate-45" : ""}`}
-                />
-                <span
-                  className={`h-0.5 w-5 bg-ink transition-transform duration-300 ${mobileOpen ? "-translate-y-1 -rotate-45" : ""}`}
-                />
-              </button>
+              ) : (
+                <Magnetic>
+                  <Link
+                    href="/contact"
+                    className="inline-block rounded-full bg-aurora-violet px-4 py-2 font-urbanist text-[15px] font-semibold text-white transition-[background-color,transform] duration-300 hover:scale-[1.02] hover:bg-aurora-violet-dark sm:px-5 sm:text-base"
+                  >
+                    Book a Call
+                  </Link>
+                </Magnetic>
+              )}
             </div>
           </div>
         </div>
       </header>
 
-      {/* Sibling of <header>, not a child — see MobileMenu.tsx's own header
-          comment for why (header's always-on transform was making it the
-          containing block for this panel's fixed positioning). */}
-      <MobileMenu open={mobileOpen} onClose={() => setMobileOpen(false)} />
+      <MobileTabBar active={sheet} onOpen={setSheet} />
+      <MobileMenu open={sheet !== null} section={sheet === "services" ? "services" : null} onClose={() => setSheet(null)} />
     </>
   );
 }
 
 /**
- * Compact dropdown: a small panel anchored under its trigger — one column of
- * icon + label rows. Deliberately not the mega treatment.
+ * Compact dropdown: a small panel anchored to its trigger — one column of
+ * icon + label rows. Opens downward from the top bar, upward from the dock.
  */
 function DropdownItem({
   menu,
+  docked,
+  triggerClassName,
+  order,
 }: {
   menu: {
     id: string;
@@ -230,18 +330,29 @@ function DropdownItem({
     dividerAfterIndex?: number;
     links: { label: string; href: string; icon: string }[];
   };
+  docked: boolean;
+  triggerClassName: string;
+  order: number;
 }) {
   return (
-    <Nav.Item value={menu.id} className="relative">
-      <Nav.Trigger className={triggerCls}>
+    <Nav.Item
+      value={menu.id}
+      className={`relative ${docked ? "dock-item" : ""}`}
+      style={docked ? ({ "--i": order } as CSSProperties) : undefined}
+    >
+      <Nav.Trigger className={triggerClassName}>
         {menu.label}
         <ChevronDown
           size={13}
           strokeWidth={1.75}
-          className="transition-transform duration-200 group-data-[state=open]:rotate-180"
+          className={`transition-transform duration-200 ${docked ? "rotate-180 group-data-[state=open]:rotate-0" : "group-data-[state=open]:rotate-180"}`}
         />
       </Nav.Trigger>
-      <Nav.Content className="dropdown-panel absolute left-1/2 top-full z-40 mt-3 w-[300px] -translate-x-1/2 rounded-xl border border-hairline bg-white p-2 shadow-[0_20px_48px_rgba(11,15,25,0.14)]">
+      <Nav.Content
+        className={`dropdown-panel absolute left-1/2 z-40 w-[300px] -translate-x-1/2 rounded-xl border border-hairline bg-white p-2 shadow-[0_20px_48px_rgba(11,15,25,0.14)] ${
+          docked ? "bottom-full mb-6" : "top-full mt-3"
+        }`}
+      >
         <ul>
           {menu.links.map((l, i) => (
             <li key={l.href}>

@@ -205,7 +205,6 @@ function StoryPanel({
           <Link
             href={story.href}
             draggable={false}
-            data-cursor="none"
             onClick={(e) => e.stopPropagation()}
             className="lens-fade-in mt-4 inline-flex w-fit items-center gap-2 rounded-full border border-white/25 bg-white/10 px-4 py-2 font-urbanist text-[12px] font-semibold text-white backdrop-blur-sm transition-colors duration-200 hover:border-transparent hover:bg-[var(--hover-bg)]"
             style={{ "--hover-bg": story.accent } as CSSProperties}

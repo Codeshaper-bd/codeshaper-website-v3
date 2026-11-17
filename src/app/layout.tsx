@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import { SITE_URL, SITE_NAME } from "@/lib/site";
@@ -29,6 +29,12 @@ const TITLE = `${COMPANY_POSITIONING} | ${SITE_NAME}`;
 // REVIEW
 const DESCRIPTION =
   "CodeShaper is an AI engineering & software development company building reliable, production-ready AI and software that integrates with your existing tools.";
+
+// viewport-fit=cover lets the mobile tab bar and sheet pad themselves with
+// env(safe-area-inset-bottom), clear of the iPhone home indicator.
+export const viewport: Viewport = {
+  viewportFit: "cover",
+};
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
