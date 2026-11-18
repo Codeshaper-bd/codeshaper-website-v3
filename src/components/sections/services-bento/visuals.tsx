@@ -11,7 +11,7 @@ import { Bot, Check, Database, FileText, Building2, Users, Sparkles, MousePointe
  * not claims about Codeshaper's results.
  */
 
-function Panel({ children, className = "" }: { children: ReactNode; className?: string }) {
+export function Panel({ children, className = "" }: { children: ReactNode; className?: string }) {
   return (
     <div
       className={`rounded-[14px] border border-[#0b0f19]/[0.07] bg-white shadow-[0_1px_2px_rgba(11,15,25,0.04),0_18px_40px_-18px_rgba(11,15,25,0.28)] ${className}`}
@@ -21,7 +21,7 @@ function Panel({ children, className = "" }: { children: ReactNode; className?: 
   );
 }
 
-function WindowBar({ label }: { label: string }) {
+export function WindowBar({ label }: { label: string }) {
   return (
     <div className="flex items-center gap-1.5 border-b border-[#0b0f19]/[0.06] px-3 py-2">
       <span className="h-1.5 w-1.5 rounded-full bg-[#0b0f19]/15" />

@@ -944,3 +944,19 @@ form[data-show-errors="true"] :invalid {
   -webkit-backdrop-filter: blur(6px);
   backdrop-filter: blur(6px);
 }
+
+/* People + AI flow: connector draws itself on hand-off */
+@keyframes hai-draw {
+  from { stroke-dashoffset: 100; }
+  to { stroke-dashoffset: 0; }
+}
+.hai-draw { animation: hai-draw 900ms cubic-bezier(0.65, 0, 0.35, 1) both; }
+@media (prefers-reduced-motion: reduce) {
+  .hai-draw { animation: none; }
+}
+/* People + AI hub: slow turning gradient ring */
+@keyframes hai-spin { to { transform: rotate(360deg); } }
+.hai-spin { animation: hai-spin 7s linear infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .hai-spin { animation: none; }
+}

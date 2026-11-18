@@ -12,7 +12,8 @@ import CaseStudies from "@/components/sections/CaseStudies";
 import CaseStudiesExpand from "@/components/sections/CaseStudiesExpand";
 import Industries from "@/components/sections/Industries";
 import TechStack from "@/components/sections/TechStack";
-import AiDevExcellence from "@/components/sections/AiDevExcellence";
+// import AiDevExcellence from "@/components/sections/AiDevExcellence";
+import HumanAiFlow from "@/components/sections/human-ai-flow/HumanAiFlow";
 import EngagementModels from "@/components/sections/EngagementModels";
 import Testimonials from "@/components/sections/Testimonials";
 import Locations from "@/components/sections/Locations";
@@ -52,7 +53,8 @@ export default function Home() {
       {/* <ServicePillars /> */}
       {/* <ServicesShowcase /> */}
       <ServicesBento />
-      <AiDevExcellence />
+      {/* <AiDevExcellence /> */}
+      <HumanAiFlow />
       <Industries />
       <EngagementModels />
       {/* TRIAL: accordion-style Case Studies (hyperline.co reference) being evaluated against the version below */}
