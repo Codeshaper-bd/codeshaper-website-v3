@@ -9,7 +9,8 @@ import TrustStrip from "@/components/sections/TrustStrip";
 import ServicesBento from "@/components/sections/services-bento/ServicesBento";
 import AboutStudio from "@/components/sections/AboutStudio";
 import CaseStudies from "@/components/sections/CaseStudies";
-import CaseStudiesExpand from "@/components/sections/CaseStudiesExpand";
+// import CaseStudiesExpand from "@/components/sections/CaseStudiesExpand";
+import CaseStudiesFeatured from "@/components/sections/CaseStudiesFeatured";
 import Industries from "@/components/sections/Industries";
 import TechStack from "@/components/sections/TechStack";
 // import AiDevExcellence from "@/components/sections/AiDevExcellence";
@@ -56,15 +57,16 @@ export default function Home() {
       {/* <AiDevExcellence /> */}
       <HumanAiFlow />
       <Industries />
-      <EngagementModels />
       {/* TRIAL: accordion-style Case Studies (hyperline.co reference) being evaluated against the version below */}
-      <CaseStudiesExpand />
+      {/* <CaseStudiesExpand /> */}
+      <CaseStudiesFeatured />
       {/* <CaseStudies /> */}
       <Testimonials />
+      <EngagementModels />
       <TechStack />
       <AboutStudio />
-      <Locations />
       <FAQ />
+      <Locations />
     </SiteShell>
   );
 }

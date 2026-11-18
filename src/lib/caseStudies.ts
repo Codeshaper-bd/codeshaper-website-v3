@@ -30,6 +30,8 @@ export type CaseStudy = {
   /** 1–2 line context, used on cards and as the hero sub */
   summary: string;
   industry: string;
+  /** Where the client is based (or "Global"). Only set when known. */
+  market?: string;
   services: string[];
   engagementModel?: string;
   tech: string[];
@@ -80,11 +82,12 @@ export const CASE_STUDIES: CaseStudy[] = [
     summary:
       "Essentialist is a luxury travel membership brand for high-income travelers in the US & EU. CodeShaper delivered the full launch — marketing website, membership application flow, CMS operations, and ongoing care — so the team could grow applications and publish content faster without engineering bottlenecks.",
     industry: "Luxury Travel",
+    market: "Spain",
     services: ["UI/UX Design", "Website Design & Development", "Website Maintenance"],
     engagementModel: "End-to-End Delivery",
     tech: ["WordPress", "GSAP", "Custom Frontend"],
     platforms: "Marketing Website + Application Flow",
-    image: "https://picsum.photos/seed/essentialist-travel/1200/800",
+    image: "/media/case-studies/essentialist-home.jpg",
     accent: "#d97fc4",
     stats: [
       { value: "8–10 weeks", label: "Time to launch" },
@@ -183,9 +186,9 @@ export const CASE_STUDIES: CaseStudy[] = [
       ],
     },
     gallery: [
-      { src: "https://picsum.photos/seed/essentialist-home/1200/800", caption: "Homepage built for premium clarity — value proposition within the first scroll" },
+      { src: "/media/case-studies/essentialist-home.jpg", caption: "Homepage built for premium clarity — value proposition within the first scroll" },
       { src: "https://picsum.photos/seed/essentialist-apply/1200/800", caption: "Application flow optimized for trust and low friction" },
-      { src: "https://picsum.photos/seed/essentialist-editors/1200/800", caption: "Editors page designed to reinforce credibility" },
+      { src: "/media/case-studies/essentialist-editors.jpg", caption: "Editors page designed to reinforce credibility" },
     ],
     testimonial: {
       quote:
@@ -208,6 +211,7 @@ export const CASE_STUDIES: CaseStudy[] = [
     summary:
       "Fennec brings venues, guests, events, and memberships together in a single connected platform — a web app for operators and a mobile app for guests, built and supported as an ongoing engagement.",
     industry: "Nightlife & Hospitality",
+    market: "Canada",
     services: ["Custom Web Apps", "Mobile App Development", "Product Discovery & Strategy"],
     tech: ["Web App", "Mobile App"],
     platforms: "Web + Mobile",
@@ -242,6 +246,7 @@ export const CASE_STUDIES: CaseStudy[] = [
     summary:
       "Acculance unifies point-of-sale, inventory, and accounting into one platform, built on Laravel and Vue for businesses that have outgrown spreadsheets and disconnected tools.",
     industry: "Retail & Business Ops",
+    market: "Global",
     services: ["SaaS Development", "Custom Web Apps"],
     tech: ["Laravel", "Vue"],
     platforms: "Web (Admin + POS)",

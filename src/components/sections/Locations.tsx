@@ -3,7 +3,7 @@
 import { useEffect, useState, type ComponentType, type SVGProps } from "react";
 import { MapPin } from "lucide-react";
 import Reveal from "@/components/system/Reveal";
-import { SectionEyebrow, SectionTitle, SectionDescription } from "@/components/system/SectionHeading";
+import { SectionEyebrow, SectionTitle } from "@/components/system/SectionHeading";
 import { usePrefersReducedMotion } from "@/lib/motion";
 import { textSafeAccent } from "@/lib/color";
 import { StatueOfLibertyIcon, ClockTowerIcon, MosqueIcon, PagodaIcon, OperaHouseIcon, FernIcon } from "./LandmarkIcons";
@@ -392,13 +392,10 @@ export default function Locations() {
           <SectionTitle id="locations-heading" className="max-w-md">
             A global footprint built for real timezone overlap.
           </SectionTitle>
-          <SectionDescription className="mt-4 max-w-xl">
-            One delivery hub and five collaboration hubs, so there's working overlap wherever the client is.
-          </SectionDescription>
         </Reveal>
 
         <Reveal delay={80}>
-          <div className="relative mt-10 rounded-[28px] border border-hairline bg-light-surface p-6 sm:p-8 lg:p-10">
+          <div className="relative mt-10 lg:mt-14 rounded-[28px] border border-hairline bg-light-surface p-6 sm:p-8 lg:p-10">
             <RouteMap active={active} onPick={pick} />
 
             <div

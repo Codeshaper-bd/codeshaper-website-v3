@@ -126,7 +126,7 @@ export default function TrustStrip() {
   return (
     <section
       aria-labelledby="clients-heading"
-      className="theme-light relative bg-gradient-to-b from-white to-light-surface pb-14 pt-12 font-urbanist lg:pb-20 lg:pt-16"
+      className="theme-light relative bg-gradient-to-b from-white to-light-surface py-16 font-urbanist lg:py-24"
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10">
         <Reveal>

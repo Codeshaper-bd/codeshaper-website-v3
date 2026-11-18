@@ -4,7 +4,7 @@ import { useEffect, useRef, useState, type CSSProperties, type MutableRefObject 
 import Image from "next/image";
 import { Check, ClipboardList, Code2, Pause, Play, Rocket, ShieldCheck, Sparkles, UserRound, type LucideIcon } from "lucide-react";
 import Reveal from "@/components/system/Reveal";
-import { SectionEyebrow, SectionTitle, SectionDescription } from "@/components/system/SectionHeading";
+import { SectionEyebrow, SectionTitle } from "@/components/system/SectionHeading";
 import { usePrefersReducedMotion } from "@/lib/motion";
 import DotField, { type DotFieldHandle } from "./DotField";
 
@@ -368,9 +368,6 @@ export default function HumanAiFlow() {
                 Humans lead. AI does the heavy lifting.
               </SectionTitle>
             </div>
-            <SectionDescription className="max-w-sm">
-              Every phase runs on the same loop: AI drafts and checks, humans decide and approve. You get speed without losing judgment.
-            </SectionDescription>
           </div>
         </Reveal>
 

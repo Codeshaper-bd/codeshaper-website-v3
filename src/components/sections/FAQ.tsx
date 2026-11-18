@@ -5,7 +5,7 @@ import Link from "next/link";
 import { ChevronDown, ArrowRight } from "lucide-react";
 import Reveal from "@/components/system/Reveal";
 import CountUp from "@/components/system/CountUp";
-import { SectionEyebrow, SectionTitle, SectionDescription } from "@/components/system/SectionHeading";
+import { SectionEyebrow, SectionTitle } from "@/components/system/SectionHeading";
 import { SERVICE_GROUPS } from "@/data/services";
 
 /** "A, B, C, D, and E" — the five group names, in locked order. */
@@ -103,7 +103,7 @@ export default function FAQ() {
   };
 
   return (
-    <section className="theme-light relative overflow-hidden bg-light-surface py-16 lg:py-20" aria-labelledby="faq-heading">
+    <section className="theme-light relative overflow-hidden bg-light-surface py-16 lg:py-24" aria-labelledby="faq-heading">
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0 opacity-[0.5]"
@@ -118,9 +118,6 @@ export default function FAQ() {
             <Reveal>
               <SectionEyebrow>FAQ</SectionEyebrow>
               <SectionTitle id="faq-heading">What clients ask before we start.</SectionTitle>
-              <SectionDescription className="mt-4 max-w-sm">
-                The things clients ask before kicking off — services, process, AI, and where the team works from.
-              </SectionDescription>
             </Reveal>
 
             <Reveal delay={100}>

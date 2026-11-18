@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { ArrowRight, ArrowUpRight, Bitcoin, Brain, Building2, Cloud, CreditCard, HeartPulse, Hotel, ShoppingCart, type LucideIcon } from "lucide-react";
 import Reveal from "@/components/system/Reveal";
-import { SectionEyebrow, SectionTitle, SectionDescription } from "@/components/system/SectionHeading";
+import { SectionEyebrow, SectionTitle } from "@/components/system/SectionHeading";
 import Image from "next/image";
 
 /** solid accent, soft tint (icon tile), readable text shade, deep shade (scrim tint) */
@@ -299,9 +299,6 @@ export default function Industries() {
                 <SectionTitle id="industries-heading" className="max-w-[17ch] text-balance">
                   Built for the way your industry works.
                 </SectionTitle>
-                <SectionDescription className="mt-4 max-w-md">
-                  Every industry runs on its own systems, approvals and customer journeys. We design and build around yours.
-                </SectionDescription>
               </div>
               <Link
                 href="/industries"
@@ -313,7 +310,7 @@ export default function Industries() {
             </div>
           </Reveal>
 
-          <ul aria-label="Industries we serve" className="mt-10 grid grid-cols-2 gap-3 sm:gap-4 lg:mt-12 lg:grid-cols-4">
+          <ul aria-label="Industries we serve" className="mt-10 grid grid-cols-2 gap-3 sm:gap-4 lg:mt-14 lg:grid-cols-4">
             {INDUSTRIES.map((ind, i) => (
                 <IndustryCard
                   key={ind.name}

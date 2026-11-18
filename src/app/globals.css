@@ -960,3 +960,14 @@ form[data-show-errors="true"] :invalid {
 @media (prefers-reduced-motion: reduce) {
   .hai-spin { animation: none; }
 }
+
+/* Client reviews: tab progress line + soft focus-in when the review changes */
+@keyframes tm-progress { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+@keyframes tm-in {
+  from { opacity: 0; transform: translateY(8px); filter: blur(4px); }
+  to { opacity: 1; transform: none; filter: none; }
+}
+.tm-in { animation: tm-in 600ms cubic-bezier(0.16, 1, 0.3, 1) both; }
+@media (prefers-reduced-motion: reduce) {
+  .tm-in { animation: none; }
+}

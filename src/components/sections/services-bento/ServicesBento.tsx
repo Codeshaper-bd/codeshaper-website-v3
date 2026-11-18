@@ -23,7 +23,7 @@ import {
 import type { IconType } from "react-icons";
 import { SERVICE_GROUPS, servicePath, servicesInGroup, type ServiceGroupSlug } from "@/data/services";
 import Reveal from "@/components/system/Reveal";
-import { SectionEyebrow, SectionTitle, SectionDescription } from "@/components/system/SectionHeading";
+import { SectionEyebrow, SectionTitle } from "@/components/system/SectionHeading";
 import { AgentsVisual, SoftwareVisual, IntegrationVisual, DesignVisual, WebVisual } from "./visuals";
 
 /**
@@ -172,9 +172,6 @@ export default function ServicesBento() {
                 </SectionTitle>
               </div>
               <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-                <SectionDescription className="max-w-xs">
-                  Five service groups, one team. Production-ready AI and software that works with the tools you already use.
-                </SectionDescription>
                 <Link
                   href="/services"
                   className="inline-flex w-fit shrink-0 items-center gap-2 rounded-full bg-aurora-violet px-5 py-2.5 font-urbanist text-[13px] font-semibold text-white transition-[background-color,transform] duration-300 hover:scale-[1.02] hover:bg-aurora-violet-dark"
@@ -186,7 +183,7 @@ export default function ServicesBento() {
             </div>
           </Reveal>
 
-          <ul className="mt-12 grid gap-3 md:grid-cols-2 lg:grid-cols-3 lg:gap-4">
+          <ul className="mt-10 lg:mt-14 grid gap-3 md:grid-cols-2 lg:grid-cols-3 lg:gap-4">
             {ITEMS.map((item, i) => {
               const Visual = item.visual;
               return (
