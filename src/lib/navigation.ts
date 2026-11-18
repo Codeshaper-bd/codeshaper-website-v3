@@ -37,6 +37,33 @@ export type IndustryLink = {
 
 export const INDUSTRIES: IndustryLink[] = [
   {
+    label: "Artificial Intelligence",
+    href: "/industries/ai",
+    icon: "brain",
+    desc: "AI products people trust",
+    summary: "AI-native products, copilots, agents, and search over your own data, designed so people understand and trust every answer.",
+    outcome: "Intelligent products, safely shipped",
+    systems: ["Copilots", "AI agents", "RAG search"],
+  },
+  {
+    label: "Healthcare",
+    href: "/industries/healthcare",
+    icon: "heart-pulse",
+    desc: "Care that works digitally",
+    summary: "Patient portals, telehealth, appointment booking, clinical dashboards, and secure records, built with privacy and compliance in mind.",
+    outcome: "Better care, less admin",
+    systems: ["Patient portal", "Telehealth", "Scheduling"],
+  },
+  {
+    label: "Crypto & Web3",
+    href: "/industries/crypto",
+    icon: "bitcoin",
+    desc: "Web3 products people can use",
+    summary: "Wallets, exchanges, token dashboards, on-chain analytics, and onboarding flows that make crypto feel simple and secure.",
+    outcome: "Secure, simple Web3 experiences",
+    systems: ["Wallets", "Exchange", "On-chain data"],
+  },
+  {
     label: "SaaS",
     href: "/industries/saas",
     icon: "cloud",

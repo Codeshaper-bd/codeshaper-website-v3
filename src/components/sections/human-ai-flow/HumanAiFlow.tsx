@@ -308,7 +308,8 @@ export default function HumanAiFlow() {
   useEffect(() => {
     const el = panelRef.current;
     if (!el) return;
-    const io = new IntersectionObserver(([e]) => setInView(e.isIntersecting), { threshold: 0.25 });
+    // "in view" = any part inside the middle 70% of the screen (works for a tall panel on phones too)
+    const io = new IntersectionObserver(([e]) => setInView(e.isIntersecting), { rootMargin: "-15% 0px -15% 0px" });
     io.observe(el);
     return () => io.disconnect();
   }, []);
@@ -377,8 +378,15 @@ export default function HumanAiFlow() {
           <div
             ref={panelRef}
             className="relative mt-12 lg:mt-14"
-            onMouseEnter={() => setHover(true)}
-            onMouseLeave={() => setHover(false)}
+            // pause while a mouse is over it or focus is inside; touch never
+            // "hovers" (a tap would otherwise pause it for good)
+            onPointerEnter={(e) => e.pointerType === "mouse" && setHover(true)}
+            onPointerLeave={(e) => e.pointerType === "mouse" && setHover(false)}
+            // keyboard focus only: a mouse click on Play must not pause it again
+            onFocus={(e) => (e.target as HTMLElement).matches(":focus-visible") && setHover(true)}
+            onBlur={(e) => {
+              if (!e.currentTarget.contains(e.relatedTarget as Node | null)) setHover(false);
+            }}
           >
             {/* soft two-tone glow behind the diagram */}
             <div

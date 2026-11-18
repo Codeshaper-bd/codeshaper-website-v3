@@ -28,6 +28,9 @@ function bySlug(slug: string): IndustryLink {
 }
 
 const CHALLENGES: Record<string, string> = {
+  ai: "AI pilots that never reach production, and answers users can't check or trust.",
+  healthcare: "Patient data scattered across systems, manual booking, and compliance slowing every release.",
+  crypto: "Onboarding that scares new users away, and security that can't be an afterthought.",
   saas: "Trials that don't convert, onboarding that leaks users, and billing that can't keep up with new plans.",
   ecommerce: "Slow storefronts, cart abandonment, and a CMS the marketing team is afraid to touch.",
   fintech: "Compliance requirements that slow every release, and dashboards users don't trust.",
@@ -41,6 +44,9 @@ const CHALLENGES: Record<string, string> = {
 };
 
 const CTAS: Record<string, string> = {
+  ai: "Talk about your AI product",
+  healthcare: "Talk about your care platform",
+  crypto: "Talk about your Web3 product",
   saas: "See the SaaS playbook",
   ecommerce: "Talk about your storefront",
   fintech: "Talk about your platform",
@@ -53,8 +59,11 @@ const CTAS: Record<string, string> = {
   "restaurant-food": "Talk about your operations",
 };
 
-/** One accent per industry so the 10 cards read as genuinely distinct, not the same card repeated. */
+/** One accent per industry so the cards read as genuinely distinct, not the same card repeated. */
 const ACCENTS: Record<string, string> = {
+  ai: "#7c6cff",
+  healthcare: "#e0607e",
+  crypto: "#e0a030",
   saas: "#8a7bff",
   ecommerce: "#5b9bdb",
   fintech: "#3fae82",
@@ -71,7 +80,7 @@ function slugOf(href: string) {
   return href.split("/").pop()!;
 }
 
-/** All 10 industries, each with a challenge line, a CTA, and its own accent — the hub page shows every one, not a "featured 6 + more" split. */
+/** All industries, each with a challenge line, a CTA, and its own accent — the hub page shows every one, not a "featured 6 + more" split. */
 export const FEATURED_INDUSTRIES: FeaturedIndustry[] = INDUSTRIES.map((ind) => {
   const slug = slugOf(ind.href);
   return { ...ind, challenge: CHALLENGES[slug], ctaLabel: CTAS[slug], accent: ACCENTS[slug] };

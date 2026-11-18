@@ -65,6 +65,8 @@ import {
   Brush,
   Search,
   Cpu,
+  HeartPulse,
+  Bitcoin,
   type LucideIcon,
 } from "lucide-react";
 
@@ -143,6 +145,8 @@ export const ICONS: Record<string, LucideIcon> = {
   brush: Brush,
   search: Search,
   cpu: Cpu,
+  "heart-pulse": HeartPulse,
+  bitcoin: Bitcoin,
 };
 
 export function Icon({
