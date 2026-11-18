@@ -4,7 +4,9 @@ import TrustStrip from "@/components/sections/TrustStrip";
 // ServicePillars is the previous card-grid Services section — kept but
 // unmounted below, pending a side-by-side decision against ServicesShowcase.
 // import ServicePillars from "@/components/sections/ServicePillars";
-import ServicesShowcase from "@/components/sections/ServicesShowcase";
+// ServicesShowcase (tab list + detail panel) is the previous version, kept but unmounted.
+// import ServicesShowcase from "@/components/sections/ServicesShowcase";
+import ServicesBento from "@/components/sections/services-bento/ServicesBento";
 import AboutStudio from "@/components/sections/AboutStudio";
 import CaseStudies from "@/components/sections/CaseStudies";
 import CaseStudiesExpand from "@/components/sections/CaseStudiesExpand";
@@ -48,7 +50,8 @@ export default function Home() {
       <Hero />
       <TrustStrip />
       {/* <ServicePillars /> */}
-      <ServicesShowcase />
+      {/* <ServicesShowcase /> */}
+      <ServicesBento />
       <AiDevExcellence />
       <Industries />
       <EngagementModels />

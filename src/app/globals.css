@@ -900,3 +900,43 @@ form[data-show-errors="true"] :invalid {
     animation: none;
   }
 }
+
+/* ── Services bento (services-bento/) ─────────────────────────────────── */
+.svc-dialog[open] .svc-dialog-panel {
+  animation: svc-panel-in 420ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.svc-dialog[open]::backdrop {
+  animation: svc-fade-in 300ms ease-out both;
+}
+@keyframes svc-panel-in {
+  from { opacity: 0; transform: translateY(24px) scale(0.985); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes svc-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+/* data flowing along the integration diagram's connectors */
+.svc-flow {
+  animation: svc-flow 1.6s linear infinite;
+}
+@keyframes svc-flow {
+  to { stroke-dashoffset: -12; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .svc-dialog[open] .svc-dialog-panel,
+  .svc-dialog[open]::backdrop,
+  .svc-flow {
+    animation: none;
+  }
+}
+/* light frosted backdrop with brand glows (Stripe pattern), instead of a dark scrim */
+.svc-dialog::backdrop {
+  background:
+    radial-gradient(55% 60% at 0% 100%, rgba(124, 108, 255, 0.5) 0%, rgba(192, 138, 255, 0.22) 45%, transparent 75%),
+    radial-gradient(50% 60% at 100% 100%, rgba(255, 140, 80, 0.5) 0%, rgba(255, 169, 138, 0.22) 45%, transparent 75%),
+    radial-gradient(40% 35% at 100% 0%, rgba(255, 190, 150, 0.3) 0%, transparent 70%),
+    rgba(244, 246, 251, 0.86);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
