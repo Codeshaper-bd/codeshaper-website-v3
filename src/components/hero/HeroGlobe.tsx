@@ -3,7 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import { RotateCcw } from "lucide-react";
 import { PALETTES, paletteDelay } from "./heroPalette";
-import type { GlobeHandle } from "./globe/createGlobe";
+import type { GlobeHandle, HoverInfo, PinInfo } from "./globe/createGlobe";
+import { SERVED, COUNT_LABEL, HQ } from "./globe/servedCountries";
 
 /**
  * Hero globe slot: the upper cap of a pearl globe, cropped by the hero's
@@ -33,8 +34,39 @@ import type { GlobeHandle } from "./globe/createGlobe";
  */
 const SPHERE_URL = "/media/hero-globe.webp";
 const LAND_URL = "/media/globe-land.webp";
+const IDS_URL = "/media/globe-countries.png";
+/** HQ pin position in the static image, as fractions of the stage (measured from the live render at the base orientation). */
+const STATIC_PIN = { fx: 0.6883, fy: 0.6891, visible: true };
 
 type Mode = "static" | "live" | "off";
+
+/**
+ * Pin and tooltip are moved by writing styles directly (no React state):
+ * the pin follows the globe on every drag frame.
+ */
+function placePin(el: HTMLElement | null, pin: PinInfo | null) {
+  if (!el) return;
+  const visible = pin ? pin.visible : STATIC_PIN.visible;
+  el.style.left = pin ? `${pin.x}px` : `${STATIC_PIN.fx * 100}%`;
+  el.style.top = pin ? `${pin.y}px` : `${STATIC_PIN.fy * 100}%`;
+  el.style.opacity = visible ? "1" : "0";
+  el.style.pointerEvents = visible ? "auto" : "none";
+}
+function placeTip(el: HTMLElement | null, info: HoverInfo | null) {
+  if (!el) return;
+  if (!info) {
+    el.style.opacity = "0";
+    return;
+  }
+  const name = el.querySelector<HTMLElement>("[data-name]");
+  const detail = el.querySelector<HTMLElement>("[data-detail]");
+  if (name) name.textContent = info.name;
+  if (detail) {
+    detail.textContent = info.detail ?? "";
+  }
+  el.style.transform = `translate(${info.x}px, ${info.y}px) translate(-50%, calc(-100% - 14px))`;
+  el.style.opacity = "1";
+}
 
 /** Cheap capability probe; the throwaway context is released immediately. */
 function hasWebGL() {
@@ -54,6 +86,8 @@ export default function HeroGlobe() {
   const [mode, setMode] = useState<Mode>("static");
   const [live, setLive] = useState(false);
   const [rotated, setRotated] = useState(false);
+  const pinRef = useRef<HTMLDivElement>(null);
+  const tipRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (process.env.NODE_ENV !== "production" && new URLSearchParams(window.location.search).get("globe") === "off") {
@@ -78,7 +112,13 @@ export default function HeroGlobe() {
           if (cancelled || !stageRef.current) return;
           handleRef.current = createGlobe({
             host: stageRef.current,
-            textureUrl: LAND_URL,
+            landUrl: LAND_URL,
+            idsUrl: IDS_URL,
+            served: SERVED,
+            countLabel: COUNT_LABEL,
+            hq: HQ,
+            onHover: (info) => placeTip(tipRef.current, info),
+            onPin: (pin) => placePin(pinRef.current, pin),
             reducedMotion: reduced,
             onReady: () => !cancelled && setLive(true),
             onRotatedChange: (v) => !cancelled && setRotated(v),
@@ -86,6 +126,8 @@ export default function HeroGlobe() {
               if (process.env.NODE_ENV !== "production") console.warn("[hero-globe] static fallback:", reason);
               handleRef.current?.dispose();
               handleRef.current = null;
+              placeTip(tipRef.current, null);
+              placePin(pinRef.current, null);
               if (!cancelled) {
                 setLive(false);
                 setRotated(false);
@@ -160,7 +202,50 @@ export default function HeroGlobe() {
           />
 
           {/* 3 · live canvas is appended here by createGlobe (it alone takes pointer events) */}
+
+          {/* 4 · HQ pin: follows the globe in live mode; fixed spot on the static image */}
+          <div
+            ref={pinRef}
+            role="img"
+            aria-label={`${HQ.detail}: ${HQ.label}`}
+            className="group/pin absolute z-10 -translate-x-1/2 -translate-y-full transition-opacity duration-300"
+            style={{
+              left: `${STATIC_PIN.fx * 100}%`,
+              top: `${STATIC_PIN.fy * 100}%`,
+              opacity: STATIC_PIN.visible ? 1 : 0,
+              pointerEvents: STATIC_PIN.visible ? "auto" : "none",
+            }}
+          >
+            <span aria-hidden className="absolute bottom-[-3px] left-1/2 h-3 w-3 -translate-x-1/2 rounded-full bg-[#615fff]/40 motion-safe:animate-ping" />
+            <span aria-hidden className="relative block h-[22px] w-[22px] -rotate-45 rounded-full rounded-bl-none border-2 border-white bg-[#615fff] shadow-[0_3px_8px_rgba(97,95,255,0.45)]">
+              <span className="absolute left-1/2 top-1/2 h-[7px] w-[7px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-white" />
+            </span>
+            <span
+              aria-hidden
+              className="pointer-events-none absolute bottom-full left-1/2 mb-2 -translate-x-1/2 whitespace-nowrap rounded-lg bg-[#0b0f19] px-2.5 py-1.5 text-[12px] font-medium text-white opacity-0 shadow-lg transition-opacity duration-150 group-hover/pin:opacity-100"
+            >
+              {HQ.label}
+              <span className="text-white/70"> · {HQ.detail}</span>
+            </span>
+          </div>
+
+          {/* 5 · country tooltip (live mode, mouse only) */}
+          <div
+            ref={tipRef}
+            aria-hidden
+            className="pointer-events-none absolute left-0 top-0 z-20 whitespace-nowrap rounded-[10px] bg-[#0b0f19] px-3 py-2 text-white opacity-0 shadow-[0_8px_24px_-6px_rgba(11,15,25,0.45)] transition-opacity duration-150"
+          >
+            <span data-name className="block text-[13px] font-semibold leading-tight" />
+            <span data-detail className="mt-0.5 block text-[11.5px] leading-tight text-white/70" />
+            <span className="absolute left-1/2 top-full h-0 w-0 -translate-x-1/2 border-x-[5px] border-t-[5px] border-x-transparent border-t-[#0b0f19]" />
+          </div>
         </div>
+
+        {/* the globe's information, for everyone (hover is mouse-only) */}
+        <p className="sr-only">
+          We have worked with clients in {SERVED.length} countries, including {SERVED.map((s) => (s.count ? `${s.name} (${s.count} ${s.count === 1 ? COUNT_LABEL.one : COUNT_LABEL.many})` : s.name)).join(", ")}. Our
+          headquarters is in {HQ.label}.
+        </p>
 
         {mode === "live" && live && rotated && (
           <button

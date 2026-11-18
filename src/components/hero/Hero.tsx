@@ -1,11 +1,7 @@
-import Link from "next/link";
-import { ArrowRight, Star } from "lucide-react";
-import { FcGoogle } from "react-icons/fc";
-import { SiEnvato } from "react-icons/si";
-import type { IconType } from "react-icons";
 import { heroInter } from "./heroFont";
 import { PALETTES, paletteDelay } from "./heroPalette";
 import HeroGlobe from "./HeroGlobe";
+import HeroAsk from "./HeroAsk";
 
 /**
  * Hero: centred copy above a flowing light that rises from the bottom
@@ -23,40 +19,16 @@ import HeroGlobe from "./HeroGlobe";
  * stay on Urbanist. `theme-light` scopes the site's light tokens here, which
  * also gives the global :focus-visible ring a dark, visible colour.
  *
- * No client JS, so this is a server component. Copy, CTA labels and
- * destinations are unchanged.
+ * Server component; the interactive parts are islands: HeroAsk (project
+ * prompt that hands off to /contact) and HeroGlobe.
  */
-const EYEBROW = "AI Automation · Digital Products · Scalable Platforms";
+const EYEBROW = "AI Native Software Solution Partner";
 const SUBTITLE =
   "We design and engineer AI solutions, digital products, and scalable platforms that transform the way businesses operate and grow.";
 
 
 /** Monochrome fractal noise, tiled (≈0.5KB inline, no request). */
 const NOISE = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`;
-
-/**
- * Ratings shown under the actions. Figures as published on codeshaper.net
- * (Google: 5.0 from 45 reviews; Envato Elite Author: 4.9 from 149 reviews).
- * Update these by hand when the review counts change.
- */
-const RATINGS: { source: string; icon: IconType; iconColor?: string; title: string; score: string; detail: string }[] = [
-  { source: "google", icon: FcGoogle, title: "5.0", score: "5.0", detail: "45 Google reviews" },
-  { source: "envato", icon: SiEnvato, iconColor: "#81b441", title: "Elite Author · 4.9", score: "4.9", detail: "149 Envato reviews" },
-];
-
-function Stars() {
-  return (
-    <span aria-hidden className="flex gap-[1px] text-[#f5a524]">
-      {[0, 1, 2, 3, 4].map((i) => (
-        <Star key={i} size={12} fill="currentColor" strokeWidth={0} />
-      ))}
-    </span>
-  );
-}
-
-/** Shared control styling: 48px height, equal padding, same type and arrow. */
-const cta =
-  "group inline-flex h-12 flex-1 basis-[150px] items-center justify-center gap-2 whitespace-nowrap rounded-full px-6 text-[15px] font-semibold tracking-[-0.005em] transition-[background-color,border-color,box-shadow,transform] duration-200 active:scale-[0.98] sm:flex-none";
 
 export default function Hero() {
   return (
@@ -96,17 +68,17 @@ export default function Hero() {
           />
         </div>
 
-        <div className="mx-auto flex w-full max-w-[1040px] flex-col items-center px-5 xl:max-w-[1240px] pb-10 pt-[120px] text-center sm:px-8 sm:pt-[136px] lg:pb-8 lg:pt-[clamp(124px,17vh,160px)]">
-          {/* Eyebrow: plain, balanced two-line label on phones; subtle pill from sm */}
-          <p className="max-w-[300px] text-balance text-[11px] font-medium uppercase leading-[1.6] tracking-[0.1em] text-[#525a6c] sm:inline-flex sm:max-w-none sm:items-center sm:gap-2 sm:rounded-full sm:border sm:border-[#0b0f19]/[0.08] sm:bg-white/70 sm:px-3.5 sm:py-1.5 sm:text-[12px] sm:leading-none sm:tracking-[0.12em] sm:backdrop-blur-sm">
-            <span aria-hidden className="hidden h-[5px] w-[5px] shrink-0 rounded-full bg-[#7c5cff]/80 sm:block" />
+        <div className="mx-auto flex w-full max-w-[1040px] flex-col items-center px-5 xl:max-w-[1240px] pb-10 pt-[120px] text-center sm:px-8 sm:pt-[116px] lg:pb-8 lg:pt-[clamp(100px,14vh,130px)]">
+          {/* Eyebrow: small bold pill, one line at every width */}
+          <p className="inline-flex max-w-full items-center gap-2 rounded-full border border-[#0b0f19]/[0.08] bg-white/70 px-3 py-1.5 text-[10.5px] font-bold uppercase leading-none tracking-[0.12em] text-[#3f4657] backdrop-blur-sm sm:text-[11px]">
+            <span aria-hidden className="h-[5px] w-[5px] shrink-0 rounded-full bg-[#7c5cff]/80" />
             <span className="hero-shimmer">{EYEBROW}</span>
           </p>
 
           {/* two lines from lg (explicit breaks); natural wrapping below */}
           <h1
             id="hero-heading"
-            className="mt-6 text-balance text-[clamp(34px,9.6vw,42px)] font-[560] leading-[1.1] tracking-[-0.025em] text-[#0b0f19] sm:mt-7 sm:text-[48px] lg:text-[52px] xl:text-[58px] 2xl:text-[64px]"
+            className="mt-6 text-balance text-[clamp(30px,8.2vw,36px)] font-[560] leading-[1.1] tracking-[-0.025em] text-[#0b0f19] sm:text-[42px] lg:text-[46px] xl:text-[52px] 2xl:text-[56px]"
           >
             <span className="lg:block lg:whitespace-nowrap">From AI automation to scalable </span>
             <span className="lg:block lg:whitespace-nowrap">
@@ -114,49 +86,14 @@ export default function Hero() {
             </span>
           </h1>
 
-          <p className="mt-6 max-w-[600px] text-[17px] leading-[1.65] tracking-[-0.005em] text-[#383f50] sm:mt-7 sm:text-[18px] lg:text-[19px]">
+          <p className="mt-5 max-w-[560px] text-[16px] leading-[1.65] tracking-[-0.005em] text-[#383f50] sm:mt-6 sm:text-[17px]">
             {SUBTITLE}
           </p>
 
-          <div className="mt-8 flex w-full max-w-[380px] flex-wrap items-center justify-center gap-3 sm:max-w-none">
-            <Link
-              href="/contact"
-              className={`${cta} bg-[#0b0f19] text-white shadow-[0_1px_2px_rgba(11,15,25,0.18),0_4px_12px_-6px_rgba(11,15,25,0.35)] hover:bg-[#262b3a]`}
-            >
-              Book a Call
-              <ArrowRight size={16} strokeWidth={2} aria-hidden className="transition-transform duration-200 group-hover:translate-x-0.5" />
-            </Link>
-            <Link
-              href="/services"
-              className={`${cta} border border-[#0b0f19]/[0.12] bg-white/85 text-[#0b0f19] backdrop-blur-sm hover:border-[#0b0f19]/25 hover:bg-white`}
-            >
-              Explore Services
-              <ArrowRight size={16} strokeWidth={2} aria-hidden className="transition-transform duration-200 group-hover:translate-x-0.5" />
-            </Link>
+          {/* project prompt (replaces the CTA buttons and the review capsule) */}
+          <div className="mt-8 flex w-full justify-center sm:mt-9">
+            <HeroAsk />
           </div>
-
-          {/* ratings: a quiet capsule so it reads on every gradient state.
-              Phones: a two-column card, each rating centred with its stars
-              on their own line. From sm: one row with a hairline divider. */}
-          <ul
-            aria-label="Client ratings"
-            className="mt-8 grid w-full max-w-[340px] grid-cols-2 divide-x divide-[#0b0f19]/10 rounded-2xl border border-[#0b0f19]/[0.07] bg-white/75 py-3 backdrop-blur-sm sm:mt-9 sm:flex sm:w-auto sm:max-w-none sm:divide-x-0 sm:rounded-full sm:px-5 sm:py-2.5"
-          >
-            {RATINGS.map((r, i) => (
-              <li key={r.source} className="flex flex-col items-center gap-1 px-2 text-center sm:flex-row sm:gap-2.5 sm:px-0 sm:text-left">
-                {i > 0 && <span aria-hidden className="mx-5 hidden h-7 w-px bg-[#0b0f19]/10 sm:block" />}
-                <r.icon size={20} aria-hidden className="shrink-0" style={r.iconColor ? { color: r.iconColor } : undefined} />
-                <span className="leading-tight">
-                  <span className="flex flex-col items-center gap-1 text-[13px] font-semibold text-[#0b0f19] sm:flex-row sm:gap-1.5 sm:text-[14px]">
-                    {r.title}
-                    <Stars />
-                    <span className="sr-only">Rated {r.score} out of 5</span>
-                  </span>
-                  <span className="mt-0.5 block text-[11.5px] text-[#4b5263] sm:mt-0 sm:text-[12.5px]">{r.detail}</span>
-                </span>
-              </li>
-            ))}
-          </ul>
         </div>
 
         {/* globe: pinned to the bottom edge, cropped by the card */}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import { INDUSTRIES as ALL_INDUSTRIES } from "@/lib/navigation";
 import { SERVICE_GROUPS } from "@/data/services";
 import Magnetic from "@/components/system/Magnetic";
@@ -27,6 +27,13 @@ export default function ContactForm() {
   const [errorMessage, setErrorMessage] = useState("");
   const [showErrors, setShowErrors] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
+  const briefRef = useRef<HTMLTextAreaElement>(null);
+
+  // Prefill the brief from the homepage hero prompt (/contact?brief=...).
+  useEffect(() => {
+    const brief = new URLSearchParams(window.location.search).get("brief");
+    if (brief && briefRef.current && !briefRef.current.value) briefRef.current.value = brief.slice(0, 1000);
+  }, []);
 
   const FALLBACK_ERROR = "Something went wrong sending that — please try again.";
 
@@ -115,7 +122,7 @@ export default function ContactForm() {
           </div>
           <label className="block">
             <span className="mb-1.5 block font-urbanist text-xs font-medium text-ink-dim">Short brief</span>
-            <textarea name="brief" rows={4} placeholder="What are you trying to build, modernize, or automate?" className={`${inputCls} resize-none`} />
+            <textarea ref={briefRef} name="brief" rows={4} placeholder="What are you trying to build, modernize, or automate?" className={`${inputCls} resize-none`} />
           </label>
           {status === "error" && (
             <p className="font-urbanist text-sm text-red-400">{errorMessage}</p>
