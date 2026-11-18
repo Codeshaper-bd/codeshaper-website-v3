@@ -1,113 +1,120 @@
-import {
-  Hexagon,
-  Triangle,
-  Circle,
-  Square,
-  Star,
-  Zap,
-  Shield,
-  Layers,
-  Box,
-  Octagon,
-  Pentagon,
-  type LucideIcon,
-} from "lucide-react";
+import { Globe2 } from "lucide-react";
 import { FaMicrosoft } from "react-icons/fa";
 import { SiWebflow, SiFiverr, SiUpwork, SiFramer } from "react-icons/si";
 import type { IconType } from "react-icons";
 import Reveal from "@/components/system/Reveal";
-import { SectionEyebrow, SectionTitle } from "@/components/system/SectionHeading";
+import { SERVED } from "@/components/hero/globe/servedCountries";
 
 /**
- * Clients & trust — back to the section's earlier composition (left-aligned
- * eyebrow/heading, region pills on the right, compact padding) after a
- * detour through centered/circular-badge layouts. Logos run as a single
- * continuous marquee line instead of a wrapping grid.
+ * Clients strip, between the hero and Services: three rows of monochrome
+ * wordmarks (reference: "Trusted by 350+ global brands" grids), each with a
+ * small industry tag, so a visitor sees the spread of sectors at a glance.
  *
- * Real brand icons (react-icons' simple-icons/font-awesome sets, already
- * monochrome via currentColor) are used for the 5 clients that are actual
- * public companies with a recognizable mark; the other 11 are private/
- * custom businesses with no public logo to source, so they get a neutral
- * geometric glyph as an explicit placeholder — swap in real logo images
- * for both groups once the user supplies them, per their note that these
- * are dummy logos for now.
+ *  · Background blends from the hero's white frame into the warm
+ *    light-surface that frames Services, so there's no hard band between them.
+ *  · Rows drift slowly, alternating direction and speed; hover pauses a row;
+ *    static under reduced motion (globals.css). Edges fade out with a mask.
+ *  · The five clients with a public mark show it (react-icons); the rest
+ *    are name-only until real SVG logos are supplied.
+ *  · Screen readers get one plain list (name + industry); the moving rows
+ *    are decorative duplicates.
+ *  · The country line reuses the globe's data (servedCountries.ts).
+ *
+ * `industry` marked // CHECK was inferred from the company name; confirm it.
  */
-const KNOWN_LOGOS: Record<string, IconType> = {
-  Microsoft: FaMicrosoft,
-  Webflow: SiWebflow,
-  Fiverr: SiFiverr,
-  UpWork: SiUpwork,
-  Framer: SiFramer,
+type Client = { name: string; industry: string; icon?: IconType };
+
+const ROWS: Client[][] = [
+  [
+    { name: "Microsoft", industry: "Technology", icon: FaMicrosoft },
+    { name: "Q Hotel Dhaka", industry: "Hospitality" },
+    { name: "Elite Capital Group", industry: "FinTech" }, // CHECK
+    { name: "Essentialist", industry: "Travel" }, // CHECK
+    { name: "Webflow", industry: "SaaS", icon: SiWebflow },
+    { name: "Lexa Shield", industry: "Security" }, // CHECK
+  ],
+  [
+    { name: "Fiverr", industry: "Marketplace", icon: SiFiverr },
+    { name: "Quinta dos Vales", industry: "Hospitality" }, // CHECK
+    { name: "DTech Corporation", industry: "Technology" }, // CHECK
+    { name: "MYTH LIFESTYLE", industry: "Fashion" }, // CHECK
+    { name: "Upwork", industry: "Marketplace", icon: SiUpwork },
+  ],
+  [
+    { name: "Framer", industry: "Design tools", icon: SiFramer },
+    { name: "Fennec", industry: "eCommerce" }, // CHECK
+    { name: "Astrica Trading", industry: "Trading" }, // CHECK
+    { name: "GoPosly", industry: "SaaS" }, // CHECK
+    { name: "Regray Stone", industry: "Real estate" }, // CHECK
+  ],
+];
+
+/**
+ * Industry tag tints: one soft pastel per family (from the hero palettes),
+ * so the same kind of business always reads in the same colour. Background
+ * is very light and text is the dark shade of the same hue (≥4.5:1 on its bg).
+ */
+const TINTS = {
+  violet: "bg-[#f1eeff] text-[#4b3fb8] border-[#5b4fd6]/15", // technology, SaaS, design
+  blue: "bg-[#eaf3fd] text-[#1d5f9e] border-[#1b78cc]/15", // finance, security
+  peach: "bg-[#fff1e8] text-[#a4471a] border-[#f08a3e]/20", // hospitality, travel
+  pink: "bg-[#fdeef5] text-[#a8326b] border-[#e96aa8]/20", // commerce, marketplace, fashion
+  amber: "bg-[#fdf5e3] text-[#8a5a0b] border-[#f2a048]/20", // trading, real estate
+} as const;
+
+const INDUSTRY_TINT: Record<string, keyof typeof TINTS> = {
+  Technology: "violet",
+  SaaS: "violet",
+  "Design tools": "violet",
+  FinTech: "blue",
+  Security: "blue",
+  Hospitality: "peach",
+  Travel: "peach",
+  eCommerce: "pink",
+  Marketplace: "pink",
+  Fashion: "pink",
+  Trading: "amber",
+  "Real estate": "amber",
 };
 
-const PLACEHOLDER_ICONS: LucideIcon[] = [Hexagon, Triangle, Circle, Square, Star, Zap, Shield, Layers, Box, Octagon, Pentagon];
-
-const CLIENTS = [
-  "Essentialist",
-  "Fennec",
-  "Q Hotel Dhaka",
-  "Microsoft",
-  "Elite Capital Group",
-  "Webflow",
-  "Fiverr",
-  "UpWork",
-  "Lexa Shield",
-  "Quinta dos Vales",
-  "DTech Corporation",
-  "Astrica Trading",
-  "MYTH LIFESTYLE",
-  "GoPosly",
-  "Framer",
-  "Regray Stone",
+/** Per-row drift: duration (s) and direction. */
+const MOTION = [
+  { duration: 46, reverse: false },
+  { duration: 54, reverse: true },
+  { duration: 50, reverse: false },
 ];
 
-const REGIONS = [
-  { label: "USA", flag: "🇺🇸" },
-  { label: "Canada", flag: "🇨🇦" },
-  { label: "Europe", flag: "🇪🇺" },
-  { label: "North America", flag: "🌎" },
-  { label: "Asia", flag: "🌏" },
-];
-
-function buildLogoMap(): Record<string, IconType | LucideIcon> {
-  const map: Record<string, IconType | LucideIcon> = {};
-  let placeholderIndex = 0;
-  for (const name of CLIENTS) {
-    map[name] = KNOWN_LOGOS[name] ?? PLACEHOLDER_ICONS[placeholderIndex++ % PLACEHOLDER_ICONS.length];
-  }
-  return map;
-}
-
-const LOGO_MAP = buildLogoMap();
-
-function LogoTile({ name }: { name: string }) {
-  const LogoIcon = LOGO_MAP[name];
-  const isReal = name in KNOWN_LOGOS;
+function Wordmark({ name, industry, icon: Icon }: Client) {
   return (
-    <div className="group flex shrink-0 items-center gap-3.5 rounded-2xl border border-hairline bg-canvas py-3 pl-3 pr-5 shadow-[0_1px_2px_rgba(9,9,11,0.04)] transition-all duration-300 hover:-translate-y-0.5 hover:border-aurora-violet/25 hover:shadow-[0_10px_24px_rgba(9,9,11,0.08)]">
-      <span className="mega-icon-tile flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-aurora-indigo">
-        <LogoIcon aria-hidden size={isReal ? 20 : 17} className={isReal ? "" : "opacity-70"} />
-      </span>
-      <span className="whitespace-nowrap font-urbanist text-[14px] font-semibold text-ink-dim transition-colors duration-300 group-hover:text-ink">
+    <li className="group flex shrink-0 items-center gap-2.5 whitespace-nowrap">
+      <span className="flex items-center gap-2 text-[17px] font-semibold tracking-[-0.01em] text-[#868b98] transition-colors duration-300 group-hover:text-[#0b0f19] sm:text-[19px]">
+        {Icon && <Icon aria-hidden size={18} />}
         {name}
       </span>
-    </div>
+      <span
+        className={`rounded-full border px-2 py-[3px] text-[10.5px] font-semibold leading-none ${TINTS[INDUSTRY_TINT[industry] ?? "violet"]}`}
+      >
+        {industry}
+      </span>
+    </li>
   );
 }
 
-function LogoMarquee() {
-  const row = [...CLIENTS, ...CLIENTS];
+function Row({ clients, duration, reverse }: { clients: Client[]; duration: number; reverse: boolean }) {
+  // each half is the row twice, so one half is always wider than the viewport
+  const half = [...clients, ...clients];
   return (
-    <div
-      className="relative overflow-hidden"
-      style={{
-        WebkitMaskImage: "linear-gradient(to right, transparent 0%, black 6%, black 94%, transparent 100%)",
-        maskImage: "linear-gradient(to right, transparent 0%, black 6%, black 94%, transparent 100%)",
-      }}
-    >
-      <div className="marquee-track flex w-max items-center gap-4">
-        {row.map((name, i) => (
-          <LogoTile key={`${name}-${i}`} name={name} />
+    <div className="overflow-hidden py-2.5 sm:py-3">
+      <div
+        className={`marquee-track flex w-max ${reverse ? "marquee-reverse" : ""}`}
+        style={{ animationDuration: `${duration}s` }}
+      >
+        {[0, 1].map((copy) => (
+          <ul key={copy} className="flex shrink-0 items-center gap-10 pr-10 sm:gap-14 sm:pr-14">
+            {half.map((c, i) => (
+              <Wordmark key={`${c.name}-${i}`} {...c} />
+            ))}
+          </ul>
         ))}
       </div>
     </div>
@@ -115,51 +122,53 @@ function LogoMarquee() {
 }
 
 export default function TrustStrip() {
+  const countries = SERVED.length;
   return (
     <section
-      aria-label="Clients and partners"
-      className="theme-light relative overflow-hidden bg-light-surface py-12 font-urbanist lg:py-16"
+      aria-labelledby="clients-heading"
+      className="theme-light relative bg-gradient-to-b from-white to-light-surface pb-14 pt-12 font-urbanist lg:pb-20 lg:pt-16"
     >
-      {/* subtle texture, same asset Hero uses, so the section visibly shares Hero's material language */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 text-ink opacity-[0.025]"
-        style={{ backgroundImage: "url(/media/hex-pattern-tile.svg)", backgroundSize: "112px 194px" }}
-      />
-
-      <div className="relative z-10 mx-auto max-w-7xl px-6 lg:px-10">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10">
         <Reveal>
-          <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-            <div>
-              <SectionEyebrow>Selected Clients</SectionEyebrow>
-              <SectionTitle>
-                The choice of fast-moving teams
-                <br />
-                <span className="text-ink-dim">from startups to global brands.</span>
-              </SectionTitle>
-            </div>
-            <ul className="flex flex-wrap gap-2.5 lg:justify-end">
-              {REGIONS.map((r) => (
-                <li
-                  key={r.label}
-                  className="flex items-center gap-1.5 rounded-full border border-hairline bg-canvas px-3.5 py-1.5 font-urbanist text-[12px] font-medium text-ink-dim"
-                >
-                  <span aria-hidden className="text-[13px] leading-none">
-                    {r.flag}
-                  </span>
-                  {r.label}
-                </li>
-              ))}
-            </ul>
-          </div>
+          <h2
+            id="clients-heading"
+            className="mx-auto max-w-[34ch] text-balance text-center text-[19px] font-semibold leading-snug tracking-[-0.01em] text-ink sm:text-[22px]"
+          >
+            The choice of fast-moving teams, <span className="text-ink-dim">from startups to global brands.</span>
+          </h2>
         </Reveal>
 
         <Reveal delay={100}>
-          <div className="mt-8 lg:mt-10">
-            <LogoMarquee />
+          <div
+            aria-hidden
+            className="mt-8 lg:mt-10"
+            style={{
+              WebkitMaskImage: "linear-gradient(to right, transparent, black 14%, black 86%, transparent)",
+              maskImage: "linear-gradient(to right, transparent, black 14%, black 86%, transparent)",
+            }}
+          >
+            {ROWS.map((clients, i) => (
+              <Row key={i} clients={clients} {...MOTION[i]} />
+            ))}
           </div>
+          <ul className="sr-only">
+            {ROWS.flat().map((c) => (
+              <li key={c.name}>
+                {c.name} ({c.industry})
+              </li>
+            ))}
+          </ul>
         </Reveal>
-        <span className="sr-only">Trusted by {CLIENTS.join(", ")}</span>
+
+        <Reveal delay={160}>
+          <p className="mx-auto mt-8 flex w-fit max-w-full items-center gap-2 rounded-full border border-[#0b0f19]/[0.07] bg-white/70 px-3.5 py-1.5 text-center text-[12.5px] font-medium text-ink-dim lg:mt-10">
+            <Globe2 size={14} aria-hidden className="shrink-0 text-[#5b4fd6]" />
+            <span>
+              Clients in <span className="font-semibold text-ink">{countries} countries</span>
+              <span className="hidden sm:inline"> across the Americas, Europe, the Middle East, Africa and Asia-Pacific</span>
+            </span>
+          </p>
+        </Reveal>
       </div>
     </section>
   );

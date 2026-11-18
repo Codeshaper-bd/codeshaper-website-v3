@@ -342,6 +342,10 @@ body {
   will-change: transform;
 }
 
+.marquee-reverse {
+  animation-direction: reverse;
+}
+
 .marquee-track:hover,
 .marquee-paused .marquee-track {
   animation-play-state: paused;
