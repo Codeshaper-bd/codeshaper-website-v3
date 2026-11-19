@@ -37,10 +37,11 @@ const CHALLENGES: Record<string, string> = {
   "real-estate": "Listings that go stale, leads that fall through the cracks between portal and CRM.",
   logistics: "Dispatch decisions made from spreadsheets, with no live visibility once a job leaves the yard.",
   travel: "Booking flows that lose people at payment, and itineraries that break the moment plans change.",
-  "professional-services": "Proposals that stall in email, with no clean way to track a deal from lead to signed.",
+  edtech: "Courses that learners abandon halfway, with no clear view of who is struggling or why.",
   luxury: "Brand experiences that feel templated the moment a customer looks closely.",
   rmg: "Production visibility that lives in spreadsheets, with no real-time view from floor to shipment.",
   "restaurant-food": "Ordering, reservations, and loyalty systems that don't talk to each other across locations.",
+  enterprise: "Teams working across disconnected systems, with approvals, data and reporting stitched together by hand.",
 };
 
 const CTAS: Record<string, string> = {
@@ -53,10 +54,11 @@ const CTAS: Record<string, string> = {
   "real-estate": "Talk about your portal",
   logistics: "Talk about your operations",
   travel: "Talk about your booking flow",
-  "professional-services": "Talk about your firm's systems",
+  edtech: "Talk about your learning product",
   luxury: "Talk about your brand experience",
   rmg: "Talk about your production systems",
   "restaurant-food": "Talk about your operations",
+  enterprise: "Talk about your enterprise systems",
 };
 
 /** One accent per industry so the cards read as genuinely distinct, not the same card repeated. */
@@ -70,10 +72,11 @@ const ACCENTS: Record<string, string> = {
   "real-estate": "#d99a4e",
   logistics: "#db5a89",
   travel: "#d97fc4",
-  "professional-services": "#4ea8b8",
+  edtech: "#4ea8b8",
   luxury: "#b08d57",
   rmg: "#6b7fd7",
   "restaurant-food": "#e0755a",
+  enterprise: "#5b6cd6",
 };
 
 function slugOf(href: string) {

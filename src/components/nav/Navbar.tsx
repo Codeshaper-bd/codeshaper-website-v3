@@ -8,7 +8,6 @@ import { ArrowRight, ChevronDown } from "lucide-react";
 import { SIMPLE_MENUS } from "@/lib/navigation";
 import { Icon } from "@/lib/icons";
 import MegaPanel from "./MegaPanel";
-import { tone } from "./tones";
 import IndustriesMegaPanel from "./IndustriesMegaPanel";
 import MobileMenu from "./MobileMenu";
 import MobileTabBar from "./MobileTabBar";
@@ -303,7 +302,7 @@ export default function Navbar() {
                       />
                     </Nav.Trigger>
                     <Nav.Content
-                      className={`mega-panel fixed left-1/2 z-40 w-[min(calc(100vw-32px),1080px)] -translate-x-1/2 data-[state=closed]:hidden ${megaPos}`}
+                      className={`mega-panel fixed left-1/2 z-40 w-[min(calc(100vw-32px),1200px)] -translate-x-1/2 data-[state=closed]:hidden ${megaPos}`}
                       style={{ position: "fixed" }}
                     >
                       <MegaPanel />
@@ -320,7 +319,7 @@ export default function Navbar() {
                       />
                     </Nav.Trigger>
                     <Nav.Content
-                      className={`mega-panel fixed left-1/2 z-40 w-[min(calc(100vw-32px),1080px)] -translate-x-1/2 data-[state=closed]:hidden ${megaPos}`}
+                      className={`mega-panel fixed left-1/2 z-40 w-[min(calc(100vw-32px),1200px)] -translate-x-1/2 data-[state=closed]:hidden ${megaPos}`}
                       style={{ position: "fixed" }}
                     >
                       <IndustriesMegaPanel />
@@ -425,7 +424,7 @@ function DropdownItem({
         />
       </Nav.Trigger>
       <Nav.Content
-        className={`dropdown-panel absolute left-1/2 z-40 w-[248px] -translate-x-1/2 p-1.5 ${
+        className={`dropdown-panel absolute left-1/2 z-40 w-[264px] -translate-x-1/2 p-2 ${
           docked ? "bottom-full mb-6" : "top-full mt-3"
         }`}
       >
@@ -435,10 +434,10 @@ function DropdownItem({
               <Nav.Link asChild>
                 <Link
                   href={l.href}
-                  className="menu-row group flex items-center gap-2.5 rounded-[12px] px-2 py-[7px] font-urbanist text-[14.5px] font-semibold text-ink-dim transition-colors hover:text-ink"
+                  className="menu-row group flex items-center gap-3 rounded-[12px] px-2.5 py-2 font-urbanist text-[15px] font-semibold text-ink-dim transition-colors hover:text-ink"
                 >
-                  <span className="mega-icon-tile flex h-7 w-7 shrink-0 items-center justify-center rounded-[9px]" style={tone(i + 3)}>
-                    <Icon name={l.icon} size={13} />
+                  <span className="mega-icon-tile flex h-8 w-8 shrink-0 items-center justify-center rounded-[10px]">
+                    <Icon name={l.icon} size={14} />
                   </span>
                   {l.label}
                 </Link>

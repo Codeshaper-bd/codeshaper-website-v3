@@ -118,13 +118,13 @@ export const INDUSTRIES: IndustryLink[] = [
     systems: ["Booking", "Vendors", "Membership"],
   },
   {
-    label: "Professional Services",
-    href: "/industries/professional-services",
-    icon: "briefcase",
-    desc: "Service firms that grow",
-    summary: "Premium websites, portals, CRM workflows, proposal flows, booking systems, and internal automation.",
-    outcome: "Sharper lead and delivery flow",
-    systems: ["CRM", "Portal", "Automation"],
+    label: "EdTech",
+    href: "/industries/edtech",
+    icon: "graduation-cap",
+    desc: "Learning products that engage",
+    summary: "Learning platforms, LMS and course products, student and teacher portals, assessments, live classes, and AI tutoring.",
+    outcome: "Learners who stay and finish",
+    systems: ["LMS", "Assessments", "AI tutor"],
   },
   {
     label: "Luxury & Lifestyle",
@@ -152,6 +152,15 @@ export const INDUSTRIES: IndustryLink[] = [
     summary: "Ordering systems, reservation flows, loyalty programs, and multi-location dashboards for hospitality operations.",
     outcome: "Smoother ordering and operations",
     systems: ["Ordering", "Reservations", "Loyalty"],
+  },
+  {
+    label: "Enterprise",
+    href: "/industries/enterprise",
+    icon: "network",
+    desc: "Systems that scale across teams",
+    summary: "ERP integrations, internal tools, workflow automation, secure portals, data platforms, and AI copilots for large organisations.",
+    outcome: "Fewer manual handoffs at scale",
+    systems: ["ERP", "Workflows", "AI copilots"],
   },
 ];
 

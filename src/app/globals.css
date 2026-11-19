@@ -1285,3 +1285,56 @@ body:has([data-hero][data-intro]) [data-site-header] {
 .font-display * {
   font-family: var(--font-urbanist), ui-sans-serif, system-ui, sans-serif !important;
 }
+
+/* ── Mega menu: final palette ─────────────────────────────────────────
+   One quiet tone, colour only on interaction: icons sit in neutral glass
+   tiles (soft slate) and turn brand violet with a soft glow on hover. (A
+   colour per item was tried and dropped: thirteen unrelated hues read as
+   noise and competed with the brand violet.) Text is never pure black:
+   titles a soft deep slate, notes a muted grey. */
+.mega-panel,
+.dropdown-panel {
+  --menu-ink: #272b3d;
+  --menu-dim: #5d6274;
+  --menu-faint: #8b90a0;
+}
+.mega-panel .text-ink,
+.dropdown-panel .text-ink,
+.mega-panel .mega-row-name,
+.dropdown-panel .menu-row:hover {
+  color: var(--menu-ink) !important;
+}
+.mega-panel .text-ink-dim,
+.dropdown-panel .text-ink-dim {
+  color: var(--menu-dim) !important;
+}
+.mega-panel .text-ink-faint {
+  color: var(--menu-faint) !important;
+}
+.mega-icon-tile {
+  color: #5d6274 !important;
+  background: linear-gradient(180deg, #ffffff, #f3f3f8) !important;
+  border: 1px solid rgb(255 255 255 / 0.95) !important;
+  box-shadow: inset 0 1px 0 #fff, 0 1px 2px rgb(11 15 25 / 0.07), 0 0 0 1px rgb(30 25 80 / 0.06) !important;
+  transition: color 200ms ease, background 200ms ease, box-shadow 200ms ease !important;
+}
+.mega-row:hover .mega-icon-tile,
+.menu-row:hover .mega-icon-tile {
+  color: #615fff !important;
+  background: linear-gradient(180deg, #ffffff, #efeeff) !important;
+  box-shadow: inset 0 1px 0 #fff, 0 4px 10px -3px rgb(97 95 255 / 0.4), 0 0 0 1px rgb(97 95 255 / 0.22) !important;
+}
+/* service arrows: faintly visible, slide in and turn violet on hover */
+.mega-row .mega-svc-arrow {
+  opacity: 0.55;
+}
+.mega-row:hover .mega-svc-arrow {
+  opacity: 1;
+  color: #615fff !important;
+}
+.mega-chip {
+  color: var(--menu-dim, #5d6274) !important;
+}
+.mega-chip:hover {
+  color: #4f46e5 !important;
+}

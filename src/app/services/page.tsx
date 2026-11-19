@@ -47,7 +47,7 @@ function SectionLabel({ children }: { children: ReactNode }) {
 
 const PROOF_STRIP = ["Start in ~1 week", "Weekly demos + shared board", "Clear ownership", "Documentation + handover"];
 
-const PRIMARY_INDUSTRY_SLUGS = ["saas", "ecommerce", "real-estate", "logistics", "travel", "professional-services", "fintech", "rmg"];
+const PRIMARY_INDUSTRY_SLUGS = ["saas", "ecommerce", "real-estate", "logistics", "travel", "edtech", "fintech", "rmg"];
 const PRIMARY_INDUSTRIES = INDUSTRIES.filter((i) => PRIMARY_INDUSTRY_SLUGS.includes(i.href.split("/").pop()!));
 
 export default function ServicesIndexPage() {
