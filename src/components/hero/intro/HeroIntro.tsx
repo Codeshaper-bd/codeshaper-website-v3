@@ -11,13 +11,15 @@ const CUE_ENTER = "Keep scrolling to step inside";
 
 /**
  * Hero intro ("Code to Shape"), ported from the Codeshaper Astro build and
- * scrubbed by GSAP ScrollTrigger while the hero is pinned (+180% of the
+ * scrubbed by GSAP ScrollTrigger while the hero is pinned (+250% of the
  * viewport):
  *
  *  1. Pieces: the nine pieces of the 3D Codeshaper mark float, large and
  *     scattered, in a soft lavender mist. They can be grabbed and thrown.
- *  2. Shape: scrolling locks them together into the mark (pearl → violet);
- *     the cursor bar blinks once it is whole.
+ *  2. Shape, then connect: scrolling locks them together into the mark
+ *     (pearl → violet) while drifting dust gathers into two halftone hands,
+ *     Human from the left and AI from the right (createHands.ts), reaching
+ *     under the mark and lock into a handshake as you scroll.
  *  3. Hero: the mark sinks back and dissolves, the mist lifts, the flowing
  *     light and the globe come up, and the copy rises in. Unlike the source
  *     build, the mark does NOT fly into a badge above the headline.
@@ -31,7 +33,6 @@ export default function HeroIntro() {
   const hostRef = useRef<HTMLDivElement>(null);
   const tipRef = useRef<HTMLSpanElement>(null);
   const cueRef = useRef<HTMLDivElement>(null);
-  const dotRef = useRef<HTMLSpanElement>(null);
   const [status, setStatus] = useState<Status>("loading");
 
   useEffect(() => {
@@ -45,6 +46,7 @@ export default function HeroIntro() {
     let cancelled = false;
     let handle: MarkHandle | null = null;
     let cleanup: (() => void) | null = null;
+    let disposeHands: (() => void) | null = null;
 
     const giveUp = (why?: unknown) => {
       if (process.env.NODE_ENV !== "production") console.warn("[hero-intro] static fallback:", why);
@@ -73,8 +75,9 @@ export default function HeroIntro() {
 
     (async () => {
       try {
-        const [{ createMark }, { gsap }, { ScrollTrigger }] = await Promise.all([
+        const [{ createMark }, { createHands, handColours }, { gsap }, { ScrollTrigger }] = await Promise.all([
           import("./createMark"),
+          import("./createHands"),
           import("gsap"),
           import("gsap/ScrollTrigger"),
         ]);
@@ -93,8 +96,9 @@ export default function HeroIntro() {
         handle = createMark({
           host: hostRef.current,
           color: "#615fff",
-          // the assembled mark: about a third of the card's height
-          markHeight: (w, h) => Math.min(w * 0.2, h * 0.34),
+          // same geometry as the hands (createHands.ts): a 1200 x 700 "meet"
+          // box with the mark ~220 units across, so the clasp sits under it
+          markHeight: (w, h) => Math.min((w * 220) / 1200, (h * 220) / 700) * 0.92,
           onReady: () => !cancelled && setStatus("ready"),
           onFail: () => giveUp("webgl"),
           onHover: placeTip,
@@ -118,12 +122,12 @@ export default function HeroIntro() {
           scrollTrigger: {
             trigger: hero,
             start: "top top",
-            end: "+=180%",
+            end: "+=250%",
             pin: true,
             scrub: 0.8,
             invalidateOnRefresh: true,
             onUpdate: (self) => {
-              handle?.setProgress(clamp(self.progress / 0.48));
+              handle?.setProgress(clamp(self.progress / 0.33));
               shiftHeader();
             },
             onRefresh: () => shiftHeader(),
@@ -149,22 +153,39 @@ export default function HeroIntro() {
         }
         // The intro row leaves as soon as the visitor starts shaping.
         tl.to(q("[data-hero-intro]"), { opacity: 0, y: 12, duration: 0.08 }, 0.1);
-        // Act 3: the mark sinks back and dissolves, the mist lifts.
-        tl.set(stage, { pointerEvents: "none" }, 0.56);
-        tl.to(stage, { scale: 0.62, yPercent: -6, duration: 0.18, ease: "power2.in" }, 0.56);
-        tl.to(stage, { opacity: 0, duration: 0.1 }, 0.64);
-        tl.to(q("[data-hero-fog]"), { opacity: 0, duration: 0.16 }, 0.58);
-        tl.fromTo(q("[data-hero-light]"), { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.22 }, 0.6);
+        // Act 2: dust gathers into two hands, Human from the left and AI from
+        // the right, reaching for each other under the mark; a caption names
+        // them, and the grip glows softly as they lock.
+        const handsCanvas = hero.querySelector<HTMLCanvasElement>("[data-hero-hands]");
+        const hands = handsCanvas ? createHands(handsCanvas, { ...handColours(), animate: true }) : null;
+        hands?.set(0);
+        disposeHands = () => hands?.dispose();
+        const handState = { t: 0 };
+        const drive = () => hands?.set(handState.t);
+        const caption = q("[data-hand-label]");
+        // the hands gather while the mark forms and clasp soon after it is
+        // whole, so the logo and the handshake complete together
+        tl.to(handState, { t: 1, duration: 0.22, onUpdate: drive }, 0.2);
+        tl.fromTo(caption, { opacity: 0 }, { opacity: 1, duration: 0.06, stagger: 0.02 }, 0.36);
+        tl.to(caption, { opacity: 0, duration: 0.05 }, 0.62);
+        // Act 3: the hands dissolve upward, the mark sinks back and dissolves,
+        // the mist lifts.
+        tl.to(handState, { t: 2, duration: 0.12, onUpdate: drive }, 0.62);
+        tl.set(stage, { pointerEvents: "none" }, 0.66);
+        tl.to(stage, { scale: 0.62, yPercent: -6, duration: 0.14, ease: "power2.in" }, 0.66);
+        tl.to(stage, { opacity: 0, duration: 0.08 }, 0.72);
+        tl.to(q("[data-hero-fog]"), { opacity: 0, duration: 0.14 }, 0.66);
+        tl.fromTo(q("[data-hero-light]"), { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 0.68);
         // The copy rises in, then the globe comes up from the bottom edge.
         tl.fromTo(
           q("[data-reveal]"),
           { autoAlpha: 0, y: 28 },
-          { autoAlpha: 1, y: 0, duration: 0.12, stagger: 0.03, ease: "power2.out" },
-          0.66,
+          { autoAlpha: 1, y: 0, duration: 0.1, stagger: 0.028, ease: "power2.out" },
+          0.76,
         );
-        tl.fromTo(q("[data-reveal-globe]"), { autoAlpha: 0, y: 90 }, { autoAlpha: 1, y: 0, duration: 0.18, ease: "power2.out" }, 0.72);
-        if (header) tl.fromTo(header, { autoAlpha: 0, y: -10 }, { autoAlpha: 1, y: 0, duration: 0.1, ease: "power2.out" }, 0.74);
-        tl.set(column, { pointerEvents: "auto" }, 0.8);
+        tl.fromTo(q("[data-reveal-globe]"), { autoAlpha: 0, y: 90 }, { autoAlpha: 1, y: 0, duration: 0.14, ease: "power2.out" }, 0.8);
+        if (header) tl.fromTo(header, { autoAlpha: 0, y: -10 }, { autoAlpha: 1, y: 0, duration: 0.08, ease: "power2.out" }, 0.82);
+        tl.set(column, { pointerEvents: "auto" }, 0.86);
         tl.to({}, { duration: 0.04 }, 0.96);
 
         const trigger = tl.scrollTrigger!;
@@ -185,17 +206,12 @@ export default function HeroIntro() {
         // while the pieces are still scattered. It steps aside for a piece's
         // label or a drag, and leaves for good once shaping has begun.
         //
-        // Custom cursor for the intro stage (replaces the system arrow there):
-        //  · a small violet dot exactly at the pointer (no lag, so it never
-        //    feels slow);
-        //  · a glass ring that trails it slightly, carrying the cue pill;
-        //  · over a piece the ring opens wide (grab me) and the pill steps
-        //    aside for the piece's label; while dragging it tightens.
-        // Off over the intro footer (its links keep the normal pointer) and
-        // once the hero arrives, when the system cursor returns.
+        // The pointer itself stays the SYSTEM cursor: the OS draws it, so it
+        // never lags, however busy the page is (the 3D mark, the hands and the
+        // glyphs all render each frame here). A custom cursor drawn by the
+        // page can only move once per finished frame, which felt laggy.
+        // Off over the intro footer and once the hero arrives.
         const cue = cueRef.current;
-        const dot = dotRef.current;
-        const ring = cue?.querySelector<HTMLElement>("[data-cue-ring]");
         const pill = cue?.querySelector<HTMLElement>("[data-cue-pill]");
         const cueText = cue?.querySelector<HTMLElement>("[data-cue-text]");
         let cx = 0;
@@ -209,32 +225,27 @@ export default function HeroIntro() {
         let cueRaf = 0;
         const stepCue = () => {
           cueRaf = 0;
-          if (!cue || !dot || !ring || !pill) return;
+          if (!cue || !pill) return;
           const pr = trigger.progress;
-          const nowActive = inside && !overFooter && pr < 0.56;
+          const nowActive = inside && !overFooter && pr < 0.66;
           if (nowActive !== active) {
             active = nowActive;
             if (active) {
               cx = tx;
               cy = ty;
-              root.setAttribute("data-cursor", "");
-            } else root.removeAttribute("data-cursor");
-            cue.style.opacity = dot.style.opacity = active ? "1" : "0";
+            }
+            cue.style.opacity = active ? "1" : "0";
           }
           // Two moments ask for a scroll: the scattered pieces, and the
           // finished mark (before it dissolves into the hero). Quiet while
           // the pieces are moving together.
-          const label = pr < 0.04 ? CUE_SHAPE : pr > 0.4 ? CUE_ENTER : null;
+          const label = pr < 0.04 ? CUE_SHAPE : pr > 0.34 ? CUE_ENTER : null;
           if (label && cueText && cueText.textContent !== label) cueText.textContent = label;
           const pillOn = active && !tipShown && !pressed && !!label;
           pill.style.opacity = pillOn ? "1" : "0";
-          pill.style.translate = pillOn ? "0 -50%" : "-8px -50%";
-          ring.style.scale = pressed ? "0.7" : tipShown ? "1.6" : "1";
-          ring.style.backgroundColor = tipShown && !pressed ? "rgba(97,95,255,0.12)" : "";
-          dot.style.scale = pressed ? "0.6" : "1";
-          dot.style.translate = `${tx}px ${ty}px`;
-          cx += (tx - cx) * 0.24;
-          cy += (ty - cy) * 0.24;
+          pill.style.translate = pillOn ? "0 0" : "-6px 0";
+          cx += (tx - cx) * 0.35;
+          cy += (ty - cy) * 0.35;
           cue.style.translate = `${cx.toFixed(1)}px ${cy.toFixed(1)}px`;
           if (Math.abs(tx - cx) > 0.3 || Math.abs(ty - cy) > 0.3) cueRaf = requestAnimationFrame(stepCue);
         };
@@ -268,7 +279,6 @@ export default function HeroIntro() {
         shiftHeader();
         cleanup = () => {
           cancelAnimationFrame(cueRaf);
-          root.removeAttribute("data-cursor");
           window.removeEventListener("pointermove", onPointer);
           window.removeEventListener("pointerdown", onPress);
           window.removeEventListener("pointerup", onPress);
@@ -282,7 +292,7 @@ export default function HeroIntro() {
           tl.kill();
           gsap.killTweensOf(chips);
           gsap.set(
-            [...q("[data-reveal]"), ...q("[data-reveal-globe]"), ...q("[data-hero-light]"), ...q("[data-hero-intro]"), ...q("[data-hero-fog]"), ...chips, stage, column],
+            [...q("[data-hand-label]"), ...q("[data-reveal]"), ...q("[data-reveal-globe]"), ...q("[data-hero-light]"), ...q("[data-hero-intro]"), ...q("[data-hero-fog]"), ...chips, stage, column],
             { clearProps: "all" },
           );
         };
@@ -295,6 +305,8 @@ export default function HeroIntro() {
       cancelled = true;
       cleanup?.();
       cleanup = null;
+      disposeHands?.();
+      disposeHands = null;
       handle?.dispose();
       handle = null;
     };
@@ -307,22 +319,19 @@ export default function HeroIntro() {
         ref={hostRef}
         className={`absolute inset-0 transition-opacity duration-700 ${status === "ready" ? "opacity-100" : "opacity-0"}`}
       />
-      {/* custom cursor (positioned by the effect): glass ring + cue pill, trailing */}
+      {/* cue pill beside the system cursor (positioned by the effect, trailing slightly) */}
       <div
         ref={cueRef}
         aria-hidden
         className="pointer-events-none absolute left-0 top-0 z-20 opacity-0 transition-opacity duration-300 ease-out"
       >
-        <span
-          data-cue-ring
-          className="absolute left-0 top-0 -ml-[18px] -mt-[18px] block h-9 w-9 rounded-full border border-white/90 bg-white/20 shadow-[inset_0_1px_0_rgba(255,255,255,0.9),0_6px_18px_-6px_rgba(60,50,140,0.35)] backdrop-blur-[3px] transition-[scale,background-color] duration-300 ease-out"
-        />
-        {/* frosted glass pill: blurred + saturated backdrop, a light top edge,
-            a soft violet sheen and a floating shadow */}
+        {/* frosted glass pill: a light top edge, a soft violet sheen and a
+            floating shadow; a modest backdrop blur (a moving blur over the 3D
+            canvas is costly, so it stays small) */}
         <span
           data-cue-pill
-          className="absolute left-[30px] top-0 flex items-center gap-2.5 overflow-hidden whitespace-nowrap rounded-full border border-white/80 bg-white/35 py-[7px] pl-[7px] pr-3.5 font-mono text-[10.5px] font-semibold uppercase tracking-[0.14em] text-[#0b0f19] opacity-0 shadow-[inset_0_1px_0_rgba(255,255,255,0.95),inset_0_-1px_0_rgba(97,95,255,0.08),0_10px_30px_-10px_rgba(60,50,140,0.35),0_2px_6px_-2px_rgba(11,15,25,0.08)] backdrop-blur-xl backdrop-saturate-[1.8] transition-[opacity,translate] duration-300 ease-out"
-          style={{ translate: "-8px -50%" }}
+          className="absolute left-[18px] top-[22px] flex items-center gap-2.5 overflow-hidden whitespace-nowrap rounded-full border border-white/80 bg-white/60 py-[7px] pl-[7px] pr-3.5 font-mono text-[10.5px] font-semibold uppercase tracking-[0.14em] text-[#0b0f19] opacity-0 shadow-[inset_0_1px_0_rgba(255,255,255,0.95),inset_0_-1px_0_rgba(97,95,255,0.08),0_10px_30px_-10px_rgba(60,50,140,0.35),0_2px_6px_-2px_rgba(11,15,25,0.08)] backdrop-blur-[6px] transition-[opacity,translate] duration-300 ease-out"
+          style={{ translate: "-6px 0" }}
         >
           <span
             aria-hidden
@@ -343,14 +352,6 @@ export default function HeroIntro() {
           </span>
         </span>
       </div>
-      {/* cursor dot: exactly at the pointer */}
-      <span
-        ref={dotRef}
-        aria-hidden
-        className="pointer-events-none absolute left-0 top-0 z-20 opacity-0 transition-[opacity,scale] duration-200"
-      >
-        <span className="absolute -ml-[3.5px] -mt-[3.5px] block h-[7px] w-[7px] rounded-full bg-[#4f46e5] shadow-[0_0_0_2px_rgba(255,255,255,0.8)]" />
-      </span>
       <span
         ref={tipRef}
         aria-hidden

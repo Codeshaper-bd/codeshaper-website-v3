@@ -9,8 +9,14 @@
  *  - the chevron's two strokes and the cursor bar (round-capped capsules).
  *
  * The caller drives `setProgress(0..1)` (GSAP ScrollTrigger scrub). At 1 the
- * mark is whole and the cursor blinks. Hover lifts a piece toward the camera
- * and reports a label for a small HTML tag. The pointer tilts the mark a
+ * mark is whole and the cursor blinks.
+ *
+ * Play belongs to the scattered pieces only (owner: "once we have shaped
+ * something, it does not break"). While scattered, a piece can be hovered
+ * (it lifts and reports its label) and grabbed and thrown; once shaping
+ * starts (LOCK) the pieces stop answering the pointer, a piece still held is
+ * let go, and the finished mark cannot be taken apart. The pointer only tilts
+ * the whole mark a little. The pointer tilts the mark a
  * little. Frames render only while the canvas is on screen and the page is
  * visible; `dispose()` releases everything.
  */
@@ -29,7 +35,6 @@ import {
   Path,
   Plane,
   MeshBasicMaterial,
-  AdditiveBlending,
   PMREMGenerator,
   Raycaster,
   Scene,
@@ -133,15 +138,20 @@ function glowTexture() {
   c.width = c.height = 128;
   const g = c.getContext('2d')!;
   const grad = g.createRadialGradient(64, 64, 0, 64, 64, 64);
-  grad.addColorStop(0, 'rgba(255,255,255,0.9)');
-  grad.addColorStop(0.35, 'rgba(160,150,255,0.45)');
-  grad.addColorStop(1, 'rgba(160,150,255,0)');
+  // A lavender halo, no white core: on v3's pale mist a white (additive)
+  // core read as a flat white disc behind the mark.
+  grad.addColorStop(0, 'rgba(150,138,255,0.5)');
+  grad.addColorStop(0.4, 'rgba(170,160,255,0.28)');
+  grad.addColorStop(1, 'rgba(190,180,255,0)');
   g.fillStyle = grad;
   g.fillRect(0, 0, 128, 128);
   const t = new CanvasTexture(c);
   t.colorSpace = SRGBColorSpace;
   return t;
 }
+
+/** Shaping progress from which the pieces lock: no hover, no grab, no throw. */
+const LOCK = 0.12;
 
 const SIDE_LABELS = ['AI', 'Build', 'Test', 'Release', 'Plan', 'Human'];
 
@@ -163,6 +173,10 @@ interface Piece {
   centre: Vector3;
   radius: number;
   now: Vector3;
+  /** 1 while grabbed, easing to 0 after release: how much of the throw shows on the formed mark. */
+  free: number;
+  /** Share of offset/tumble currently shown: max(scatter, free). */
+  reach: number;
 }
 
 export function createMark(o: MarkOptions): MarkHandle {
@@ -247,6 +261,8 @@ export function createMark(o: MarkOptions): MarkHandle {
       centre: new Vector3(),
       radius: 1,
       now: new Vector3(),
+      free: 0,
+      reach: 1,
     };
     geometry.computeBoundingSphere();
     piece.centre.copy(geometry.boundingSphere!.center);
@@ -348,7 +364,7 @@ export function createMark(o: MarkOptions): MarkHandle {
       map: glowTex,
       transparent: true,
       opacity: 0,
-      blending: AdditiveBlending,
+      // normal blending: tints the mist violet instead of brightening it to white
       depthWrite: false,
     }),
   );
@@ -399,7 +415,21 @@ export function createMark(o: MarkOptions): MarkHandle {
     const dt = Math.min(0.05, (now - last) / 1000);
     last = now;
     shown += (progress - shown) * 0.12;
-    const isWhole = assembled();
+    if (shown > LOCK && (dragged || hovered)) {
+      dragged = null;
+      hovered = null;
+      canvas.style.cursor = '';
+      o.onHover(null);
+    }
+    // home = what is SHOWN is home (offsets left over from the scatter are
+    // scaled away as the mark forms, so they do not hold the seamless mark back)
+    const settled = !dragged && pieces.every(
+      (pc) =>
+        pc.off.lengthSq() * pc.reach * pc.reach < 0.02 &&
+        pc.angle.lengthSq() * pc.reach * pc.reach < 0.0004 &&
+        pc.lift < 0.02,
+    );
+    const isWhole = assembled() && settled;
     whole.visible = isWhole;
     tilt.lerp(pointer, 0.06);
     mark.rotation.y = tilt.x * 0.32 + (1 - shown) * Math.sin(t * 0.25) * 0.15;
@@ -409,12 +439,16 @@ export function createMark(o: MarkOptions): MarkHandle {
       const local = ease(clamp((shown - piece.delay) / (1 - 0.45)));
       const idle = 1 - local;
       const bob = Math.sin(t * 0.9 + piece.phase) * 1.6 * idle;
-      // Thrown pieces float back to their place on a slow, soft spring.
+      // Thrown pieces float back to their place: a slow, soft spring while
+      // scattered; firmer (back in ~2 s, a small overshoot) once the mark has
+      // formed, so the logo snaps whole again.
       if (dragged !== piece) {
-        piece.vel.addScaledVector(piece.off, -1.6 * dt);
-        piece.vel.multiplyScalar(Math.exp(-1.5 * dt));
+        piece.vel.addScaledVector(piece.off, -(1.6 + shown * 4.4) * dt);
+        piece.vel.multiplyScalar(Math.exp(-(1.5 + shown * 2.3) * dt));
         piece.off.addScaledVector(piece.vel, dt);
       }
+      // the tumble settles faster on the formed mark too
+      if (shown > 0.5) piece.angle.multiplyScalar(Math.exp(-2.2 * shown * dt));
       piece.angle.addScaledVector(piece.spin, dt);
       piece.spin.multiplyScalar(Math.exp(-0.9 * dt));
       piece.angle.multiplyScalar(Math.exp(-0.5 * dt));
@@ -422,15 +456,21 @@ export function createMark(o: MarkOptions): MarkHandle {
       piece.lift += ((hovered === piece ? 1 : 0) - piece.lift) * 0.15;
       // Bigger while scattered, true size once assembled.
       piece.mesh.scale.setScalar(1 + idle * 0.6);
+      // Offsets and tumble (bumps, throws) fade out as the mark forms, so
+      // every piece locks exactly into place; a piece grabbed from the formed
+      // mark shows its throw in full (free = 1) until it has floated home.
+      piece.free = dragged === piece ? 1 : Math.max(0, piece.free - dt * 0.4);
+      const reach = Math.max(idle, piece.free);
+      piece.reach = reach;
       piece.mesh.position.set(
-        (piece.from.x + piece.off.x) * idle,
-        (piece.from.y + piece.off.y) * idle + bob,
-        (piece.from.z + piece.off.z) * idle + piece.lift * 4,
+        piece.from.x * idle + piece.off.x * reach,
+        piece.from.y * idle + piece.off.y * reach + bob,
+        piece.from.z * idle + piece.off.z * reach + piece.lift * 4,
       );
       piece.mesh.rotation.set(
-        (piece.rot.x + piece.angle.x) * idle + Math.sin(t * 0.5 + piece.phase) * 0.12 * idle,
-        (piece.rot.y + piece.angle.y) * idle,
-        (piece.rot.z + piece.angle.z) * idle,
+        piece.rot.x * idle + piece.angle.x * reach + Math.sin(t * 0.5 + piece.phase) * 0.12 * idle,
+        piece.rot.y * idle + piece.angle.y * reach,
+        piece.rot.z * idle + piece.angle.z * reach,
       );
       const m = piece.mesh.material as MeshPhysicalMaterial;
       m.color.copy(pearl).lerp(brand, local);
@@ -488,7 +528,7 @@ export function createMark(o: MarkOptions): MarkHandle {
     const cm = wholeCursor.material as MeshPhysicalMaterial;
     cm.emissive.set(0xffffff);
     cm.emissiveIntensity = isWhole && Math.sin(t * 5) > 0 ? 0.35 : 0;
-    (glow.material as MeshBasicMaterial).opacity = 0.15 + shown * 0.55;
+    (glow.material as MeshBasicMaterial).opacity = 0.2 + shown * 0.6;
 
     renderer.render(scene, camera);
 
@@ -527,13 +567,18 @@ export function createMark(o: MarkOptions): MarkHandle {
   };
   const meshes = () => pieces.map((piece) => piece.mesh);
   const onDown = (e: PointerEvent) => {
-    if (e.pointerType === 'touch' || e.button !== 0 || shown > 0.5) return;
+    if (e.pointerType === 'touch' || e.button !== 0 || shown > LOCK) return;
     raycaster.setFromCamera(ndc(e), camera);
     const hit = raycaster.intersectObjects(meshes(), false)[0];
     const piece = (hit?.object.userData.piece as Piece | undefined) ?? null;
     if (!piece || !hit) return;
     e.preventDefault();
     dragged = piece;
+    // start from what is on screen: hidden leftovers must not jump into view
+    piece.off.multiplyScalar(piece.reach);
+    piece.angle.multiplyScalar(piece.reach);
+    piece.free = 1;
+    piece.reach = 1;
     dragPlane.set(new Vector3(0, 0, 1), -hit.point.z);
     dragPrev.copy(pointOnPlane(e) ?? new Vector3());
     dragTime = performance.now();
@@ -543,13 +588,12 @@ export function createMark(o: MarkOptions): MarkHandle {
     kick();
   };
   const onDrag = (e: PointerEvent) => {
-    if (!dragged) return;
+    if (!dragged || shown > LOCK) return;
     const p = pointOnPlane(e);
     if (!p) return;
     const now = performance.now();
     const step = p.clone().sub(dragPrev);
-    const idle = 1 - ease(clamp((shown - dragged.delay) / (1 - 0.45)));
-    dragged.off.addScaledVector(step, 1 / Math.max(0.2, idle));
+    dragged.off.add(step);
     // The velocity of the last movement becomes the throw.
     const dt = Math.max(0.008, (now - dragTime) / 1000);
     dragged.vel
@@ -570,7 +614,11 @@ export function createMark(o: MarkOptions): MarkHandle {
       (Math.random() - 0.5) * speed * 0.02,
     );
     dragged = null;
-    canvas.style.cursor = 'grab';
+    // let go: the thrown piece is no longer "hovered" (its label and lift
+    // would otherwise ride along with it until the pointer moves)
+    hovered = null;
+    o.onHover(null);
+    canvas.style.cursor = '';
   };
   canvas.addEventListener('pointerdown', onDown);
   canvas.addEventListener('pointermove', onDrag);
@@ -582,11 +630,11 @@ export function createMark(o: MarkOptions): MarkHandle {
     pointer.set(x, y);
     if (e.pointerType === 'touch' || dragged) return;
     raycaster.setFromCamera(new Vector2(x, y), camera);
-    const hit = assembled() ? undefined : raycaster.intersectObjects(meshes(), false)[0];
+    const hit = shown > LOCK ? undefined : raycaster.intersectObjects(meshes(), false)[0];
     const next = (hit?.object.userData.piece as Piece | undefined) ?? null;
     if (next !== hovered) {
       hovered = next;
-      canvas.style.cursor = next ? (shown > 0.5 ? 'pointer' : 'grab') : '';
+      canvas.style.cursor = next ? 'grab' : '';
       if (!next) o.onHover(null);
     }
     kick();

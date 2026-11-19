@@ -64,6 +64,19 @@ var r=document.currentScript&&document.currentScript.parentElement;if(!r)return;
 setTimeout(function(){if(!r.hasAttribute('data-intro-live'))r.removeAttribute('data-intro');},${process.env.NODE_ENV === "production" ? 6000 : 30000});
 }catch(e){}})();`;
 
+/** Intro fog: three large blurred lavender clouds drifting slowly. */
+const FOG_BLOBS = [
+  { "--d": "18s", left: "4%", top: "38%", width: "46%", height: "52%", background: "rgb(196 186 236 / 0.45)" },
+  { "--d": "23s", right: "2%", top: "30%", width: "44%", height: "56%", background: "rgb(186 200 240 / 0.42)" },
+  { "--d": "27s", left: "28%", bottom: "-12%", width: "48%", height: "46%", background: "rgb(226 214 250 / 0.6)" },
+];
+
+/** Handshake captions in the intro (Human from the left, AI from the right). */
+const HAND_LABELS = [
+  { text: "Human", left: true },
+  { text: "AI", left: false },
+];
+
 /** Monochrome fractal noise, tiled (≈0.5KB inline, no request). */
 const NOISE = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`;
 
@@ -107,6 +120,14 @@ export default function Hero() {
                   "radial-gradient(ellipse 60% 55% at 38% 62%, rgba(214,206,255,0.55), rgba(214,206,255,0) 70%), radial-gradient(ellipse 50% 50% at 70% 40%, rgba(206,222,255,0.5), rgba(206,222,255,0) 70%), #f4f3f9",
               }}
             />
+            {/* drifting lavender fog clouds (from the Codeshaper Astro build) */}
+            {FOG_BLOBS.map((b, i) => (
+              <div
+                key={i}
+                className="absolute rounded-full blur-[70px] motion-safe:animate-[fog-drift_var(--d)_ease-in-out_infinite_alternate]"
+                style={b as React.CSSProperties}
+              />
+            ))}
             <HeroGlyphs />
           </div>
           {/* film grain: static SVG noise tile, overlay-blended so it only
@@ -118,7 +139,23 @@ export default function Hero() {
         </div>
 
         {/* intro stage: the 3D mark fills the card while the intro runs */}
-        <div className="absolute inset-0 z-[1] hidden intro:block" data-hero-stage>
+        <div className="absolute inset-0 z-[1] hidden [container-type:size] intro:block" data-hero-stage>
+          {/* halftone handshake (driven by HeroIntro), same 1200 x 700 "meet" box as the mark */}
+          <canvas aria-hidden className="pointer-events-none absolute inset-0 z-10 h-full w-full" data-hero-hands />
+          {/* captions for the handshake */}
+          {HAND_LABELS.map(({ text, left }) => (
+            <span
+              key={text}
+              aria-hidden
+              className={`pointer-events-none absolute top-[calc(50%+min(12.5cqw,21.4cqh))] z-10 flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.16em] text-[#5b6170] opacity-0 ${
+                left ? "left-[calc(50%-min(25cqw,42.8cqh))]" : "right-[calc(50%-min(25cqw,42.8cqh))] flex-row-reverse"
+              }`}
+              data-hand-label
+            >
+              <span className={`h-1.5 w-1.5 rounded-full ${left ? "bg-[#c58ad8]" : "bg-[#615fff]"}`} />
+              {text}
+            </span>
+          ))}
           <HeroIntro />
         </div>
 

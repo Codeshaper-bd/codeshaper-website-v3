@@ -984,6 +984,15 @@ form[data-show-errors="true"] :invalid {
   opacity: 0;
   visibility: hidden;
 }
+/* intro fog clouds drift slowly (Hero.tsx) */
+@keyframes fog-drift {
+  from {
+    transform: translate3d(-4%, 2%, 0) scale(1);
+  }
+  to {
+    transform: translate3d(5%, -3%, 0) scale(1.12);
+  }
+}
 /* intro cursor cue: the mouse wheel rolls down */
 @keyframes intro-wheel {
   0% { transform: translate(-50%, 0); opacity: 1; }
@@ -992,11 +1001,6 @@ form[data-show-errors="true"] :invalid {
 }
 .intro-wheel {
   animation: intro-wheel 1.4s ease-in-out infinite;
-}
-/* intro custom cursor active: hide the system cursor on the stage only */
-[data-hero][data-cursor] [data-hero-stage],
-[data-hero][data-cursor] [data-hero-stage] * {
-  cursor: none !important;
 }
 /* the top bar arrives with the hero copy (HeroIntro.tsx) */
 body:has([data-hero][data-intro]) [data-site-header] {
