@@ -1338,3 +1338,17 @@ body:has([data-hero][data-intro]) [data-site-header] {
 .mega-chip:hover {
   color: #4f46e5 !important;
 }
+
+/* brand mark pearls: a slow, slight float (MarkSvg pearls) */
+@keyframes mark-pearl {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-1.2px); }
+}
+.mark-pearl {
+  transform-box: fill-box;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .mark-pearl {
+    animation: mark-pearl 5.2s ease-in-out infinite;
+  }
+}

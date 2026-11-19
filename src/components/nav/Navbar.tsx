@@ -239,7 +239,7 @@ export default function Navbar() {
               className={`group/logo relative flex shrink-0 items-center ${docked ? "dock-item mr-1 rounded-full p-1.5 transition-colors duration-200 hover:bg-white/70" : ""}`}
             >
               {docked ? (
-                <MarkSvg premium className="h-8 w-8 drop-shadow-[0_3px_8px_rgba(97,95,255,0.35)]" id="dock-mark-mask" />
+                <MarkSvg premium pearls className="h-8 w-8 drop-shadow-[0_3px_8px_rgba(97,95,255,0.35)]" id="dock-mark-mask" />
               ) : (
                 // The brand mark (the same mark the hero intro assembles in
                 // 3D; it flies here and lands in this slot) + the wordmark.
@@ -252,7 +252,7 @@ export default function Navbar() {
                       className="pointer-events-none absolute inset-0 rounded-full border-2 border-[#615fff]/40 opacity-0"
                       data-header-ring
                     />
-                    <MarkSvg premium className="relative h-full w-full drop-shadow-[0_4px_10px_rgba(97,95,255,0.35)] transition-[filter,transform] duration-300 ease-out group-hover/logo:-translate-y-px group-hover/logo:drop-shadow-[0_6px_14px_rgba(97,95,255,0.5)]" id="header-mark-mask" />
+                    <MarkSvg premium pearls className="relative h-full w-full drop-shadow-[0_4px_10px_rgba(97,95,255,0.35)] transition-[filter,transform] duration-300 ease-out group-hover/logo:-translate-y-px group-hover/logo:drop-shadow-[0_6px_14px_rgba(97,95,255,0.5)]" id="header-mark-mask" />
                   </span>
                   <span className="font-display text-[23px] font-extrabold leading-none tracking-[-0.02em] text-[#0b0f19]" data-nav-wordmark>
                     CodeShaper
