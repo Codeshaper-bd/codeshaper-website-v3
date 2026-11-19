@@ -128,6 +128,7 @@ export default function HeroIntro() {
             invalidateOnRefresh: true,
             onUpdate: (self) => {
               handle?.setProgress(clamp(self.progress / 0.33));
+              handle?.setCalm(clamp((self.progress - 0.54) / 0.06));
               shiftHeader();
             },
             onRefresh: () => shiftHeader(),
@@ -167,15 +168,35 @@ export default function HeroIntro() {
         // whole, so the logo and the handshake complete together
         tl.to(handState, { t: 1, duration: 0.22, onUpdate: drive }, 0.2);
         tl.fromTo(caption, { opacity: 0 }, { opacity: 1, duration: 0.06, stagger: 0.02 }, 0.36);
-        tl.to(caption, { opacity: 0, duration: 0.05 }, 0.62);
-        // Act 3: the hands dissolve upward, the mark sinks back and dissolves,
-        // the mist lifts.
-        tl.to(handState, { t: 2, duration: 0.12, onUpdate: drive }, 0.62);
-        tl.set(stage, { pointerEvents: "none" }, 0.66);
-        tl.to(stage, { scale: 0.62, yPercent: -6, duration: 0.14, ease: "power2.in" }, 0.66);
-        tl.to(stage, { opacity: 0, duration: 0.08 }, 0.72);
-        tl.to(q("[data-hero-fog]"), { opacity: 0, duration: 0.14 }, 0.66);
-        tl.fromTo(q("[data-hero-light]"), { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 0.68);
+        tl.to(caption, { opacity: 0, duration: 0.05 }, 0.56);
+        // Act 3: as soon as scrolling resumes after the handshake, the hands
+        // dissolve upward while the mark lifts off and arcs up into the
+        // header, where it becomes the logo; the glass nav arrives meanwhile.
+        tl.to(handState, { t: 2, duration: 0.12, onUpdate: drive }, 0.56);
+        const headerMark = header?.querySelector<HTMLElement>("[data-header-mark]") ?? null;
+        const ring = header?.querySelector<HTMLElement>("[data-header-ring]") ?? null;
+        const card = stage.parentElement!;
+        /** From the card centre (the 3D mark) to the header's mark slot. Layout
+         *  boxes only (the card is never scaled), so it is right at any scroll. */
+        const flight = () => {
+          if (!headerMark) return { x: 0, y: -card.clientHeight * 0.06, scale: 0.62 };
+          const c = card.getBoundingClientRect();
+          const m = headerMark.getBoundingClientRect();
+          const markPx = Math.min((c.width * 220) / 1200, (c.height * 220) / 700) * 0.92;
+          return {
+            x: m.left + m.width / 2 - (c.left + c.width / 2),
+            y: m.top + m.height / 2 - (c.top + c.height / 2),
+            // the 3D mark fits 72 units into markPx; the SVG fits 64 into its box
+            scale: (m.height * 72) / 64 / markPx,
+          };
+        };
+        tl.set(stage, { pointerEvents: "none" }, 0.56);
+        // An arc, not a straight line: it rises first (y eases out) and then
+        // glides across (x eases in and out), shrinking as it goes.
+        tl.to(stage, { y: () => flight().y, duration: 0.16, ease: "power2.out" }, 0.56);
+        tl.to(stage, { x: () => flight().x, duration: 0.16, ease: "sine.inOut" }, 0.56);
+        tl.to(stage, { scale: () => flight().scale, duration: 0.16, ease: "power2.inOut" }, 0.56);
+        tl.fromTo(q("[data-hero-light]"), { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 0.64);
         // The copy rises in, then the globe comes up from the bottom edge.
         tl.fromTo(
           q("[data-reveal]"),
@@ -184,7 +205,37 @@ export default function HeroIntro() {
           0.76,
         );
         tl.fromTo(q("[data-reveal-globe]"), { autoAlpha: 0, y: 90 }, { autoAlpha: 1, y: 0, duration: 0.14, ease: "power2.out" }, 0.8);
-        if (header) tl.fromTo(header, { autoAlpha: 0, y: -10 }, { autoAlpha: 1, y: 0, duration: 0.08, ease: "power2.out" }, 0.82);
+        // the top bar arrives while the mark is in flight (no slide, so the
+        // landing slot stays put), its own mark hidden until the 3D one lands
+        // The top bar is shown as a container; each part arrives on its own:
+        // the glass capsule slides in at the right, its links one by one
+        // (left to right), "Book a Call" last, the wordmark beside the slot,
+        // all done as the mark lands.
+        const capsule = header?.querySelector<HTMLElement>("[data-nav-capsule]") ?? null;
+        const navItems = capsule ? [...capsule.querySelectorAll<HTMLElement>("nav > div > ul > li")] : [];
+        const cta = header?.querySelector<HTMLElement>("[data-nav-cta]") ?? null;
+        const wordmark = header?.querySelector<HTMLElement>("[data-nav-wordmark]") ?? null;
+        if (header) tl.fromTo(header, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.02 }, 0.58);
+        // (clearProps: no transform may stay on an ancestor of the fixed mega
+        // panels, or they would position against it instead of the viewport)
+        // once the logo has landed, the links and "Book a Call" appear,
+        // left to right
+        if (navItems.length)
+          tl.fromTo(
+            navItems,
+            { opacity: 0, y: 6 },
+            { opacity: 1, y: 0, duration: 0.035, stagger: 0.01, ease: "power2.out", clearProps: "transform" },
+            0.745,
+          );
+        if (cta) tl.fromTo(cta, { autoAlpha: 0, y: 6 }, { autoAlpha: 1, y: 0, duration: 0.035, ease: "power2.out", clearProps: "transform" }, 0.785);
+        // the wordmark slides out from beside the logo once it has landed
+        // (earlier, the mark would fly across it)
+        if (wordmark)
+          tl.fromTo(wordmark, { opacity: 0, x: -14 }, { opacity: 1, x: 0, duration: 0.05, ease: "power2.out", clearProps: "transform" }, 0.716);
+        // the landing: the flat logo takes over, one soft ring ripples out
+        if (headerMark) tl.fromTo(headerMark, { opacity: 0 }, { opacity: 1, duration: 0.012 }, 0.714);
+        tl.to(stage, { opacity: 0, duration: 0.012 }, 0.72);
+        if (ring) tl.fromTo(ring, { opacity: 0.6, scale: 0.7 }, { opacity: 0, scale: 2.1, duration: 0.06, ease: "power2.out" }, 0.72);
         tl.set(column, { pointerEvents: "auto" }, 0.86);
         tl.to({}, { duration: 0.04 }, 0.96);
 
@@ -227,7 +278,7 @@ export default function HeroIntro() {
           cueRaf = 0;
           if (!cue || !pill) return;
           const pr = trigger.progress;
-          const nowActive = inside && !overFooter && pr < 0.66;
+          const nowActive = inside && !overFooter && pr < 0.56;
           if (nowActive !== active) {
             active = nowActive;
             if (active) {
@@ -286,6 +337,9 @@ export default function HeroIntro() {
           document.documentElement.removeEventListener("pointerleave", onOut);
           document.documentElement.style.removeProperty("--intro-shift");
           if (header) gsap.set(header, { clearProps: "all" });
+          if (headerMark) gsap.set(headerMark, { clearProps: "all" });
+          gsap.set([capsule, cta, wordmark, ...navItems].filter(Boolean), { clearProps: "all" });
+          if (ring) gsap.set(ring, { clearProps: "all" });
           column.removeEventListener("focusin", onFocus);
           skip?.removeEventListener("click", onSkip);
           tl.scrollTrigger?.kill();

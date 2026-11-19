@@ -6,8 +6,9 @@ import { useEffect, useRef } from "react";
  * Faint code glyphs drifting upward behind the intro (ported from the
  * Codeshaper Astro build). Where the pointer moves they surface in a wave,
  * brighter and pushed aside, then settle. One decorative 2D canvas; the
- * pointer is read from the window so it never blocks anything. Starts only
- * while the intro runs ([data-hero][data-intro]); pauses off screen and in hidden
+ * pointer is read from the window so it never blocks anything. Runs
+ * behind the hero and its intro; a still frame on touch, none under reduced
+ * motion; pauses off screen and in hidden
  * tabs.
  */
 const GLYPHS = ["{", "}", "<", ">", "/>", "</", "=>", ";", "()", "[]", "#", "&&", "::", "01", "fn", "=", "*", "$"];
@@ -24,7 +25,9 @@ export default function HeroGlyphs() {
     const canvas = ref.current;
     const card = canvas?.parentElement;
     const ctx = canvas?.getContext("2d");
-    if (!canvas || !card || !ctx || !canvas.closest("[data-intro]")) return;
+    if (!canvas || !card || !ctx || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    // touch / no hover: one still frame (no drift, no pointer wave)
+    const live = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
 
     let glyphs: Glyph[] = [];
     let w = 0;
@@ -33,13 +36,13 @@ export default function HeroGlyphs() {
     const trail: { x: number; y: number; t: number }[] = [];
 
     const seed = () => {
-      const count = Math.round((w * h) / 15000);
+      const count = Math.round((w * h) / 11000);
       glyphs = Array.from({ length: count }, () => ({
         x: Math.random() * w,
         y: Math.random() * h,
         vy: 0.08 + Math.random() * 0.16,
-        size: 11 + Math.random() * 6,
-        base: 0.05 + Math.random() * 0.06,
+        size: 12 + Math.random() * 7,
+        base: 0.08 + Math.random() * 0.08,
         text: GLYPHS[Math.floor(Math.random() * GLYPHS.length)],
         tint: Math.random() < 0.55 ? BRAND : INK,
         ox: 0,
@@ -57,7 +60,7 @@ export default function HeroGlyphs() {
         ctx.save();
         ctx.translate(g.x + g.ox, g.y + g.oy);
         ctx.rotate(g.rot);
-        ctx.globalAlpha = Math.min(0.42, g.base + g.glow * 0.36);
+        ctx.globalAlpha = Math.min(0.5, g.base + g.glow * 0.38);
         ctx.fillStyle = g.tint;
         ctx.font = `600 ${g.size}px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace`;
         ctx.fillText(g.text, 0, 0);
@@ -109,7 +112,7 @@ export default function HeroGlyphs() {
       if (!disposed && visible && document.visibilityState === "visible") raf = requestAnimationFrame(step);
     };
     const kick = () => {
-      if (!raf && !disposed) raf = requestAnimationFrame(step);
+      if (live && !raf && !disposed) raf = requestAnimationFrame(step);
     };
 
     resize();

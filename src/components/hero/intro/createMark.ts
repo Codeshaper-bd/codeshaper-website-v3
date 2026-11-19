@@ -49,6 +49,9 @@ import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment
 
 export interface MarkHandle {
   setProgress: (p: number) => void;
+  /** 0..1: while the mark flies to the header it settles (no pointer tilt,
+   *  no glow, fully assembled), so it lands exactly on the flat logo. */
+  setCalm: (c: number) => void;
   dispose: () => void;
 }
 
@@ -186,7 +189,7 @@ export function createMark(o: MarkOptions): MarkHandle {
     renderer = new WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'low-power' });
   } catch {
     o.onFail();
-    return { setProgress() {}, dispose() {} };
+    return { setProgress() {}, setCalm() {}, dispose() {} };
   }
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.75));
   renderer.setClearColor(0x000000, 0);
@@ -376,6 +379,7 @@ export function createMark(o: MarkOptions): MarkHandle {
   const pearl = new Color('#f1effb');
   const brand = new Color(o.color);
   let progress = 0;
+  let calm = 0;
   let shown = 0; // eased progress
   const pointer = new Vector2(0, 0);
   const tilt = new Vector2(0, 0);
@@ -415,6 +419,7 @@ export function createMark(o: MarkOptions): MarkHandle {
     const dt = Math.min(0.05, (now - last) / 1000);
     last = now;
     shown += (progress - shown) * 0.12;
+    if (calm > 0 && progress >= 1) shown = 1; // never in pieces mid-flight
     if (shown > LOCK && (dragged || hovered)) {
       dragged = null;
       hovered = null;
@@ -432,8 +437,8 @@ export function createMark(o: MarkOptions): MarkHandle {
     const isWhole = assembled() && settled;
     whole.visible = isWhole;
     tilt.lerp(pointer, 0.06);
-    mark.rotation.y = tilt.x * 0.32 + (1 - shown) * Math.sin(t * 0.25) * 0.15;
-    mark.rotation.x = -tilt.y * 0.22;
+    mark.rotation.y = (tilt.x * 0.32 + (1 - shown) * Math.sin(t * 0.25) * 0.15) * (1 - calm);
+    mark.rotation.x = -tilt.y * 0.22 * (1 - calm);
 
     for (const piece of pieces) {
       const local = ease(clamp((shown - piece.delay) / (1 - 0.45)));
@@ -528,7 +533,7 @@ export function createMark(o: MarkOptions): MarkHandle {
     const cm = wholeCursor.material as MeshPhysicalMaterial;
     cm.emissive.set(0xffffff);
     cm.emissiveIntensity = isWhole && Math.sin(t * 5) > 0 ? 0.35 : 0;
-    (glow.material as MeshBasicMaterial).opacity = 0.2 + shown * 0.6;
+    (glow.material as MeshBasicMaterial).opacity = (0.2 + shown * 0.6) * (1 - calm);
 
     renderer.render(scene, camera);
 
@@ -675,6 +680,10 @@ export function createMark(o: MarkOptions): MarkHandle {
   });
 
   return {
+    setCalm(c) {
+      calm = clamp(c);
+      kick();
+    },
     setProgress(p) {
       progress = clamp(p);
       kick();

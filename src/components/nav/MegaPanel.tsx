@@ -3,60 +3,51 @@
 import Link from "next/link";
 import * as Nav from "@radix-ui/react-navigation-menu";
 import { ArrowRight } from "lucide-react";
-import {
-  SERVICE_GROUPS,
-  SERVICES_QUICK_ACCESS,
-  SERVICES_FEATURED,
-  MEGA_MENU_FOOTER,
-  groupDescriptor,
-  servicePath,
-} from "@/data/services";
+import { SERVICE_GROUPS, SERVICES_FEATURED, MEGA_MENU_FOOTER, groupDescriptor, servicePath } from "@/data/services";
 import { Icon } from "@/lib/icons";
 import EngageCard from "./EngageCard";
+import { tone } from "./tones";
 
 /**
- * Services mega panel — 3 columns, everything visible at once (no
- * click-through, no active-pillar state). Left: How We Engage (shared with
- * Industries). Center: the 5 service groups as a flat list. Right: a featured
- * AI callout + quick-access chips. Footer: count + two links.
+ * Services mega panel: compact, glass (globals.css "Nav glass details").
+ * Three zones: How we engage (a glass box, left), the 5 service groups
+ * (one-line descriptor each), and a featured AI card in dark glass. A slim glass
+ * footer with one quiet link and one button. The quick-access chips were
+ * dropped: they repeated links already in the list.
  */
 export default function MegaPanel() {
   return (
-    <div className="mx-auto max-w-7xl p-5">
-      <div className="grid grid-cols-[0.95fr_1.08fr_270px] gap-4">
+    <div className="p-2.5">
+      <div className="grid grid-cols-[1fr_1.25fr_236px] gap-2">
         <EngageCard />
 
-        {/* Center — Core Services */}
-        <div className="menu-col min-w-0">
-          <p className="mega-col-label mb-3 px-1">Core Services</p>
+        {/* Services */}
+        <div className="menu-col min-w-0 p-1.5">
+          <p className="mega-col-label mb-2 px-2">Services</p>
           <ul>
-            {SERVICE_GROUPS.map((group) => (
+            {SERVICE_GROUPS.map((group, i) => (
               <li key={group.slug}>
                 <Nav.Link asChild>
-                  <Link href={servicePath(group.slug)} className="mega-row group flex items-center gap-3.5 rounded-xl p-2.5">
-                    <span className="mega-icon-tile flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-aurora-indigo">
-                      <Icon name={group.icon} size={17} />
+                  <Link href={servicePath(group.slug)} className="mega-row group flex items-center gap-3 px-2 py-2">
+                    <span className="mega-icon-tile flex h-8 w-8 shrink-0 items-center justify-center rounded-[10px]" style={tone(i)}>
+                      <Icon name={group.icon} size={15} />
                     </span>
                     <span className="min-w-0 flex-1">
-                      <span className="flex items-center gap-2">
-                        <span className="mega-row-name font-urbanist text-base font-semibold leading-snug text-ink transition-colors duration-150">
+                      <span className="flex items-center gap-1.5">
+                        <span className="mega-row-name truncate font-urbanist text-[14.5px] font-semibold leading-tight text-ink">
                           {group.name}
                         </span>
                         {group.flagship && (
-                          <span className="shrink-0 rounded-full border border-hairline px-1.5 py-px font-urbanist text-[10px] leading-tight text-aurora-amber-dark">
+                          <span className="shrink-0 rounded-full bg-[#615fff]/10 px-1.5 py-px font-urbanist text-[10px] font-semibold leading-tight text-[#4f46e5]">
                             New
                           </span>
                         )}
                       </span>
-                      <span className="mt-0.5 block truncate font-urbanist text-[13px] leading-snug text-ink-dim">
+                      <span className="mt-px block truncate font-urbanist text-[12px] leading-snug text-ink-dim">
                         {groupDescriptor(group)}
                       </span>
                     </span>
-                    <ArrowRight
-                      size={15}
-                      strokeWidth={1.75}
-                      className="mega-svc-arrow shrink-0 text-ink-faint transition-all duration-200"
-                    />
+                    <ArrowRight size={14} strokeWidth={1.75} className="mega-svc-arrow shrink-0 text-ink-faint" />
                   </Link>
                 </Nav.Link>
               </li>
@@ -64,57 +55,46 @@ export default function MegaPanel() {
           </ul>
         </div>
 
-        {/* Right — Featured + Quick access */}
-        <div className="menu-col">
-          <p className="mega-col-label mb-3 px-1">Featured</p>
+        {/* Featured, dark glass */}
+        <div className="menu-col p-1">
           <Nav.Link asChild>
-            <Link href={SERVICES_FEATURED.href} className="mega-feature-card group mb-5 block rounded-2xl p-4">
-              <span className="mb-3.5 flex h-9 w-9 items-center justify-center rounded-xl bg-white/[0.12] text-white">
-                <Icon name={SERVICES_FEATURED.icon} size={17} />
+            <Link href={SERVICES_FEATURED.href} className="mega-feature-card group flex h-full flex-col rounded-[18px] p-4">
+              <span className="mb-3 flex h-8 w-8 items-center justify-center rounded-[10px] bg-white/10 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.18)]">
+                <Icon name={SERVICES_FEATURED.icon} size={15} />
               </span>
-              <span className="mb-1.5 block font-urbanist text-[10.5px] font-bold uppercase tracking-[0.1em] text-white/50">
+              <span className="mb-1 block font-urbanist text-[10px] font-bold uppercase tracking-[0.12em] text-white/50">
                 {SERVICES_FEATURED.eyebrow}
               </span>
-              <span className="block font-urbanist text-[17px] font-bold leading-tight tracking-tight text-white">
+              <span className="block font-urbanist text-[16px] font-bold leading-tight tracking-tight text-white">
                 {SERVICES_FEATURED.title}
               </span>
-              <span className="mt-1.5 block font-urbanist text-[13.5px] leading-relaxed text-white/85">
-                {SERVICES_FEATURED.desc}
+              <span className="mt-1.5 block font-urbanist text-[12.5px] leading-relaxed text-white/75">{SERVICES_FEATURED.desc}</span>
+              <span className="mt-auto inline-flex items-center gap-1 pt-4 font-urbanist text-[12.5px] font-semibold text-white">
+                Learn more
+                <ArrowRight size={13} strokeWidth={2} className="transition-transform duration-200 group-hover:translate-x-0.5" />
               </span>
             </Link>
           </Nav.Link>
-          <p className="menu-section-label font-urbanist mb-2.5 px-1">Quick access</p>
-          <div className="flex flex-wrap gap-1.5">
-            {SERVICES_QUICK_ACCESS.map((c) => (
-              <Nav.Link asChild key={c.href}>
-                <Link href={c.href} className="mega-chip inline-flex items-center rounded-full px-3 py-1.5 font-urbanist text-[12.5px] font-semibold">
-                  {c.label}
-                </Link>
-              </Nav.Link>
-            ))}
-          </div>
         </div>
       </div>
 
-      {/* Footer bar */}
-      <div className="mt-5 flex flex-wrap items-center justify-between gap-4 rounded-2xl bg-canvas-raised px-5 py-3.5">
-        <p className="font-urbanist text-[12.5px] text-ink-dim">
+      {/* Footer */}
+      <div className="mega-foot mt-2 flex items-center justify-between gap-4 rounded-[14px] px-3.5 py-2">
+        <p className="font-urbanist text-[12px] text-ink-dim">
           <span className="font-semibold text-ink">{MEGA_MENU_FOOTER.count}</span>
-          <span className="mx-2 inline-block h-[3px] w-[3px] rounded-full bg-hairline-strong align-middle" aria-hidden />
+          <span className="mx-2 inline-block h-[3px] w-[3px] rounded-full bg-[#0b0f19]/20 align-middle" aria-hidden />
           {MEGA_MENU_FOOTER.tagline}
         </p>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3">
           <Nav.Link asChild>
-            <Link href="/case-studies" className="font-urbanist text-[13px] text-ink-dim transition-colors hover:text-ink">
-              View Case Studies →
+            <Link href="/case-studies" className="font-urbanist text-[12.5px] text-ink-dim transition-colors hover:text-ink">
+              Case studies
             </Link>
           </Nav.Link>
           <Nav.Link asChild>
-            <Link
-              href="/services"
-              className="rounded-full border border-aurora-indigo/30 bg-aurora-indigo/5 px-4 py-2 font-urbanist text-[13px] font-semibold text-aurora-violet transition-colors hover:border-aurora-violet hover:bg-aurora-violet hover:text-white"
-            >
-              Explore All Services →
+            <Link href="/services" className="mega-foot-btn inline-flex items-center gap-1 rounded-full px-3.5 py-1.5 font-urbanist text-[12.5px] font-semibold text-ink">
+              All services
+              <ArrowRight size={12} strokeWidth={2} />
             </Link>
           </Nav.Link>
         </div>

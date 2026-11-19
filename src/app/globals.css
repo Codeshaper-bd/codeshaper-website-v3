@@ -115,7 +115,7 @@ html {
 body {
   background: var(--color-canvas);
   color: var(--color-ink);
-  font-family: var(--font-urbanist);
+  font-family: var(--font-hero), ui-sans-serif, system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   overflow-x: clip;
 }
@@ -984,6 +984,17 @@ form[data-show-errors="true"] :invalid {
   opacity: 0;
   visibility: hidden;
 }
+/* brand mark: the "_" cursor blinks softly, like a live prompt (MarkSvg) */
+@keyframes mark-blink {
+  0%, 55% { opacity: 1; }
+  70%, 88% { opacity: 0.2; }
+  100% { opacity: 1; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .mark-cursor {
+    animation: mark-blink 1.4s ease-in-out infinite;
+  }
+}
 /* intro fog clouds drift slowly (Hero.tsx) */
 @keyframes fog-drift {
   from {
@@ -1009,4 +1020,268 @@ body:has([data-hero][data-intro]) [data-site-header] {
 }
 [data-intro] [data-hero-column] {
   pointer-events: none;
+}
+
+/* ── Nav glass details (the top bar itself is transparent) ───────────
+   Mega menus and dropdowns: frosted glass. Opaque enough (~85-90% white)
+   that content behind is never legible even where blur is unsupported,
+   with a bright top sheen, a light rim and a soft lifted shadow; they pop
+   in with a small scale from the top. */
+.mega-panel,
+.dropdown-panel {
+  background: linear-gradient(180deg, rgb(255 255 255 / 0.92), rgb(249 249 253 / 0.86)) !important;
+  -webkit-backdrop-filter: blur(28px) saturate(1.8);
+  backdrop-filter: blur(28px) saturate(1.8);
+  border: 1px solid rgb(255 255 255 / 0.85) !important;
+  box-shadow:
+    0 0 0 1px rgb(30 25 80 / 0.06),
+    inset 0 1px 0 #fff,
+    0 30px 80px -24px rgb(40 30 110 / 0.3),
+    0 8px 24px -10px rgb(11 15 25 / 0.1) !important;
+  transform-origin: 50% 0;
+}
+.dropdown-panel {
+  border-radius: 20px;
+  overflow: hidden;
+}
+.mega-panel::before,
+.dropdown-panel::before {
+  /* the top sheen */
+  inset-inline: 0 !important;
+  height: 140px !important;
+  background: radial-gradient(60% 100% at 30% 0%, rgb(255 255 255 / 0.75), rgb(255 255 255 / 0) 70%) !important;
+  pointer-events: none;
+}
+@keyframes menu-pop-in {
+  from { opacity: 0; transform: translateY(-6px) scale(0.975); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.mega-panel[data-state="open"],
+.dropdown-panel[data-state="open"] {
+  animation: menu-pop-in 260ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .mega-panel,
+  .dropdown-panel {
+    background: #fff !important;
+  }
+}
+
+/* Book a Call: a glossy dark capsule. A light top edge, a light sheen that
+   sweeps across on hover, a lift and a soft violet glow. */
+.cta-glossy {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  background: linear-gradient(180deg, #2c2f3d 0%, #141823 55%, #0b0f19 100%);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.22),
+    inset 0 -1px 0 rgb(0 0 0 / 0.35),
+    0 0 0 1px rgb(11 15 25 / 0.9),
+    0 8px 20px -8px rgb(11 15 25 / 0.5);
+  transition: transform 300ms cubic-bezier(0.22, 1, 0.36, 1), box-shadow 300ms ease;
+}
+.cta-glossy::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(110deg, transparent 30%, rgb(255 255 255 / 0.2) 50%, transparent 70%);
+  transform: translateX(-120%);
+  transition: transform 700ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.cta-glossy:hover {
+  transform: translateY(-1px);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.26),
+    inset 0 -1px 0 rgb(0 0 0 / 0.35),
+    0 0 0 1px rgb(11 15 25 / 0.9),
+    0 12px 28px -8px rgb(97 95 255 / 0.45);
+}
+.cta-glossy:hover::after {
+  transform: translateX(120%);
+}
+@media (prefers-reduced-motion: reduce) {
+  .cta-glossy,
+  .cta-glossy::after {
+    transition: none;
+  }
+  .mega-panel[data-state="open"],
+  .dropdown-panel[data-state="open"] {
+    animation: none;
+  }
+}
+
+/* Bottom dock: Apple-style liquid glass. A translucent body (strong blur,
+   boosted colour) that the page tints as it scrolls under, a light-catching
+   rim, a specular sheen along the top, and a soft floating shadow. At least
+   ~45% white so the links stay legible over any section; nearly solid
+   where backdrop blur is unsupported. */
+.dock-glass {
+  background: linear-gradient(180deg, rgb(255 255 255 / 0.66), rgb(246 246 252 / 0.48));
+  -webkit-backdrop-filter: blur(24px) saturate(1.9) brightness(1.04);
+  backdrop-filter: blur(24px) saturate(1.9) brightness(1.04);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.95),
+    inset 0 -1px 0 rgb(255 255 255 / 0.35),
+    0 0 0 1px rgb(30 25 80 / 0.08),
+    0 18px 50px -14px rgb(40 30 110 / 0.38),
+    0 4px 12px -4px rgb(11 15 25 / 0.12);
+}
+.dock-glass::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(120deg, rgb(255 255 255 / 0.95), rgb(170 160 235 / 0.28) 32%, rgb(170 160 235 / 0.1) 62%, rgb(255 255 255 / 0.85));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+}
+.dock-glass::after {
+  content: "";
+  position: absolute;
+  inset: 1px;
+  border-radius: inherit;
+  background: radial-gradient(70% 90% at 30% -30%, rgb(255 255 255 / 0.6), rgb(255 255 255 / 0) 60%);
+}
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .dock-glass {
+    background: rgb(255 255 255 / 0.94);
+  }
+}
+
+/* ── Mega menu / dropdown, glass details (compact redesign) ─────────── */
+.mega-panel {
+  border-radius: 26px !important;
+}
+.mega-col-label {
+  font-family: var(--font-urbanist), system-ui, sans-serif;
+  font-size: 10.5px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.14em !important;
+  text-transform: uppercase;
+  color: rgb(11 15 25 / 0.42) !important;
+}
+/* rows: a glass pill rises behind the hovered row */
+.mega-row {
+  border-radius: 12px !important;
+  background: transparent !important;
+  transform: none !important;
+  transition: background-color 180ms ease, box-shadow 180ms ease !important;
+}
+.mega-row:hover,
+.mega-row:focus-visible {
+  background: rgb(255 255 255 / 0.8) !important;
+  box-shadow: inset 0 1px 0 #fff, 0 1px 3px rgb(11 15 25 / 0.07), 0 0 0 1px rgb(255 255 255 / 0.6) !important;
+}
+.mega-row .mega-svc-arrow {
+  opacity: 0;
+  transform: translateX(-4px);
+  transition: opacity 180ms ease, transform 220ms cubic-bezier(0.22, 1, 0.36, 1) !important;
+}
+.mega-row:hover .mega-svc-arrow {
+  opacity: 1;
+  transform: translateX(0) !important;
+  color: #4f46e5;
+}
+/* small glass icon tiles */
+.mega-icon-tile {
+  color: #615fff !important;
+  background: linear-gradient(180deg, #ffffff, #f2f1fb) !important;
+  border: 1px solid rgb(255 255 255 / 0.95) !important;
+  box-shadow: inset 0 1px 0 #fff, 0 1px 2px rgb(11 15 25 / 0.08), 0 0 0 1px rgb(30 25 80 / 0.05) !important;
+  transition: box-shadow 200ms ease, color 200ms ease !important;
+}
+.mega-row:hover .mega-icon-tile,
+.menu-row:hover .mega-icon-tile {
+  color: #4f46e5 !important;
+  box-shadow: inset 0 1px 0 #fff, 0 3px 8px -2px rgb(97 95 255 / 0.35), 0 0 0 1px rgb(97 95 255 / 0.18) !important;
+  transform: none !important;
+}
+/* featured card: dark glass with a violet glow */
+.mega-feature-card {
+  background:
+    radial-gradient(120% 80% at 100% 0%, rgb(97 95 255 / 0.45), transparent 60%),
+    linear-gradient(160deg, #24273a 0%, #12141f 55%, #0b0f19 100%) !important;
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.14), 0 0 0 1px rgb(11 15 25 / 0.6), 0 12px 28px -12px rgb(40 30 110 / 0.55) !important;
+  transition: transform 300ms cubic-bezier(0.22, 1, 0.36, 1), box-shadow 300ms ease !important;
+}
+.mega-feature-card:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.18), 0 0 0 1px rgb(11 15 25 / 0.6), 0 18px 34px -12px rgb(97 95 255 / 0.55) !important;
+}
+/* chips and footer: glass */
+.mega-chip {
+  color: rgb(11 15 25 / 0.75) !important;
+  background: rgb(255 255 255 / 0.6) !important;
+  border: 1px solid rgb(255 255 255 / 0.9) !important;
+  box-shadow: 0 1px 2px rgb(11 15 25 / 0.06), 0 0 0 1px rgb(30 25 80 / 0.05) !important;
+  transition: background-color 180ms ease, color 180ms ease !important;
+}
+.mega-chip:hover {
+  color: #4f46e5 !important;
+  background: #fff !important;
+}
+.mega-foot {
+  background: rgb(255 255 255 / 0.5);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.9), 0 0 0 1px rgb(30 25 80 / 0.05);
+}
+.mega-foot-btn {
+  background: linear-gradient(180deg, #ffffff, #f4f3fb);
+  box-shadow: inset 0 1px 0 #fff, 0 1px 3px rgb(11 15 25 / 0.1), 0 0 0 1px rgb(30 25 80 / 0.08);
+  transition: box-shadow 200ms ease, color 200ms ease;
+}
+.mega-foot-btn:hover {
+  color: #4f46e5;
+  box-shadow: inset 0 1px 0 #fff, 0 4px 12px -4px rgb(97 95 255 / 0.4), 0 0 0 1px rgb(97 95 255 / 0.2);
+}
+/* compact dropdown rows: the same glass pill on hover */
+.dropdown-panel .menu-row::after {
+  background: rgb(255 255 255 / 0.85) !important;
+  box-shadow: inset 0 1px 0 #fff, 0 1px 3px rgb(11 15 25 / 0.07), 0 0 0 1px rgb(255 255 255 / 0.6);
+}
+.dropdown-panel {
+  border-radius: 18px !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  .mega-feature-card,
+  .mega-feature-card:hover {
+    transform: none !important;
+  }
+}
+
+/* tinted icon tiles: colour per item from --tone (nav/tones.ts) */
+.mega-icon-tile {
+  color: var(--tone, #615fff) !important;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--tone, #615fff) 9%, #fff), color-mix(in srgb, var(--tone, #615fff) 16%, #fff)) !important;
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.9), 0 1px 2px rgb(11 15 25 / 0.06), 0 0 0 1px color-mix(in srgb, var(--tone, #615fff) 16%, transparent) !important;
+}
+.mega-row:hover .mega-icon-tile,
+.menu-row:hover .mega-icon-tile {
+  color: var(--tone, #615fff) !important;
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.9), 0 4px 10px -3px color-mix(in srgb, var(--tone, #615fff) 45%, transparent), 0 0 0 1px color-mix(in srgb, var(--tone, #615fff) 28%, transparent) !important;
+}
+/* How we engage: a glass box inside the panel */
+.engage-box {
+  background: linear-gradient(180deg, rgb(255 255 255 / 0.78), rgb(246 245 252 / 0.6));
+  box-shadow: inset 0 1px 0 #fff, 0 0 0 1px rgb(30 25 80 / 0.06), 0 2px 6px -2px rgb(11 15 25 / 0.06);
+}
+
+/* ── Typography split ────────────────────────────────────────────────
+   Inter for reading: body copy, descriptions, menus, buttons and other
+   small text, including everything styled with the font-urbanist utility
+   (this unlayered rule wins over the utility). Urbanist stays for
+   headings (h1-h6, and everything inside them) and the wordmark
+   (.font-display). The homepage hero is the exception: its headline is
+   set in Inter on purpose (Hero.tsx). */
+.font-urbanist {
+  font-family: var(--font-hero), ui-sans-serif, system-ui, sans-serif;
+}
+:is(h1, h2, h3, h4, h5, h6):not([data-hero] *),
+:is(h1, h2, h3, h4, h5, h6):not([data-hero] *) *,
+.font-display,
+.font-display * {
+  font-family: var(--font-urbanist), ui-sans-serif, system-ui, sans-serif !important;
 }

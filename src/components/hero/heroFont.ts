@@ -1,8 +1,9 @@
 import { Inter } from "next/font/google";
 
 /**
- * Inter (variable) for the homepage hero copy only. The rest of the site
- * stays on Urbanist (see layout.tsx). next/font downloads the font at build
+ * Inter (variable): the reading font site-wide (paragraphs and small text;
+ * layout.tsx exposes --font-hero on <html>) and the homepage hero copy.
+ * Headings stay on Urbanist (globals.css "Typography split"). next/font downloads the font at build
  * time and self-hosts it, so visitors never request it from Google, and it
  * is preloaded only on pages that render the hero.
  *

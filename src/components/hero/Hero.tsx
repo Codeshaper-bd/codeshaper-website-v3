@@ -34,8 +34,6 @@ import { SERVED } from "./globe/servedCountries";
  * prompt that hands off to /contact), HeroGlobe and the intro.
  */
 const EYEBROW = "AI Native Software Solution Partner";
-const SUBTITLE =
-  "We design and engineer AI solutions, digital products, and scalable platforms that transform the way businesses operate and grow.";
 
 /**
  * Intro footer figures. Years, brands and reviews: owner-supplied
@@ -64,7 +62,11 @@ var r=document.currentScript&&document.currentScript.parentElement;if(!r)return;
 setTimeout(function(){if(!r.hasAttribute('data-intro-live'))r.removeAttribute('data-intro');},${process.env.NODE_ENV === "production" ? 6000 : 30000});
 }catch(e){}})();`;
 
-/** Intro fog: three large blurred lavender clouds drifting slowly. */
+/** The mist behind the hero (and its intro): pale lavender and sky. */
+const MIST =
+  "radial-gradient(ellipse 60% 55% at 38% 62%, rgba(214,206,255,0.55), rgba(214,206,255,0) 70%), radial-gradient(ellipse 50% 50% at 70% 40%, rgba(206,222,255,0.5), rgba(206,222,255,0) 70%), #f4f3f9";
+
+/** Hero fog: three large blurred lavender clouds drifting slowly. */
 const FOG_BLOBS = [
   { "--d": "18s", left: "4%", top: "38%", width: "46%", height: "52%", background: "rgb(196 186 236 / 0.45)" },
   { "--d": "23s", right: "2%", top: "30%", width: "44%", height: "56%", background: "rgb(186 200 240 / 0.42)" },
@@ -82,15 +84,22 @@ const NOISE = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'
 
 export default function Hero() {
   return (
-    <div className="bg-white p-3 sm:p-4" data-hero suppressHydrationWarning>
+    <div className="bg-white px-3 pb-3 sm:px-4 sm:pb-4" data-hero suppressHydrationWarning>
       <script dangerouslySetInnerHTML={{ __html: INTRO_SCRIPT }} />
       <section
         aria-labelledby="hero-heading"
-        className={`theme-light relative isolate flex flex-col overflow-hidden rounded-[28px] bg-[#ffffff] sm:rounded-[32px] lg:min-h-[calc(100svh-32px)] intro:h-[calc(100svh-32px)] ${heroInter.className}`}
+        className={`theme-light relative isolate flex flex-col overflow-hidden rounded-b-[28px] bg-[#ffffff] sm:rounded-b-[32px] lg:min-h-[calc(100svh-16px)] intro:h-[calc(100svh-16px)] ${heroInter.className}`}
       >
-        {/* flowing light (decorative; never intercepts pointer events) */}
+        {/* Background (decorative; never intercepts pointer events), the same
+            for the intro and the hero (owner request): a pale lavender mist,
+            the hero's flowing colour light as a faint tint inside it,
+            drifting fog clouds and code glyphs on top, then film grain. */}
         <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
-          <div className="hg-flow absolute -inset-x-[8%] -bottom-[4%] top-0" data-hero-light>
+          <div className="absolute inset-0" style={{ background: MIST }} />
+          {/* flowing light: the five palettes, still changing colour; multiply-blended,
+              so their white tops leave the mist untouched and only the colour shows */}
+          <div className="absolute inset-0" data-hero-light>
+          <div className="hg-flow absolute -inset-x-[8%] -bottom-[4%] top-0 opacity-[0.72] mix-blend-multiply">
             <div className="absolute inset-0">
               {PALETTES.map((p, i) => (
                 <div
@@ -109,18 +118,10 @@ export default function Hero() {
               }}
             />
           </div>
-          {/* keeps the reading area calm: the light fades out well below the copy */}
-          <div className="absolute inset-x-0 top-0 h-[40%] bg-gradient-to-b from-[#ffffff] via-[#ffffff]/75 to-transparent" />
-          {/* intro mist: pale lavender with drifting code glyphs; lifts as the hero arrives */}
-          <div className="absolute inset-0 hidden intro:block" data-hero-fog>
-            <div
-              className="absolute inset-0"
-              style={{
-                background:
-                  "radial-gradient(ellipse 60% 55% at 38% 62%, rgba(214,206,255,0.55), rgba(214,206,255,0) 70%), radial-gradient(ellipse 50% 50% at 70% 40%, rgba(206,222,255,0.5), rgba(206,222,255,0) 70%), #f4f3f9",
-              }}
-            />
-            {/* drifting lavender fog clouds (from the Codeshaper Astro build) */}
+          </div>
+          {/* drifting lavender fog clouds (from the Codeshaper Astro build) and
+              code glyphs */}
+          <div className="absolute inset-0" data-hero-fog>
             {FOG_BLOBS.map((b, i) => (
               <div
                 key={i}
@@ -128,6 +129,10 @@ export default function Hero() {
                 style={b as React.CSSProperties}
               />
             ))}
+            {/* the top melts into the page: white at the very top, fading into
+                the mist, so the card meets the white page edges without a seam
+                (glyphs stay above it) */}
+            <div className="absolute inset-x-0 top-0 h-[46%] bg-gradient-to-b from-white via-white/80 to-transparent" />
             <HeroGlyphs />
           </div>
           {/* film grain: static SVG noise tile, overlay-blended so it only
@@ -191,7 +196,7 @@ export default function Hero() {
         </div>
 
         <div
-          className="relative z-[2] mx-auto flex w-full max-w-[1040px] flex-col items-center px-5 xl:max-w-[1240px] pb-10 pt-[120px] text-center sm:px-8 sm:pt-[116px] lg:pb-8 lg:pt-[clamp(100px,14vh,130px)]"
+          className="relative z-[2] mx-auto flex w-full max-w-[1040px] flex-col items-center px-5 xl:max-w-[1240px] pb-10 pt-[120px] text-center sm:px-8 sm:pt-[116px] lg:pb-8 lg:pt-[clamp(150px,22vh,230px)]"
           data-hero-column
         >
           {/* Eyebrow: small bold pill, one line at every width */}
@@ -206,25 +211,18 @@ export default function Hero() {
           {/* two lines from lg (explicit breaks); natural wrapping below */}
           <h1
             id="hero-heading"
-            className="mt-6 text-balance text-[clamp(30px,8.2vw,36px)] font-[560] leading-[1.1] tracking-[-0.025em] text-[#0b0f19] sm:text-[42px] lg:text-[46px] xl:text-[52px] 2xl:text-[56px]"
+            className="mt-6 text-balance text-[clamp(26px,6.9vw,30px)] font-[560] leading-[1.14] tracking-[-0.025em] text-[#0b0f19] sm:text-[34px] lg:text-[38px] xl:text-[41px] 2xl:text-[44px]"
           >
             <span className="inline-block lg:block lg:whitespace-nowrap" data-reveal>
-              From AI automation to scalable{" "}
+              From AI automation to scalable software,
             </span>{" "}
             <span className="inline-block lg:block lg:whitespace-nowrap" data-reveal>
-              digital products, <span className="text-[#363d4f]">we build the future.</span>
+              <span className="text-[#363d4f]">we build what grows your business.</span>
             </span>
           </h1>
 
-          <p
-            data-reveal
-            className="mt-5 max-w-[560px] text-[16px] leading-[1.65] tracking-[-0.005em] text-[#383f50] sm:mt-6 sm:text-[17px]"
-          >
-            {SUBTITLE}
-          </p>
-
           {/* project prompt (replaces the CTA buttons and the review capsule) */}
-          <div className="mt-8 flex w-full justify-center sm:mt-9" data-reveal>
+          <div className="mt-9 flex w-full justify-center sm:mt-10" data-reveal>
             <HeroAsk />
           </div>
         </div>

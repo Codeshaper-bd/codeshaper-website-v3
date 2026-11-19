@@ -1,13 +1,14 @@
 "use client";
 
+import MarkSvg from "@/components/brand/MarkSvg";
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import * as Nav from "@radix-ui/react-navigation-menu";
-import { ChevronDown } from "lucide-react";
+import { ArrowRight, ChevronDown } from "lucide-react";
 import { SIMPLE_MENUS } from "@/lib/navigation";
 import { Icon } from "@/lib/icons";
 import MegaPanel from "./MegaPanel";
+import { tone } from "./tones";
 import IndustriesMegaPanel from "./IndustriesMegaPanel";
 import MobileMenu from "./MobileMenu";
 import MobileTabBar from "./MobileTabBar";
@@ -49,9 +50,9 @@ const DOCK_MIN_SCROLL = 160; // never dock while the top bar could still be on s
 const DOCK_AT = 0.35; // dock once the hero's bottom passes 35% of the viewport
 
 const triggerCls =
-  "nav-underline group flex select-none items-center gap-1 rounded px-3 py-2 font-urbanist text-base font-semibold text-ink-dim outline-none transition-colors hover:text-ink focus-visible:text-ink data-[state=open]:text-ink";
+  "group relative z-[1] flex select-none items-center gap-1 rounded-full px-3.5 py-[7px] font-urbanist text-[15px] font-semibold text-ink-dim outline-none transition-colors hover:text-ink focus-visible:bg-white/70 focus-visible:text-ink data-[state=open]:text-ink";
 const dockTriggerCls =
-  "group flex select-none items-center gap-1 rounded-xl px-3 py-2 font-urbanist text-[15px] font-semibold text-ink-dim outline-none transition-colors hover:bg-[#f2f3f6] hover:text-ink focus-visible:bg-[#f2f3f6] focus-visible:text-ink data-[state=open]:bg-[#f2f3f6] data-[state=open]:text-ink";
+  "group flex select-none items-center gap-1 rounded-full px-3.5 py-2 font-urbanist text-[15px] font-semibold text-ink-dim outline-none transition-[background-color,box-shadow,color] duration-200 hover:bg-white/75 hover:text-ink hover:shadow-[inset_0_1px_0_#fff,0_1px_3px_rgba(11,15,25,0.08)] focus-visible:bg-white/75 focus-visible:text-ink data-[state=open]:bg-white/80 data-[state=open]:text-ink data-[state=open]:shadow-[inset_0_1px_0_#fff,0_1px_3px_rgba(11,15,25,0.08)]";
 
 type Mode = "top" | "dock";
 type Phase = "idle" | "entering" | "leaving";
@@ -62,6 +63,27 @@ export default function Navbar() {
   const [openValue, setOpenValue] = useState("");
   const [sheet, setSheet] = useState<null | "menu" | "services">(null);
   const barRef = useRef<HTMLDivElement>(null);
+  // glass capsule: the white pill that slides behind the hovered link
+  const pillRef = useRef<HTMLSpanElement>(null);
+  const movePill = useCallback((e: React.SyntheticEvent) => {
+    const pill = pillRef.current;
+    const target = (e.target as HTMLElement).closest<HTMLElement>("a, button");
+    const box = e.currentTarget as HTMLElement;
+    if (!pill || !target || !box.contains(target) || target.closest(".mega-panel, .dropdown-panel")) return;
+    const b = box.getBoundingClientRect();
+    const r = target.getBoundingClientRect();
+    const first = pill.style.opacity !== "1";
+    if (first) pill.style.transition = "opacity 300ms"; // appear in place, then slide
+    pill.style.width = `${r.width}px`;
+    pill.style.transform = `translateX(${r.left - b.left}px)`;
+    pill.style.opacity = "1";
+    if (first) requestAnimationFrame(() => (pill.style.transition = ""));
+  }, []);
+  const hidePill = useCallback((e: React.SyntheticEvent) => {
+    const box = e.currentTarget as HTMLElement;
+    if (e.type === "blur" && box.contains((e as React.FocusEvent).relatedTarget as Node)) return;
+    if (pillRef.current) pillRef.current.style.opacity = "0";
+  }, []);
   const wantDock = useRef(false);
   const modeRef = useRef<Mode>("top");
   modeRef.current = mode;
@@ -192,38 +214,85 @@ export default function Navbar() {
           onAnimationEnd={onBarAnimationEnd}
           className={
             docked
-              ? `pointer-events-auto rounded-[20px] border border-[#e3e5eb] bg-white shadow-[0_1px_2px_rgba(11,15,25,0.05),0_16px_48px_-8px_rgba(11,15,25,0.22)] ${animCls}`
+              ? `pointer-events-auto relative rounded-full ${animCls}`
               : `mx-auto w-full ${animCls}`
           }
         >
+          {docked && (
+            // Apple-style liquid glass (globals.css .dock-glass); a background
+            // layer, never a filter on an ancestor of the fixed mega panels
+            <span aria-hidden className="dock-glass pointer-events-none absolute inset-0 rounded-full" />
+          )}
           <div
             className={
               docked
-                ? "flex h-[60px] items-center gap-1 pl-2.5 pr-2"
-                : "flex h-16 items-center justify-between px-3 sm:px-5 lg:px-8 xl:px-12"
+                ? "relative flex h-[60px] items-center gap-1 pl-2 pr-2"
+                : "relative flex h-16 items-center justify-between px-3 sm:px-5 lg:px-8 xl:px-12"
             }
           >
+            {/* Desktop top bar: transparent (owner preference), no bar,
+                border or shadow. The glass lives in the details: the hover
+                pill behind links, the glossy CTA and the frosted menus. */}
             <Link
               href="/"
               aria-label="CodeShaper home"
               {...item(0)}
-              className={`flex shrink-0 items-center ${docked ? "dock-item mr-1 rounded-xl p-1.5 transition-colors hover:bg-[#f2f3f6]" : ""}`}
+              className={`group/logo relative flex shrink-0 items-center ${docked ? "dock-item mr-1 rounded-full p-1.5 transition-colors duration-200 hover:bg-white/70" : ""}`}
             >
               {docked ? (
-                <Image src="/brand/favicon.png" alt="" width={32} height={32} className="h-8 w-8 rounded-[9px]" />
+                <MarkSvg premium className="h-8 w-8 drop-shadow-[0_3px_8px_rgba(97,95,255,0.35)]" id="dock-mark-mask" />
               ) : (
-                // alt intentionally lowercase-c "codeShaper": it describes the
-                // wordmark as rendered; the Link's aria-label is what screen
-                // readers announce (see Footer.tsx for the same reasoning).
-                <Image src="/brand/logo.png" alt="codeShaper" width={169} height={60} priority className="h-10 w-auto" />
+                // The brand mark (the same mark the hero intro assembles in
+                // 3D; it flies here and lands in this slot) + the wordmark.
+                // The cursor bar blinks like a live prompt; a ring ripples
+                // out once when the intro mark lands (HeroIntro.tsx).
+                <span className="flex items-center gap-2">
+                  <span className="relative block h-9 w-9" data-header-mark>
+                    <span
+                      aria-hidden
+                      className="pointer-events-none absolute inset-0 rounded-full border-2 border-[#615fff]/40 opacity-0"
+                      data-header-ring
+                    />
+                    <MarkSvg premium className="relative h-full w-full drop-shadow-[0_4px_10px_rgba(97,95,255,0.35)] transition-[filter,transform] duration-300 ease-out group-hover/logo:-translate-y-px group-hover/logo:drop-shadow-[0_6px_14px_rgba(97,95,255,0.5)]" id="header-mark-mask" />
+                  </span>
+                  <span className="font-display text-[23px] font-extrabold leading-none tracking-[-0.02em] text-[#0b0f19]" data-nav-wordmark>
+                    CodeShaper
+                  </span>
+                </span>
               )}
             </Link>
 
-            {docked && <span aria-hidden className="dock-item mx-1 h-6 w-px bg-[#e6e8ee]" style={{ "--i": 1 } as CSSProperties} />}
+            {docked && <span aria-hidden className="dock-item mx-1 h-6 w-px bg-[#0b0f19]/[0.09] shadow-[1px_0_0_rgba(255,255,255,0.75)]" style={{ "--i": 1 } as CSSProperties} />}
 
-            <div className={docked ? "block" : "ml-auto mr-8 hidden lg:block"}>
+            {/* Top: the links sit in one floating glass capsule (a strong blur
+                with boosted colour, a light top edge, a soft shadow; at least
+                55% white so the text stays legible over any colour; nearly
+                solid where backdrop blur is unsupported). Only the capsule is
+                blurred, never each link. A white pill slides behind the
+                hovered link. The glass is a background LAYER, not the
+                capsule itself: a backdrop-filter on an ancestor would become
+                the containing block of the fixed mega panels inside. */}
+            <div
+              className={
+                docked
+                  ? "block"
+                  : "relative mx-auto hidden rounded-full p-1 lg:block"
+              }
+              data-nav-capsule={docked ? undefined : ""}
+              onPointerOver={docked ? undefined : movePill}
+              onFocus={docked ? undefined : movePill}
+              onPointerLeave={docked ? undefined : hidePill}
+              onBlur={docked ? undefined : hidePill}
+            >
+              {!docked && (
+                <span
+                  ref={pillRef}
+                  aria-hidden
+                  className="pointer-events-none absolute left-0 top-1 h-[calc(100%-8px)] rounded-full border border-white/90 bg-white/75 opacity-0 shadow-[inset_0_1px_0_#fff,0_2px_8px_-2px_rgba(50,40,120,0.18)] transition-[transform,width,opacity] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]"
+                />
+              )}
               <Nav.Root value={openValue} onValueChange={setOpenValue}>
-                <Nav.List className={`flex items-center ${docked ? "gap-0.5" : "gap-1"}`}>
+                <Nav.List className={`flex items-center ${docked ? "gap-0.5" : "gap-0.5"}`}>
                   <Nav.Item value="services" {...item(2)}>
                     <Nav.Trigger className={tc}>
                       Services
@@ -234,7 +303,7 @@ export default function Navbar() {
                       />
                     </Nav.Trigger>
                     <Nav.Content
-                      className={`mega-panel fixed left-1/2 z-40 w-[min(calc(100vw-32px),1200px)] -translate-x-1/2 data-[state=closed]:hidden ${megaPos}`}
+                      className={`mega-panel fixed left-1/2 z-40 w-[min(calc(100vw-32px),1080px)] -translate-x-1/2 data-[state=closed]:hidden ${megaPos}`}
                       style={{ position: "fixed" }}
                     >
                       <MegaPanel />
@@ -251,7 +320,7 @@ export default function Navbar() {
                       />
                     </Nav.Trigger>
                     <Nav.Content
-                      className={`mega-panel fixed left-1/2 z-40 w-[min(calc(100vw-32px),1200px)] -translate-x-1/2 data-[state=closed]:hidden ${megaPos}`}
+                      className={`mega-panel fixed left-1/2 z-40 w-[min(calc(100vw-32px),1080px)] -translate-x-1/2 data-[state=closed]:hidden ${megaPos}`}
                       style={{ position: "fixed" }}
                     >
                       <IndustriesMegaPanel />
@@ -284,13 +353,13 @@ export default function Navbar() {
               </Nav.Root>
             </div>
 
-            {docked && <span aria-hidden className="dock-item mx-1.5 h-6 w-px bg-[#e6e8ee]" style={{ "--i": 7 } as CSSProperties} />}
+            {docked && <span aria-hidden className="dock-item mx-1.5 h-6 w-px bg-[#0b0f19]/[0.09] shadow-[1px_0_0_rgba(255,255,255,0.75)]" style={{ "--i": 7 } as CSSProperties} />}
 
-            <div {...item(8)} className={`flex items-center gap-3 ${docked ? "dock-item" : ""}`}>
+            <div {...item(8)} className={`relative flex items-center gap-3 ${docked ? "dock-item" : ""}`} data-nav-cta={docked ? undefined : ""}>
               {docked ? (
                 <Link
                   href="/contact"
-                  className="inline-flex h-10 items-center rounded-[12px] bg-aurora-violet px-4 font-urbanist text-[15px] font-semibold text-white transition-colors duration-200 hover:bg-aurora-violet-dark"
+                  className="cta-glossy inline-flex h-10 items-center rounded-full px-5 font-urbanist text-[15px] font-semibold text-white"
                 >
                   Book a Call
                 </Link>
@@ -298,9 +367,15 @@ export default function Navbar() {
                 <Magnetic>
                   <Link
                     href="/contact"
-                    className="inline-block rounded-full bg-aurora-violet px-4 py-2 font-urbanist text-[15px] font-semibold text-white transition-[background-color,transform] duration-300 hover:scale-[1.02] hover:bg-aurora-violet-dark sm:px-5 sm:text-base"
+                    className="cta-glossy group inline-flex h-10 items-center gap-1.5 rounded-full px-4 font-urbanist text-[15px] font-semibold text-white sm:px-5 sm:text-base lg:h-11 lg:pl-5 lg:pr-4"
                   >
                     Book a Call
+                    <ArrowRight
+                      size={16}
+                      strokeWidth={2}
+                      aria-hidden
+                      className="transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-x-0.5"
+                    />
                   </Link>
                 </Magnetic>
               )}
@@ -350,7 +425,7 @@ function DropdownItem({
         />
       </Nav.Trigger>
       <Nav.Content
-        className={`dropdown-panel absolute left-1/2 z-40 w-[300px] -translate-x-1/2 rounded-xl border border-hairline bg-white p-2 shadow-[0_20px_48px_rgba(11,15,25,0.14)] ${
+        className={`dropdown-panel absolute left-1/2 z-40 w-[248px] -translate-x-1/2 p-1.5 ${
           docked ? "bottom-full mb-6" : "top-full mt-3"
         }`}
       >
@@ -360,15 +435,15 @@ function DropdownItem({
               <Nav.Link asChild>
                 <Link
                   href={l.href}
-                  className="menu-row group flex items-center gap-3 rounded-lg px-2.5 py-2.5 font-urbanist text-base font-semibold text-ink-dim transition-colors hover:text-ink"
+                  className="menu-row group flex items-center gap-2.5 rounded-[12px] px-2 py-[7px] font-urbanist text-[14.5px] font-semibold text-ink-dim transition-colors hover:text-ink"
                 >
-                  <span className="icon-tile flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-hairline bg-canvas-raised text-aurora-indigo group-hover:border-aurora-indigo/45">
-                    <Icon name={l.icon} size={14} />
+                  <span className="mega-icon-tile flex h-7 w-7 shrink-0 items-center justify-center rounded-[9px]" style={tone(i + 3)}>
+                    <Icon name={l.icon} size={13} />
                   </span>
                   {l.label}
                 </Link>
               </Nav.Link>
-              {menu.dividerAfterIndex === i && <div className="my-1.5 h-px bg-hairline" aria-hidden />}
+              {menu.dividerAfterIndex === i && <div className="mx-2 my-1 h-px bg-[#0b0f19]/[0.07] shadow-[0_1px_0_rgba(255,255,255,0.8)]" aria-hidden />}
             </li>
           ))}
         </ul>

@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
+import { heroInter } from "@/components/hero/heroFont";
 import { SITE_URL, SITE_NAME } from "@/lib/site";
 import { COMPANY_POSITIONING } from "@/data/services";
 
@@ -9,6 +10,12 @@ import { COMPANY_POSITIONING } from "@/data/services";
  * <link rel="preload"> and a metric-matched fallback (size-adjust). That
  * keeps font swap from shifting layout. File lives in src/fonts and comes
  * from the @fontsource/urbanist package.
+ *
+ * Two families: Urbanist for headings and the wordmark (character), Inter
+ * for reading (paragraphs, descriptions, menus, buttons: tall x-height, open
+ * shapes, clear at 12-14px). Inter is self-hosted too (next/font/google
+ * downloads it at build time); its variable is --font-hero (heroFont.ts).
+ * The split itself is in globals.css ("Typography split").
  */
 const urbanist = localFont({
   src: [
@@ -89,7 +96,7 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={urbanist.variable}>
+    <html lang="en" className={`${urbanist.variable} ${heroInter.variable}`}>
       {/*
         suppressHydrationWarning is scoped to this element's own attributes
         only (not descendants) — it's the standard Next.js/React mitigation
