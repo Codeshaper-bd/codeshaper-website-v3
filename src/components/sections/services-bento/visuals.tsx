@@ -50,7 +50,7 @@ export function AgentsVisual() {
           <div className="ml-auto max-w-[88%] rounded-[12px] rounded-tr-[4px] bg-[#efeaff] px-3 py-2 text-[11px] leading-snug text-[#2a2470]">
             Sorry about that! A $48.00 refund is ready and a teammate is approving it now.
           </div>
-          <p className="flex items-center justify-end gap-1 text-[9.5px] text-[#8a90a0]">
+          <p className="flex items-center justify-end gap-1 text-[9.5px] text-[#6b7180]">
             <Sparkles size={9} /> Drafted by AI · checked by your team
           </p>
           <div className="h-7 rounded-lg border border-[#0b0f19]/[0.07] bg-[#fafbfc]" />
@@ -63,18 +63,18 @@ export function AgentsVisual() {
             <Bot size={13} strokeWidth={2} />
           </span>
           <span className="text-[11.5px] font-semibold text-[#0b0f19]">Refund agent</span>
-          <span className="ml-auto flex items-center gap-1 text-[10px] font-medium text-[#16a34a]">
+          <span className="ml-auto flex items-center gap-1 text-[10px] font-medium text-[#15803d]">
             <span className="h-1.5 w-1.5 rounded-full bg-[#22c55e]" /> Live
           </span>
         </div>
         <ul className="space-y-1.5 px-3.5 py-3">
           {steps.map((s) => (
             <li key={s.label} className="flex items-center gap-2 text-[11px] text-[#383f50]">
-              <span className="grid h-4 w-4 shrink-0 place-items-center rounded-full bg-[#dcfce7] text-[#16a34a]">
+              <span className="grid h-4 w-4 shrink-0 place-items-center rounded-full bg-[#dcfce7] text-[#15803d]">
                 <Check size={10} strokeWidth={3} />
               </span>
               {s.label}
-              <span className="ml-auto text-[10px] tabular-nums text-[#8a90a0]">{s.time}</span>
+              <span className="ml-auto text-[10px] tabular-nums text-[#6b7180]">{s.time}</span>
             </li>
           ))}
         </ul>
@@ -90,7 +90,7 @@ export function AgentsVisual() {
             </span>
           </div>
         </div>
-        <p className="border-t border-[#0b0f19]/[0.06] px-3.5 py-2 text-[9.5px] text-[#8a90a0]">Every step logged · tested · monitored</p>
+        <p className="border-t border-[#0b0f19]/[0.06] px-3.5 py-2 text-[9.5px] text-[#6b7180]">Every step logged · tested · monitored</p>
       </Panel>
     </div>
   );
@@ -109,7 +109,7 @@ export function SoftwareVisual() {
           </span>
           <div>
             <p className="text-[12px] font-semibold text-[#0b0f19]">Pro plan</p>
-            <p className="text-[10px] text-[#8a90a0]">Billed monthly · 24 seats</p>
+            <p className="text-[10px] text-[#6b7180]">Billed monthly · 24 seats</p>
           </div>
           <span className="ml-auto rounded-full bg-[#dcfce7] px-2 py-0.5 text-[9.5px] font-semibold text-[#15803d]">Active</span>
         </div>
@@ -122,7 +122,7 @@ export function SoftwareVisual() {
         <p className="text-[10px] font-medium text-[#6b7180]">Active users · last 30 days</p>
         <p className="mt-0.5 flex items-baseline gap-2">
           <span className="text-[19px] font-semibold tabular-nums tracking-tight text-[#0b0f19]">12,480</span>
-          <span className="text-[10px] font-semibold text-[#16a34a]">+18.4%</span>
+          <span className="text-[10px] font-semibold text-[#15803d]">+18.4%</span>
         </p>
         <div className="mt-3 flex h-[64px] items-end gap-[3px]">
           {BARS.map((h, i) => (
@@ -204,7 +204,7 @@ export function DesignVisual() {
     <div className="relative grid h-full w-full place-items-center">
       <div className="relative w-[210px] -rotate-[7deg] rounded-[26px] border border-white/70 bg-white/90 p-2 shadow-[0_30px_60px_-24px_rgba(90,40,120,0.45)] backdrop-blur-sm">
         <div className="rounded-[20px] bg-white p-4">
-          <p className="text-[9.5px] font-semibold uppercase tracking-[0.12em] text-[#8a90a0]">Step 2 of 3</p>
+          <p className="text-[9.5px] font-semibold uppercase tracking-[0.12em] text-[#6b7180]">Step 2 of 3</p>
           <p className="mt-1 text-[14px] font-semibold leading-tight text-[#0b0f19]">Set up your workspace</p>
           <div className="mt-2 h-1 overflow-hidden rounded-full bg-[#f1eef8]">
             <div className="h-full w-2/3 rounded-full bg-[#e96aa8]" />
@@ -225,7 +225,7 @@ export function DesignVisual() {
             ].map((p) => (
               <span key={p} className={`absolute h-[7px] w-[7px] border border-[#5b8cff] bg-white ${p}`} />
             ))}
-            <span className="absolute -bottom-6 left-1/2 -translate-x-1/2 whitespace-nowrap rounded bg-[#5b8cff] px-1.5 py-0.5 text-[9px] font-semibold text-white">
+            <span className="absolute -bottom-6 left-1/2 -translate-x-1/2 whitespace-nowrap rounded bg-[#2f62d9] px-1.5 py-0.5 text-[9px] font-semibold text-white">
               Button / Primary · 32
             </span>
           </div>
@@ -239,7 +239,7 @@ export function DesignVisual() {
       </div>
       <span className="absolute right-[16%] top-[54%] flex items-start">
         <MousePointer2 size={18} className="fill-[#e96aa8] text-white drop-shadow" />
-        <span className="ml-0.5 mt-3 rounded-full bg-[#e96aa8] px-2 py-0.5 text-[9.5px] font-semibold text-white">Designer</span>
+        <span className="ml-0.5 mt-3 rounded-full bg-[#c43d82] px-2 py-0.5 text-[9.5px] font-semibold text-white">Designer</span>
       </span>
     </div>
   );
@@ -295,7 +295,7 @@ export function WebVisual() {
         </span>
         <span>
           <span className="block text-[11px] font-semibold text-[#0b0f19]">Performance</span>
-          <span className="block text-[9.5px] text-[#8a90a0]">Core Web Vitals pass</span>
+          <span className="block text-[9.5px] text-[#6b7180]">Core Web Vitals pass</span>
         </span>
       </Panel>
 

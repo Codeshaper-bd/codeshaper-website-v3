@@ -147,7 +147,8 @@ function hasWebGL() {
   }
 }
 
-export default function HeroGlobe() {
+/** priority: the hero's copy is the page's largest element; load it eagerly. */
+export default function HeroGlobe({ priority = false }: { priority?: boolean }) {
   const stageRef = useRef<HTMLDivElement>(null);
   const handleRef = useRef<GlobeHandle | null>(null);
   const [mode, setMode] = useState<Mode>("static");
@@ -239,9 +240,19 @@ export default function HeroGlobe() {
       },
       { rootMargin: "200px 0px" }
     );
-    io.observe(stage);
+    // The live globe (three.js + WebGL) waits for the visitor's first
+    // interaction; until then the identical still image shows. Keeps the
+    // first load light (it is the page's largest element and its heaviest
+    // script), and real visitors move the mouse almost at once.
+    const EVENTS = ["pointermove", "pointerdown", "wheel", "scroll", "keydown", "touchstart"] as const;
+    const arm = () => {
+      EVENTS.forEach((ev) => window.removeEventListener(ev, arm));
+      if (!cancelled) io.observe(stage);
+    };
+    EVENTS.forEach((ev) => window.addEventListener(ev, arm, { passive: true, once: true }));
 
     return () => {
+      EVENTS.forEach((ev) => window.removeEventListener(ev, arm));
       cancelled = true;
       io.disconnect();
       const cic = (window as Window & { cancelIdleCallback?: (h: number) => void }).cancelIdleCallback;
@@ -282,11 +293,14 @@ export default function HeroGlobe() {
           {/* eslint-disable-next-line @next/next/no-img-element -- decorative, sized by CSS */}
           <img
             src={SPHERE_URL}
+            // smaller copies for smaller screens (the globe is ~490px wide on phones)
+            srcSet={`/media/hero-globe-900.webp 900w, /media/hero-globe-1200.webp 1200w, ${SPHERE_URL} 1800w`}
+            sizes="(min-width: 1024px) 880px, (min-width: 640px) 75vw, 490px"
             alt=""
             aria-hidden
             decoding="async"
-            loading="lazy"
-            fetchPriority="low"
+            loading={priority ? "eager" : "lazy"}
+            fetchPriority={priority ? "high" : "low"}
             className={`absolute inset-0 h-full w-full transition-opacity duration-500 ${live ? "opacity-0" : "opacity-100"}`}
           />
 

@@ -21,6 +21,8 @@ export default function SmoothScroll({ children }: { children: React.ReactNode }
     });
 
     lenis.on("scroll", ScrollTrigger.update);
+    // the hero intro moves the scroll position when it retires its pin
+    (window as Window & { __lenis?: Lenis }).__lenis = lenis;
 
     const raf = (time: number) => {
       lenis.raf(time * 1000);
@@ -31,6 +33,7 @@ export default function SmoothScroll({ children }: { children: React.ReactNode }
     return () => {
       gsap.ticker.remove(raf);
       lenis.destroy();
+      delete (window as Window & { __lenis?: Lenis }).__lenis;
     };
   }, [reduced]);
 

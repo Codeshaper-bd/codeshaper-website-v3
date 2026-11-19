@@ -1,3 +1,4 @@
+import LazyHydrate from "@/components/system/LazyHydrate";
 import SiteShell from "@/components/system/SiteShell";
 import Hero from "@/components/hero/Hero";
 import TrustStrip from "@/components/sections/TrustStrip";
@@ -53,20 +54,40 @@ export default function Home() {
       <TrustStrip />
       {/* <ServicePillars /> */}
       {/* <ServicesShowcase /> */}
-      <ServicesBento />
+      <LazyHydrate>
+        <ServicesBento />
+      </LazyHydrate>
       {/* <AiDevExcellence /> */}
-      <HumanAiFlow />
-      <Industries />
+      <LazyHydrate>
+        <HumanAiFlow />
+      </LazyHydrate>
+      <LazyHydrate>
+        <Industries />
+      </LazyHydrate>
       {/* TRIAL: accordion-style Case Studies (hyperline.co reference) being evaluated against the version below */}
       {/* <CaseStudiesExpand /> */}
-      <CaseStudiesFeatured />
+      <LazyHydrate>
+        <CaseStudiesFeatured />
+      </LazyHydrate>
       {/* <CaseStudies /> */}
-      <Testimonials />
-      <EngagementModels />
-      <TechStack />
-      <AboutStudio />
-      <FAQ />
-      <Locations />
+      <LazyHydrate>
+        <Testimonials />
+      </LazyHydrate>
+      <LazyHydrate>
+        <EngagementModels />
+      </LazyHydrate>
+      <LazyHydrate>
+        <TechStack />
+      </LazyHydrate>
+      <LazyHydrate>
+        <AboutStudio />
+      </LazyHydrate>
+      <LazyHydrate>
+        <FAQ />
+      </LazyHydrate>
+      <LazyHydrate>
+        <Locations />
+      </LazyHydrate>
     </SiteShell>
   );
 }

@@ -381,7 +381,6 @@ export default function AboutStudio() {
                   src="https://picsum.photos/seed/codeshaper-office-main/900/1100"
                   className="aspect-[4/5]"
                   radius={28}
-                  priority
                 />
                 <div className="absolute -bottom-8 -right-6 w-[52%] sm:-right-10">
                   <DraggablePhoto

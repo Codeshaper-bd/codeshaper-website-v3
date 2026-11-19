@@ -47,6 +47,7 @@ export default function HeroIntro() {
     let handle: MarkHandle | null = null;
     let cleanup: (() => void) | null = null;
     let disposeHands: (() => void) | null = null;
+    let finish = () => {};
 
     const giveUp = (why?: unknown) => {
       if (process.env.NODE_ENV !== "production") console.warn("[hero-intro] static fallback:", why);
@@ -132,6 +133,8 @@ export default function HeroIntro() {
               shiftHeader();
             },
             onRefresh: () => shiftHeader(),
+            // played once: on reaching the end it retires (no reverse replay)
+            onLeave: () => finish(),
           },
         });
 
@@ -158,11 +161,23 @@ export default function HeroIntro() {
         // the right, reaching for each other under the mark; a caption names
         // them, and the grip glows softly as they lock.
         const handsCanvas = hero.querySelector<HTMLCanvasElement>("[data-hero-hands]");
-        const hands = handsCanvas ? createHands(handsCanvas, { ...handColours(), animate: true }) : null;
-        hands?.set(0);
+        // building the hands samples ~10k dots: do it at idle time, not on
+        // the intro's first frame (they are only needed once shaping starts)
+        let hands: ReturnType<typeof createHands> | null = null;
+        const ricH = (window as Window & { requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => number }).requestIdleCallback;
+        const buildHands = () => {
+          if (hands || cancelled || !handsCanvas) return;
+          hands = createHands(handsCanvas, { ...handColours(), animate: true });
+          hands.set(handState.t);
+        };
+        if (ricH) ricH(buildHands, { timeout: 2500 });
+        else window.setTimeout(buildHands, 1200);
         disposeHands = () => hands?.dispose();
         const handState = { t: 0 };
-        const drive = () => hands?.set(handState.t);
+        const drive = () => {
+          if (!hands && handState.t > 0) buildHands();
+          hands?.set(handState.t);
+        };
         const caption = q("[data-hand-label]");
         // the hands gather while the mark forms and clasp soon after it is
         // whole, so the logo and the handshake complete together
@@ -241,6 +256,39 @@ export default function HeroIntro() {
 
         const trigger = tl.scrollTrigger!;
         const toEnd = () => window.scrollTo({ top: trigger.end + 1, behavior: "instant" });
+
+        // The intro plays once. On reaching its end, it locks the finished
+        // hero in place: the timeline jumps to its final state, the pin and
+        // its 250% of scroll space are removed, the scroll position moves up
+        // by the same distance (so nothing on screen jumps), and the 3D mark
+        // and hands are released. Scrolling back up shows the normal hero;
+        // the intro only plays again on a fresh visit.
+        let finished = false;
+        finish = () => {
+          if (finished) return;
+          finished = true;
+          const dist = trigger.end - trigger.start;
+          // hand over to the plain hero: it is built to look exactly like the
+          // intro's last frame, so tear the intro down (pin, timeline, inline
+          // styles, listeners) and drop the intro flags
+          cleanup?.();
+          cleanup = null;
+          root.removeAttribute("data-intro");
+          root.removeAttribute("data-intro-live");
+          // the top bar and its parts: no intro styles left behind
+          gsap.set([header, headerMark, ring, capsule, cta, wordmark, ...navItems].filter(Boolean), { clearProps: "all" });
+          const lenis = (window as Window & { __lenis?: { scrollTo: (y: number, o: object) => void } }).__lenis;
+          const y = Math.max(0, window.scrollY - dist);
+          if (lenis) lenis.scrollTo(y, { immediate: true, force: true });
+          else window.scrollTo({ top: y, behavior: "instant" });
+          root.setAttribute("data-intro-done", "");
+          disposeHands?.();
+          disposeHands = null;
+          handle?.dispose();
+          handle = null;
+          if (!cancelled) setStatus("static");
+          requestAnimationFrame(() => ScrollTrigger.refresh());
+        };
         // Keyboard and screen reader users land on the finished hero.
         const onFocus = () => {
           if (trigger.progress < 0.95) toEnd();

@@ -36,3 +36,5 @@ yarn-error.log*
 # git worktrees (local scratch, not part of history)
 /.worktrees
 /.superpowers
+/.next-prod/
+/.next-audit/

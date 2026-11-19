@@ -229,7 +229,7 @@ export default function Hero() {
 
         {/* globe: pinned to the bottom edge, cropped by the card */}
         <div className="relative z-[2] mt-auto" data-reveal-globe>
-          <HeroGlobe />
+          <HeroGlobe priority />
         </div>
       </section>
     </div>

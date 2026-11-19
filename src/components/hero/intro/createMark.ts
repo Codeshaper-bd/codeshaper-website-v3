@@ -320,6 +320,11 @@ export function createMark(o: MarkOptions): MarkHandle {
     metalness: 0.12,
     clearcoat: 1,
     clearcoatRoughness: 0.05,
+    // pearl light (matches the header logo): a soft thin-film iridescence
+    // that shifts pink / sky as the mark turns
+    iridescence: 0.55,
+    iridescenceIOR: 1.3,
+    iridescenceThicknessRange: [180, 420],
     envMapIntensity: 1.7,
     sheen: 0.6,
     sheenRoughness: 0.35,

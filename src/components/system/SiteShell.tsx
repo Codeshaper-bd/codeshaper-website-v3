@@ -3,6 +3,7 @@ import SmoothScroll from "@/components/system/SmoothScroll";
 import Navbar from "@/components/nav/Navbar";
 import Footer from "@/components/sections/Footer";
 import Reveal from "@/components/system/Reveal";
+import LazyHydrate from "@/components/system/LazyHydrate";
 
 /**
  * Shared page frame — Lenis smooth scroll, Navbar, Footer.
@@ -16,9 +17,12 @@ export default function SiteShell({ children, joinedFooter = false }: { children
     <SmoothScroll>
       <Navbar />
       <main>{children}</main>
-      <Reveal distance={0}>
-        <Footer joined={joinedFooter} />
-      </Reveal>
+      {/* the footer is far below: hydrated on approach (LazyHydrate) */}
+      <LazyHydrate>
+        <Reveal distance={0}>
+          <Footer joined={joinedFooter} />
+        </Reveal>
+      </LazyHydrate>
       {/* room for the fixed mobile tab bar (MobileTabBar) below the footer */}
       <div aria-hidden className="h-[calc(61px+env(safe-area-inset-bottom))] bg-light-surface lg:hidden" />
     </SmoothScroll>

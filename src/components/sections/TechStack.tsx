@@ -198,7 +198,7 @@ function Chip({ t }: { t: Tech }) {
   const Icon = t.icon;
   return (
     <span className="inline-flex h-[30px] shrink-0 items-center gap-1.5 whitespace-nowrap rounded-[9px] border border-[#0b0f19]/[0.08] bg-white px-2.5 font-urbanist text-[12.5px] font-semibold text-ink shadow-[0_1px_2px_rgba(11,15,25,0.05)]">
-      {Icon ? <Icon size={14} color={t.color} /> : <span className="text-[10px] font-bold" style={{ color: t.color === "#ffffff" ? "#0b0f19" : t.color }}>{t.badge}</span>}
+      {Icon ? <Icon size={14} color={t.color} /> : <span className="text-[10px] font-bold" style={{ color: t.color === "#ffffff" ? "#0b0f19" : `color-mix(in srgb, ${t.color} 62%, #000)` }}>{t.badge}</span>}
       {t.name}
     </span>
   );
