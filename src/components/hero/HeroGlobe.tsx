@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { RotateCcw } from "lucide-react";
 import { PALETTES, paletteDelay } from "./heroPalette";
-import type { GlobeHandle, HoverInfo, PinInfo } from "./globe/createGlobe";
+import type { GlobeHandle, HoverInfo, LabelPos, PinInfo } from "./globe/createGlobe";
 import { SERVED, COUNT_LABEL, HQ } from "./globe/servedCountries";
 
 /**
@@ -39,6 +39,73 @@ const IDS_URL = "/media/globe-countries.png";
 const STATIC_PIN = { fx: 0.6883, fy: 0.6891, visible: true };
 
 type Mode = "static" | "live" | "off";
+
+/**
+ * Floating sales labels (live mode). Countries with a known count, biggest
+ * first; that order is also the priority when two labels would overlap.
+ * Each label is a glass pill on a hairline stem, anchored to a dot on the
+ * country. While the globe turns, a label:
+ *  · fades in as its country turns to face the viewer and out toward the
+ *    edge (facing hysteresis, so nothing flickers at the threshold);
+ *  · shrinks slightly with depth, so the front of the globe reads closest;
+ *  · gives way to a bigger country's label instead of overlapping it;
+ *  · steps aside for the tooltip while its country is hovered.
+ * At most MAX_LABELS show at once, so the globe never becomes a word cloud.
+ */
+const LABELED = SERVED.filter((c) => c.count).sort((a, b) => (b.count ?? 0) - (a.count ?? 0));
+const MAX_LABELS = 6;
+const STEM = 14; // px from the surface dot to the pill
+const PILL_H = 26;
+const SHOW_AT = 0.42; // facing needed to appear…
+const KEEP_AT = 0.3; // …and to stay
+const nf = new Intl.NumberFormat("en-US");
+const smooth = (a: number, b: number, v: number) => {
+  const t = Math.min(1, Math.max(0, (v - a) / (b - a)));
+  return t * t * (3 - 2 * t);
+};
+
+function placeLabels(
+  els: (HTMLElement | null)[],
+  widths: number[],
+  shown: boolean[],
+  pos: LabelPos[] | null,
+  hovered: string | null,
+  stageW: number,
+  stageH: number,
+  pin: PinInfo | null = null
+) {
+  const taken: { l: number; r: number; t: number; b: number }[] = [];
+  // the HQ pin (and its hover label) keeps its own space
+  if (pin?.visible) taken.push({ l: pin.x - 16, r: pin.x + 16, t: pin.y - 34, b: pin.y + 6 });
+  for (let i = 0; i < els.length; i++) {
+    const el = els[i];
+    if (!el) continue;
+    const lp = pos?.[i];
+    let show = false;
+    let scale = 1;
+    if (lp && LABELED[i].a3 !== hovered && taken.length < MAX_LABELS + (pin?.visible ? 1 : 0)) {
+      const inView = lp.y > 8 && lp.y < stageH - 10 && lp.x > 0 && lp.x < stageW;
+      if (inView && lp.facing > (shown[i] ? KEEP_AT : SHOW_AT)) {
+        scale = 0.86 + 0.14 * smooth(0.3, 0.95, lp.facing);
+        if (!widths[i]) widths[i] = el.querySelector<HTMLElement>("[data-pill]")?.offsetWidth ?? 120;
+        const w = widths[i] * scale;
+        const box = {
+          l: lp.x - w / 2 - 4,
+          r: lp.x + w / 2 + 4,
+          t: lp.y - (STEM + PILL_H) * scale - 4,
+          b: lp.y + 4,
+        };
+        if (!taken.some((o) => box.l < o.r && box.r > o.l && box.t < o.b && box.b > o.t)) {
+          taken.push(box);
+          show = true;
+        }
+      }
+    }
+    shown[i] = show;
+    if (lp) el.style.transform = `translate3d(${lp.x}px, ${lp.y}px, 0) scale(${scale.toFixed(3)})`;
+    el.style.opacity = show && lp ? smooth(KEEP_AT, 0.6, lp.facing).toFixed(3) : "0";
+  }
+}
 
 /**
  * Pin and tooltip are moved by writing styles directly (no React state):
@@ -88,6 +155,8 @@ export default function HeroGlobe() {
   const [rotated, setRotated] = useState(false);
   const pinRef = useRef<HTMLDivElement>(null);
   const tipRef = useRef<HTMLDivElement>(null);
+  const labelEls = useRef<(HTMLDivElement | null)[]>([]);
+  const labelState = useRef({ widths: [] as number[], shown: [] as boolean[], hovered: null as string | null, last: null as LabelPos[] | null, pin: null as PinInfo | null });
 
   useEffect(() => {
     if (process.env.NODE_ENV !== "production" && new URLSearchParams(window.location.search).get("globe") === "off") {
@@ -117,8 +186,26 @@ export default function HeroGlobe() {
             served: SERVED,
             countLabel: COUNT_LABEL,
             hq: HQ,
-            onHover: (info) => placeTip(tipRef.current, info),
-            onPin: (pin) => placePin(pinRef.current, pin),
+            labels: LABELED,
+            onLabels: (pos) => {
+              const st = labelState.current;
+              st.last = pos;
+              const stage = stageRef.current;
+              if (stage) placeLabels(labelEls.current, st.widths, st.shown, pos, st.hovered, stage.clientWidth, stage.clientHeight, st.pin);
+            },
+            onHover: (info) => {
+              placeTip(tipRef.current, info);
+              const st = labelState.current;
+              const a3 = info?.a3 ?? null;
+              if (a3 === st.hovered) return;
+              st.hovered = a3;
+              const stage = stageRef.current;
+              if (stage && st.last) placeLabels(labelEls.current, st.widths, st.shown, st.last, a3, stage.clientWidth, stage.clientHeight, st.pin);
+            },
+            onPin: (pin) => {
+              labelState.current.pin = pin;
+              placePin(pinRef.current, pin);
+            },
             reducedMotion: reduced,
             onReady: () => !cancelled && setLive(true),
             onRotatedChange: (v) => !cancelled && setRotated(v),
@@ -128,6 +215,8 @@ export default function HeroGlobe() {
               handleRef.current = null;
               placeTip(tipRef.current, null);
               placePin(pinRef.current, null);
+              labelState.current.last = null;
+              placeLabels(labelEls.current, labelState.current.widths, labelState.current.shown, null, null, 0, 0);
               if (!cancelled) {
                 setLive(false);
                 setRotated(false);
@@ -203,7 +292,38 @@ export default function HeroGlobe() {
 
           {/* 3 · live canvas is appended here by createGlobe (it alone takes pointer events) */}
 
-          {/* 4 · HQ pin: follows the globe in live mode; fixed spot on the static image */}
+          {/* 4 · floating sales labels (live mode; positioned by placeLabels) */}
+          {LABELED.map((c, i) => (
+            <div
+              key={c.a3}
+              ref={(el) => {
+                labelEls.current[i] = el;
+              }}
+              aria-hidden
+              className="absolute left-0 top-0 z-[5] origin-[0_0] opacity-0 transition-opacity duration-300 ease-out will-change-transform"
+            >
+              {/* surface dot */}
+              <span className="absolute left-0 top-0 h-[7px] w-[7px] -translate-x-1/2 -translate-y-1/2 rounded-full border-[1.5px] border-white bg-[#615fff] shadow-[0_0_0_3px_rgba(97,95,255,0.18)]" />
+              {/* stem */}
+              <span
+                className="absolute bottom-[3px] left-0 w-px -translate-x-1/2 bg-gradient-to-t from-[#615fff]/60 to-[#615fff]/0"
+                style={{ height: STEM - 3 }}
+              />
+              {/* pill */}
+              <span
+                data-pill
+                className="absolute left-0 flex -translate-x-1/2 items-center gap-1.5 whitespace-nowrap rounded-full border border-white/90 bg-white/70 px-2.5 text-[11.5px] leading-none text-[#0b0f19] shadow-[0_6px_18px_-8px_rgba(11,15,25,0.35),inset_0_1px_0_rgba(255,255,255,0.9)] backdrop-blur-md"
+                style={{ bottom: STEM, height: PILL_H }}
+              >
+                <span className="font-medium">{c.name}</span>
+                <span className="h-3 w-px bg-[#0b0f19]/12" />
+                <span className="font-semibold tabular-nums text-[#4f46e5]">{nf.format(c.count ?? 0)}</span>
+                <span className="-ml-0.5 text-[#0b0f19]/55">{c.count === 1 ? COUNT_LABEL.one : COUNT_LABEL.many}</span>
+              </span>
+            </div>
+          ))}
+
+          {/* 5 · HQ pin: follows the globe in live mode; fixed spot on the static image */}
           <div
             ref={pinRef}
             role="img"
@@ -229,7 +349,7 @@ export default function HeroGlobe() {
             </span>
           </div>
 
-          {/* 5 · country tooltip (live mode, mouse only) */}
+          {/* 6 · country tooltip (live mode, mouse only) */}
           <div
             ref={tipRef}
             aria-hidden

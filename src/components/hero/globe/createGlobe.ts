@@ -27,16 +27,22 @@ import { COUNTRY_CODES } from "./countryIndex";
  * longitude orientation), with local changes for this hero:
  *  · no @react-three/fiber / drei: an imperative renderer gives on-demand
  *    rendering, exact pointer control and complete disposal;
- *  · surface is a custom shader: pearl ocean, soft slate land (land mask),
- *    and "served" countries in a deeper slate-indigo, from a lossless
+ *  · surface is a custom glass shader: a see-through ocean with a faint
+ *    20° graticule (the hero's colour light shows through it), frosted
+ *    white land, "served" countries in solid violet glass, a
+ *    fresnel rim and a soft specular, from a lossless
  *    country ID map (both from Natural Earth 1:50m, public domain);
  *  · hovering a served country deepens it and reports it for a tooltip
  *    (picked on the CPU from the same ID map, so GPU and tooltip agree);
  *  · an HQ pin position is projected every frame and handed to the DOM;
- *  · no auto-rotate, zoom, pan, inertia or damping; no arcs or avatars;
+ *  · a slow auto-spin (eastward, ~105 s per turn) that eases in, pauses
+ *    while the pointer is on the globe or dragging, resumes 2 s after a
+ *    drag, and stops off screen / in hidden tabs / under reduced motion;
+ *  · no zoom, pan, inertia or damping; no arcs or avatars;
  *  · the coloured atmosphere is CSS behind the canvas (HeroGlobe.tsx).
  *
- * Frames render only when something changes (drag, hover, reset, resize).
+ * Frames render only while spinning or when something changes (drag,
+ * hover, reset, resize).
  *
  * Geometry contract (CSS px), shared with HeroGlobe.tsx:
  *   D = sphere diameter; the canvas is F = 1.16·D wide and H tall, showing
@@ -55,8 +61,10 @@ export const BASE_SPIN = -2.74;
 const BASE_TILT = 0.0;
 const TILT_RANGE = 0.45;
 
-export type HoverInfo = { name: string; detail?: string; x: number; y: number };
+export type HoverInfo = { a3: string; name: string; detail?: string; x: number; y: number };
 export type PinInfo = { x: number; y: number; visible: boolean };
+/** Projected anchor of a country label: stage px, plus how squarely it faces the camera (1 = centre, 0 = limb, <0 = far side). */
+export type LabelPos = { x: number; y: number; facing: number };
 
 export type GlobeHandle = {
   reset: () => void;
@@ -68,6 +76,9 @@ type Options = {
   landUrl: string;
   idsUrl: string;
   served: { a3: string; name: string; count?: number }[];
+  /** Surface points projected every frame for floating labels (same order in onLabels). */
+  labels?: { lat: number; lng: number }[];
+  onLabels?: (pos: LabelPos[]) => void;
   countLabel: { one: string; many: string; unknown: string };
   hq: { lat: number; lng: number };
   reducedMotion: boolean;
@@ -108,17 +119,36 @@ const fragment = /* glsl */ `
     // served is 0 (not served) or a 0.6–1.0 depth; deeper = more projects
     vec3 landCol = served > 0.0 ? mix(uLandCol, uServedCol, 0.35 + 0.9 * (served - 0.6)) : uLandCol;
     if (served > 0.5 && abs(id - uHover) < 0.5) landCol = uHoverCol;
-    vec3 base = mix(uOcean, landCol, land);
-    // soft key light from upper left, never harsh
-    vec3 l = normalize(vec3(-0.45, 0.65, 0.62));
-    float shade = 0.86 + 0.16 * max(dot(n, l), 0.0);
-    // gentle limb darkening gives the silhouette shape against light backgrounds
+    // glass: the ocean is see-through (the hero's colour light shows through
+    // it, so the globe takes on the gradient), land is frosted white glass,
+    // served countries a deeper violet glass
     float facing = clamp(n.z, 0.0, 1.0);
-    shade *= 0.9 + 0.1 * facing;
-    vec3 col = base * shade;
-    // pale rim so the edge reads as an atmosphere-lit surface (colour comes from CSS)
-    col = mix(col, uRim, pow(1.0 - facing, 3.0) * 0.55);
-    gl_FragColor = vec4(col, 1.0);
+    vec3 l = normalize(vec3(-0.45, 0.65, 0.62));
+    float diffuse = max(dot(n, l), 0.0);
+    float isServed = served > 0.0 ? 1.0 : 0.0;
+    // graticule on the ocean: every 20°
+    vec2 gq = abs(fract(vec2(vUv.x * 18.0, vUv.y * 9.0)) - 0.5);
+    vec2 gw = fwidth(vec2(vUv.x * 18.0, vUv.y * 9.0)) * 1.1;
+    float grid = 1.0 - min(smoothstep(0.0, gw.x, gq.x), smoothstep(0.0, gw.y, gq.y));
+
+    float facingEarly = clamp(n.z, 0.0, 1.0);
+    float limbFade = smoothstep(0.08, 0.35, facingEarly); // dots/lines fade near the edge
+
+    vec3 col = mix(uOcean, landCol, land) * (0.9 + 0.12 * diffuse);
+    // land: frosted white glass; served countries: solid violet glass
+    float alpha = mix(0.24, mix(0.86, 0.95, isServed), land);
+    // ocean grid lines
+    alpha = mix(alpha, 0.5, (1.0 - land) * grid * limbFade * 0.55);
+    // thicker glass toward the edge: a bright fresnel rim
+    float fres = pow(1.0 - facing, 2.4);
+    col = mix(col, uRim, fres * 0.85);
+    alpha = mix(alpha, 1.0, fres * 0.9);
+    // soft specular highlight, upper left
+    vec3 h = normalize(l + vec3(0.0, 0.0, 1.0));
+    float spec = pow(max(dot(n, h), 0.0), 40.0);
+    col += uRim * spec * 0.55;
+    alpha = min(1.0, alpha + spec * 0.4);
+    gl_FragColor = vec4(col, alpha);
     #include <colorspace_fragment>
   }
 `;
@@ -180,15 +210,16 @@ export function createGlobe(o: Options): GlobeHandle {
   const material = new ShaderMaterial({
     vertexShader: vertex,
     fragmentShader: fragment,
+    transparent: true,
     uniforms: {
       uLand: { value: null as Texture | null },
       uIds: { value: null as Texture | null },
       uServed: { value: servedTex },
       uHover: { value: -1 },
-      uOcean: { value: new Color("#f4f6fa") },
-      uLandCol: { value: new Color("#d6dbe5") },
-      uServedCol: { value: new Color("#7d84b8") },
-      uHoverCol: { value: new Color("#6f6bd8") },
+      uOcean: { value: new Color("#ffffff") },
+      uLandCol: { value: new Color("#f7f8fc") },
+      uServedCol: { value: new Color("#6b63e6") },
+      uHoverCol: { value: new Color("#4f46e5") },
       uRim: { value: new Color("#ffffff") },
     },
   });
@@ -214,6 +245,8 @@ export function createGlobe(o: Options): GlobeHandle {
 
   // ── drawing (every frame goes through here) ───────────────
   const hqLocal = latLngToLocal(o.hq.lat, o.hq.lng);
+  const labelLocal = (o.labels ?? []).map((l) => latLngToLocal(l.lat, l.lng));
+  const labelPos: LabelPos[] = labelLocal.map(() => ({ x: 0, y: 0, facing: -1 }));
   const tmp = new Vector3();
   const toCam = new Vector3();
   let renders = 0; // dev diagnostics only
@@ -227,6 +260,18 @@ export function createGlobe(o: Options): GlobeHandle {
     const visible = tmp.dot(toCam) > 0.02;
     tmp.project(camera);
     o.onPin({ x: ((tmp.x + 1) / 2) * F, y: ((1 - tmp.y) / 2) * H, visible });
+    if (o.onLabels && labelLocal.length) {
+      for (let i = 0; i < labelLocal.length; i++) {
+        tmp.copy(labelLocal[i]).applyMatrix4(sphere.matrixWorld);
+        toCam.copy(camera.position).sub(tmp);
+        const lp = labelPos[i];
+        lp.facing = tmp.dot(toCam) / (tmp.length() * toCam.length());
+        tmp.project(camera);
+        lp.x = ((tmp.x + 1) / 2) * F;
+        lp.y = ((1 - tmp.y) / 2) * H;
+      }
+      o.onLabels(labelPos);
+    }
   };
   let raf = 0;
   const requestRender = () => {
@@ -280,6 +325,7 @@ export function createGlobe(o: Options): GlobeHandle {
         draw();
         canvas.style.opacity = "1";
         o.onReady();
+        wakeSpin();
       });
     })
     .catch(() => o.onFail("texture-failed"));
@@ -315,6 +361,8 @@ export function createGlobe(o: Options): GlobeHandle {
 
   // ── drag to rotate (mouse/pen, inside the sphere only) ─────
   let dragging: { id: number; x: number; y: number } | null = null;
+  let pointerInside = false;
+  let resumeAt = 0; // auto-spin waits until this time after a drag
   let rotated = false;
   const setRotated = (v: boolean) => {
     if (v !== rotated) {
@@ -342,11 +390,14 @@ export function createGlobe(o: Options): GlobeHandle {
     if (e.pointerType === "touch") return;
     if (!dragging) {
       const inside = insideSphere(e);
+      pointerInside = inside;
+      if (!inside) wakeSpin();
       canvas.style.cursor = inside ? "grab" : "";
       const hit = inside ? pick(e) : null;
       if (hit) {
         setHover(hit.id);
         o.onHover({
+          a3: hit.entry.a3,
           name: hit.entry.name,
           detail: hit.entry.count
             ? `${hit.entry.count} ${hit.entry.count === 1 ? o.countLabel.one : o.countLabel.many}`
@@ -372,12 +423,16 @@ export function createGlobe(o: Options): GlobeHandle {
     if (!dragging || e.pointerId !== dragging.id) return;
     if (canvas.hasPointerCapture(e.pointerId)) canvas.releasePointerCapture(e.pointerId);
     dragging = null;
+    resumeAt = performance.now() + 2000;
     canvas.style.cursor = insideSphere(e) ? "grab" : "";
+    wakeSpin();
   };
   const onLeave = () => {
+    pointerInside = false;
     if (!dragging) {
       canvas.style.cursor = "";
       clearHover();
+      wakeSpin();
     }
   };
   canvas.addEventListener("pointerdown", onDown);
@@ -407,6 +462,9 @@ export function createGlobe(o: Options): GlobeHandle {
       tiltGroup.rotation.x = BASE_TILT;
       setRotated(false);
       requestRender();
+      resetRaf = 0;
+      resumeAt = performance.now() + 1200;
+      wakeSpin();
     };
     if (o.reducedMotion) return finish();
     const start = performance.now();
@@ -421,6 +479,45 @@ export function createGlobe(o: Options): GlobeHandle {
     };
     resetRaf = requestAnimationFrame(step);
   };
+
+  // ── slow auto-spin ─────────────────────────────────────────
+  const SPIN = 0.06; // rad/s, eastward
+  let spinRaf = 0;
+  let spinLast = 0;
+  let spinSpeed = 0; // eases toward SPIN so starts and resumes are gentle
+  let onScreen = true;
+  const canSpin = () => !o.reducedMotion && onScreen && !document.hidden && !disposed;
+  const spinFrame = (now: number) => {
+    spinRaf = 0;
+    if (!canSpin()) {
+      spinSpeed = 0;
+      return;
+    }
+    const dt = Math.min(0.05, (now - spinLast) / 1000);
+    spinLast = now;
+    const hold = dragging || pointerInside || resetRaf || now < resumeAt;
+    spinSpeed += ((hold ? 0 : SPIN) - spinSpeed) * (1 - Math.pow(0.08, dt));
+    if (spinSpeed > 0.0005) {
+      sphere.rotation.y += spinSpeed * dt;
+      draw();
+    }
+    // keep ticking while moving or waiting to resume; sleep when fully held by the pointer
+    if (spinSpeed > 0.0005 || (!pointerInside && !dragging)) spinRaf = requestAnimationFrame(spinFrame);
+  };
+  function wakeSpin() {
+    if (spinRaf || !canSpin()) return;
+    spinLast = performance.now();
+    spinRaf = requestAnimationFrame(spinFrame);
+  }
+  const io = new IntersectionObserver(([entry]) => {
+    onScreen = entry.isIntersecting;
+    if (onScreen) wakeSpin();
+  });
+  io.observe(host);
+  const onVisibility = () => {
+    if (!document.hidden) wakeSpin();
+  };
+  document.addEventListener("visibilitychange", onVisibility);
 
   // ── lifecycle: resize, context loss ───────────────────────
   const ro = new ResizeObserver(layout);
@@ -437,9 +534,17 @@ export function createGlobe(o: Options): GlobeHandle {
     w.__heroGlobeState = () => ({ spin: sphere.rotation.y, tilt: tiltGroup.rotation.x, renders, hoverId });
     w.__heroGlobeSnapshot = (px: number) => {
       const prev = renderer.getPixelRatio();
+      // always capture the base orientation (the globe auto-spins)
+      const spin = sphere.rotation.y;
+      const tilt = tiltGroup.rotation.x;
+      sphere.rotation.y = BASE_SPIN;
+      tiltGroup.rotation.x = BASE_TILT;
+      setHover(-1);
       renderer.setPixelRatio(px / F);
       layout();
       renderer.render(scene, camera);
+      sphere.rotation.y = spin;
+      tiltGroup.rotation.x = tilt;
       const url = canvas.toDataURL("image/webp", 0.9);
       renderer.setPixelRatio(prev);
       layout();
@@ -458,8 +563,11 @@ export function createGlobe(o: Options): GlobeHandle {
     dispose() {
       disposed = true;
       cancelAnimationFrame(raf);
+      cancelAnimationFrame(spinRaf);
       cancelReset();
       ro.disconnect();
+      io.disconnect();
+      document.removeEventListener("visibilitychange", onVisibility);
       canvas.removeEventListener("pointerdown", onDown);
       canvas.removeEventListener("pointermove", onMove);
       canvas.removeEventListener("pointerup", endDrag);

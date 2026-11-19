@@ -11,13 +11,13 @@ import Reveal from "@/components/system/Reveal";
  * shell without re-copying it. Footer stays a quiet zone: simple
  * fade-in, no cursor effects, same as it always was on the homepage.
  */
-export default function SiteShell({ children }: { children: ReactNode }) {
+export default function SiteShell({ children, joinedFooter = false }: { children: ReactNode; joinedFooter?: boolean }) {
   return (
     <SmoothScroll>
       <Navbar />
       <main>{children}</main>
       <Reveal distance={0}>
-        <Footer />
+        <Footer joined={joinedFooter} />
       </Reveal>
       {/* room for the fixed mobile tab bar (MobileTabBar) below the footer */}
       <div aria-hidden className="h-[calc(61px+env(safe-area-inset-bottom))] bg-light-surface lg:hidden" />

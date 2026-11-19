@@ -6,6 +6,8 @@ import { SIMPLE_MENUS, INDUSTRIES } from "@/lib/navigation";
 import { SERVICE_GROUPS, ENGAGEMENT_MODELS, servicePath } from "@/data/services";
 import FooterWordmark from "./FooterWordmark";
 import Reveal from "@/components/system/Reveal";
+import Grain from "@/components/system/Grain";
+import { PALETTES, paletteDelay } from "@/components/hero/heroPalette";
 
 /**
  * Footer — round 8. Reviews and Partners & Memberships were two
@@ -141,15 +143,42 @@ function ColHead({ children }: { children: string }) {
   );
 }
 
-export default function Footer() {
+/**
+ * `joined` (homepage): the footer continues the Locations card above it as
+ * one light block. The globe's colour light, mirrored, carries over the
+ * horizon line into the top of the footer and fades out (same palettes,
+ * same clock), with grain across the whole block. Other pages keep the
+ * standalone light footer.
+ */
+export default function Footer({ joined = false }: { joined?: boolean }) {
   return (
-    <div className="bg-light-surface p-3 sm:p-4">
-      <footer className="theme-light relative overflow-hidden rounded-[32px] bg-canvas pb-10 pt-16" aria-label="Site footer">
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0"
-        style={{ background: "radial-gradient(60% 45% at 50% 0%, rgba(124,108,255,0.12), transparent 70%)" }}
-      />
+    <div className={joined ? "bg-light-surface px-3 pb-3 sm:px-4 sm:pb-4" : "bg-light-surface p-3 sm:p-4"}>
+      <footer
+        className={joined ? "theme-light relative isolate overflow-hidden rounded-b-[32px] bg-white pb-10 pt-20 lg:pt-24" : "theme-light relative overflow-hidden rounded-[32px] bg-canvas pb-10 pt-16"}
+        aria-label="Site footer"
+      >
+      {joined ? (
+        <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
+          {/* the globe's light, reflected below the horizon */}
+          <div
+            className="absolute inset-x-[-8%] top-0 h-[520px] -scale-y-100"
+            style={{ WebkitMaskImage: "linear-gradient(to top, black 0%, transparent 85%)", maskImage: "linear-gradient(to top, black 0%, transparent 85%)" }}
+          >
+            {PALETTES.map((p, i) => (
+              <div key={p.name} className="hg-layer" style={{ background: p.gradient, animationDelay: paletteDelay(i) }} />
+            ))}
+          </div>
+          {/* horizon line */}
+          <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white to-transparent" />
+          <Grain />
+        </div>
+      ) : (
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0"
+          style={{ background: "radial-gradient(60% 45% at 50% 0%, rgba(124,108,255,0.12), transparent 70%)" }}
+        />
+      )}
 
       <div className="relative mx-auto max-w-7xl px-6 lg:px-10">
         {/* Social row — top of the footer, large standout badges */}

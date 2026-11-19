@@ -48,7 +48,7 @@ import FAQ from "@/components/sections/FAQ";
  */
 export default function Home() {
   return (
-    <SiteShell>
+    <SiteShell joinedFooter>
       <Hero />
       <TrustStrip />
       {/* <ServicePillars /> */}
