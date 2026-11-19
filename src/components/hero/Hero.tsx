@@ -2,6 +2,9 @@ import { heroInter } from "./heroFont";
 import { PALETTES, paletteDelay } from "./heroPalette";
 import HeroGlobe from "./HeroGlobe";
 import HeroAsk from "./HeroAsk";
+import HeroIntro from "./intro/HeroIntro";
+import HeroGlyphs from "./intro/HeroGlyphs";
+import { SERVED } from "./globe/servedCountries";
 
 /**
  * Hero: centred copy above a flowing light that rises from the bottom
@@ -15,31 +18,66 @@ import HeroAsk from "./HeroAsk";
  * (shrinks on short viewports) sets the gap under the navigation, and the
  * bottom padding reserves room for the light below the actions.
  *
+ * Scroll intro (desktop only, intro/HeroIntro.tsx): the card first shows the
+ * scattered 3D pieces of the Codeshaper mark in a lavender mist with drifting
+ * code glyphs; scrolling assembles the mark, then the mist lifts and this
+ * hero (copy, light, globe) rises in. The finished state is exactly the
+ * normal hero: no logo above the headline. The `intro:` variant styles apply
+ * only while [data-hero][data-intro] is set (by the inline script below; not
+ * on <html>, whose attributes React resets when it hydrates).
+ *
  * Hero copy uses Inter (heroFont.ts); the header and the rest of the site
  * stay on Urbanist. `theme-light` scopes the site's light tokens here, which
  * also gives the global :focus-visible ring a dark, visible colour.
  *
  * Server component; the interactive parts are islands: HeroAsk (project
- * prompt that hands off to /contact) and HeroGlobe.
+ * prompt that hands off to /contact), HeroGlobe and the intro.
  */
 const EYEBROW = "AI Native Software Solution Partner";
 const SUBTITLE =
   "We design and engineer AI solutions, digital products, and scalable platforms that transform the way businesses operate and grow.";
 
+/**
+ * Intro footer figures. Years, brands and reviews: owner-supplied
+ * (18 Nov 2026, "10+ years, 350+ brands, 150+ reviews"); CHECK before
+ * launch. Countries follow the globe's list so the two never disagree.
+ */
+const INTRO_STATS = [
+  { value: "10+", label: "years" },
+  { value: "350+", label: "brands" },
+  { value: `${SERVED.length}`, label: "countries" },
+  { value: "150+", label: "reviews" },
+];
+
+/**
+ * Decides before first paint whether the scroll intro runs, so the content
+ * never flashes. A safety timer cancels it if the island has not taken over
+ * within 6s (slow network or a failed chunk; 30s in dev, where chunks compile on demand). ?intro=off previews the
+ * finished hero.
+ */
+const INTRO_SCRIPT = `(function(){try{
+var m=window.matchMedia('(min-width:1024px) and (min-height:640px) and (hover:hover) and (pointer:fine) and (prefers-reduced-motion:no-preference)').matches;
+if(!m||/[?&]intro=off/.test(location.search)||location.hash)return;
+var c=document.createElement('canvas'),gl=c.getContext('webgl2')||c.getContext('webgl');if(!gl)return;
+var l=gl.getExtension('WEBGL_lose_context');if(l)l.loseContext();
+var r=document.currentScript&&document.currentScript.parentElement;if(!r)return;r.setAttribute('data-intro','');
+setTimeout(function(){if(!r.hasAttribute('data-intro-live'))r.removeAttribute('data-intro');},${process.env.NODE_ENV === "production" ? 6000 : 30000});
+}catch(e){}})();`;
 
 /** Monochrome fractal noise, tiled (≈0.5KB inline, no request). */
 const NOISE = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`;
 
 export default function Hero() {
   return (
-    <div className="bg-white p-3 sm:p-4">
+    <div className="bg-white p-3 sm:p-4" data-hero suppressHydrationWarning>
+      <script dangerouslySetInnerHTML={{ __html: INTRO_SCRIPT }} />
       <section
         aria-labelledby="hero-heading"
-        className={`theme-light relative isolate flex flex-col overflow-hidden rounded-[28px] bg-[#ffffff] sm:rounded-[32px] lg:min-h-[calc(100svh-32px)] ${heroInter.className}`}
+        className={`theme-light relative isolate flex flex-col overflow-hidden rounded-[28px] bg-[#ffffff] sm:rounded-[32px] lg:min-h-[calc(100svh-32px)] intro:h-[calc(100svh-32px)] ${heroInter.className}`}
       >
         {/* flowing light (decorative; never intercepts pointer events) */}
         <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
-          <div className="hg-flow absolute -inset-x-[8%] -bottom-[4%] top-0">
+          <div className="hg-flow absolute -inset-x-[8%] -bottom-[4%] top-0" data-hero-light>
             <div className="absolute inset-0">
               {PALETTES.map((p, i) => (
                 <div
@@ -60,6 +98,17 @@ export default function Hero() {
           </div>
           {/* keeps the reading area calm: the light fades out well below the copy */}
           <div className="absolute inset-x-0 top-0 h-[40%] bg-gradient-to-b from-[#ffffff] via-[#ffffff]/75 to-transparent" />
+          {/* intro mist: pale lavender with drifting code glyphs; lifts as the hero arrives */}
+          <div className="absolute inset-0 hidden intro:block" data-hero-fog>
+            <div
+              className="absolute inset-0"
+              style={{
+                background:
+                  "radial-gradient(ellipse 60% 55% at 38% 62%, rgba(214,206,255,0.55), rgba(214,206,255,0) 70%), radial-gradient(ellipse 50% 50% at 70% 40%, rgba(206,222,255,0.5), rgba(206,222,255,0) 70%), #f4f3f9",
+              }}
+            />
+            <HeroGlyphs />
+          </div>
           {/* film grain: static SVG noise tile, overlay-blended so it only
               textures the coloured light and vanishes on the white top */}
           <div
@@ -68,9 +117,51 @@ export default function Hero() {
           />
         </div>
 
-        <div className="mx-auto flex w-full max-w-[1040px] flex-col items-center px-5 xl:max-w-[1240px] pb-10 pt-[120px] text-center sm:px-8 sm:pt-[116px] lg:pb-8 lg:pt-[clamp(100px,14vh,130px)]">
+        {/* intro stage: the 3D mark fills the card while the intro runs */}
+        <div className="absolute inset-0 z-[1] hidden intro:block" data-hero-stage>
+          <HeroIntro />
+        </div>
+
+        {/* intro footer: figures counting up, the scroll cue, "Skip intro" */}
+        <div
+          className="absolute inset-x-[4%] bottom-6 z-[3] hidden grid-cols-[1fr_auto_1fr] items-center gap-6 border-t border-[#0b0f19]/[0.08] pt-4 intro:grid"
+          data-hero-intro
+        >
+          <ul aria-hidden className="flex flex-wrap items-center gap-x-5 gap-y-1 font-mono text-[11px] uppercase tracking-[0.08em] text-[#5b6170]">
+            {INTRO_STATS.map((s) => (
+              <li key={s.label} className="flex items-baseline gap-1.5" data-intro-chip>
+                <span
+                  className="text-[13px] font-semibold tabular-nums tracking-normal text-[#0b0f19]"
+                  data-intro-count={s.value.replace(/\D/g, "")}
+                  data-intro-suffix={s.value.replace(/^\d+/, "")}
+                >
+                  {s.value}
+                </span>
+                {s.label}
+              </li>
+            ))}
+          </ul>
+          <span aria-hidden className="font-mono text-[11px] uppercase tracking-[0.14em] text-[#5b6170]">
+            Scroll to shape it
+          </span>
+          <a
+            href="#hero-heading"
+            className="justify-self-end font-mono text-[11px] uppercase tracking-[0.14em] text-[#383f50] underline-offset-4 hover:text-[#0b0f19] hover:underline"
+            data-hero-skip
+          >
+            Skip intro
+          </a>
+        </div>
+
+        <div
+          className="relative z-[2] mx-auto flex w-full max-w-[1040px] flex-col items-center px-5 xl:max-w-[1240px] pb-10 pt-[120px] text-center sm:px-8 sm:pt-[116px] lg:pb-8 lg:pt-[clamp(100px,14vh,130px)]"
+          data-hero-column
+        >
           {/* Eyebrow: small bold pill, one line at every width */}
-          <p className="inline-flex max-w-full items-center gap-2 rounded-full border border-[#0b0f19]/[0.08] bg-white/70 px-3 py-1.5 text-[10.5px] font-bold uppercase leading-none tracking-[0.12em] text-[#3f4657] backdrop-blur-sm sm:text-[11px]">
+          <p
+            data-reveal
+            className="inline-flex max-w-full items-center gap-2 rounded-full border border-[#0b0f19]/[0.08] bg-white/70 px-3 py-1.5 text-[10.5px] font-bold uppercase leading-none tracking-[0.12em] text-[#3f4657] backdrop-blur-sm sm:text-[11px]"
+          >
             <span aria-hidden className="h-[5px] w-[5px] shrink-0 rounded-full bg-[#7c5cff]/80" />
             <span className="hero-shimmer">{EYEBROW}</span>
           </p>
@@ -80,24 +171,29 @@ export default function Hero() {
             id="hero-heading"
             className="mt-6 text-balance text-[clamp(30px,8.2vw,36px)] font-[560] leading-[1.1] tracking-[-0.025em] text-[#0b0f19] sm:text-[42px] lg:text-[46px] xl:text-[52px] 2xl:text-[56px]"
           >
-            <span className="lg:block lg:whitespace-nowrap">From AI automation to scalable </span>
-            <span className="lg:block lg:whitespace-nowrap">
+            <span className="inline-block lg:block lg:whitespace-nowrap" data-reveal>
+              From AI automation to scalable{" "}
+            </span>{" "}
+            <span className="inline-block lg:block lg:whitespace-nowrap" data-reveal>
               digital products, <span className="text-[#363d4f]">we build the future.</span>
             </span>
           </h1>
 
-          <p className="mt-5 max-w-[560px] text-[16px] leading-[1.65] tracking-[-0.005em] text-[#383f50] sm:mt-6 sm:text-[17px]">
+          <p
+            data-reveal
+            className="mt-5 max-w-[560px] text-[16px] leading-[1.65] tracking-[-0.005em] text-[#383f50] sm:mt-6 sm:text-[17px]"
+          >
             {SUBTITLE}
           </p>
 
           {/* project prompt (replaces the CTA buttons and the review capsule) */}
-          <div className="mt-8 flex w-full justify-center sm:mt-9">
+          <div className="mt-8 flex w-full justify-center sm:mt-9" data-reveal>
             <HeroAsk />
           </div>
         </div>
 
         {/* globe: pinned to the bottom edge, cropped by the card */}
-        <div className="mt-auto">
+        <div className="relative z-[2] mt-auto" data-reveal-globe>
           <HeroGlobe />
         </div>
       </section>

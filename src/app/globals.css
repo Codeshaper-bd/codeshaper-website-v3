@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+/* Hero scroll intro running ([data-hero][data-intro], set by the inline script in Hero.tsx) */
+@custom-variant intro (&:where([data-intro] *));
+
 @theme {
   /* ── Color system (exact hex per spec §2) ─────────────── */
   --color-canvas: #0a0a0f;            /* ink (dark surface) */
@@ -970,4 +973,36 @@ form[data-show-errors="true"] :invalid {
 .tm-in { animation: tm-in 600ms cubic-bezier(0.16, 1, 0.3, 1) both; }
 @media (prefers-reduced-motion: reduce) {
   .tm-in { animation: none; }
+}
+
+/* Hero scroll intro: hidden until GSAP takes over (HeroIntro.tsx); removing
+   data-intro (failure, timeout) shows everything again. */
+[data-intro] [data-reveal],
+[data-intro] [data-reveal-globe],
+[data-intro] [data-intro-chip],
+[data-intro] [data-hero-light] {
+  opacity: 0;
+  visibility: hidden;
+}
+/* intro cursor cue: the mouse wheel rolls down */
+@keyframes intro-wheel {
+  0% { transform: translate(-50%, 0); opacity: 1; }
+  70% { transform: translate(-50%, 5px); opacity: 0; }
+  100% { transform: translate(-50%, 0); opacity: 0; }
+}
+.intro-wheel {
+  animation: intro-wheel 1.4s ease-in-out infinite;
+}
+/* intro custom cursor active: hide the system cursor on the stage only */
+[data-hero][data-cursor] [data-hero-stage],
+[data-hero][data-cursor] [data-hero-stage] * {
+  cursor: none !important;
+}
+/* the top bar arrives with the hero copy (HeroIntro.tsx) */
+body:has([data-hero][data-intro]) [data-site-header] {
+  opacity: 0;
+  visibility: hidden;
+}
+[data-intro] [data-hero-column] {
+  pointer-events: none;
 }

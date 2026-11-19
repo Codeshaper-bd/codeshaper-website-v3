@@ -180,10 +180,11 @@ export default function Navbar() {
       />
 
       <header
+        data-site-header
         className={`theme-light z-50 font-urbanist ${
           docked
             ? "pointer-events-none fixed inset-x-0 bottom-5 hidden justify-center px-4 lg:flex"
-            : "absolute inset-x-0 top-[10px] px-3 sm:px-4"
+            : "absolute inset-x-0 top-[calc(10px+var(--intro-shift,0px))] px-3 sm:px-4"
         }`}
       >
         <div
