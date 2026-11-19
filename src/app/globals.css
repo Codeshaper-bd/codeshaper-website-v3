@@ -1359,3 +1359,158 @@ body:has([data-hero][data-intro]) [data-site-header] {
     animation: none !important;
   }
 }
+
+/* ── Service dialog (ServiceDialogBody): Apple-style glass ───────────── */
+.svc-glass {
+  background: linear-gradient(180deg, rgb(255 255 255 / 0.9), rgb(248 248 252 / 0.84));
+  -webkit-backdrop-filter: blur(30px) saturate(1.8);
+  backdrop-filter: blur(30px) saturate(1.8);
+  border: 1px solid rgb(255 255 255 / 0.9);
+  box-shadow: 0 0 0 1px rgb(30 25 80 / 0.06), inset 0 1px 0 #fff, 0 40px 100px -40px rgb(40 30 110 / 0.4);
+}
+/* small glass buttons (close, secondary actions, tool chips) */
+.svc-glass-btn {
+  background: linear-gradient(180deg, #ffffff, #f3f3f8);
+  box-shadow: inset 0 1px 0 #fff, 0 1px 2px rgb(11 15 25 / 0.07), 0 0 0 1px rgb(30 25 80 / 0.08);
+  transition: box-shadow 200ms ease, color 200ms ease;
+}
+.svc-glass-btn:hover {
+  color: #4f46e5;
+  box-shadow: inset 0 1px 0 #fff, 0 4px 12px -4px rgb(97 95 255 / 0.35), 0 0 0 1px rgb(97 95 255 / 0.2);
+}
+/* service / project / review cards: light glass that lifts on hover */
+.svc-card {
+  background: linear-gradient(180deg, rgb(255 255 255 / 0.85), rgb(250 250 253 / 0.7));
+  box-shadow: inset 0 1px 0 #fff, 0 0 0 1px rgb(30 25 80 / 0.06), 0 2px 6px -2px rgb(11 15 25 / 0.05);
+  transition: transform 300ms cubic-bezier(0.22, 1, 0.36, 1), box-shadow 300ms ease;
+}
+a.svc-card:hover {
+  transform: translateY(-2px);
+  box-shadow: inset 0 1px 0 #fff, 0 0 0 1px rgb(97 95 255 / 0.16), 0 16px 34px -16px rgb(40 30 110 / 0.3);
+}
+a.svc-card:hover .mega-icon-tile {
+  color: #615fff !important;
+  box-shadow: inset 0 1px 0 #fff, 0 4px 10px -3px rgb(97 95 255 / 0.4), 0 0 0 1px rgb(97 95 255 / 0.22) !important;
+}
+.svc-label {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #5d6274;
+}
+/* closing band: a soft violet glass wash */
+.svc-cta {
+  background:
+    radial-gradient(80% 120% at 50% 0%, rgb(97 95 255 / 0.12), transparent 70%),
+    linear-gradient(180deg, rgb(255 255 255 / 0.8), rgb(246 245 255 / 0.7));
+  box-shadow: inset 0 1px 0 #fff, 0 0 0 1px rgb(97 95 255 / 0.12);
+}
+@media (prefers-reduced-motion: reduce) {
+  .svc-card, a.svc-card:hover { transform: none; transition: none; }
+}
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .svc-glass { background: #fff; }
+}
+
+/* ── Service card motion (services-bento/visuals.tsx) ────────────────
+   Slow looping scenes in CSS only, Stripe-style. Each .sv-step appears at
+   its --d delay within a --cyc cycle, holds, then fades for the next loop. */
+.sv-step, .sv-type { animation: sv-in-0 var(--cyc, 9s) cubic-bezier(0.22, 1, 0.36, 1) infinite both; }
+.sv-blip { animation: sv-blip var(--cyc, 9s) ease var(--d, 0s) infinite backwards; }
+@keyframes sv-step {
+  0% { opacity: 0; transform: translateY(6px); }
+  6% { opacity: 1; transform: none; }
+  86% { opacity: 1; transform: none; }
+  94%, 100% { opacity: 0; transform: none; }
+}
+/* typing bubble: shows briefly before the reply */
+@keyframes sv-blip {
+  0% { opacity: 0; } 4%, 11% { opacity: 1; } 13%, 100% { opacity: 0; }
+}
+.sv-typing i { display: block; width: 5px; height: 5px; border-radius: 9999px; background: #6c63d9; opacity: 0.5; animation: sv-dot 0.9s ease-in-out infinite; }
+.sv-typing i:nth-child(2) { animation-delay: 0.15s; }
+.sv-typing i:nth-child(3) { animation-delay: 0.3s; }
+@keyframes sv-dot { 0%, 100% { transform: translateY(0); opacity: 0.35; } 50% { transform: translateY(-3px); opacity: 0.9; } }
+/* AI answer lines type in left to right */
+.sv-type { transform-origin: left; }
+@keyframes sv-type {
+  0% { transform: scaleX(0); } 10% { transform: scaleX(1); } 88% { transform: scaleX(1); opacity: 1; } 96%, 100% { transform: scaleX(1); opacity: 0; }
+}
+/* a button being pressed (scale + soft glow), once per cycle */
+.sv-press { animation: sv-press var(--cyc, 9s) ease var(--d, 0s) infinite; }
+@keyframes sv-press {
+  0%, 100% { transform: none; box-shadow: 0 0 0 0 rgb(97 95 255 / 0); }
+  3% { transform: scale(0.94); }
+  7% { transform: none; box-shadow: 0 0 0 5px rgb(97 95 255 / 0.22); }
+  20% { box-shadow: 0 0 0 0 rgb(97 95 255 / 0); }
+}
+/* a live dot with a soft ping */
+.sv-live::after { content: ""; position: absolute; inset: 0; border-radius: inherit; background: inherit; animation: sv-ping 2s ease-out infinite; }
+@keyframes sv-ping { 0% { transform: scale(1); opacity: 0.6; } 80%, 100% { transform: scale(2.8); opacity: 0; } }
+/* bars grow, fills fill, then reset */
+.sv-bar { transform-origin: bottom; animation: sv-bar 7s cubic-bezier(0.22, 1, 0.36, 1) calc(var(--i, 0) * 45ms) infinite backwards; }
+@keyframes sv-bar { 0% { transform: scaleY(0.12); } 25%, 88% { transform: scaleY(1); } 100% { transform: scaleY(0.12); } }
+.sv-fill { transform-origin: left; animation: sv-fill var(--cyc, 7s) cubic-bezier(0.22, 1, 0.36, 1) infinite; }
+@keyframes sv-fill { 0% { transform: scaleX(0); } 30%, 88% { transform: scaleX(1); } 100% { transform: scaleX(0); } }
+/* score ring fills to its value */
+.sv-ring { animation: sv-ring 8s cubic-bezier(0.22, 1, 0.36, 1) infinite; }
+@keyframes sv-ring { 0% { stroke-dashoffset: var(--c); } 22%, 88% { stroke-dashoffset: var(--off); } 100% { stroke-dashoffset: var(--c); } }
+/* a slowly flowing gradient (storefront banner) */
+.sv-flow-bg { background-size: 220% 220%; animation: sv-flow 9s ease-in-out infinite alternate; }
+@keyframes sv-flow { 0% { background-position: 0% 40%; } 100% { background-position: 100% 60%; } }
+/* the designer cursor glides in, clicks the button, rests, leaves */
+.sv-cursor { animation: sv-cursor 7s cubic-bezier(0.65, 0, 0.35, 1) infinite; }
+@keyframes sv-cursor {
+  0% { transform: translate(70px, -70px); opacity: 0; }
+  10% { opacity: 1; }
+  38% { transform: translate(-6px, 12px); }
+  42% { transform: translate(-6px, 12px) scale(0.88); }
+  46% { transform: translate(-6px, 12px) scale(1); }
+  80% { transform: translate(-6px, 12px); opacity: 1; }
+  95%, 100% { transform: translate(70px, -70px); opacity: 0; }
+}
+/* Stripe-style fine diagonal hatching that fades up */
+.sv-hatch {
+  background-image: repeating-linear-gradient(135deg, rgb(97 95 255 / 0.22) 0 1px, transparent 1px 7px);
+  -webkit-mask-image: linear-gradient(to top, #000 0%, transparent 85%);
+  mask-image: linear-gradient(to top, #000 0%, transparent 85%);
+}
+@media (prefers-reduced-motion: reduce) {
+  .sv-step, .sv-type, .sv-press, .sv-bar, .sv-fill, .sv-ring, .sv-flow-bg, .sv-cursor, .sv-typing i, .sv-live::after { animation: none !important; }
+  .sv-blip { display: none; }
+}
+
+/* scene steps: appear at k*4% of the cycle, all reset together at 90-96% */
+@keyframes sv-in-0 { 0% { opacity: 0; transform: translateY(6px); } 6%, 90% { opacity: 1; transform: none; } 96%, 100% { opacity: 0; transform: none; } }
+@keyframes sv-in-1 { 0%, 4% { opacity: 0; transform: translateY(6px); } 10%, 90% { opacity: 1; transform: none; } 96%, 100% { opacity: 0; transform: none; } }
+@keyframes sv-in-2 { 0%, 8% { opacity: 0; transform: translateY(6px); } 14%, 90% { opacity: 1; transform: none; } 96%, 100% { opacity: 0; transform: none; } }
+@keyframes sv-in-3 { 0%, 12% { opacity: 0; transform: translateY(6px); } 18%, 90% { opacity: 1; transform: none; } 96%, 100% { opacity: 0; transform: none; } }
+@keyframes sv-in-4 { 0%, 16% { opacity: 0; transform: translateY(6px); } 22%, 90% { opacity: 1; transform: none; } 96%, 100% { opacity: 0; transform: none; } }
+@keyframes sv-in-5 { 0%, 20% { opacity: 0; transform: translateY(6px); } 26%, 90% { opacity: 1; transform: none; } 96%, 100% { opacity: 0; transform: none; } }
+@keyframes sv-in-6 { 0%, 24% { opacity: 0; transform: translateY(6px); } 30%, 90% { opacity: 1; transform: none; } 96%, 100% { opacity: 0; transform: none; } }
+@keyframes sv-in-7 { 0%, 28% { opacity: 0; transform: translateY(6px); } 34%, 90% { opacity: 1; transform: none; } 96%, 100% { opacity: 0; transform: none; } }
+@keyframes sv-in-8 { 0%, 32% { opacity: 0; transform: translateY(6px); } 38%, 90% { opacity: 1; transform: none; } 96%, 100% { opacity: 0; transform: none; } }
+@keyframes sv-in-9 { 0%, 36% { opacity: 0; transform: translateY(6px); } 42%, 90% { opacity: 1; transform: none; } 96%, 100% { opacity: 0; transform: none; } }
+@keyframes sv-in-10 { 0%, 40% { opacity: 0; transform: translateY(6px); } 46%, 90% { opacity: 1; transform: none; } 96%, 100% { opacity: 0; transform: none; } }
+@keyframes sv-in-11 { 0%, 44% { opacity: 0; transform: translateY(6px); } 50%, 90% { opacity: 1; transform: none; } 96%, 100% { opacity: 0; transform: none; } }
+@keyframes sv-in-12 { 0%, 48% { opacity: 0; transform: translateY(6px); } 54%, 90% { opacity: 1; transform: none; } 96%, 100% { opacity: 0; transform: none; } }
+@keyframes sv-in-13 { 0%, 52% { opacity: 0; transform: translateY(6px); } 58%, 90% { opacity: 1; transform: none; } 96%, 100% { opacity: 0; transform: none; } }
+@keyframes sv-in-14 { 0%, 56% { opacity: 0; transform: translateY(6px); } 62%, 90% { opacity: 1; transform: none; } 96%, 100% { opacity: 0; transform: none; } }
+@keyframes sv-in-15 { 0%, 60% { opacity: 0; transform: translateY(6px); } 66%, 90% { opacity: 1; transform: none; } 96%, 100% { opacity: 0; transform: none; } }
+@keyframes sv-in-16 { 0%, 64% { opacity: 0; transform: translateY(6px); } 70%, 90% { opacity: 1; transform: none; } 96%, 100% { opacity: 0; transform: none; } }
+@keyframes sv-in-17 { 0%, 68% { opacity: 0; transform: translateY(6px); } 74%, 90% { opacity: 1; transform: none; } 96%, 100% { opacity: 0; transform: none; } }
+@keyframes sv-in-18 { 0%, 72% { opacity: 0; transform: translateY(6px); } 78%, 90% { opacity: 1; transform: none; } 96%, 100% { opacity: 0; transform: none; } }
+@keyframes sv-in-19 { 0%, 76% { opacity: 0; transform: translateY(6px); } 82%, 90% { opacity: 1; transform: none; } 96%, 100% { opacity: 0; transform: none; } }
+@keyframes sv-in-20 { 0%, 80% { opacity: 0; transform: translateY(6px); } 86%, 90% { opacity: 1; transform: none; } 96%, 100% { opacity: 0; transform: none; } }
+
+/* ── Service line art (services-bento/lineArt.tsx): slow, transform-only ── */
+.la-ribbon { animation: la-drift 14s ease-in-out infinite alternate; transform-origin: center; }
+@keyframes la-drift { 0% { transform: translateX(-3%) scaleY(1); } 100% { transform: translateX(3%) scaleY(1.08); } }
+.la-burst { transform-origin: 50% 100%; animation: la-breathe 7s ease-in-out infinite; }
+@keyframes la-breathe { 0%, 100% { transform: scale(0.96); opacity: 0.85; } 50% { transform: scale(1.04); opacity: 1; } }
+.la-grid-pan { animation: la-pan 10s linear infinite; }
+@keyframes la-pan { from { transform: translateX(0); } to { transform: translateX(40px); } }
+.la-topo-turn { animation: la-turn 60s linear infinite; transform-box: view-box; transform-origin: 0 0; }
+@keyframes la-turn { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .la-ribbon, .la-burst, .la-grid-pan, .la-topo-turn { animation: none; } }

@@ -24,6 +24,7 @@ import type { IconType } from "react-icons";
 import { SERVICE_GROUPS, servicePath, servicesInGroup, type ServiceGroupSlug } from "@/data/services";
 import Reveal from "@/components/system/Reveal";
 import { SectionEyebrow, SectionTitle } from "@/components/system/SectionHeading";
+import ServiceDialogBody, { type Tool } from "./ServiceDialogBody";
 import { AgentsVisual, SoftwareVisual, IntegrationVisual, DesignVisual, WebVisual } from "./visuals";
 
 /**
@@ -47,7 +48,7 @@ type Palette = { wash: string; dot: string };
 
 const CARDS: Record<
   ServiceGroupSlug,
-  { headline: string; palette: Palette; visual: ComponentType; span?: string; tools: IconType[] }
+  { headline: string; palette: Palette; visual: ComponentType; span?: string; tools: Tool[] }
 > = {
   "ai-agents-automation": {
     headline: "AI agents that finish real work inside the tools you already use",
@@ -57,7 +58,7 @@ const CARDS: Record<
     },
     visual: AgentsVisual,
     span: "md:col-span-2",
-    tools: [SiPython, SiLangchain, SiHuggingface],
+    tools: [{ icon: SiPython, name: "Python", bg: "#3776AB" }, { icon: SiLangchain, name: "LangChain", bg: "#1C3C3C" }, { icon: SiHuggingface, name: "Hugging Face", bg: "#FFD21E", fg: "#1d2130" }],
   },
   "ai-software-development": {
     headline: "SaaS products and MVPs, built to scale",
@@ -66,7 +67,7 @@ const CARDS: Record<
       dot: "#4f6bff",
     },
     visual: SoftwareVisual,
-    tools: [SiReact, SiNextdotjs, SiNodedotjs, SiTypescript],
+    tools: [{ icon: SiReact, name: "React", bg: "#61DAFB", fg: "#1d2130" }, { icon: SiNextdotjs, name: "Next.js", bg: "#000000" }, { icon: SiNodedotjs, name: "Node.js", bg: "#5FA04E" }, { icon: SiTypescript, name: "TypeScript", bg: "#3178C6" }],
   },
   "ai-integration-infrastructure": {
     headline: "Connect AI to your systems and data, securely",
@@ -75,7 +76,7 @@ const CARDS: Record<
       dot: "#1b78cc",
     },
     visual: IntegrationVisual,
-    tools: [SiDocker, SiKubernetes, SiPostgresql],
+    tools: [{ icon: SiDocker, name: "Docker", bg: "#2496ED" }, { icon: SiKubernetes, name: "Kubernetes", bg: "#326CE5" }, { icon: SiPostgresql, name: "PostgreSQL", bg: "#4169E1" }],
   },
   "ui-ux-product-design": {
     headline: "Product design people understand at first use",
@@ -84,7 +85,7 @@ const CARDS: Record<
       dot: "#e96aa8",
     },
     visual: DesignVisual,
-    tools: [SiFigma, SiFramer],
+    tools: [{ icon: SiFigma, name: "Figma", bg: "#F24E1E" }, { icon: SiFramer, name: "Framer", bg: "#0055FF" }],
   },
   "websites-commerce": {
     headline: "Websites and stores that rank, get cited and convert",
@@ -93,7 +94,7 @@ const CARDS: Record<
       dot: "#f08a3e",
     },
     visual: WebVisual,
-    tools: [SiWordpress, SiWebflow, SiShopify],
+    tools: [{ icon: SiWordpress, name: "WordPress", bg: "#21759B" }, { icon: SiWebflow, name: "Webflow", bg: "#146EF5" }, { icon: SiShopify, name: "Shopify", bg: "#7AB55C" }],
   },
 };
 
@@ -189,7 +190,7 @@ export default function ServicesBento() {
               return (
                 <li key={item.group.slug} className={item.span ?? ""}>
                   <Reveal delay={i * 70} className="h-full">
-                    <article className="group/card relative flex h-[440px] flex-col overflow-hidden rounded-[24px] border border-[#0b0f19]/[0.07] bg-white transition-shadow duration-300 hover:shadow-[0_24px_60px_-28px_rgba(11,15,25,0.35)] sm:h-[460px]">
+                    <article className="group/card relative flex h-[440px] flex-col overflow-hidden rounded-[18px] border border-[#0b0f19]/[0.07] bg-white transition-shadow duration-300 hover:shadow-[0_24px_60px_-28px_rgba(11,15,25,0.35)] sm:h-[460px]">
                       <Wash palette={item.palette} />
 
                       <div className="relative z-10 flex items-start gap-4 p-6 sm:p-7">
@@ -246,94 +247,17 @@ export default function ServicesBento() {
             onClick={onBackdrop}
             className="theme-light h-full overflow-y-auto overscroll-contain px-3 py-3 sm:px-6 sm:py-10 lg:py-14"
           >
-            <div className="svc-dialog-panel relative mx-auto max-w-[1120px] rounded-[28px] border border-[#0b0f19]/[0.06] bg-white shadow-[0_40px_100px_-40px_rgba(40,30,110,0.35)] p-6 pt-16 font-urbanist sm:p-10 sm:pt-12 lg:p-14">
-              <button
-                type="button"
-                onClick={close}
-                data-autofocus
-                aria-label="Close"
-                className="absolute right-4 top-4 grid h-10 w-10 place-items-center rounded-xl bg-[#f0eeff] text-[#4b3fd1] transition-colors hover:bg-[#e4e0ff] sm:right-6 sm:top-6"
-              >
-                <X size={18} strokeWidth={2} aria-hidden />
-              </button>
-
-              <div className="grid gap-10 lg:grid-cols-[1.15fr_1fr] lg:gap-14">
-                <div>
-                  <p className="flex items-center gap-2 text-[13px] font-semibold text-ink-dim">
-                    <span className="h-1.5 w-1.5 rounded-full" style={{ background: active.palette.dot }} />
-                    {active.group.name}
-                  </p>
-                  <h2
-                    id="svc-dialog-title"
-                    className="mt-3 text-[28px] font-semibold leading-[1.12] tracking-[-0.015em] text-ink sm:text-[36px]"
-                  >
-                    {active.headline}
-                  </h2>
-                  <p className="mt-4 max-w-[52ch] text-[16px] leading-relaxed text-ink-dim sm:text-[17px]">{active.group.focus}</p>
-                  <div className="mt-7 flex flex-wrap gap-3">
-                    <Link
-                      href={servicePath(active.group.slug)}
-                      onClick={close}
-                      className="inline-flex h-11 items-center gap-1.5 rounded-full bg-[#0b0f19] px-5 text-[14px] font-semibold text-white transition-colors hover:bg-[#262b3a]"
-                    >
-                      Explore {active.group.name}
-                      <ArrowRight size={15} strokeWidth={2} aria-hidden />
-                    </Link>
-                    <Link
-                      href={`/contact?brief=${encodeURIComponent(`I'm interested in ${active.group.name}: `)}`}
-                      onClick={close}
-                      className="inline-flex h-11 items-center rounded-full border border-[#0b0f19]/15 px-5 text-[14px] font-semibold text-ink transition-colors hover:bg-[#f4f5f8]"
-                    >
-                      Start a project
-                    </Link>
-                  </div>
-                  <div className="mt-8 flex items-center gap-3">
-                    <span className="text-[12px] font-medium text-ink-faint">Built with</span>
-                    <span className="flex gap-1.5">
-                      {active.tools.map((T, i) => (
-                        <span key={i} className="grid h-8 w-8 place-items-center rounded-full border border-hairline text-ink-dim">
-                          <T size={14} aria-hidden />
-                        </span>
-                      ))}
-                    </span>
-                  </div>
-                </div>
-
-                <div>
-                  <p className="text-[12px] font-semibold uppercase tracking-[0.14em] text-ink-faint">
-                    {active.services.length} services
-                  </p>
-                  <ul className={`mt-3 grid gap-x-6 ${active.services.length > 6 ? "sm:grid-cols-2" : ""}`}>
-                    {active.services.map((s) => (
-                      <li key={s.slug}>
-                        <Link
-                          href={servicePath(s.slug)}
-                          onClick={close}
-                          className="group/svc flex items-start gap-2.5 rounded-lg py-1.5 text-[15px] leading-snug text-ink-mid transition-colors hover:text-ink"
-                        >
-                          <span
-                            className="mt-[3px] grid h-4 w-4 shrink-0 place-items-center rounded-full"
-                            style={{ background: `${active.palette.dot}1f`, color: active.palette.dot }}
-                          >
-                            <Check size={10} strokeWidth={3} aria-hidden />
-                          </span>
-                          <span className="underline-offset-4 group-hover/svc:underline">{s.menuLabel}</span>
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-
-              <div
-                aria-hidden
-                className="pointer-events-none relative mt-10 h-[340px] select-none overflow-hidden rounded-[22px] border border-[#0b0f19]/[0.06] sm:h-[360px] lg:mt-12"
-              >
-                <Wash palette={active.palette} />
-                <div className="relative h-full pt-8">
-                  <active.visual />
-                </div>
-              </div>
+            <div className="svc-dialog-panel">
+              <ServiceDialogBody
+                group={active.group}
+                headline={active.headline}
+                services={active.services}
+                tools={active.tools}
+                dot={active.palette.dot}
+                Visual={active.visual}
+                wash={<Wash palette={active.palette} />}
+                onClose={close}
+              />
             </div>
           </div>
         )}

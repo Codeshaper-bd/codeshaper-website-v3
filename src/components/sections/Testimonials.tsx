@@ -1,5 +1,6 @@
 "use client";
 
+import { REAL_REVIEWS, type Review } from "@/data/reviews";
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -26,29 +27,11 @@ import Flag from "@/components/system/Flag";
  * the layout can be judged in development and carry a "Placeholder" tag.
  * Replace them with real clients' photos/videos and permitted quotes.
  */
-type Review = {
-  real: boolean;
-  quote: string;
-  name: string;
-  role: string;
-  company: string;
-  market?: string;
-  caseSlug?: string;
-  photo?: string;
-  video?: { src: string; duration: string };
-};
+// the Review type and the real reviews live in data/reviews.ts (shared)
 
 const ALL: Review[] = [
-  // REAL (quoted word for word). Add Joan's photo (with permission) as `photo`.
-  {
-    real: true,
-    quote: "This was a web development project and we were very pleased with the service and responsiveness… Definitely recommend this seller!",
-    name: "Joan Roca",
-    role: "Founder & CEO",
-    company: "Essentialist",
-    market: "Spain",
-    caseSlug: "essentialist",
-  },
+  // REAL (quoted word for word): data/reviews.ts
+  ...REAL_REVIEWS,
   // PLACEHOLDERS (development only)
   {
     real: false,
