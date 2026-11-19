@@ -5,6 +5,8 @@ import HeroAsk from "./HeroAsk";
 import HeroIntro from "./intro/HeroIntro";
 import HeroGlyphs from "./intro/HeroGlyphs";
 import { SERVED } from "./globe/servedCountries";
+import Link from "next/link";
+import { getAnnouncement, KIND_STYLE } from "@/data/announcement";
 
 /**
  * Hero: centred copy above a flowing light that rises from the bottom
@@ -34,6 +36,7 @@ import { SERVED } from "./globe/servedCountries";
  * prompt that hands off to /contact), HeroGlobe and the intro.
  */
 const EYEBROW = "AI Native Software Solution Partner";
+const ANNOUNCEMENT = getAnnouncement();
 
 /**
  * Intro footer figures. Years, brands and reviews: owner-supplied
@@ -199,14 +202,34 @@ export default function Hero() {
           className="relative z-[2] mx-auto flex w-full max-w-[1040px] flex-col items-center px-5 xl:max-w-[1240px] pb-10 pt-[120px] text-center sm:px-8 sm:pt-[116px] lg:pb-8 lg:pt-[clamp(150px,22vh,230px)]"
           data-hero-column
         >
-          {/* Eyebrow: small bold pill, one line at every width */}
-          <p
-            data-reveal
-            className="inline-flex max-w-full items-center gap-2 rounded-full border border-[#0b0f19]/[0.08] bg-white/70 px-3 py-1.5 text-[10.5px] font-bold uppercase leading-none tracking-[0.12em] text-[#3f4657] backdrop-blur-sm sm:text-[11px]"
-          >
-            <span aria-hidden className="h-[5px] w-[5px] shrink-0 rounded-full bg-[#7c5cff]/80" />
-            <span className="hero-shimmer">{EYEBROW}</span>
-          </p>
+          {/* Announcement chip: [TAG] text → (data/announcement.ts; the newest
+              blog post by default). Without one, the positioning eyebrow. */}
+          {ANNOUNCEMENT ? (
+            <Link
+              href={ANNOUNCEMENT.href}
+              data-reveal
+              className="group inline-flex max-w-full items-center gap-2 rounded-full border border-[#0b0f19]/[0.08] bg-white/70 py-1 pl-1 pr-3 text-[12.5px] font-medium leading-none text-[#3f4657] shadow-[0_1px_2px_rgba(11,15,25,0.04)] backdrop-blur-sm transition-[border-color,background-color,box-shadow] duration-300 hover:border-[#615fff]/30 hover:bg-white hover:shadow-[0_4px_14px_-6px_rgba(97,95,255,0.35)] sm:text-[13px]"
+            >
+              <span
+                className="shrink-0 rounded-full px-2 py-[5px] text-[10px] font-bold uppercase leading-none tracking-[0.1em] text-white"
+                style={{ backgroundColor: KIND_STYLE[ANNOUNCEMENT.kind].bg }}
+              >
+                {KIND_STYLE[ANNOUNCEMENT.kind].label}
+              </span>
+              <span className="min-w-0 truncate">{ANNOUNCEMENT.text}</span>
+              <svg aria-hidden viewBox="0 0 16 16" className="h-3.5 w-3.5 shrink-0 text-[#4f46e5] transition-transform duration-300 ease-out group-hover:translate-x-0.5" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M3 8h10M9 4l4 4-4 4" />
+              </svg>
+            </Link>
+          ) : (
+            <p
+              data-reveal
+              className="inline-flex max-w-full items-center gap-2 rounded-full border border-[#0b0f19]/[0.08] bg-white/70 px-3 py-1.5 text-[10.5px] font-bold uppercase leading-none tracking-[0.12em] text-[#3f4657] backdrop-blur-sm sm:text-[11px]"
+            >
+              <span aria-hidden className="h-[5px] w-[5px] shrink-0 rounded-full bg-[#7c5cff]/80" />
+              <span className="hero-shimmer">{EYEBROW}</span>
+            </p>
+          )}
 
           {/* two lines from lg (explicit breaks); natural wrapping below */}
           <h1
