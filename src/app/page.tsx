@@ -1,4 +1,7 @@
 import LazyHydrate from "@/components/system/LazyHydrate";
+// Below-the-fold sections load their code on approach (LazySection); the
+// server still renders their full HTML.
+import LazySection from "@/components/system/LazySection";
 import SiteShell from "@/components/system/SiteShell";
 import Hero from "@/components/hero/Hero";
 import TrustStrip from "@/components/sections/TrustStrip";
@@ -7,19 +10,9 @@ import TrustStrip from "@/components/sections/TrustStrip";
 // import ServicePillars from "@/components/sections/ServicePillars";
 // ServicesShowcase (tab list + detail panel) is the previous version, kept but unmounted.
 // import ServicesShowcase from "@/components/sections/ServicesShowcase";
-import ServicesBento from "@/components/sections/services-bento/ServicesBento";
-import AboutStudio from "@/components/sections/AboutStudio";
-import CaseStudies from "@/components/sections/CaseStudies";
 // import CaseStudiesExpand from "@/components/sections/CaseStudiesExpand";
-import CaseStudiesFeatured from "@/components/sections/CaseStudiesFeatured";
-import Industries from "@/components/sections/Industries";
-import TechStack from "@/components/sections/TechStack";
 // import AiDevExcellence from "@/components/sections/AiDevExcellence";
-import HumanAiFlow from "@/components/sections/human-ai-flow/HumanAiFlow";
-import EngagementModels from "@/components/sections/EngagementModels";
-import Testimonials from "@/components/sections/Testimonials";
 import Locations from "@/components/sections/Locations";
-import FAQ from "@/components/sections/FAQ";
 
 /**
  * PASS 2: motion layer active — Lenis smooth scroll, custom cursor
@@ -54,37 +47,19 @@ export default function Home() {
       <TrustStrip />
       {/* <ServicePillars /> */}
       {/* <ServicesShowcase /> */}
-      <LazyHydrate>
-        <ServicesBento />
-      </LazyHydrate>
+      <LazySection name="servicesBento" />
       {/* <AiDevExcellence /> */}
-      <LazyHydrate>
-        <HumanAiFlow />
-      </LazyHydrate>
-      <LazyHydrate>
-        <Industries />
-      </LazyHydrate>
+      <LazySection name="humanAiFlow" />
+      <LazySection name="industries" />
       {/* TRIAL: accordion-style Case Studies (hyperline.co reference) being evaluated against the version below */}
       {/* <CaseStudiesExpand /> */}
-      <LazyHydrate>
-        <CaseStudiesFeatured />
-      </LazyHydrate>
+      <LazySection name="caseStudies" />
       {/* <CaseStudies /> */}
-      <LazyHydrate>
-        <Testimonials />
-      </LazyHydrate>
-      <LazyHydrate>
-        <EngagementModels />
-      </LazyHydrate>
-      <LazyHydrate>
-        <TechStack />
-      </LazyHydrate>
-      <LazyHydrate>
-        <AboutStudio />
-      </LazyHydrate>
-      <LazyHydrate>
-        <FAQ />
-      </LazyHydrate>
+      <LazySection name="testimonials" />
+      <LazySection name="engagementModels" />
+      <LazySection name="techStack" />
+      <LazySection name="aboutStudio" />
+      <LazySection name="faq" />
       <LazyHydrate>
         <Locations />
       </LazyHydrate>

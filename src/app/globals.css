@@ -1352,3 +1352,10 @@ body:has([data-hero][data-intro]) [data-site-header] {
     animation: mark-pearl 5.2s ease-in-out infinite;
   }
 }
+
+/* fog clouds: still on touch devices (a moving 70px blur is costly on phones) */
+@media (hover: none), (pointer: coarse) {
+  .fog-blob {
+    animation: none !important;
+  }
+}

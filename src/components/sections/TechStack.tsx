@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, type ComponentType } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore, type ComponentType } from "react";
 import {
   SiAnthropic,
   SiDjango,
@@ -194,11 +194,20 @@ const APPEAR_ORDER = SCATTER.map((s, i) => ({ i, o: s.order }))
 const clamp = (v: number) => Math.min(1, Math.max(0, v));
 const ease = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
 
+/**
+ * The brand icons are drawn in the browser only (this section is loaded on
+ * approach, see LazySection), not sent in the server HTML: 58 brand SVGs were
+ * ~84 KB of the page. The names stay in the HTML as text (what search engines
+ * and screen readers use); a same-size slot keeps the layout identical.
+ */
+const noop = () => () => {};
+const useInBrowser = () => useSyncExternalStore(noop, () => true, () => false);
+
 function Chip({ t }: { t: Tech }) {
-  const Icon = t.icon;
+  const Icon = useInBrowser() ? t.icon : null;
   return (
     <span className="inline-flex h-[30px] shrink-0 items-center gap-1.5 whitespace-nowrap rounded-[9px] border border-[#0b0f19]/[0.08] bg-white px-2.5 font-urbanist text-[12.5px] font-semibold text-ink shadow-[0_1px_2px_rgba(11,15,25,0.05)]">
-      {Icon ? <Icon size={14} color={t.color} /> : <span className="text-[10px] font-bold" style={{ color: t.color === "#ffffff" ? "#0b0f19" : `color-mix(in srgb, ${t.color} 62%, #000)` }}>{t.badge}</span>}
+      {Icon ? <Icon size={14} color={t.color} /> : t.icon ? <span aria-hidden className="inline-block h-[14px] w-[14px] shrink-0" /> : <span className="text-[10px] font-bold" style={{ color: t.color === "#ffffff" ? "#0b0f19" : `color-mix(in srgb, ${t.color} 62%, #000)` }}>{t.badge}</span>}
       {t.name}
     </span>
   );

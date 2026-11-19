@@ -74,7 +74,7 @@ export default function HeroIntro() {
       tip.style.opacity = "1";
     };
 
-    (async () => {
+    const setup = async () => {
       try {
         const [{ createMark }, { createHands, handColours }, { gsap }, { ScrollTrigger }] = await Promise.all([
           import("./createMark"),
@@ -401,10 +401,33 @@ export default function HeroIntro() {
       } catch (err) {
         giveUp(err);
       }
-    })();
+    };
+
+    // The 3D intro (three.js mark, hands, scroll timeline) sets up on the
+    // visitor's first interaction, not during page load: a mouse move, wheel,
+    // key or touch (or after FALLBACK_MS for anyone who does none of those).
+    // Until then the intro shows its mist, glyphs and figures; the pieces
+    // fade in a moment after the first move. This keeps the WebGL start-up
+    // (the heaviest work on the page) out of the first load. "armed" tells
+    // the safety timer in Hero.tsx that the intro is alive.
+    const FALLBACK_MS = 9000;
+    const START_EVENTS = ["pointermove", "pointerdown", "wheel", "keydown", "touchstart", "scroll"] as const;
+    let started = false;
+    const go = () => {
+      if (started) return;
+      started = true;
+      START_EVENTS.forEach((ev) => window.removeEventListener(ev, go));
+      window.clearTimeout(fallbackTimer);
+      void setup();
+    };
+    root.setAttribute("data-intro-armed", "");
+    START_EVENTS.forEach((ev) => window.addEventListener(ev, go, { passive: true }));
+    const fallbackTimer = window.setTimeout(go, FALLBACK_MS);
 
     return () => {
       cancelled = true;
+      START_EVENTS.forEach((ev) => window.removeEventListener(ev, go));
+      window.clearTimeout(fallbackTimer);
       cleanup?.();
       cleanup = null;
       disposeHands?.();

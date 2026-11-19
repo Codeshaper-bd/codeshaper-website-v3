@@ -5,9 +5,6 @@ const nextConfig: NextConfig = {
   // A separate output folder (NEXT_DIST_DIR=.next-prod) lets a production
   // build run for audits while the dev server keeps using .next.
   distDir: process.env.NEXT_DIST_DIR || ".next",
-  // Inline the (small) CSS into the HTML: no render-blocking stylesheet
-  // requests, so the first paint does not wait on extra round trips.
-  experimental: { inlineCss: true },
   /**
    * 301s (statusCode, not `permanent: true`, which sends 308) for:
    *  - URLs from the previous live site, mapped onto the new service structure

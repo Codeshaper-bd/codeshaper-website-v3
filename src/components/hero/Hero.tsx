@@ -59,7 +59,7 @@ if(!m||/[?&]intro=off/.test(location.search)||location.hash)return;
 var c=document.createElement('canvas'),gl=c.getContext('webgl2')||c.getContext('webgl');if(!gl)return;
 var l=gl.getExtension('WEBGL_lose_context');if(l)l.loseContext();
 var r=document.currentScript&&document.currentScript.parentElement;if(!r)return;r.setAttribute('data-intro','');
-setTimeout(function(){if(!r.hasAttribute('data-intro-live'))r.removeAttribute('data-intro');},${process.env.NODE_ENV === "production" ? 6000 : 30000});
+setTimeout(function(){if(!r.hasAttribute('data-intro-live')&&!r.hasAttribute('data-intro-armed'))r.removeAttribute('data-intro');},${process.env.NODE_ENV === "production" ? 6000 : 30000});
 }catch(e){}})();`;
 
 /** The mist behind the hero (and its intro): pale lavender and sky. */
@@ -125,7 +125,7 @@ export default function Hero() {
             {FOG_BLOBS.map((b, i) => (
               <div
                 key={i}
-                className="absolute rounded-full blur-[70px] motion-safe:animate-[fog-drift_var(--d)_ease-in-out_infinite_alternate]"
+                className="fog-blob absolute rounded-full blur-[70px] motion-safe:animate-[fog-drift_var(--d)_ease-in-out_infinite_alternate]"
                 style={b as React.CSSProperties}
               />
             ))}

@@ -1,7 +1,11 @@
 "use client";
 
 import { useEffect, useLayoutEffect, useRef, type MouseEvent } from "react";
-import gsap from "gsap";
+import type gsapType from "gsap";
+
+/** GSAP is loaded when the footer comes alive, not with the page (it was ~50 KB of the first load). */
+let gsapPromise: Promise<typeof gsapType> | null = null;
+const loadGsap = () => (gsapPromise ??= import("gsap").then((m) => m.default));
 import { usePrefersReducedMotion } from "@/lib/motion";
 
 const WORD = "CodeShaper";
@@ -46,6 +50,7 @@ const FIT_PROBE_SIZE = 100; // px — arbitrary known base used to compute the f
  * was last touched.
  */
 export default function FooterWordmark() {
+  const gsapRef = useRef<typeof gsapType | null>(null);
   const reduced = usePrefersReducedMotion();
   const wrapRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLParagraphElement>(null);
@@ -82,6 +87,14 @@ export default function FooterWordmark() {
     const letters = lettersRef.current.filter((el): el is HTMLSpanElement => Boolean(el));
     const container = containerRef.current;
     if (!letters.length || !container) return;
+    let cancelled = false;
+    let cleanup = () => {};
+    void loadGsap().then((gsap) => {
+      if (cancelled) return;
+      gsapRef.current = gsap;
+      cleanup = run(gsap);
+    });
+    const run = (gsap: typeof gsapType) => {
 
     // overflow-hidden only exists to mask the entrance slide-up; once
     // revealed it has to come off, or the hover-lift (translateY negative,
@@ -94,7 +107,7 @@ export default function FooterWordmark() {
     if (reduced) {
       gsap.set(letters, { yPercent: 0, opacity: 1, rotate: 0 });
       unmask();
-      return;
+      return () => {};
     }
 
     gsap.set(letters, { yPercent: 100, opacity: 0, rotate: 6 });
@@ -130,10 +143,16 @@ export default function FooterWordmark() {
       io.disconnect();
       clearTimeout(failsafe);
     };
+    };
+    return () => {
+      cancelled = true;
+      cleanup();
+    };
   }, [reduced]);
 
   const handleMove = (e: MouseEvent<HTMLParagraphElement>) => {
-    if (reduced || !containerRef.current) return;
+    const gsap = gsapRef.current;
+    if (reduced || !containerRef.current || !gsap) return;
     const containerRect = containerRef.current.getBoundingClientRect();
     const mouseX = e.clientX - containerRect.left;
     lettersRef.current.forEach((el) => {
@@ -153,7 +172,8 @@ export default function FooterWordmark() {
   };
 
   const handleLeave = () => {
-    if (reduced) return;
+    const gsap = gsapRef.current;
+    if (reduced || !gsap) return;
     const letters = lettersRef.current.filter((el): el is HTMLSpanElement => Boolean(el));
     gsap.to(letters, { y: 0, scale: 1, color: baseColorRef.current, duration: 0.5, ease: "power3.out", overwrite: "auto" });
   };
