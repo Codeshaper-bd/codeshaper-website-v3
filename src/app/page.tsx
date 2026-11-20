@@ -47,11 +47,13 @@ export default function Home() {
       {/* <ServicesShowcase /> */}
       <LazySection name="servicesBento" />
       {/* <AiDevExcellence /> */}
-      <LazySection name="humanAiFlow" />
-      <LazySection name="industries" />
-      {/* TRIAL: accordion-style Case Studies (hyperline.co reference) being evaluated against the version below */}
+      {/* Case Studies (owner request: swapped up from below Industries, where
+          Human + AI now sits) */}
+      {/* TRIAL: accordion-style Case Studies (hyperline.co reference) being evaluated against this version */}
       {/* <CaseStudiesExpand /> */}
       <LazySection name="caseStudies" />
+      <LazySection name="industries" />
+      <LazySection name="humanAiFlow" />
       {/* <CaseStudies /> */}
       <LazySection name="testimonials" />
       <LazySection name="techStack" />
