@@ -59,6 +59,7 @@ import { DiMsqlServer } from "react-icons/di";
 import { TbBrandCSharp, TbBrandAzure } from "react-icons/tb";
 import { FaJava, FaMagento } from "react-icons/fa6";
 import Reveal from "@/components/system/Reveal";
+import DotField from "@/components/sections/human-ai-flow/DotField";
 import { SectionEyebrow, SectionTitle } from "@/components/system/SectionHeading";
 
 /**
@@ -513,15 +514,13 @@ export default function TechStack() {
   );
 
   return (
-    <div className="bg-light-surface p-3 sm:p-4">
-      <section className="theme-light relative overflow-clip rounded-[32px] bg-canvas" aria-labelledby="tech-stack-heading">
+    <div className="bg-light-surface">
+      <section className="theme-light relative overflow-clip bg-light-surface" aria-labelledby="tech-stack-heading">
         <div ref={trackRef} className={animated ? "relative h-[300vh]" : "relative"}>
           <div ref={stageRef} className={animated ? "sticky top-0 flex flex-col overflow-hidden" : "relative py-16 lg:py-24"}>
-            {/* faint grid, like a canvas the tools land on */}
-            <div
-              aria-hidden
-              className="pointer-events-none absolute inset-0 bg-[linear-gradient(rgba(11,15,25,0.04)_1px,transparent_1px),linear-gradient(90deg,rgba(11,15,25,0.04)_1px,transparent_1px)] bg-[size:56px_56px] [mask-image:radial-gradient(80%_70%_at_50%_55%,black,transparent)]"
-            />
+            {/* the animated dot grid of the Human + AI section (mouse wave); inside the
+                sticky stage, so the canvas stays viewport-sized */}
+            <DotField className="[mask-image:linear-gradient(to_bottom,transparent,black_18%,black_82%,transparent)]" />
 
             <div className={`relative mx-auto flex w-full max-w-7xl flex-col px-4 sm:px-6 lg:px-10 ${animated ? "py-24" : ""}`}>
               <Reveal>

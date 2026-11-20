@@ -1,4 +1,3 @@
-import LazyHydrate from "@/components/system/LazyHydrate";
 // Below-the-fold sections load their code on approach (LazySection); the
 // server still renders their full HTML.
 import LazySection from "@/components/system/LazySection";
@@ -12,7 +11,6 @@ import TrustStrip from "@/components/sections/TrustStrip";
 // import ServicesShowcase from "@/components/sections/ServicesShowcase";
 // import CaseStudiesExpand from "@/components/sections/CaseStudiesExpand";
 // import AiDevExcellence from "@/components/sections/AiDevExcellence";
-import Locations from "@/components/sections/Locations";
 
 /**
  * PASS 2: motion layer active — Lenis smooth scroll, custom cursor
@@ -42,7 +40,7 @@ import Locations from "@/components/sections/Locations";
  */
 export default function Home() {
   return (
-    <SiteShell joinedFooter>
+    <SiteShell>
       <Hero />
       <TrustStrip />
       {/* <ServicePillars /> */}
@@ -56,13 +54,16 @@ export default function Home() {
       <LazySection name="caseStudies" />
       {/* <CaseStudies /> */}
       <LazySection name="testimonials" />
-      <LazySection name="engagementModels" />
       <LazySection name="techStack" />
-      <LazySection name="aboutStudio" />
-      <LazySection name="faq" />
-      <LazyHydrate>
-        <Locations />
-      </LazyHydrate>
+      {/* numbers + AI and human workflow (where Tech Stack was) */}
+      <LazySection name="impactWorkflow" />
+      {/* Engagement Models (swapped with Tech Stack) */}
+      <LazySection name="engagementModels" />
+      {/* hidden for now (owner): Who we are / Why teams choose us / glimpses, and FAQ */}
+      {/* <LazySection name="aboutStudio" /> */}
+      {/* <LazySection name="faq" /> */}
+      {/* Locations hidden for now (owner) */}
+      {/* <LazyHydrate><Locations /></LazyHydrate> */}
     </SiteShell>
   );
 }

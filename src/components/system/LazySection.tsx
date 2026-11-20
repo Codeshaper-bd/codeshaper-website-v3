@@ -32,6 +32,7 @@ const LOADERS = {
   techStack: () => import("@/components/sections/TechStack"),
   aboutStudio: () => import("@/components/sections/AboutStudio"),
   faq: () => import("@/components/sections/FAQ"),
+  impactWorkflow: () => import("@/components/sections/ImpactWorkflow"),
 } satisfies Record<string, () => Promise<{ default: ComponentType }>>;
 
 export type SectionName = keyof typeof LOADERS;
