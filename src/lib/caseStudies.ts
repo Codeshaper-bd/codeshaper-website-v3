@@ -1,7 +1,7 @@
 /**
- * Case study data. Only three real, verified projects exist right now —
- * Fennec, Essentialist, and Acculance (the same three marked "real" in
- * CaseStudiesExpand.tsx on the homepage). No placeholder/invented case
+ * Case study data. Fennec, Essentialist, Acculance, and TOI Coin are
+ * featured projects. TOI Coin's copy describes only its supplied film;
+ * no delivery metrics or technical stack are inferred. No invented case
  * studies are added here: a hub page whose entire premise is "proof, not
  * promises" would undermine itself by padding the grid with fabricated
  * companies and results, unlike a homepage teaser card where a clearly
@@ -37,6 +37,7 @@ export type CaseStudy = {
   tech: string[];
   platforms?: string;
   image: string;
+  video?: string;
   accent: string;
   /** Impact stats strip — 2–5 items, all honest/categorical, never invented numbers */
   stats: Stat[];
@@ -87,7 +88,8 @@ export const CASE_STUDIES: CaseStudy[] = [
     engagementModel: "End-to-End Delivery",
     tech: ["WordPress", "GSAP", "Custom Frontend"],
     platforms: "Marketing Website + Application Flow",
-    image: "/media/case-studies/essentialist-home.jpg",
+    image: "/media/case-studies/essentialist-poster.jpg",
+    video: "/media/case-studies/essentialist.mp4",
     accent: "#d97fc4",
     stats: [
       { value: "8–10 weeks", label: "Time to launch" },
@@ -186,7 +188,7 @@ export const CASE_STUDIES: CaseStudy[] = [
       ],
     },
     gallery: [
-      { src: "/media/case-studies/essentialist-home.jpg", caption: "Homepage built for premium clarity — value proposition within the first scroll" },
+      { src: "/media/case-studies/essentialist-poster.jpg", caption: "Essentialist project film — a luxury travel experience" },
       { src: "https://picsum.photos/seed/essentialist-apply/1200/800", caption: "Application flow optimized for trust and low friction" },
       { src: "/media/case-studies/essentialist-editors.jpg", caption: "Editors page designed to reinforce credibility" },
     ],
@@ -215,7 +217,8 @@ export const CASE_STUDIES: CaseStudy[] = [
     services: ["Custom Web Apps", "Mobile App Development", "Product Discovery & Strategy"],
     tech: ["Web App", "Mobile App"],
     platforms: "Web + Mobile",
-    image: "https://picsum.photos/seed/fennec-nightlife/1200/800",
+    image: "/media/case-studies/fennec-poster.jpg",
+    video: "/media/case-studies/fennec.mp4",
     accent: "#8a7bff",
     stats: [
       { value: "Web + App", label: "Platforms shipped" },
@@ -237,6 +240,24 @@ export const CASE_STUDIES: CaseStudy[] = [
     gallery: [
       { src: "https://picsum.photos/seed/fennec-venues/1200/800", caption: "Venue operations, in one place" },
       { src: "https://picsum.photos/seed/fennec-guests/1200/800", caption: "Guest-facing mobile experience" },
+    ],
+  },
+  {
+    slug: "toi-coin",
+    project: "TOI Coin",
+    headline: "TOI Coin, brought to life in motion.",
+    summary: "Explore TOI Coin through a project film featuring its visual identity, digital artwork, and brand in motion.",
+    industry: "Blockchain & Web3",
+    services: ["Brand Presentation", "Motion Design"],
+    tech: [],
+    image: "/media/case-studies/toi-poster.jpg",
+    video: "/media/case-studies/toi.mp4",
+    accent: "#137960",
+    stats: [],
+    deliverables: [
+      "Distinctive visual identity",
+      "Digital brand presentation",
+      "Motion-led storytelling",
     ],
   },
   {

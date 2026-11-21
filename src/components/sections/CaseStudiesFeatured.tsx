@@ -3,11 +3,12 @@
 import { useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, ArrowUpRight, Check } from "lucide-react";
+import { ArrowRight, ArrowUpRight, Calculator, Check, Package, ShoppingCart, type LucideIcon } from "lucide-react";
 import Flag from "@/components/system/Flag";
 import Reveal from "@/components/system/Reveal";
 import { SectionEyebrow, SectionTitle } from "@/components/system/SectionHeading";
 import { getCaseStudyBySlug, type CaseStudy } from "@/lib/caseStudies";
+import CaseStudyVideo from "@/components/case-studies/CaseStudyVideo";
 
 /**
  * Case studies, homepage: stacked sticky cards (the studio-portfolio
@@ -17,9 +18,8 @@ import { getCaseStudyBySlug, type CaseStudy } from "@/lib/caseStudies";
  *
  *  · Media first (~60% of the card), then the story: index, client,
  *    outcome headline, proof (results, or what we built), one CTA.
- *  · Essentialist uses real screenshots of the live site; Fennec and
- *    Acculance have none yet, so their media is typographic. Add screens
- *    to /public/media/case-studies and set `screens` below to switch.
+ *  · Project films preserve their full 16:9 composition inside the media
+ *    frame. Essentialist also retains its mobile screenshot overlay.
  *  · Only real projects from lib/caseStudies.ts. Below lg, and under
  *    reduced motion, the cards simply stack with no pinning or scaling.
  */
@@ -27,6 +27,7 @@ type Entry = {
   slug: string;
   headline?: string;
   screens?: { desktop: string; mobile?: string };
+  modules?: { label: string; Icon: LucideIcon }[];
   wash: string;
   accent: string;
 };
@@ -35,7 +36,7 @@ const ENTRIES: Entry[] = [
   {
     slug: "essentialist",
     headline: "A premium membership site, launched in 8–10 weeks.",
-    screens: { desktop: "/media/case-studies/essentialist-home.jpg", mobile: "/media/case-studies/essentialist-mobile.jpg" },
+    screens: { desktop: "/media/case-studies/essentialist-poster.jpg", mobile: "/media/case-studies/essentialist-mobile.jpg" },
     wash: "radial-gradient(85% 95% at 0% 100%, rgba(255,162,108,0.55) 0%, rgba(255,201,112,0.28) 35%, rgba(255,255,255,0) 70%), radial-gradient(60% 70% at 100% 0%, rgba(192,138,255,0.28) 0%, rgba(255,255,255,0) 70%)",
     accent: "#c2531c",
   },
@@ -45,7 +46,17 @@ const ENTRIES: Entry[] = [
     accent: "#4b3fb8",
   },
   {
+    slug: "toi-coin",
+    wash: "radial-gradient(90% 100% at 100% 100%, rgba(68,229,185,0.4) 0%, rgba(167,244,221,0.25) 40%, rgba(255,255,255,0) 80%)",
+    accent: "#137960",
+  },
+  {
     slug: "acculance",
+    modules: [
+      { label: "Point of sale", Icon: ShoppingCart },
+      { label: "Inventory", Icon: Package },
+      { label: "Accounting", Icon: Calculator },
+    ],
     wash: "radial-gradient(90% 100% at 100% 100%, #4f9be0 0%, #8cc1f2 24%, #bfddfb 44%, rgba(227,239,253,0.55) 62%, rgba(255,255,255,0) 82%)",
     accent: "#1d5f9e",
   },
@@ -66,38 +77,51 @@ function Media({ cs, e }: { cs: CaseStudy; e: Entry }) {
     <div className="relative h-full overflow-hidden rounded-[22px] bg-[#f6f4f1]">
       <div aria-hidden className="absolute inset-0 transition-transform duration-[1200ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover/card:scale-[1.05]" style={{ background: e.wash }} />
 
-      {e.screens ? (
-        <div className="absolute inset-x-[7%] top-[11%] transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover/card:-translate-y-1.5">
-          <div className="overflow-hidden rounded-[12px] border border-[#0b0f19]/[0.08] bg-white shadow-[0_1px_2px_rgba(11,15,25,0.05),0_40px_70px_-34px_rgba(11,15,25,0.5)]">
-            <div className="flex items-center gap-1.5 border-b border-[#0b0f19]/[0.06] bg-[#fafaf9] px-3 py-2">
-              <span className="h-2 w-2 rounded-full bg-[#0b0f19]/15" />
-              <span className="h-2 w-2 rounded-full bg-[#0b0f19]/15" />
-              <span className="h-2 w-2 rounded-full bg-[#0b0f19]/15" />
-              {host && <span className="mx-auto rounded-md bg-[#0b0f19]/[0.04] px-3 py-0.5 font-urbanist text-[10.5px] text-ink-dim">{host}</span>}
-            </div>
-            <div className="relative aspect-[16/10]">
-              <Image src={e.screens.desktop} alt={`${cs.project} website`} fill sizes="(min-width: 1024px) 720px, 92vw" className="object-cover object-top" />
-            </div>
-          </div>
-          {e.screens.mobile && (
-            <div className="absolute -bottom-[14%] right-[-3%] w-[22%] min-w-[90px] rounded-[24px] bg-[#0b0f19] p-[4px] shadow-[0_30px_50px_-22px_rgba(11,15,25,0.65)]">
-              <div className="relative aspect-[390/760] overflow-hidden rounded-[20px] bg-white">
-                <Image src={e.screens.mobile} alt={`${cs.project} on mobile`} fill sizes="170px" className="object-cover object-top" />
+      <div className={`relative flex h-full flex-col px-[7%] pt-5 sm:pt-7 lg:pt-8 lg:pb-[8%] ${e.screens?.mobile ? "pb-[10%]" : "pb-6"}`}>
+        <p className="font-urbanist text-xl font-semibold leading-tight tracking-tight text-ink sm:text-2xl">
+          {cs.project}
+        </p>
+        <div className="mt-4 flex flex-1 items-center sm:mt-5">
+          {e.screens || cs.video ? (
+            <div className="relative w-full transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] motion-safe:group-hover/card:-translate-y-1.5">
+              <div className="overflow-hidden rounded-[12px] border border-[#0b0f19]/[0.08] bg-white shadow-[0_1px_2px_rgba(11,15,25,0.05),0_40px_70px_-34px_rgba(11,15,25,0.5)]">
+                <div className="flex items-center gap-1.5 border-b border-[#0b0f19]/[0.06] bg-[#fafaf9] px-3 py-2">
+                  <span className="h-2 w-2 rounded-full bg-[#0b0f19]/15" />
+                  <span className="h-2 w-2 rounded-full bg-[#0b0f19]/15" />
+                  <span className="h-2 w-2 rounded-full bg-[#0b0f19]/15" />
+                  {host && <span className="mx-auto rounded-md bg-[#0b0f19]/[0.04] px-3 py-0.5 font-urbanist text-[10.5px] text-ink-dim">{host}</span>}
+                </div>
+                <div className="relative aspect-video">
+                  {cs.video ? (
+                    <CaseStudyVideo src={cs.video} poster={cs.image} project={cs.project} />
+                  ) : e.screens ? (
+                    <Image src={e.screens.desktop} alt={`${cs.project} website`} fill sizes="(min-width: 1024px) 720px, 92vw" className="object-cover object-top" />
+                  ) : null}
+                </div>
               </div>
+              {e.screens?.mobile && (
+                <div className="pointer-events-none absolute -bottom-[14%] right-[-3%] w-[22%] min-w-[64px] rounded-[18px] bg-[#0b0f19] p-[3px] shadow-[0_30px_50px_-22px_rgba(11,15,25,0.65)] sm:rounded-[24px] sm:p-[4px]">
+                  <div className="relative aspect-[390/760] overflow-hidden rounded-[15px] bg-white sm:rounded-[20px]">
+                    <Image src={e.screens.mobile} alt={`${cs.project} on mobile`} fill sizes="170px" className="object-cover object-top" />
+                  </div>
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="flex aspect-video w-full flex-col justify-center gap-3 rounded-xl border border-white/80 bg-white/65 p-3 shadow-[0_24px_54px_-36px_rgba(11,15,25,0.45)] sm:gap-5 sm:p-7">
+              <p className="text-center font-urbanist text-xs font-semibold text-ink-dim sm:text-sm">{cs.platforms}</p>
+              <ul className="grid grid-cols-3 gap-1.5 sm:gap-3">
+                {e.modules?.map(({ label, Icon }) => (
+                  <li key={label} className="flex min-w-0 flex-col items-center gap-2 rounded-lg border border-[#0b0f19]/[0.07] bg-white/85 px-1 py-3 text-center font-urbanist text-[11px] font-semibold leading-tight text-ink sm:gap-3 sm:py-5 sm:text-sm">
+                    <Icon className="size-5 sm:size-7" style={{ color: e.accent }} strokeWidth={1.75} aria-hidden />
+                    {label}
+                  </li>
+                ))}
+              </ul>
             </div>
           )}
         </div>
-      ) : (
-        <div aria-hidden className="relative flex h-full flex-col justify-between p-7 sm:p-10">
-          <span className="w-fit rounded-full border border-white/70 bg-white/60 px-3 py-1 font-urbanist text-[12px] font-semibold text-ink shadow-[inset_0_1px_0_rgba(255,255,255,0.9)] backdrop-blur-md">
-            {cs.platforms}
-          </span>
-          <div>
-            <p className="font-urbanist text-[56px] font-bold leading-[0.9] tracking-[-0.045em] text-ink sm:text-[88px] lg:text-[104px]">{cs.project}</p>
-            <p className="mt-4 font-urbanist text-[14px] font-medium text-ink/70">{cs.industry}</p>
-          </div>
-        </div>
-      )}
+      </div>
     </div>
   );
 }
@@ -193,8 +217,7 @@ export default function CaseStudiesFeatured() {
                       </div>
 
                       <p className="mt-8 font-urbanist text-[14px] text-ink-dim lg:mt-auto">
-                        <span className="font-semibold text-ink">{cs.project}</span>
-                        <span> · {cs.services.slice(0, 2).join(", ")}</span>
+                        {cs.services.slice(0, 2).join(", ")}
                       </p>
                       <h3 className="mt-2 font-urbanist text-[26px] font-bold leading-[1.1] tracking-[-0.025em] text-ink sm:text-[32px]">
                         {e.headline ?? cs.headline}
@@ -241,7 +264,7 @@ export default function CaseStudiesFeatured() {
                     </div>
 
                     {/* media */}
-                    <div className="order-1 h-[260px] sm:h-[380px] lg:order-2 lg:h-full">
+                    <div className="order-1 lg:order-2 lg:h-full">
                       <Media cs={cs} e={e} />
                     </div>
                   </div>

@@ -31,6 +31,7 @@ import Breadcrumbs from "@/components/system/Breadcrumbs";
 import Reveal from "@/components/system/Reveal";
 import { SectionEyebrow, SectionTitle } from "@/components/system/SectionHeading";
 import CaseStudyCard from "@/components/case-studies/CaseStudyCard";
+import CaseStudyVideo from "@/components/case-studies/CaseStudyVideo";
 import CaseStudiesFinalCta from "@/components/case-studies/CaseStudiesFinalCta";
 import { CASE_STUDIES, getCaseStudyBySlug, getRelatedCaseStudies } from "@/lib/caseStudies";
 import { textSafeAccent } from "@/lib/color";
@@ -119,7 +120,7 @@ export default async function CaseStudyDetailPage({
     ...(story.engagementModel ? [{ label: "Engagement model", value: story.engagementModel }] : []),
     ...(story.timeline ? [{ label: "Timeline", value: story.timeline }] : []),
     ...(story.team ? [{ label: "Team", value: story.team }] : []),
-    { label: "Tech stack", value: story.tech.join(", ") },
+    ...(story.tech.length ? [{ label: "Tech stack", value: story.tech.join(", ") }] : []),
     ...(story.platforms ? [{ label: "Platforms", value: story.platforms }] : []),
   ];
 
@@ -188,9 +189,13 @@ export default async function CaseStudyDetailPage({
           {/* Cover image */}
           <div className="mx-auto max-w-7xl px-6 pt-8 lg:px-10">
             <Reveal delay={80}>
-              <div className="aspect-[21/9] overflow-hidden rounded-2xl bg-light-raised">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={story.image} alt="" className="h-full w-full object-cover" />
+              <div className={`${story.video ? "aspect-video" : "aspect-[21/9]"} overflow-hidden rounded-2xl bg-light-raised`}>
+                {story.video ? (
+                  <CaseStudyVideo key={story.video} src={story.video} poster={story.image} project={story.project} />
+                ) : (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={story.image} alt="" className="h-full w-full object-cover" />
+                )}
               </div>
             </Reveal>
 
