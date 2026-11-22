@@ -1,0 +1,32 @@
+{
+ "ai-agents-automation": [
+  "Less manual work",
+  "Human approval where it matters",
+  "Every action logged",
+  "Measurable time saved"
+ ],
+ "ai-software-development": [
+  "Maintainable code",
+  "Tested before every release",
+  "Built to scale",
+  "Clean handover"
+ ],
+ "ai-integration-infrastructure": [
+  "Works with your existing systems",
+  "Secure data access",
+  "Monitored in production",
+  "Grounded, not generic answers"
+ ],
+ "ui-ux-product-design": [
+  "Clearer flows",
+  "Accessible by default",
+  "Faster dev handoff",
+  "Consistent UI"
+ ],
+ "websites-commerce": [
+  "Found in Google and AI search",
+  "Fast load times",
+  "Higher conversion",
+  "Content teams can self-serve"
+ ]
+}

@@ -5,7 +5,7 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState, type CSSProp
 import Link from "next/link";
 import * as Nav from "@radix-ui/react-navigation-menu";
 import { ArrowRight, ChevronDown } from "lucide-react";
-import { SIMPLE_MENUS } from "@/lib/navigation";
+import { HEADER_BUTTON, HEADER_ITEMS, type MenuLink } from "@/lib/navigation";
 import { Icon } from "@/lib/icons";
 import MegaPanel from "./MegaPanel";
 import IndustriesMegaPanel from "./IndustriesMegaPanel";
@@ -292,83 +292,58 @@ export default function Navbar() {
               )}
               <Nav.Root value={openValue} onValueChange={setOpenValue}>
                 <Nav.List className={`flex items-center ${docked ? "gap-0.5" : "gap-0.5"}`}>
-                  <Nav.Item value="services" {...item(2)}>
-                    <Nav.Trigger className={tc}>
-                      Services
-                      <ChevronDown
-                        size={13}
-                        strokeWidth={1.75}
-                        className={`transition-transform duration-200 ${docked ? "rotate-180 group-data-[state=open]:rotate-0" : "group-data-[state=open]:rotate-180"}`}
-                      />
-                    </Nav.Trigger>
-                    <Nav.Content
-                      className={`mega-panel fixed left-1/2 z-40 w-[min(calc(100vw-32px),1200px)] -translate-x-1/2 data-[state=closed]:hidden ${megaPos}`}
-                      style={{ position: "fixed" }}
-                    >
-                      <MegaPanel />
-                    </Nav.Content>
-                  </Nav.Item>
-
-                  <Nav.Item value="industries" {...item(3)}>
-                    <Nav.Trigger className={tc}>
-                      Industries
-                      <ChevronDown
-                        size={13}
-                        strokeWidth={1.75}
-                        className={`transition-transform duration-200 ${docked ? "rotate-180 group-data-[state=open]:rotate-0" : "group-data-[state=open]:rotate-180"}`}
-                      />
-                    </Nav.Trigger>
-                    <Nav.Content
-                      className={`mega-panel fixed left-1/2 z-40 w-[min(calc(100vw-32px),1200px)] -translate-x-1/2 data-[state=closed]:hidden ${megaPos}`}
-                      style={{ position: "fixed" }}
-                    >
-                      <IndustriesMegaPanel />
-                    </Nav.Content>
-                  </Nav.Item>
-
-                  <Nav.Item {...item(4)}>
-                    <Nav.Link asChild>
-                      <Link href="/case-studies" className={tc}>
-                        Case Studies
-                      </Link>
-                    </Nav.Link>
-                  </Nav.Item>
-
-                  {/* Standing in for the Insights dropdown (disabled — see its
-                      `enabled: false` in navigation.ts) until it has more than
-                      Blog behind it. */}
-                  <Nav.Item {...item(5)}>
-                    <Nav.Link asChild>
-                      <Link href="/blog" className={tc}>
-                        Blog
-                      </Link>
-                    </Nav.Link>
-                  </Nav.Item>
-
-                  {SIMPLE_MENUS.filter((m) => m.enabled !== false).map((m, i) => (
-                    <DropdownItem key={m.id} menu={m} docked={docked} triggerClassName={tc} order={6 + i} />
-                  ))}
+                  {HEADER_ITEMS.map((it, i) => {
+                    if (it.type === "group") return <DropdownItem key={i} id={it.label.toLowerCase().replace(/[^a-z0-9]+/g, "-") || `group-${i}`} label={it.label} links={it.links} docked={docked} triggerClassName={tc} order={2 + i} />;
+                    if (it.type === "link")
+                      return (
+                        <Nav.Item key={i} {...item(2 + i)}>
+                          <Nav.Link asChild>
+                            <Link href={it.href} className={tc}>
+                              {it.label}
+                            </Link>
+                          </Nav.Link>
+                        </Nav.Item>
+                      );
+                    return (
+                      <Nav.Item key={i} value={it.type} {...item(2 + i)}>
+                        <Nav.Trigger className={tc}>
+                          {it.label}
+                          <ChevronDown
+                            size={13}
+                            strokeWidth={1.75}
+                            className={`transition-transform duration-200 ${docked ? "rotate-180 group-data-[state=open]:rotate-0" : "group-data-[state=open]:rotate-180"}`}
+                          />
+                        </Nav.Trigger>
+                        <Nav.Content
+                          className={`mega-panel fixed left-1/2 z-40 w-[min(calc(100vw-32px),1200px)] -translate-x-1/2 data-[state=closed]:hidden ${megaPos}`}
+                          style={{ position: "fixed" }}
+                        >
+                          {it.type === "services" ? <MegaPanel /> : <IndustriesMegaPanel />}
+                        </Nav.Content>
+                      </Nav.Item>
+                    );
+                  })}
                 </Nav.List>
               </Nav.Root>
             </div>
 
-            {docked && <span aria-hidden className="dock-item mx-1.5 h-6 w-px bg-[#0b0f19]/[0.09] shadow-[1px_0_0_rgba(255,255,255,0.75)]" style={{ "--i": 7 } as CSSProperties} />}
+            {docked && <span aria-hidden className="dock-item mx-1.5 h-6 w-px bg-[#0b0f19]/[0.09] shadow-[1px_0_0_rgba(255,255,255,0.75)]" style={{ "--i": 2 + HEADER_ITEMS.length } as CSSProperties} />}
 
-            <div {...item(8)} className={`relative flex items-center gap-3 ${docked ? "dock-item" : ""}`} data-nav-cta={docked ? undefined : ""}>
+            <div {...item(3 + HEADER_ITEMS.length)} className={`relative flex items-center gap-3 ${docked ? "dock-item" : ""}`} data-nav-cta={docked ? undefined : ""}>
               {docked ? (
                 <Link
-                  href="/contact"
+                  href={HEADER_BUTTON.href}
                   className="cta-glossy inline-flex h-10 items-center rounded-full px-5 font-urbanist text-[15px] font-semibold text-white"
                 >
-                  Book a Call
+                  {HEADER_BUTTON.label}
                 </Link>
               ) : (
                 <Magnetic>
                   <Link
-                    href="/contact"
+                    href={HEADER_BUTTON.href}
                     className="cta-glossy group inline-flex h-10 items-center gap-1.5 rounded-full px-4 font-urbanist text-[15px] font-semibold text-white sm:px-5 sm:text-base lg:h-11 lg:pl-5 lg:pr-4"
                   >
-                    Book a Call
+                    {HEADER_BUTTON.label}
                     <ArrowRight
                       size={16}
                       strokeWidth={2}
@@ -394,29 +369,28 @@ export default function Navbar() {
  * icon + label rows. Opens downward from the top bar, upward from the dock.
  */
 function DropdownItem({
-  menu,
+  id,
+  label,
+  links,
   docked,
   triggerClassName,
   order,
 }: {
-  menu: {
-    id: string;
-    label: string;
-    dividerAfterIndex?: number;
-    links: { label: string; href: string; icon: string }[];
-  };
+  id: string;
+  label: string;
+  links: MenuLink[];
   docked: boolean;
   triggerClassName: string;
   order: number;
 }) {
   return (
     <Nav.Item
-      value={menu.id}
+      value={id}
       className={`relative ${docked ? "dock-item" : ""}`}
       style={docked ? ({ "--i": order } as CSSProperties) : undefined}
     >
       <Nav.Trigger className={triggerClassName}>
-        {menu.label}
+        {label}
         <ChevronDown
           size={13}
           strokeWidth={1.75}
@@ -429,7 +403,7 @@ function DropdownItem({
         }`}
       >
         <ul>
-          {menu.links.map((l, i) => (
+          {links.map((l, i) => (
             <li key={l.href}>
               <Nav.Link asChild>
                 <Link
@@ -442,7 +416,7 @@ function DropdownItem({
                   {l.label}
                 </Link>
               </Nav.Link>
-              {menu.dividerAfterIndex === i && <div className="mx-2 my-1 h-px bg-[#0b0f19]/[0.07] shadow-[0_1px_0_rgba(255,255,255,0.8)]" aria-hidden />}
+              {i === 0 && links.length > 1 && <div className="mx-2 my-1 h-px bg-[#0b0f19]/[0.07] shadow-[0_1px_0_rgba(255,255,255,0.8)]" aria-hidden />}
             </li>
           ))}
         </ul>

@@ -38,3 +38,10 @@ yarn-error.log*
 /.superpowers
 /.next-prod/
 /.next-audit/
+
+# enquiries waiting to be sent to the CMS
+.leads-spool/
+.content-backup/
+.next-update/
+.next-old/
+.next-*/

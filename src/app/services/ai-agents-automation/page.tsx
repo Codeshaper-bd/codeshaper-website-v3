@@ -14,6 +14,8 @@ import {
   SectionLabel,
   breadcrumbJsonLd,
 } from "@/components/services/ServicePageParts";
+import RichContent from "@/components/cms/RichContent";
+import { serviceDetail } from "@/lib/details";
 import { getGroup, servicesInGroup, servicePath } from "@/data/services";
 import { pageMetadata } from "@/lib/pageMetadata";
 import {
@@ -259,6 +261,8 @@ export default function AiAgentsAutomationPage() {
         <FaqAccordion id="ai-faq-heading" title={`${GROUP.name} questions, answered`} items={AI_FAQS} />
 
         {/* 11. Final CTA */}
+        <RichContent html={serviceDetail("ai-agents-automation").html} className="mx-auto max-w-4xl px-6 py-14 lg:px-10" />
+
         <BookCallCta
           title="Have a workflow worth automating?"
           description="Tell us what's manual today — we'll map where AI actually helps, and where it doesn't."

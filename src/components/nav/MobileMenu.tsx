@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import * as Accordion from "@radix-ui/react-accordion";
 import { ArrowRight, ChevronRight, Plus, X } from "lucide-react";
-import { SIMPLE_MENUS, INDUSTRIES } from "@/lib/navigation";
+import { HEADER_BUTTON, HEADER_ITEMS, INDUSTRIES } from "@/lib/navigation";
 import {
   SERVICE_GROUPS,
   ENGAGEMENT_MODELS,
@@ -176,147 +176,149 @@ export default function MobileMenu({
             onValueChange={setItem}
             className="divide-y divide-black/[0.06] overflow-hidden rounded-2xl bg-white"
           >
-            <Accordion.Item value="services">
-              {/* opened from the Services tab, the sheet title already says
-                  "Services": show its content directly, without the row */}
-              <Accordion.Header className={title === "Services" ? "hidden" : undefined}>
-                <Accordion.Trigger className={rowTrigger}>
-                  Services
-                  <Plus size={18} strokeWidth={1.8} aria-hidden className={rowIcon} />
-                </Accordion.Trigger>
-              </Accordion.Header>
-              <Accordion.Content className="overflow-hidden px-4 pb-5">
-                <p className="menu-section-label mb-1 mt-1">How We Engage</p>
-                <ul className="mb-4">
-                  {ENGAGEMENT_MODELS.map((m) => (
-                    <li key={m.href}>
-                      <Link href={m.href} onClick={close} className="flex min-h-[44px] items-center text-[15px] text-ink-dim">
-                        {m.label}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
+            {HEADER_ITEMS.map((it, i) => {
+              if (it.type === "services")
+                return (
+                <Accordion.Item key={i} value="services">
+                  {/* opened from the Services tab, the sheet title already says
+                      "Services": show its content directly, without the row */}
+                  <Accordion.Header className={title === "Services" ? "hidden" : undefined}>
+                    <Accordion.Trigger className={rowTrigger}>
+                      {it.label}
+                      <Plus size={18} strokeWidth={1.8} aria-hidden className={rowIcon} />
+                    </Accordion.Trigger>
+                  </Accordion.Header>
+                  <Accordion.Content className="overflow-hidden px-4 pb-5">
+                    <p className="menu-section-label mb-1 mt-1">How We Engage</p>
+                    <ul className="mb-4">
+                      {ENGAGEMENT_MODELS.map((m) => (
+                        <li key={m.href}>
+                          <Link href={m.href} onClick={close} className="flex min-h-[44px] items-center text-[15px] text-ink-dim">
+                            {m.label}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
 
-                <p className="menu-section-label mb-1">Core Services</p>
-                <Accordion.Root type="single" collapsible className="mb-4">
-                  {SERVICE_GROUPS.map((group) => (
-                    <Accordion.Item key={group.slug} value={group.slug}>
-                      <Accordion.Header>
-                        <Accordion.Trigger className="group flex min-h-[48px] w-full items-center gap-3 text-left text-[15px] text-ink">
-                          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[9px] bg-[#f1f2f5] text-aurora-indigo">
-                            <Icon name={group.icon} size={15} />
-                          </span>
-                          <span className="flex-1">
-                            {group.name}
-                            {group.flagship && (
-                              <span className="ml-2 rounded-full border border-hairline px-1.5 py-px text-[10px] text-aurora-amber-dark">
-                                New
+                    <p className="menu-section-label mb-1">Core Services</p>
+                    <Accordion.Root type="single" collapsible className="mb-4">
+                      {SERVICE_GROUPS.map((group) => (
+                        <Accordion.Item key={group.slug} value={group.slug}>
+                          <Accordion.Header>
+                            <Accordion.Trigger className="group flex min-h-[48px] w-full items-center gap-3 text-left text-[15px] text-ink">
+                              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[9px] bg-[#f1f2f5] text-aurora-indigo">
+                                <Icon name={group.icon} size={15} />
                               </span>
-                            )}
-                          </span>
-                          <Plus
-                            size={15}
-                            strokeWidth={1.8}
-                            className="shrink-0 text-ink-faint transition-transform duration-300 group-data-[state=open]:rotate-45"
-                            aria-hidden
-                          />
-                        </Accordion.Trigger>
-                      </Accordion.Header>
-                      <Accordion.Content className="overflow-hidden pb-2 pl-11">
-                        <Link
-                          href={servicePath(group.slug)}
-                          onClick={close}
-                          className="inline-flex min-h-[40px] items-center gap-1.5 text-[14px] font-semibold text-aurora-violet"
-                        >
-                          {group.name} overview
-                          <ArrowRight size={13} strokeWidth={1.9} />
-                        </Link>
-                        {groupSections(group).map((s) => (
-                          <div key={s.name ?? group.slug}>
-                            {s.name && (
-                              <p className="mb-0.5 mt-2 text-[11px] font-medium uppercase tracking-[0.16em] text-ink-faint">{s.name}</p>
-                            )}
-                            <ul>
-                              {s.services.map((svc) => (
-                                <li key={svc.slug}>
-                                  <Link href={servicePath(svc.slug)} onClick={close} className="flex min-h-[40px] items-center text-[14px] text-ink-dim">
-                                    {svc.menuLabel}
-                                  </Link>
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
-                        ))}
-                      </Accordion.Content>
-                    </Accordion.Item>
-                  ))}
-                </Accordion.Root>
+                              <span className="flex-1">
+                                {group.name}
+                                {group.flagship && (
+                                  <span className="ml-2 rounded-full border border-hairline px-1.5 py-px text-[10px] text-aurora-amber-dark">
+                                    New
+                                  </span>
+                                )}
+                              </span>
+                              <Plus
+                                size={15}
+                                strokeWidth={1.8}
+                                className="shrink-0 text-ink-faint transition-transform duration-300 group-data-[state=open]:rotate-45"
+                                aria-hidden
+                              />
+                            </Accordion.Trigger>
+                          </Accordion.Header>
+                          <Accordion.Content className="overflow-hidden pb-2 pl-11">
+                            <Link
+                              href={servicePath(group.slug)}
+                              onClick={close}
+                              className="inline-flex min-h-[40px] items-center gap-1.5 text-[14px] font-semibold text-aurora-violet"
+                            >
+                              {group.name} overview
+                              <ArrowRight size={13} strokeWidth={1.9} />
+                            </Link>
+                            {groupSections(group).map((s) => (
+                              <div key={s.name ?? group.slug}>
+                                {s.name && (
+                                  <p className="mb-0.5 mt-2 text-[11px] font-medium uppercase tracking-[0.16em] text-ink-faint">{s.name}</p>
+                                )}
+                                <ul>
+                                  {s.services.map((svc) => (
+                                    <li key={svc.slug}>
+                                      <Link href={servicePath(svc.slug)} onClick={close} className="flex min-h-[40px] items-center text-[14px] text-ink-dim">
+                                        {svc.menuLabel}
+                                      </Link>
+                                    </li>
+                                  ))}
+                                </ul>
+                              </div>
+                            ))}
+                          </Accordion.Content>
+                        </Accordion.Item>
+                      ))}
+                    </Accordion.Root>
 
-                <p className="menu-section-label mb-2">Featured</p>
-                <Link href={SERVICES_FEATURED.href} onClick={close} className="mb-4 block rounded-xl bg-[#f4f5f8] p-4">
-                  <p className="text-[15px] font-semibold text-ink">{SERVICES_FEATURED.title}</p>
-                  <p className="mt-1 text-[13px] leading-relaxed text-ink-dim">{SERVICES_FEATURED.desc}</p>
-                </Link>
-
-                <p className="menu-section-label mb-2">Quick Access</p>
-                <div className="flex flex-wrap gap-2">
-                  {SERVICES_QUICK_ACCESS.map((c) => (
-                    <Link
-                      key={c.href}
-                      href={c.href}
-                      onClick={close}
-                      className="mega-chip inline-flex min-h-[36px] items-center rounded-full px-3.5 text-[13px] font-semibold"
-                    >
-                      {c.label}
+                    <p className="menu-section-label mb-2">Featured</p>
+                    <Link href={SERVICES_FEATURED.href} onClick={close} className="mb-4 block rounded-xl bg-[#f4f5f8] p-4">
+                      <p className="text-[15px] font-semibold text-ink">{SERVICES_FEATURED.title}</p>
+                      <p className="mt-1 text-[13px] leading-relaxed text-ink-dim">{SERVICES_FEATURED.desc}</p>
                     </Link>
-                  ))}
-                </div>
-              </Accordion.Content>
-            </Accordion.Item>
 
-            {title !== "Services" && (
-              <>
-            <Accordion.Item value="industries">
-              <Accordion.Header>
-                <Accordion.Trigger className={rowTrigger}>
-                  Industries
-                  <Plus size={18} strokeWidth={1.8} aria-hidden className={rowIcon} />
-                </Accordion.Trigger>
-              </Accordion.Header>
-              <Accordion.Content className="overflow-hidden px-4 pb-4">
-                <ul>
-                  {INDUSTRIES.map((ind) => (
-                    <li key={ind.href}>
-                      <Link href={ind.href} onClick={close} className="flex min-h-[44px] items-center text-[15px] text-ink-dim">
-                        {ind.label}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-                <Link
-                  href="/industries"
-                  onClick={close}
-                  className="mt-1 inline-flex min-h-[40px] items-center gap-1.5 text-[14px] font-semibold text-aurora-violet"
-                >
-                  Explore All Industries
-                  <ArrowRight size={13} strokeWidth={1.9} />
-                </Link>
-              </Accordion.Content>
-            </Accordion.Item>
-
-            <RowLink href="/case-studies" onClick={close}>
-              Case Studies
-            </RowLink>
-              </>
-            )}
-            <RowLink href="/blog" onClick={close}>
-              Blog
-            </RowLink>
+                    <p className="menu-section-label mb-2">Quick Access</p>
+                    <div className="flex flex-wrap gap-2">
+                      {SERVICES_QUICK_ACCESS.map((c) => (
+                        <Link
+                          key={c.href}
+                          href={c.href}
+                          onClick={close}
+                          className="mega-chip inline-flex min-h-[36px] items-center rounded-full px-3.5 text-[13px] font-semibold"
+                        >
+                          {c.label}
+                        </Link>
+                      ))}
+                    </div>
+                  </Accordion.Content>
+                </Accordion.Item>
+                );
+              if (title === "Services" || it.type === "group") return null;
+              if (it.type === "link")
+                return (
+                  <RowLink key={i} href={it.href} onClick={close}>
+                    {it.label}
+                  </RowLink>
+                );
+              return (
+                <Accordion.Item key={i} value="industries">
+                  <Accordion.Header>
+                    <Accordion.Trigger className={rowTrigger}>
+                      {it.label}
+                      <Plus size={18} strokeWidth={1.8} aria-hidden className={rowIcon} />
+                    </Accordion.Trigger>
+                  </Accordion.Header>
+                  <Accordion.Content className="overflow-hidden px-4 pb-4">
+                    <ul>
+                      {INDUSTRIES.map((ind) => (
+                        <li key={ind.href}>
+                          <Link href={ind.href} onClick={close} className="flex min-h-[44px] items-center text-[15px] text-ink-dim">
+                            {ind.label}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                    <Link
+                      href="/industries"
+                      onClick={close}
+                      className="mt-1 inline-flex min-h-[40px] items-center gap-1.5 text-[14px] font-semibold text-aurora-violet"
+                    >
+                      Explore All Industries
+                      <ArrowRight size={13} strokeWidth={1.9} />
+                    </Link>
+                  </Accordion.Content>
+                </Accordion.Item>
+              );
+            })}
           </Accordion.Root>
 
           {title !== "Services" &&
-            SIMPLE_MENUS.filter((m) => m.enabled !== false).map((m) => (
-            <div key={m.id} className="mt-6">
+            HEADER_ITEMS.map((m, i) => m.type === "group" && (
+            <div key={i} className="mt-6">
               <p className="menu-section-label mb-2 px-4">{m.label}</p>
               <ul className="divide-y divide-black/[0.06] overflow-hidden rounded-2xl bg-white">
                 {m.links.map((l) => (
@@ -337,11 +339,11 @@ export default function MobileMenu({
 
         <div className="shrink-0 border-t border-black/[0.06] bg-[#f6f7f9] px-4 pb-[calc(12px+env(safe-area-inset-bottom))] pt-3">
           <Link
-            href="/contact"
+            href={HEADER_BUTTON.href}
             onClick={close}
             className="flex h-[52px] w-full items-center justify-center gap-2 rounded-[14px] bg-aurora-violet text-[16px] font-semibold text-white transition-transform active:scale-[0.98]"
           >
-            Book a Call
+            {HEADER_BUTTON.label}
             <ArrowRight size={17} strokeWidth={2} aria-hidden />
           </Link>
         </div>

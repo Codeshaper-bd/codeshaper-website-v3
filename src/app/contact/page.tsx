@@ -1,14 +1,15 @@
 import type { Metadata } from "next";
+import { mainMeta } from "@/lib/mainPages";
 import SiteShell from "@/components/system/SiteShell";
 import Reveal from "@/components/system/Reveal";
 import ContactForm from "@/components/sections/ContactForm";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = mainMeta("contact", {
   title: "Contact — Book a Call",
   description:
     "Tell CodeShaper about your product, timeline, and scope. We'll recommend the right service and engagement model and get back to you within one business day.",
   alternates: { canonical: "/contact" },
-};
+});
 
 const NEXT_STEPS = [
   { n: "1", text: "Quick call — goals, constraints, honest fit check" },

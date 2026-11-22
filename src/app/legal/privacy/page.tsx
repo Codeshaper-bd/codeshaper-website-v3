@@ -1,14 +1,15 @@
 import type { Metadata } from "next";
+import { mainMeta } from "@/lib/mainPages";
 import SiteShell from "@/components/system/SiteShell";
 import LegalDoc from "@/components/system/LegalDoc";
 import { SITE_NAME } from "@/lib/site";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = mainMeta("privacy", {
   title: "Privacy Policy",
   description: "How CodeShaper collects, uses, and protects information from visitors and clients.",
   alternates: { canonical: "/legal/privacy" },
   robots: { index: false, follow: true },
-};
+});
 
 export default function PrivacyPolicyPage() {
   return (

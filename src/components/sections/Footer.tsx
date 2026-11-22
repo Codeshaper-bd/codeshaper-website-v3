@@ -1,8 +1,10 @@
 import type { CSSProperties } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { FileText, ArrowUp, Mail, Phone } from "lucide-react";
-import { SIMPLE_MENUS, INDUSTRIES } from "@/lib/navigation";
+import { FileText, ArrowUp, Clock, Mail, MapPin, MessageCircle, Phone } from "lucide-react";
+import { SiBehance, SiDribbble, SiFacebook, SiGithub } from "react-icons/si";
+import { INDUSTRIES } from "@/lib/navigation";
+import { SITE } from "@/lib/siteSettings";
 import { SERVICE_GROUPS, ENGAGEMENT_MODELS, servicePath } from "@/data/services";
 import FooterWordmark from "./FooterWordmark";
 import Reveal from "@/components/system/Reveal";
@@ -74,56 +76,33 @@ import { PALETTES, paletteDelay } from "@/components/hero/heroPalette";
  * little natural height variance between columns reads as normal, not
  * broken, the same as any other footer's nav columns).
  */
-const CITY_NAMES = ["Bangladesh", "Japan", "USA", "UK", "Australia", "New Zealand"];
+const { contact: CONTACT, footer: FOOTER } = SITE;
 
-// Insights is disabled for now (see its `enabled: false` in
-// navigation.ts) — Blog is the only real page behind it, so it rides
-// along in the company row below instead of anchoring its own
-// dedicated nav column (see the file header for why).
-const insights = SIMPLE_MENUS.find((m) => m.id === "insights")!;
-const blogLink = insights.links.find((l) => l.label === "Blog")!;
-const company = SIMPLE_MENUS.find((m) => m.id === "company")!;
-const companyLinks = [...company.links.filter((l) => l.label !== "Contact"), blogLink];
-
-/**
- * HIDDEN UNTIL REAL: every href below is still "#" — no real social
- * profile URLs exist yet. Entries with href "#" are not rendered (see
- * `isLive`), and the whole "Follow CodeShaper" row is hidden while none
- * are live. To publish one, replace its "#" with the real profile URL —
- * nothing else needs to change.
- */
-const SOCIAL_LINKS: { label: string; href: string; color: string; d: string }[] = [
-  { label: "LinkedIn", href: "#", color: "#0A66C2", d: "M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5ZM3 9h4v12H3V9Zm7 0h3.8v1.7h.05c.53-1 1.83-2.05 3.77-2.05 4.03 0 4.78 2.65 4.78 6.1V21h-4v-5.6c0-1.34-.02-3.06-1.87-3.06-1.87 0-2.16 1.46-2.16 2.96V21h-4V9Z" },
-  { label: "X", href: "#", color: "#0b0f19", d: "M3 3h4.6l4 5.8L16.2 3H21l-6.9 8.9L21.4 21h-4.6l-4.4-6.3L6.6 21H2l7.3-9.3L3 3Z" },
-  { label: "Instagram", href: "#", color: "#E1306C", d: "M12 2.2c2.7 0 3 0 4.1.06 1.1.05 1.85.23 2.5.48.68.27 1.26.63 1.83 1.2.57.57.93 1.15 1.2 1.83.25.65.43 1.4.48 2.5.06 1.1.06 1.4.06 4.1s0 3-.06 4.1c-.05 1.1-.23 1.85-.48 2.5a4.9 4.9 0 0 1-1.2 1.83 4.9 4.9 0 0 1-1.83 1.2c-.65.25-1.4.43-2.5.48-1.1.06-1.4.06-4.1.06s-3 0-4.1-.06c-1.1-.05-1.85-.23-2.5-.48a4.9 4.9 0 0 1-1.83-1.2 4.9 4.9 0 0 1-1.2-1.83c-.25-.65-.43-1.4-.48-2.5C2.2 15 2.2 14.7 2.2 12s0-3 .06-4.1c.05-1.1.23-1.85.48-2.5.27-.68.63-1.26 1.2-1.83a4.9 4.9 0 0 1 1.83-1.2c.65-.25 1.4-.43 2.5-.48C9 2.2 9.3 2.2 12 2.2Zm0 1.8c-2.65 0-2.97 0-4.02.06-.9.04-1.4.19-1.72.32-.43.17-.74.37-1.07.7-.33.33-.53.64-.7 1.07-.13.32-.28.82-.32 1.72C4.11 9 4.1 9.32 4.1 12s0 2.97.06 4.02c.04.9.19 1.4.32 1.72.17.43.37.74.7 1.07.33.33.64.53 1.07.7.32.13.82.28 1.72.32 1.05.06 1.37.06 4.03.06s2.97 0 4.02-.06c.9-.04 1.4-.19 1.72-.32.43-.17.74-.37 1.07-.7.33-.33.53-.64.7-1.07.13-.32.28-.82.32-1.72.06-1.05.06-1.37.06-4.02s0-2.97-.06-4.02c-.04-.9-.19-1.4-.32-1.72a2.9 2.9 0 0 0-.7-1.07 2.9 2.9 0 0 0-1.07-.7c-.32-.13-.82-.28-1.72-.32C14.97 4 14.65 4 12 4Zm0 3.4a4.6 4.6 0 1 1 0 9.2 4.6 4.6 0 0 1 0-9.2Zm0 1.8a2.8 2.8 0 1 0 0 5.6 2.8 2.8 0 0 0 0-5.6Zm4.8-3.35a1.08 1.08 0 1 1 0 2.15 1.08 1.08 0 0 1 0-2.15Z" },
-  { label: "YouTube", href: "#", color: "#FF0000", d: "M21.6 7.2s-.2-1.5-.85-2.15c-.8-.85-1.7-.85-2.1-.9C15.9 4 12 4 12 4h-.03s-3.9 0-6.65.15c-.4.05-1.3.05-2.1.9-.65.65-.85 2.15-.85 2.15S2.15 9 2.15 10.8v1.6c0 1.8.22 3.6.22 3.6s.2 1.5.85 2.15c.8.85 1.85.82 2.32.91C7.05 19.2 12 19.25 12 19.25s3.9 0 6.65-.15c.4-.05 1.3-.05 2.1-.9.65-.65.85-2.15.85-2.15s.22-1.8.22-3.6v-1.6c0-1.8-.22-3.6-.22-3.6ZM9.95 14.4V8.8l5.4 2.8-5.4 2.8Z" },
+/** Shown only with a real profile link (CMS: Settings, Contact and social). */
+const SOCIAL_ICONS: { key: string; label: string; color: string; d?: string; icon?: typeof SiGithub }[] = [
+  { key: "linkedin", label: "LinkedIn", color: "#0A66C2", d: "M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5ZM3 9h4v12H3V9Zm7 0h3.8v1.7h.05c.53-1 1.83-2.05 3.77-2.05 4.03 0 4.78 2.65 4.78 6.1V21h-4v-5.6c0-1.34-.02-3.06-1.87-3.06-1.87 0-2.16 1.46-2.16 2.96V21h-4V9Z" },
+  { key: "x", label: "X", color: "#0b0f19", d: "M3 3h4.6l4 5.8L16.2 3H21l-6.9 8.9L21.4 21h-4.6l-4.4-6.3L6.6 21H2l7.3-9.3L3 3Z" },
+  { key: "instagram", label: "Instagram", color: "#E1306C", d: "M12 2.2c2.7 0 3 0 4.1.06 1.1.05 1.85.23 2.5.48.68.27 1.26.63 1.83 1.2.57.57.93 1.15 1.2 1.83.25.65.43 1.4.48 2.5.06 1.1.06 1.4.06 4.1s0 3-.06 4.1c-.05 1.1-.23 1.85-.48 2.5a4.9 4.9 0 0 1-1.2 1.83 4.9 4.9 0 0 1-1.83 1.2c-.65.25-1.4.43-2.5.48-1.1.06-1.4.06-4.1.06s-3 0-4.1-.06c-1.1-.05-1.85-.23-2.5-.48a4.9 4.9 0 0 1-1.83-1.2 4.9 4.9 0 0 1-1.2-1.83c-.25-.65-.43-1.4-.48-2.5C2.2 15 2.2 14.7 2.2 12s0-3 .06-4.1c.05-1.1.23-1.85.48-2.5.27-.68.63-1.26 1.2-1.83a4.9 4.9 0 0 1 1.83-1.2c.65-.25 1.4-.43 2.5-.48C9 2.2 9.3 2.2 12 2.2Zm0 1.8c-2.65 0-2.97 0-4.02.06-.9.04-1.4.19-1.72.32-.43.17-.74.37-1.07.7-.33.33-.53.64-.7 1.07-.13.32-.28.82-.32 1.72C4.11 9 4.1 9.32 4.1 12s0 2.97.06 4.02c.04.9.19 1.4.32 1.72.17.43.37.74.7 1.07.33.33.64.53 1.07.7.32.13.82.28 1.72.32 1.05.06 1.37.06 4.03.06s2.97 0 4.02-.06c.9-.04 1.4-.19 1.72-.32.43-.17.74-.37 1.07-.7.33-.33.53-.64.7-1.07.13-.32.28-.82.32-1.72.06-1.05.06-1.37.06-4.02s0-2.97-.06-4.02c-.04-.9-.19-1.4-.32-1.72a2.9 2.9 0 0 0-.7-1.07 2.9 2.9 0 0 0-1.07-.7c-.32-.13-.82-.28-1.72-.32C14.97 4 14.65 4 12 4Zm0 3.4a4.6 4.6 0 1 1 0 9.2 4.6 4.6 0 0 1 0-9.2Zm0 1.8a2.8 2.8 0 1 0 0 5.6 2.8 2.8 0 0 0 0-5.6Zm4.8-3.35a1.08 1.08 0 1 1 0 2.15 1.08 1.08 0 0 1 0-2.15Z" },
+  { key: "youtube", label: "YouTube", color: "#FF0000", d: "M21.6 7.2s-.2-1.5-.85-2.15c-.8-.85-1.7-.85-2.1-.9C15.9 4 12 4 12 4h-.03s-3.9 0-6.65.15c-.4.05-1.3.05-2.1.9-.65.65-.85 2.15-.85 2.15S2.15 9 2.15 10.8v1.6c0 1.8.22 3.6.22 3.6s.2 1.5.85 2.15c.8.85 1.85.82 2.32.91C7.05 19.2 12 19.25 12 19.25s3.9 0 6.65-.15c.4-.05 1.3-.05 2.1-.9.65-.65.85-2.15.85-2.15s.22-1.8.22-3.6v-1.6c0-1.8-.22-3.6-.22-3.6ZM9.95 14.4V8.8l5.4 2.8-5.4 2.8Z" },
+  { key: "facebook", label: "Facebook", color: "#1877F2", icon: SiFacebook },
+  { key: "github", label: "GitHub", color: "#0b0f19", icon: SiGithub },
+  { key: "dribbble", label: "Dribbble", color: "#EA4C89", icon: SiDribbble },
+  { key: "behance", label: "Behance", color: "#1769FF", icon: SiBehance },
 ];
+const LIVE_SOCIAL_LINKS = SOCIAL_ICONS.flatMap((s) => (CONTACT.social?.[s.key] ? [{ ...s, href: CONTACT.social[s.key] }] : []));
 
-/**
- * Real platforms/partners/memberships the user confirmed — scores/
- * counts and profile URLs not known, see file header. Every entry has
- * a subtitle so the row reads clearly without separate group headings.
- *
- * HIDDEN UNTIL REAL: same rule as SOCIAL_LINKS — badges whose href is
- * still "#" aren't rendered, and the "Reviews & Partners" row is hidden
- * while none are live. Fill in a real review/partner profile URL to
- * publish that badge.
- */
-const TRUST_BADGES: { name: string; href: string; color?: string; colors?: string[]; subtitle: string }[] = [
-  { name: "Google", href: "#", colors: ["#4285F4", "#EA4335", "#FBBC05", "#4285F4", "#34A853", "#EA4335"], subtitle: "Reviews" },
-  { name: "Clutch", href: "#", color: "#EF2D45", subtitle: "Reviews" },
-  { name: "Upwork", href: "#", color: "#14A800", subtitle: "Reviews" },
-  { name: "Fiverr", href: "#", color: "#1DBF73", subtitle: "Reviews" },
-  { name: "Envato", href: "#", color: "#82B540", subtitle: "Author & Reviews" },
-  { name: "Framer", href: "#", color: "#0055FF", subtitle: "Partner" },
-  { name: "Webflow", href: "#", color: "#4353FF", subtitle: "Partner" },
-  { name: "BASIS", href: "#", color: "#9ca3af", subtitle: "Member" },
-];
+/** Review and partner badges with a real profile link (CMS: Settings, Footer). Google keeps its own colours. */
+const GOOGLE = ["#4285F4", "#EA4335", "#FBBC05", "#4285F4", "#34A853", "#EA4335"];
+const LIVE_TRUST_BADGES = (FOOTER.badges ?? []).map((b) => ({ name: b.title, subtitle: b.subtitle, href: b.href, color: b.color ?? "#6b7280", colors: b.title === "Google" ? GOOGLE : undefined }));
 
-/** A footer link is shown only once it has a real destination (not the "#" placeholder). */
-const isLive = (l: { href: string }) => l.href !== "#";
-const LIVE_SOCIAL_LINKS = SOCIAL_LINKS.filter(isLive);
-const LIVE_TRUST_BADGES = TRUST_BADGES.filter(isLive);
+const digits = (v: string) => v.replace(/[^+\d]/g, "");
+const CONTACT_LINES = [
+  CONTACT.email && { icon: Mail, text: CONTACT.email, href: `mailto:${CONTACT.email}` },
+  CONTACT.phone && { icon: Phone, text: CONTACT.phone, href: `tel:${digits(CONTACT.phone)}` },
+  CONTACT.whatsapp && { icon: MessageCircle, text: `WhatsApp: ${CONTACT.whatsapp}`, href: `https://wa.me/${digits(CONTACT.whatsapp).replace("+", "")}` },
+  CONTACT.address && { icon: MapPin, text: CONTACT.address },
+  CONTACT.hours && { icon: Clock, text: CONTACT.hours },
+].filter((l): l is { icon: typeof Mail; text: string; href?: string } => Boolean(l));
 
 /**
  * The 3 hiring pages sit under Services; How We Engage keeps the two
@@ -204,9 +183,13 @@ export default function Footer({ joined = false }: { joined?: boolean }) {
                   } as CSSProperties
                 }
               >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
-                  <path d={s.d} />
-                </svg>
+                {s.icon ? (
+                  <s.icon size={20} aria-hidden />
+                ) : (
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+                    <path d={s.d} />
+                  </svg>
+                )}
               </a>
             ))}
           </div>
@@ -224,7 +207,7 @@ export default function Footer({ joined = false }: { joined?: boolean }) {
           <div className="grid grid-cols-2 gap-3 sm:flex sm:flex-wrap">
             {LIVE_TRUST_BADGES.map((p) => {
               const colors = p.colors;
-              const accent = colors ? colors[0] : p.color!;
+              const accent = colors ? colors[0] : p.color;
               return (
                 <a
                   key={p.name}
@@ -269,29 +252,32 @@ export default function Footer({ joined = false }: { joined?: boolean }) {
               <Image src="/brand/logo.png" alt="codeShaper" width={169} height={60} className="h-8 w-auto" />
             </Link>
             <p className="mt-4 max-w-xs font-urbanist text-sm leading-relaxed text-ink-faint">
-              AI engineering &amp; software development company. Reliable,
-              production-ready AI and software that works with the tools you
-              already use.
+              {FOOTER.tagline}
             </p>
+            {FOOTER.button && (
             <Link
-              href="/company/about"
+              href={FOOTER.button.href}
               className="mt-5 inline-flex w-fit items-center gap-2 rounded-full border border-hairline px-4 py-2 font-urbanist text-xs font-medium text-ink-dim transition-colors hover:border-ink-faint hover:text-ink"
             >
               <FileText size={13} strokeWidth={1.75} />
-              Company Profile
+              {FOOTER.button.label}
             </Link>
+            )}
 
-            {/* Contact — placeholders, see file header. */}
-            <div className="mt-7 space-y-2">
-              <p className="flex items-center gap-2 font-urbanist text-[13px] text-ink-faint">
-                <Mail size={13} strokeWidth={1.75} className="shrink-0" />
-                Email: TBD
-              </p>
-              <p className="flex items-center gap-2 font-urbanist text-[13px] text-ink-faint">
-                <Phone size={13} strokeWidth={1.75} className="shrink-0" />
-                Phone: TBD
-              </p>
-            </div>
+            {CONTACT_LINES.length > 0 && (
+              <ul className="mt-7 space-y-2">
+                {CONTACT_LINES.map((l) => (
+                  <li key={l.text} className="flex items-start gap-2 font-urbanist text-[13px] leading-5 text-ink-faint">
+                    <l.icon size={13} strokeWidth={1.75} className="mt-1 shrink-0" aria-hidden />
+                    {l.href ? (
+                      <a href={l.href} className="transition-colors hover:text-ink">{l.text}</a>
+                    ) : (
+                      <span className="whitespace-pre-line">{l.text}</span>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
 
           {/* Nav columns — no card, no background, no divider lines; just
@@ -355,7 +341,7 @@ export default function Footer({ joined = false }: { joined?: boolean }) {
 
         {/* Company row */}
         <div className="mt-10 flex flex-wrap items-center gap-x-8 gap-y-3 border-t border-hairline pt-8">
-          {companyLinks.map((l) => (
+          {(FOOTER.links ?? []).map((l) => (
             <Link key={l.href} href={l.href} className={colLink}>
               {l.label}
             </Link>
@@ -364,7 +350,7 @@ export default function Footer({ joined = false }: { joined?: boolean }) {
 
         {/* Cities row → Locations section */}
         <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-2">
-          {CITY_NAMES.map((c) => (
+          {(FOOTER.places ?? []).map((c) => (
             <Link key={c} href="/#locations" className="font-urbanist text-xs text-ink-faint transition-colors hover:text-ink">
               {c}
             </Link>
@@ -379,7 +365,7 @@ export default function Footer({ joined = false }: { joined?: boolean }) {
         {/* Legal bar */}
         <div className="mt-8 flex flex-wrap items-center justify-between gap-4 border-t border-hairline pt-6">
           <p className="font-urbanist text-xs text-ink-faint">
-            © {new Date().getFullYear()} CodeShaper. All rights reserved.
+            © {new Date().getFullYear()} {FOOTER.copyright}
           </p>
           <div className="flex items-center gap-6">
             <Link href="/legal/privacy" className="font-urbanist text-xs text-ink-faint transition-colors hover:text-ink">

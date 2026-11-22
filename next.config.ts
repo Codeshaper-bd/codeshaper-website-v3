@@ -1,4 +1,9 @@
 import type { NextConfig } from "next";
+import { existsSync, readFileSync } from "node:fs";
+
+// read, not imported: importing it would restart the dev server on every change
+const REDIRECTS = "src/content/redirects.json";
+const cmsRedirects: { from: string; to: string }[] = existsSync(REDIRECTS) ? JSON.parse(readFileSync(REDIRECTS, "utf8")) : [];
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
@@ -13,6 +18,8 @@ const nextConfig: NextConfig = {
    */
   async redirects() {
     return [
+      // addresses changed in the CMS
+      ...cmsRedirects.map((r) => ({ source: r.from, destination: r.to, statusCode: 301 as const })),
       // Previous live site
       { source: "/software-development", destination: "/services/ai-software-development", statusCode: 301 },
       { source: "/web-development", destination: "/services/web-application-development", statusCode: 301 },

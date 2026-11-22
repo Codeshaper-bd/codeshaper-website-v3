@@ -1,3 +1,6 @@
+import industries from "@/content/industries.json";
+import header from "@/content/header.json";
+
 /**
  * Finds the item whose href's last path segment exactly matches `slug`.
  * Shared by every [dynamic]/page.tsx route below instead of each one
@@ -35,134 +38,8 @@ export type IndustryLink = {
   systems: string[];
 };
 
-export const INDUSTRIES: IndustryLink[] = [
-  {
-    label: "Artificial Intelligence",
-    href: "/industries/ai",
-    icon: "brain",
-    desc: "AI products people trust",
-    summary: "AI-native products, copilots, agents, and search over your own data, designed so people understand and trust every answer.",
-    outcome: "Intelligent products, safely shipped",
-    systems: ["Copilots", "AI agents", "RAG search"],
-  },
-  {
-    label: "Healthcare",
-    href: "/industries/healthcare",
-    icon: "heart-pulse",
-    desc: "Care that works digitally",
-    summary: "Patient portals, telehealth, appointment booking, clinical dashboards, and secure records, built with privacy and compliance in mind.",
-    outcome: "Better care, less admin",
-    systems: ["Patient portal", "Telehealth", "Scheduling"],
-  },
-  {
-    label: "Crypto & Web3",
-    href: "/industries/crypto",
-    icon: "bitcoin",
-    desc: "Web3 products people can use",
-    summary: "Wallets, exchanges, token dashboards, on-chain analytics, and onboarding flows that make crypto feel simple and secure.",
-    outcome: "Secure, simple Web3 experiences",
-    systems: ["Wallets", "Exchange", "On-chain data"],
-  },
-  {
-    label: "SaaS",
-    href: "/industries/saas",
-    icon: "cloud",
-    desc: "Scalable B2B & B2C products",
-    summary: "Dashboards, onboarding, billing, analytics, and product workflows that can scale past the first launch.",
-    outcome: "Retention-ready product systems",
-    systems: ["MVP", "Billing", "Analytics"],
-  },
-  {
-    label: "eCommerce & Retail",
-    href: "/industries/ecommerce",
-    icon: "shopping-cart",
-    desc: "Stores that convert at scale",
-    summary: "Headless storefronts, Shopify/WooCommerce builds, checkout flows, subscriptions, and owner-ready CMS operations.",
-    outcome: "Fast storefronts and cleaner ops",
-    systems: ["Storefront", "Checkout", "CMS"],
-  },
-  {
-    label: "FinTech",
-    href: "/industries/fintech",
-    icon: "credit-card",
-    desc: "Finance built to move fast",
-    summary: "Secure workflows, data-heavy dashboards, onboarding journeys, reporting, and integration-ready platforms.",
-    outcome: "Trusted product and data flows",
-    systems: ["KYC", "Data", "Security"],
-  },
-  {
-    label: "Real Estate",
-    href: "/industries/real-estate",
-    icon: "building-2",
-    desc: "Platforms buyers trust",
-    summary: "Property portals, listing systems, lead routing, deal visibility, CRM sync, and maintainable CMS workflows.",
-    outcome: "Lead-to-listing clarity",
-    systems: ["Listings", "CRM", "Portal"],
-  },
-  {
-    label: "Logistics",
-    href: "/industries/logistics",
-    icon: "truck",
-    desc: "Ops that move without friction",
-    summary: "Tracking dashboards, dispatch tools, approval flows, route visibility, reporting, and AI-assisted operations.",
-    outcome: "Operational visibility in motion",
-    systems: ["Dispatch", "Tracking", "Reports"],
-  },
-  {
-    label: "Travel & Hospitality",
-    href: "/industries/travel",
-    icon: "plane",
-    desc: "Experiences that book",
-    summary: "Booking experiences, itinerary flows, vendor integrations, membership journeys, and premium CMS systems.",
-    outcome: "Premium planning experiences",
-    systems: ["Booking", "Vendors", "Membership"],
-  },
-  {
-    label: "EdTech",
-    href: "/industries/edtech",
-    icon: "graduation-cap",
-    desc: "Learning products that engage",
-    summary: "Learning platforms, LMS and course products, student and teacher portals, assessments, live classes, and AI tutoring.",
-    outcome: "Learners who stay and finish",
-    systems: ["LMS", "Assessments", "AI tutor"],
-  },
-  {
-    label: "Luxury & Lifestyle",
-    href: "/industries/luxury",
-    icon: "gem",
-    desc: "Brands built to endure",
-    summary: "Premium brand websites, curated e-commerce, and CRM systems built for high-touch, relationship-driven sales.",
-    outcome: "Brand experiences built to endure",
-    systems: ["Storefront", "CRM", "Content"],
-  },
-  {
-    label: "RMG & Fashion",
-    href: "/industries/rmg",
-    icon: "shirt",
-    desc: "Supply chain to storefront",
-    summary: "Production tracking, inventory visibility, approval systems, reporting, and operational dashboards.",
-    outcome: "Cleaner production control",
-    systems: ["Inventory", "Approvals", "Dashboards"],
-  },
-  {
-    label: "Restaurant & Food",
-    href: "/industries/restaurant-food",
-    icon: "utensils",
-    desc: "Hospitality that scales",
-    summary: "Ordering systems, reservation flows, loyalty programs, and multi-location dashboards for hospitality operations.",
-    outcome: "Smoother ordering and operations",
-    systems: ["Ordering", "Reservations", "Loyalty"],
-  },
-  {
-    label: "Enterprise",
-    href: "/industries/enterprise",
-    icon: "network",
-    desc: "Systems that scale across teams",
-    summary: "ERP integrations, internal tools, workflow automation, secure portals, data platforms, and AI copilots for large organisations.",
-    outcome: "Fewer manual handoffs at scale",
-    systems: ["ERP", "Workflows", "AI copilots"],
-  },
-];
+// edited in the CMS (Industries)
+export const INDUSTRIES: IndustryLink[] = industries.map(({ label, href, icon, desc, summary, outcome, systems }) => ({ label, href, icon, desc, summary, outcome, systems }));
 
 /** Industries mega menu — right column "Popular verticals" chips. */
 export const INDUSTRIES_POPULAR: { label: string; href: string }[] = [
@@ -181,53 +58,11 @@ export const INDUSTRIES_FEATURED = {
   icon: "shopping-cart",
 };
 
-/** Lucide icon name per dropdown item (rendered at 16px, 1.5px stroke). */
-export const SIMPLE_MENUS: {
-  id: string;
-  label: string;
-  /** Renders a hairline divider immediately after this 0-based link index. */
-  dividerAfterIndex?: number;
-  links: { label: string; href: string; icon: string }[];
-  /**
-   * Set to false to hide this menu from the nav without deleting its data —
-   * Insights is disabled for now (only Blog is live; Playbooks/Webinars/
-   * Podcasts/etc. are still stubs), and Navbar/MobileMenu just renders a
-   * plain "Blog" link in its place. Flip back to true (or omit) once the
-   * rest of Insights has real content and it should return as a dropdown.
-   */
-  enabled?: boolean;
-}[] = [
-  {
-    id: "insights",
-    label: "Insights",
-    enabled: false,
-    dividerAfterIndex: 2,
-    links: [
-      { label: "Blog", href: "/blog", icon: "file-text" },
-      { label: "Playbooks", href: "/insights/playbooks", icon: "clipboard-list" },
-      { label: "Research & Newsletters", href: "/insights/research-newsletters", icon: "bar-chart-2" },
-      { label: "Webinars", href: "/insights/webinars", icon: "video" },
-      { label: "Podcasts", href: "/insights/podcasts", icon: "mic" },
-      { label: "FAQs", href: "/insights/faqs", icon: "help-circle" },
-      { label: "Downloads", href: "/insights/downloads", icon: "download" },
-    ],
-  },
-  {
-    id: "company",
-    label: "Company",
-    dividerAfterIndex: 0,
-    links: [
-      { label: "About", href: "/company/about", icon: "building-2" },
-      // Hidden until these pages are real (they currently render the
-      // "coming soon" stub from app/[...slug]/page.tsx). Uncomment each
-      // one as its page is built, and restore dividerAfterIndex: 4 once
-      // all four sit between About and Contact again.
-      // { label: "Leadership Team", href: "/company/leadership", icon: "users" },
-      // { label: "Life at CodeShaper", href: "/company/life", icon: "sparkles" },
-      // { label: "Clients & Partners", href: "/company/clients", icon: "handshake" },
-      // { label: "Locations", href: "/company/locations", icon: "map-pin" },
-      { label: "Contact", href: "/contact", icon: "message-circle" },
-      // { label: "Careers", href: "/company/careers", icon: "target" },
-    ],
-  },
-];
+/** The header menu and its button, edited in the CMS (Settings, Header menu). */
+export type MenuLink = { label: string; href: string; icon: string };
+export type HeaderItem =
+  | { type: "services" | "industries"; label: string }
+  | { type: "link"; label: string; href: string }
+  | { type: "group"; label: string; links: MenuLink[] };
+export const HEADER_ITEMS = header.items as unknown as HeaderItem[];
+export const HEADER_BUTTON: { label: string; href: string } = header.button;

@@ -22,6 +22,13 @@ export type Quote = { quote: string; name: string; role: string; accent: string 
  * both the Industries and SaaS pages asked for that background
  * specifically instead of a flat section.
  */
+/**
+ * The quotes passed in here were written as placeholders and no client has
+ * confirmed them, so they are not shown. Real reviews come from the CMS.
+ * Set to true only when every one of them is a real client's words.
+ */
+export const SHOW_UNCONFIRMED_QUOTES = false;
+
 export default function QuoteGrid({
   id,
   title,
@@ -35,6 +42,7 @@ export default function QuoteGrid({
   columns?: 2 | 3 | 4;
   card?: boolean;
 }) {
+  if (!SHOW_UNCONFIRMED_QUOTES) return null;
   const colCls = columns === 4 ? "sm:grid-cols-2 lg:grid-cols-4" : columns === 2 ? "sm:grid-cols-2" : "sm:grid-cols-3";
 
   const body = (

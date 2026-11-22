@@ -3,6 +3,10 @@ import { SITE_URL } from "@/lib/site";
 import { INDUSTRIES } from "@/lib/navigation";
 import { SERVICE_GROUPS, SERVICES, ENGAGEMENT_MODELS, servicePath } from "@/data/services";
 import { BLOG_POSTS } from "@/lib/blog";
+import blog from "@/content/blog.json";
+import { PRODUCTS } from "@/lib/products";
+import { PAGES } from "@/lib/pages";
+import { mainPage } from "@/lib/mainPages";
 import { CASE_STUDIES } from "@/lib/caseStudies";
 
 /**
@@ -20,6 +24,7 @@ import { CASE_STUDIES } from "@/lib/caseStudies";
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();
 
+  const hidden = new Set(["home", "contact", "about", "services", "industries", "engagement", "blog", "case-studies", "products"].filter((k) => mainPage(k).seo?.noindex).map((k) => `${SITE_URL}${k === "home" ? "" : k === "about" ? "/company/about" : `/${k}`}`));
   const staticRoutes: MetadataRoute.Sitemap = [
     { url: SITE_URL, lastModified: now, changeFrequency: "weekly", priority: 1 },
     { url: `${SITE_URL}/contact`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
@@ -73,5 +78,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.6,
   }));
 
-  return [...staticRoutes, ...serviceGroupRoutes, ...serviceDetailRoutes, ...industryRoutes, ...engagementRoutes, ...blogRoutes, ...caseStudyRoutes];
+  const more = [
+    ...(PRODUCTS.length ? ["/products"] : []),
+    ...PRODUCTS.filter((p) => !p.seo?.noindex).map((p) => `/products/${p.slug}`),
+    ...PAGES.filter((p) => !p.seo?.noindex).map((p) => p.path),
+    ...blog.categories.map((c) => `/blog/category/${c.slug}`),
+  ].map((p) => ({ url: `${SITE_URL}${p}`, lastModified: now, changeFrequency: "monthly" as const, priority: 0.6 }));
+
+  return [...[...staticRoutes, ...more].filter((r) => !hidden.has(r.url)), ...serviceGroupRoutes, ...serviceDetailRoutes, ...industryRoutes, ...engagementRoutes, ...blogRoutes, ...caseStudyRoutes];
 }

@@ -35,6 +35,5 @@ const CARD_VISUALS: Record<string, Omit<ModelCardData, "name" | "href">> = {
 
 export const ENGAGEMENT_MODEL_CARDS: ModelCardData[] = ENGAGEMENT_MODELS.map((m) => {
   const visuals = CARD_VISUALS[m.href];
-  if (!visuals) throw new Error(`No card visuals for engagement model ${m.href}`);
-  return { name: m.label, href: m.href, ...visuals };
+  return { name: m.label, href: m.href, ...(visuals ?? { fit: m.desc, icon: Boxes, accent: "#7c6cff" }) };
 });

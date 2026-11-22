@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { mainMeta } from "@/lib/mainPages";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import SiteShell from "@/components/system/SiteShell";
@@ -7,12 +8,12 @@ import { SectionEyebrow, SectionTitle, SectionDescription } from "@/components/s
 import { SERVICE_GROUPS, ENGAGEMENT_MODELS, servicePath } from "@/data/services";
 import { Icon } from "@/lib/icons";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = mainMeta("about", {
   title: "About",
   description:
     "CodeShaper is an AI engineering & software development company building reliable, production-ready AI and software that integrates with your existing tools.",
   alternates: { canonical: "/company/about" },
-};
+});
 
 /**
  * Stats reused from AboutStudio.tsx (the homepage "who we are" section) —

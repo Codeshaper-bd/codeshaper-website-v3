@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { mainMeta } from "@/lib/mainPages";
 import type { ReactNode } from "react";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
@@ -24,12 +25,12 @@ import {
 } from "@/lib/engagementContent";
 import { SITE_URL } from "@/lib/site";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = mainMeta("engagement", {
   title: "How We Work — Engagement Models",
   description:
     "Flexible engagement models for predictable delivery — MVP Sprint, End-to-End Delivery, a Dedicated Development Team, IT Staff Augmentation, or an Offshore Development Center.",
   alternates: { canonical: "/engagement" },
-};
+});
 
 const BREADCRUMB_JSON_LD = {
   "@context": "https://schema.org",

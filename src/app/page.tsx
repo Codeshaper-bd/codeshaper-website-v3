@@ -1,6 +1,8 @@
 // Below-the-fold sections load their code on approach (LazySection); the
 // server still renders their full HTML.
-import LazySection from "@/components/system/LazySection";
+import type { Metadata } from "next";
+import LazySection, { type SectionName } from "@/components/system/LazySection";
+import { mainMeta, mainPage } from "@/lib/mainPages";
 import SiteShell from "@/components/system/SiteShell";
 import Hero from "@/components/hero/Hero";
 import TrustStrip from "@/components/sections/TrustStrip";
@@ -27,45 +29,20 @@ import TrustStrip from "@/components/sections/TrustStrip";
  * homepage per direct request; that conversion path now lives at the
  * real /contact page, which every "Book a Call" link already points to.
  *
- * Section order (audit pass): moved from
- * Hero → TrustStrip → CaseStudies → About → Services → Engagement →
- * Testimonials → Industries → TechStack → AiDev → Locations → FAQ
- * to
- * Hero → TrustStrip → Services → AiDev → Industries → Engagement →
- * CaseStudies → Testimonials → TechStack → About → Locations → FAQ.
- * Reasoning: a cold organic-search visitor needs "what do you do" and
- * "who's it for" before "proof you can do it" and "who you are as a
- * studio" — the previous order showed case studies and company story
- * before the visitor knew what CodeShaper actually offers.
+ * The order of the sections, and which ones show, is edited in the CMS
+ * (Pages, Home). The hero is always first.
  */
+const SECTIONS = ["servicesBento", "caseStudies", "industries", "humanAiFlow", "testimonials", "techStack", "impactWorkflow", "engagementModels", "aboutStudio", "faq"] satisfies SectionName[];
+const isSection = (s: string): s is SectionName => (SECTIONS as string[]).includes(s);
+const ORDER = mainPage("home").sections ?? ["trustStrip", ...SECTIONS.slice(0, 8)];
+
+export const metadata: Metadata = mainMeta("home", {});
+
 export default function Home() {
   return (
     <SiteShell>
       <Hero />
-      <TrustStrip />
-      {/* <ServicePillars /> */}
-      {/* <ServicesShowcase /> */}
-      <LazySection name="servicesBento" />
-      {/* <AiDevExcellence /> */}
-      {/* Case Studies (owner request: swapped up from below Industries, where
-          Human + AI now sits) */}
-      {/* TRIAL: accordion-style Case Studies (hyperline.co reference) being evaluated against this version */}
-      {/* <CaseStudiesExpand /> */}
-      <LazySection name="caseStudies" />
-      <LazySection name="industries" />
-      <LazySection name="humanAiFlow" />
-      {/* <CaseStudies /> */}
-      <LazySection name="testimonials" />
-      <LazySection name="techStack" />
-      {/* numbers + AI and human workflow (where Tech Stack was) */}
-      <LazySection name="impactWorkflow" />
-      {/* Engagement Models (swapped with Tech Stack) */}
-      <LazySection name="engagementModels" />
-      {/* hidden for now (owner): Who we are / Why teams choose us / glimpses, and FAQ */}
-      {/* <LazySection name="aboutStudio" /> */}
-      {/* <LazySection name="faq" /> */}
-      {/* Locations hidden for now (owner) */}
-      {/* <LazyHydrate><Locations /></LazyHydrate> */}
+      {ORDER.map((name) => (name === "trustStrip" ? <TrustStrip key={name} /> : isSection(name) ? <LazySection key={name} name={name} /> : null))}
     </SiteShell>
   );
 }

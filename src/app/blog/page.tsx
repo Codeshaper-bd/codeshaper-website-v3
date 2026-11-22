@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { mainMeta } from "@/lib/mainPages";
 import { Suspense } from "react";
 import SiteShell from "@/components/system/SiteShell";
 import BlogHero from "@/components/blog/BlogHero";
@@ -7,12 +8,12 @@ import BlogFinalCta from "@/components/blog/BlogFinalCta";
 import { BLOG_POSTS } from "@/lib/blog";
 import { SITE_URL } from "@/lib/site";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = mainMeta("blog", {
   title: "Blog — Product, Engineering & AI Insights",
   description:
     "Practical articles on UX/UI, SaaS development, eCommerce, AI automation, DevOps, and delivery models — built from real projects at CodeShaper.",
   alternates: { canonical: "/blog" },
-};
+});
 
 const BLOG_JSON_LD = {
   "@context": "https://schema.org",

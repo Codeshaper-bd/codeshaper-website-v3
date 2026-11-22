@@ -7,7 +7,7 @@ import { ArrowRight, ArrowUpRight, Check } from "lucide-react";
 import Flag from "@/components/system/Flag";
 import Reveal from "@/components/system/Reveal";
 import { SectionEyebrow, SectionTitle } from "@/components/system/SectionHeading";
-import { getCaseStudyBySlug, type CaseStudy } from "@/lib/caseStudies";
+import { CASE_STUDIES, getCaseStudyBySlug, type CaseStudy } from "@/lib/caseStudies";
 
 /**
  * Case studies, homepage: stacked sticky cards (the studio-portfolio
@@ -31,7 +31,7 @@ type Entry = {
   accent: string;
 };
 
-const ENTRIES: Entry[] = [
+const DESIGNED: Entry[] = [
   {
     slug: "essentialist",
     headline: "A premium membership site, launched in 8–10 weeks.",
@@ -51,13 +51,19 @@ const ENTRIES: Entry[] = [
   },
 ];
 
+const DEFAULT_WASH = "radial-gradient(90% 100% at 100% 100%, #8676ff 0%, #c08aff 24%, #dcc6ff 44%, rgba(238,230,255,0.55) 62%, rgba(255,255,255,0) 82%)";
+/** The designed cards that are published, then any other case study marked Featured in the CMS. */
+const ENTRIES: Entry[] = [
+  ...DESIGNED.filter((e) => getCaseStudyBySlug(e.slug)),
+  ...CASE_STUDIES.filter((c) => c.featured && !DESIGNED.some((e) => e.slug === c.slug)).map((c) => ({ slug: c.slug, wash: DEFAULT_WASH, accent: c.accent, screens: { desktop: c.image } })),
+];
+
 const STICKY_TOP = 96; // px from the viewport top on desktop
 const PEEK = 18; // each later card pins a little lower, so the stack shows
 
-function must(slug: string): CaseStudy {
-  const cs = getCaseStudyBySlug(slug);
-  if (!cs) throw new Error(`Unknown case study: ${slug}`);
-  return cs;
+/** Cards whose case study is published. */
+function story(slug: string): CaseStudy {
+  return getCaseStudyBySlug(slug)!;
 }
 
 function Media({ cs, e }: { cs: CaseStudy; e: Entry }) {
@@ -165,7 +171,7 @@ export default function CaseStudiesFeatured() {
 
         <ol ref={listRef} className="mt-10 space-y-5 lg:mt-14 lg:space-y-8">
           {ENTRIES.map((e, i) => {
-            const cs = must(e.slug);
+            const cs = story(e.slug);
             const proof = cs.results?.operational?.length ? cs.results.operational.slice(0, 3) : (cs.deliverables ?? []).slice(0, 3);
             const proofLabel = cs.results?.operational?.length ? "Results" : "What we built";
             return (

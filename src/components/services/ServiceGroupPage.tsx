@@ -1,4 +1,6 @@
 import SiteShell from "@/components/system/SiteShell";
+import DetailSections from "@/components/cms/DetailSections";
+import { serviceDetail, type Detail } from "@/lib/details";
 import { groupSections, servicePath, type ServiceGroup } from "@/data/services";
 import {
   ServicesHero,
@@ -16,7 +18,7 @@ import {
  * subgroup. The flagship AI Agents & Automation group has its own richer
  * page (app/services/ai-agents-automation) built from the same parts.
  */
-export default function ServiceGroupPage({ group }: { group: ServiceGroup }) {
+export default function ServiceGroupPage({ group, detail = serviceDetail(group.slug) }: { group: ServiceGroup; detail?: Detail }) {
   const crumbs = [
     { label: "Home", href: "/" },
     { label: "Services", href: "/services" },
@@ -33,7 +35,7 @@ export default function ServiceGroupPage({ group }: { group: ServiceGroup }) {
           breadcrumbs={[crumbs[0], crumbs[1], { label: group.name }]}
           icon={group.icon}
           eyebrow="Services"
-          title={group.name}
+          title={detail.headline ?? group.name}
           intro={group.focus}
           primary={{ label: "Book a Call", href: "/contact" }}
           secondary={{ label: "See all services", href: "/services" }}
@@ -53,6 +55,8 @@ export default function ServiceGroupPage({ group }: { group: ServiceGroup }) {
             </ServicesSection>
           );
         })}
+
+        <DetailSections detail={detail} name={group.name} />
 
         <BookCallCta
           title={`Ready to talk about ${group.name}?`}

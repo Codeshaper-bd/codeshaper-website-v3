@@ -1,6 +1,8 @@
 import SiteShell from "@/components/system/SiteShell";
 import Reveal from "@/components/system/Reveal";
-import { getGroup, relatedServices, servicePath, type Service } from "@/data/services";
+import { detailParts } from "@/components/cms/DetailSections";
+import { serviceDetail, type Detail } from "@/lib/details";
+import { SERVICE_GROUPS, getGroup, getService, relatedServices, servicePath, type Service } from "@/data/services";
 import { SITE_NAME, SITE_URL } from "@/lib/site";
 import {
   ServicesHero,
@@ -66,8 +68,25 @@ function PlaceholderBody({ todo }: { todo: string }) {
   );
 }
 
-export default function ServiceDetailPage({ service }: { service: Service }) {
-  const group = getGroup(service.groupSlug)!;
+/** Parts that come before "What we deliver". */
+const BEFORE = ["snapshot", "stats", "problems"];
+
+function renderPart(p: ReturnType<typeof detailParts>[number]) {
+  return p.title ? (
+    <ServicesSection key={p.key} id={`service-${p.key}-heading`} label={p.label} title={p.title}>
+      {p.body}
+    </ServicesSection>
+  ) : (
+    <section key={p.key} className="border-t border-hairline-light bg-light-surface py-14 lg:py-20">
+      <div className="mx-auto max-w-4xl px-6 lg:px-10">{p.body}</div>
+    </section>
+  );
+}
+
+export default function ServiceDetailPage({ service, detail = serviceDetail(service.slug) }: { service: Service; detail?: Detail }) {
+  const group = getGroup(service.groupSlug) ?? SERVICE_GROUPS[0];
+  const parts = Object.fromEntries(detailParts(detail, service.menuLabel).map((p) => [p.key, p]));
+  const related = (detail.related ?? []).flatMap((s) => getService(s) ?? []);
   const path = servicePath(service.slug);
   const crumbs = [
     { label: "Home", href: "/" },
@@ -98,24 +117,27 @@ export default function ServiceDetailPage({ service }: { service: Service }) {
           breadcrumbs={[crumbs[0], crumbs[1], crumbs[2], { label: service.menuLabel }]}
           icon={service.icon}
           eyebrow={group.name}
-          title={service.title}
+          title={detail.headline ?? service.title}
           intro={service.summary}
           primary={{ label: "Book a Call", href: "/contact" }}
           secondary={{ label: `All ${group.name} services`, href: servicePath(group.slug) }}
         />
 
+        {Object.values(parts).filter((p) => !PLACEHOLDER_SECTIONS.some((x) => x.key === p.key) && BEFORE.includes(p.key)).map(renderPart)}
         {PLACEHOLDER_SECTIONS.map((section, i) => {
+          const part = parts[section.key];
+          if (part) return renderPart(part);
           const id = `service-${section.key}-heading`;
           return (
-            <ServicesSection key={section.key} id={id} first={i === 0} label={section.label} title={section.title(service)}>
-              {/* TODO(content): replace with real section content — see PLACEHOLDER_SECTIONS above */}
+            <ServicesSection key={section.key} id={id} first={i === 0 && !Object.keys(parts).length} label={section.label} title={section.title(service)}>
               <PlaceholderBody todo={section.todo} />
             </ServicesSection>
           );
         })}
+        {Object.values(parts).filter((p) => !PLACEHOLDER_SECTIONS.some((x) => x.key === p.key) && !BEFORE.includes(p.key)).map(renderPart)}
 
         <ServicesSection id="service-related-heading" label="Related Services" title={`More in ${group.name}.`}>
-          <ServiceCardGrid services={relatedServices(service)} />
+          <ServiceCardGrid services={related.length ? related : relatedServices(service)} />
         </ServicesSection>
 
         <BookCallCta

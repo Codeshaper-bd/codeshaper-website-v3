@@ -22,6 +22,7 @@ export default function DetailPage({
   ctaLabel = "Talk about this",
   related,
   relatedTitle = "Related",
+  children,
 }: {
   breadcrumbs: Crumb[];
   icon: string;
@@ -32,6 +33,8 @@ export default function DetailPage({
   ctaLabel?: string;
   related: RelatedLink[];
   relatedTitle?: string;
+  /** Extra sections between the intro and the related links. */
+  children?: React.ReactNode;
 }) {
   return (
     <>
@@ -69,6 +72,8 @@ export default function DetailPage({
           </Link>
         </div>
       </section>
+
+      {children}
 
       {related.length > 0 && (
         <section className="border-t border-hairline bg-canvas-raised py-14 lg:py-16">

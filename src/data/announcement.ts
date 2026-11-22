@@ -1,12 +1,11 @@
 import { BLOG_POSTS } from "@/lib/blog";
+import saved from "@/content/announcement.json";
 
 /**
  * The announcement chip above the hero headline:  [NEW]  Read: <title>  →
  *
- * By default it points at the newest blog post, so publishing a post updates
- * it automatically. To announce something else (a product update, a fix, a
- * news item), set MANUAL below; set it back to null to return to the newest
- * post.
+ * Edited in the CMS (Settings, Announcement): the newest blog post, the
+ * owner's own text, or nothing.
  */
 export type AnnouncementKind = "new" | "update" | "fix" | "news";
 
@@ -17,11 +16,11 @@ export type Announcement = {
   href: string;
 };
 
-/** e.g. { kind: "update", text: "Our AI agents now support voice", href: "/services/ai-agents-automation" } */
-const MANUAL: Announcement | null = null;
+const CMS = saved as { mode: string } & Partial<Announcement>;
 
 export function getAnnouncement(): Announcement | null {
-  if (MANUAL) return MANUAL;
+  if (CMS.mode === "off") return null;
+  if (CMS.mode === "manual" && CMS.text && CMS.href) return { kind: CMS.kind && CMS.kind in KIND_STYLE ? CMS.kind : "new", text: CMS.text, href: CMS.href };
   const latest = [...BLOG_POSTS].sort((a, b) => b.date.localeCompare(a.date))[0];
   if (!latest) return null;
   // the short form of the title (before a colon), so the chip stays compact

@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import type { CSSProperties, ReactNode } from "react";
 import Link from "next/link";
 import { ArrowRight, ArrowUpRight, Check, X } from "lucide-react";
+import RichContent from "@/components/cms/RichContent";
+import { industryDetail } from "@/lib/details";
 import SiteShell from "@/components/system/SiteShell";
 import Breadcrumbs from "@/components/system/Breadcrumbs";
 import Reveal from "@/components/system/Reveal";
@@ -9,7 +11,7 @@ import { SectionEyebrow, SectionTitle, SectionDescription } from "@/components/s
 import { Icon } from "@/lib/icons";
 import FaqAccordion from "@/components/system/FaqAccordion";
 import QuoteGrid from "@/components/system/QuoteGrid";
-import { getCaseStudyBySlug } from "@/lib/caseStudies";
+import { CASE_STUDIES, getCaseStudyBySlug } from "@/lib/caseStudies";
 import {
   SAAS_SNAPSHOT,
   SAAS_PROBLEMS,
@@ -35,7 +37,7 @@ export const metadata: Metadata = {
 };
 
 const IND = findBySlug(INDUSTRIES, "saas")!;
-const PROOF = getCaseStudyBySlug("acculance")!;
+const PROOF = getCaseStudyBySlug("acculance") ?? CASE_STUDIES[0];
 const BUILT_FOR = IND.systems.concat(IND.outcome);
 
 const BREADCRUMB_JSON_LD = {
@@ -468,6 +470,7 @@ export default function SaasIndustryPage() {
           </Reveal>
         </div>
       </div>
+      <RichContent html={industryDetail("saas").html} className="theme-light mx-auto max-w-4xl px-6 py-14 lg:px-10" />
     </SiteShell>
   );
 }

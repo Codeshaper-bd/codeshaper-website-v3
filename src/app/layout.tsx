@@ -4,6 +4,7 @@ import "./globals.css";
 import { heroInter } from "@/components/hero/heroFont";
 import { SITE_URL, SITE_NAME } from "@/lib/site";
 import { COMPANY_POSITIONING } from "@/data/services";
+import { SITE } from "@/lib/siteSettings";
 
 /**
  * Typography — Urbanist, self-hosted through next/font/local so Next emits
@@ -32,9 +33,10 @@ const urbanist = localFont({
 });
 
 // SEO decision (Pass 1 §2): visible H1 stays short/human; keyword line lives here.
-const TITLE = `${COMPANY_POSITIONING} | ${SITE_NAME}`;
+const TITLE = SITE.seo.title ?? `${COMPANY_POSITIONING} | ${SITE_NAME}`;
 // REVIEW
 const DESCRIPTION =
+  SITE.seo.description ??
   "CodeShaper is an AI engineering & software development company building reliable, production-ready AI and software that integrates with your existing tools.";
 
 // viewport-fit=cover lets the mobile tab bar and sheet pad themselves with
@@ -59,22 +61,24 @@ export const metadata: Metadata = {
     siteName: SITE_NAME,
     title: TITLE,
     description: DESCRIPTION,
+    ...(SITE.seo.image ? { images: [SITE.seo.image] } : {}),
   },
   twitter: {
     card: "summary_large_image",
     title: TITLE,
     description: DESCRIPTION,
   },
+  ...(SITE.seo.google || SITE.seo.bing
+    ? { verification: { google: SITE.seo.google, ...(SITE.seo.bing ? { other: { "msvalidate.01": SITE.seo.bing } } : {}) } }
+    : {}),
 };
 
 /**
  * Organization + WebSite JSON-LD. Only facts that are actually true are
  * asserted here: name, the real logo (public/brand/logo.png, supplied
- * directly by the client), and (placeholder, see lib/site.ts) URL. No
- * `sameAs` (no real social profile URLs exist anywhere in this project
- * — see Footer.tsx — and a fake one is exactly the kind of unverifiable
- * claim this project avoids everywhere else), no `SearchAction` (there's
- * no on-site search to back that claim up).
+ * directly by the client), and (placeholder, see lib/site.ts) URL. Contact
+ * details and `sameAs` appear once they are filled in the CMS. No
+ * `SearchAction` (there's no on-site search to back that claim up).
  */
 const ORG_JSON_LD = {
   "@context": "https://schema.org",
@@ -83,6 +87,10 @@ const ORG_JSON_LD = {
   url: SITE_URL,
   logo: `${SITE_URL}/brand/logo.png`,
   description: DESCRIPTION,
+  ...(SITE.contact.email ? { email: SITE.contact.email } : {}),
+  ...(SITE.contact.phone ? { telephone: SITE.contact.phone } : {}),
+  ...(SITE.contact.address ? { address: SITE.contact.address } : {}),
+  ...(SITE.contact.social ? { sameAs: Object.values(SITE.contact.social) } : {}),
 };
 
 const WEBSITE_JSON_LD = {
@@ -107,7 +115,7 @@ export default function RootLayout({
       */}
       <body suppressHydrationWarning>
         {children}
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(ORG_JSON_LD) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(ORG_JSON_LD).replace(/</g, "\\u003c") }} />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(WEBSITE_JSON_LD) }} />
       </body>
     </html>

@@ -1,3 +1,4 @@
+import content from "@/content/engagement.json";
 import { getEngagementModel, type EngagementModel } from "@/data/services";
 
 /**
@@ -44,63 +45,7 @@ export type ComparisonRow = {
   commitment: string;
 };
 
-export const COMPARISON_TABLE: ComparisonRow[] = [
-  {
-    href: bySlug("mvp-sprint").href,
-    model: bySlug("mvp-sprint").label,
-    bestFor: "Launch a focused v1 fast",
-    speed: "1–2 weeks",
-    involvement: "Medium–High",
-    certainty: "Clear",
-    pricing: "Fixed scope",
-    teamSize: "3–6",
-    commitment: "4–12 weeks",
-  },
-  {
-    href: bySlug("end-to-end-delivery").href,
-    model: bySlug("end-to-end-delivery").label,
-    bestFor: "Full build with one accountable partner",
-    speed: "1–3 weeks",
-    involvement: "Medium",
-    certainty: "Mixed",
-    pricing: "Milestones / T&M",
-    teamSize: "4–10",
-    commitment: "2–6+ months",
-  },
-  {
-    href: bySlug("hire-dedicated-developers").href,
-    model: bySlug("hire-dedicated-developers").label,
-    bestFor: "Ongoing roadmap delivery",
-    speed: "1–2 weeks",
-    involvement: "Medium",
-    certainty: "Evolving",
-    pricing: "Monthly retainer",
-    teamSize: "4–12",
-    commitment: "3+ months",
-  },
-  {
-    href: bySlug("staff-augmentation").href,
-    model: bySlug("staff-augmentation").label,
-    bestFor: "Fill skill gaps quickly",
-    speed: "3–10 days",
-    involvement: "High",
-    certainty: "Any",
-    pricing: "Hourly / Monthly",
-    teamSize: "1–8",
-    commitment: "Flexible",
-  },
-  {
-    href: bySlug("offshore-development-center").href,
-    model: bySlug("offshore-development-center").label,
-    bestFor: "A long-term offshore team with strong overlap",
-    speed: "1–2 weeks",
-    involvement: "Medium",
-    certainty: "Evolving",
-    pricing: "Monthly / T&M",
-    teamSize: "5–15",
-    commitment: "3+ months",
-  },
-];
+export const COMPARISON_TABLE: ComparisonRow[] = content.comparison;
 
 export const AT_A_GLANCE = [
   { icon: "zap", label: "Start time", value: "3–10 days" },
@@ -140,7 +85,7 @@ export const DECISION_QUIZ: QuizQuestion[] = [
 
 export type ModelOverview = EngagementModel & { oneLiner: string; bestFor: string[]; startTime: string; ctaLabel: string };
 
-export const MODEL_OVERVIEWS: ModelOverview[] = [
+const OVERVIEWS: ModelOverview[] = [
   {
     ...bySlug("mvp-sprint"),
     oneLiner: "Validate and launch a focused MVP fast — without scope chaos.",
@@ -178,6 +123,9 @@ export const MODEL_OVERVIEWS: ModelOverview[] = [
     ctaLabel: "Explore Offshore Development Center",
   },
 ];
+
+/** The one-line text can be changed in the CMS. */
+export const MODEL_OVERVIEWS: ModelOverview[] = OVERVIEWS.map((m) => ({ ...m, oneLiner: (content.oneLiners as Record<string, string>)[m.href] ?? m.oneLiner }));
 
 export type DeliveryStep = { n: string; title: string; description: string };
 
@@ -243,82 +191,32 @@ export const HUB_PROOF: ProofCard[] = [
 
 /** MVP Sprint page content */
 
-export const MVP_BENEFITS = [
-  { icon: "zap", title: "Speed to market", description: "Launch a usable v1 quickly, instead of waiting for a feature-complete version that never quite arrives." },
-  { icon: "shield", title: "Lower risk", description: "Scope stays focused and measurable, so budget goes toward what actually validates the product." },
-  { icon: "target", title: "Better decisions", description: "Real user feedback informs v2 — not internal opinions about what might matter." },
-];
+export const MVP_BENEFITS = content.mvp.benefits;
 
-export const MVP_AI_EDGE = [
-  "Faster backlog drafts from flows and requirements",
-  "Faster QA support — test cases and edge-case coverage",
-  "Faster iteration on UX microcopy and UI variants",
-  "Faster scaffolding for standard components",
-];
+export const MVP_AI_EDGE: string[] = content.mvp.aiEdge;
 
-export const MVP_GOOD_FIT = [
-  "Idea or prototype moving to a market-ready v1",
-  "MVP built for funding, partnerships, or early traction",
-  "An internal tool replacing manual operations",
-  "A new feature line that needs fast validation",
-];
+export const MVP_GOOD_FIT: string[] = content.mvp.goodFit;
 
-export const MVP_NOT_IDEAL = [
-  "You want a full platform in v1, without prioritization",
-  "Requirements are unknown and stakeholders can't align",
-  "Delivery depends on long external approvals or procurement",
-];
+export const MVP_NOT_IDEAL: string[] = content.mvp.notIdeal;
 
 export type Deliverable = { title: string; items: string[] };
 
-export const MVP_DELIVERABLES: Deliverable[] = [
-  { title: "Blueprint", items: ["MVP scope: must-have / should-have / later", "Core user journeys + flow map", "Acceptance criteria (high level) + delivery plan"] },
-  { title: "Design", items: ["UX/UI for core flows", "Clickable prototype for key journeys", "Dev-ready specs + handoff documentation"] },
-  { title: "Build", items: ["MVP web or mobile app (based on scope)", "Backend/API + essential integrations", "Authentication + role access, as needed"] },
-  { title: "Release-ready", items: ["QA passes on critical scenarios", "Staging → production deployment", "Release notes + handover package + v2 roadmap"] },
-];
+export const MVP_DELIVERABLES: Deliverable[] = content.mvp.deliverables;
 
-export const MVP_TEAM = ["Delivery Lead — project ownership + cadence", "Product Designer, when design scope is included", "Frontend Engineer", "Backend Engineer", "QA Engineer", "DevOps support, when needed"];
-export const MVP_TEAM_SPECIALISTS = ["Solution architect — complex systems", "Data/AI engineer — AI features"];
-export const MVP_YOU_PROVIDE = ["A decision-maker available for weekly feedback", "Access to brand/product assets, if any", "Priority clarity — what matters most for v1"];
+export const MVP_TEAM: string[] = content.mvp.team;
+export const MVP_TEAM_SPECIALISTS: string[] = content.mvp.specialists;
+export const MVP_YOU_PROVIDE: string[] = content.mvp.youProvide;
 
-export const MVP_TIMELINE: DeliveryStep[] = [
-  { n: "1", title: "Kickoff + scope lock", description: "Days 1–5 — goals, success metrics, core journeys, MVP scope, and milestones." },
-  { n: "2", title: "UX/UI + backlog shaping", description: "Week 1–2 — flows, prototype (if included), ticket breakdown, and build plan." },
-  { n: "3", title: "Build + QA in weekly increments", description: "Week 2–10 — a weekly cadence of demo, feedback, and next increment." },
-  { n: "4", title: "Hardening + release readiness", description: "Final 1–2 weeks — bug fixing, a performance baseline, and the launch checklist." },
-  { n: "5", title: "Launch + handover + next roadmap", description: "Production release, full documentation, and a v2 plan." },
-];
+export const MVP_TIMELINE: DeliveryStep[] = content.mvp.timeline;
 
-export const MVP_ENGINEERING_STANDARDS = [
-  "Code reviews before merge",
-  "QA gates for critical flows",
-  "Release checklist — staging to production",
-  "Performance baselines where relevant (e.g. Core Web Vitals for web)",
-  "Basic accessibility considerations from sprint 1, where applicable",
-  "Documentation and handover included",
-  "Clear change control — scope changes stay transparent",
-];
+export const MVP_ENGINEERING_STANDARDS: string[] = content.mvp.engineering;
 
-export const MVP_COMMUNICATION_STANDARDS = ["One owner responsible for delivery", "Weekly checkpoint + demo", "Async updates between meetings"];
+export const MVP_COMMUNICATION_STANDARDS: string[] = content.mvp.communication;
 
 export type PricingApproach = { title: string; description: string };
 
-export const MVP_PRICING: PricingApproach[] = [
-  { title: "Fixed-scope / fixed-price", description: "For certainty when scope is clear from the start." },
-  { title: "Sprint-based pricing", description: "When phased execution fits the build better than one lump commitment." },
-  { title: "Time & materials", description: "When discovery reveals scope that's still evolving." },
-];
+export const MVP_PRICING: PricingApproach[] = content.mvp.pricing;
 
-export const MVP_PRICING_DEPENDS_ON = ["Journeys/screens + integrations", "Platform scope — web vs. web + mobile", "Admin complexity + roles/permissions", "Timeline constraints"];
+export const MVP_PRICING_DEPENDS_ON: string[] = content.mvp.pricingDependsOn;
 
-export const MVP_FAQS: Faq[] = [
-  { q: "What do you mean by \"MVP\"?", a: "A focused version of the product that delivers the core value and can be used by real users, without unnecessary features." },
-  { q: "Can you help us define the MVP scope?", a: "Yes — scope definition is a core part of the MVP Sprint model, not something you're expected to arrive with already finished." },
-  { q: "What if our scope changes mid-sprint?", a: "We handle changes transparently — we'll adjust priorities, trade features, or extend the timeline, based on what matters most." },
-  { q: "Do you include UI design and prototyping?", a: "Yes, if your sprint includes the design track. If you already have designs, we can build directly from those instead." },
-  { q: "Can you integrate with our existing stack?", a: "Yes. We can build within your stack, or recommend a pragmatic stack chosen for speed if you're starting from scratch." },
-  { q: "Do we own the source code and IP?", a: "Yes. You own every deliverable once payments are completed." },
-  { q: "Do you provide post-launch support?", a: "Yes — we can support fixes, improvements, and iterations as a follow-up engagement after the sprint ends." },
-  { q: "How quickly can we start?", a: "Typically within 1–2 weeks, depending on availability and how ready the scope is." },
-];
+export const MVP_FAQS: Faq[] = content.mvp.faqs;

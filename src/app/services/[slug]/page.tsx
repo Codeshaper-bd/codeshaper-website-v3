@@ -4,6 +4,7 @@ import ServiceGroupPage from "@/components/services/ServiceGroupPage";
 import ServiceDetailPage from "@/components/services/ServiceDetailPage";
 import { SERVICE_GROUPS, SERVICES, getGroup, getService, servicePath } from "@/data/services";
 import { pageMetadata } from "@/lib/pageMetadata";
+import { serviceDetail, withSeo } from "@/lib/details";
 
 /**
  * /services/<slug> serves both group pages and service detail pages —
@@ -30,7 +31,8 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const { slug } = await params;
   const entry = getGroup(slug) ?? getService(slug);
   if (!entry) return {};
-  return pageMetadata({ title: entry.metaTitle, description: entry.metaDescription, path: servicePath(slug) });
+  const { image, canonical, noindex } = serviceDetail(slug).seo ?? {};
+  return withSeo(pageMetadata({ title: entry.metaTitle, description: entry.metaDescription, path: servicePath(slug) }), { image, canonical, noindex });
 }
 
 export default async function ServiceSlugPage({ params }: { params: Promise<{ slug: string }> }) {

@@ -1,0 +1,42 @@
+{
+ "items": [
+  {
+   "type": "services",
+   "label": "Services"
+  },
+  {
+   "type": "industries",
+   "label": "Industries"
+  },
+  {
+   "type": "link",
+   "label": "Case Studies",
+   "href": "/case-studies"
+  },
+  {
+   "type": "link",
+   "label": "Blog",
+   "href": "/blog"
+  },
+  {
+   "type": "group",
+   "label": "Company",
+   "links": [
+    {
+     "label": "About",
+     "href": "/company/about",
+     "icon": "building-2"
+    },
+    {
+     "label": "Contact",
+     "href": "/contact",
+     "icon": "message-circle"
+    }
+   ]
+  }
+ ],
+ "button": {
+  "label": "Book a Call",
+  "href": "/contact"
+ }
+}
