@@ -3,11 +3,15 @@
 import { useEffect, useState } from "react";
 import { slugifyHeading } from "@/lib/blog";
 
-export default function TableOfContents({ headings }: { headings: string[] }) {
-  const [activeId, setActiveId] = useState<string>(() => slugifyHeading(headings[0] ?? ""));
+type Heading = string | { id: string; text: string };
+const idOf = (h: Heading) => (typeof h === "string" ? slugifyHeading(h) : h.id);
+const textOf = (h: Heading) => (typeof h === "string" ? h : h.text);
+
+export default function TableOfContents({ headings }: { headings: Heading[] }) {
+  const [activeId, setActiveId] = useState<string>(() => (headings[0] ? idOf(headings[0]) : ""));
 
   useEffect(() => {
-    const ids = headings.map(slugifyHeading);
+    const ids = headings.map(idOf);
     const els = ids.map((id) => document.getElementById(id)).filter((el): el is HTMLElement => Boolean(el));
     if (!els.length) return;
 
@@ -31,7 +35,7 @@ export default function TableOfContents({ headings }: { headings: string[] }) {
       </p>
       <ul className="space-y-2.5 border-l border-hairline-light">
         {headings.map((heading) => {
-          const id = slugifyHeading(heading);
+          const id = idOf(heading);
           const active = activeId === id;
           return (
             <li key={id} className="-ml-px">
@@ -41,7 +45,7 @@ export default function TableOfContents({ headings }: { headings: string[] }) {
                   active ? "border-aurora-violet font-semibold text-aurora-violet" : "border-transparent text-ink-dim hover:text-ink"
                 }`}
               >
-                {heading}
+                {textOf(heading)}
               </a>
             </li>
           );

@@ -8,9 +8,7 @@ import Magnetic from "@/components/system/Magnetic";
 /**
  * Real submission form for the /contact page — adapted from the
  * removed homepage FinalCtaForm (same fields/validation/shake-on-invalid
- * UX, which was already solid), now POSTing to /api/contact instead of
- * a client-only stub. See that route's own header for what's still
- * pending on the backend side (email/CRM forwarding).
+ * UX). POSTs to /api/contact, which hands the lead to the CMS.
  */
 // Derived from the same canonical INDUSTRIES list every industries page/mega
 // menu uses, plus "Other" — was previously a separately hand-typed list that
@@ -28,6 +26,8 @@ export default function ContactForm() {
   const [showErrors, setShowErrors] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
   const briefRef = useRef<HTMLTextAreaElement>(null);
+  // one id per enquiry: sending twice never saves it twice
+  const submissionId = useRef("");
 
   // Prefill the brief from the homepage hero prompt (/contact?brief=...).
   useEffect(() => {
@@ -41,12 +41,13 @@ export default function ContactForm() {
     e.preventDefault();
     const form = e.currentTarget;
     const data = Object.fromEntries(new FormData(form).entries());
+    submissionId.current ||= crypto.randomUUID?.() ?? "";
     setStatus("submitting");
     try {
       const res = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
+        body: JSON.stringify({ ...data, submission_id: submissionId.current }),
       });
       if (!res.ok) {
         const body = await res.json().catch(() => null);
@@ -81,6 +82,7 @@ export default function ContactForm() {
         </div>
       ) : (
         <form onSubmit={onSubmit} onInvalid={onInvalid} data-show-errors={showErrors} className="space-y-5" aria-label="Project inquiry">
+          <input name="company_website" type="text" tabIndex={-1} autoComplete="off" aria-hidden="true" className="absolute -left-[9999px] h-px w-px opacity-0" />
           <div className="grid gap-5 sm:grid-cols-2">
             <label className="block">
               <span className="mb-1.5 block font-urbanist text-xs font-medium text-ink-dim">Name</span>

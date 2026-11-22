@@ -1,0 +1,921 @@
+{
+ "posts": {
+  "rag-for-support-teams": {
+   "author": {
+    "name": "The CodeShaper Team"
+   }
+  },
+  "mvp-sprint-scoping": {
+   "author": {
+    "name": "The CodeShaper Team"
+   }
+  },
+  "cro-checklist-ecommerce": {
+   "author": {
+    "name": "The CodeShaper Team"
+   }
+  },
+  "design-systems-101": {
+   "author": {
+    "name": "The CodeShaper Team"
+   }
+  },
+  "shopify-vs-custom-storefront": {
+   "author": {
+    "name": "The CodeShaper Team"
+   }
+  },
+  "legacy-rebuild-checklist": {
+   "author": {
+    "name": "The CodeShaper Team"
+   }
+  },
+  "dedicated-product-team-explained": {
+   "author": {
+    "name": "The CodeShaper Team"
+   }
+  },
+  "apis-integrations-questions": {
+   "author": {
+    "name": "The CodeShaper Team"
+   }
+  },
+  "process-automation-without-chaos": {
+   "author": {
+    "name": "The CodeShaper Team"
+   }
+  },
+  "team-augmentation-vs-outsourcing": {
+   "author": {
+    "name": "The CodeShaper Team"
+   }
+  }
+ },
+ "services": {
+  "ai-agents-automation": {
+   "snapshot": [
+    {
+     "icon": "target",
+     "title": "Who this is for",
+     "description": "Teams with a specific, repetitive workflow to speed up — not a general appetite for \"adding AI\" somewhere."
+    },
+    {
+     "icon": "layers",
+     "title": "What we build",
+     "description": "AI strategy, custom agents and RAG search grounded in your own data, and automation across the tools you already run."
+    },
+    {
+     "icon": "shield",
+     "title": "What matters most",
+     "description": "Accuracy, human oversight on anything consequential, and a measurable reduction in manual work."
+    }
+   ],
+   "useCases": [
+    {
+     "icon": "book-open",
+     "title": "Internal knowledge base search",
+     "description": "Answers grounded in your own docs and SOPs, with sources — not a generic model's guess."
+    },
+    {
+     "icon": "bot",
+     "title": "Support copilots",
+     "description": "Draft responses and surface relevant history for support agents, human-reviewed before sending."
+    },
+    {
+     "icon": "workflow",
+     "title": "Document capture & review",
+     "description": "Extract, classify, and route documents through an approval chain instead of manual entry."
+    },
+    {
+     "icon": "clipboard-list",
+     "title": "Structured reporting",
+     "description": "Turn recurring manual reports into an automated pipeline with a human check before it ships."
+    },
+    {
+     "icon": "plug",
+     "title": "Cross-tool automation",
+     "description": "Trigger actions across CRM, helpdesk, and internal tools without a person manually bridging them."
+    },
+    {
+     "icon": "bar-chart-2",
+     "title": "Anomaly & usage detection",
+     "description": "Flag unusual patterns in operational or product usage data for a human to investigate."
+    },
+    {
+     "icon": "brain",
+     "title": "AI strategy & feasibility",
+     "description": "An honest map of where AI actually pays off in your workflow, before any building starts."
+    },
+    {
+     "icon": "component",
+     "title": "UX microcopy & content drafts",
+     "description": "Faster first drafts for in-product copy and documentation, edited and approved by your team."
+    }
+   ],
+   "goodFit": [
+    "A specific, repetitive workflow with a clear before/after",
+    "Internal documentation or SOPs that support/ops teams search constantly",
+    "Reporting or approval steps that are manual today but rule-based enough to automate",
+    "A team willing to keep a human in the loop on anything consequential"
+   ],
+   "notIdeal": [
+    "You want a general-purpose chatbot with no specific workflow attached",
+    "The task requires judgment calls with no acceptable error rate and no human review step",
+    "Source data is too inconsistent or sparse to ground answers in yet"
+   ],
+   "process": [
+    {
+     "n": "1",
+     "title": "Use-case mapping",
+     "description": "We map where AI could realistically save time or reduce error in your actual workflow — not a generic capability list."
+    },
+    {
+     "n": "2",
+     "title": "Feasibility & data check",
+     "description": "We check whether the data needed to ground the system reliably actually exists and is accessible."
+    },
+    {
+     "n": "3",
+     "title": "Design & guardrails",
+     "description": "Scope what the system can and can't do on its own, and where a human reviews before anything ships."
+    },
+    {
+     "n": "4",
+     "title": "Build & evaluate",
+     "description": "Iterative build with real test cases, evaluated against accuracy and failure-mode criteria, not just a demo."
+    },
+    {
+     "n": "5",
+     "title": "Launch & monitor",
+     "description": "Release with monitoring in place, so drift or failure modes get caught early, not after they compound."
+    }
+   ],
+   "stack": [
+    {
+     "category": "LLM Providers",
+     "tools": [
+      "OpenAI",
+      "Anthropic",
+      "Open-source models where appropriate"
+     ]
+    },
+    {
+     "category": "Retrieval & RAG",
+     "tools": [
+      "Vector databases",
+      "Embedding pipelines",
+      "Document chunking & indexing"
+     ]
+    },
+    {
+     "category": "Automation & Orchestration",
+     "tools": [
+      "Workflow automation platforms",
+      "Custom agent orchestration",
+      "Webhooks & schedulers"
+     ]
+    },
+    {
+     "category": "Integration Layer",
+     "tools": [
+      "REST/GraphQL APIs",
+      "CRM & helpdesk connectors",
+      "Internal auth & permissions"
+     ]
+    }
+   ],
+   "guardrails": [
+    "Human review on anything consequential — no fully autonomous high-stakes actions by default",
+    "Grounded in your own data via RAG, not relying on a model's unverified general knowledge",
+    "Evaluation against real test cases before launch, not just a working demo",
+    "Clear logging of what the system did and why, for anything that touches real operations",
+    "Data handling scoped to what the use case actually needs — no unnecessary data exposure"
+   ],
+   "faqs": [
+    {
+     "q": "Will this replace our team?",
+     "a": "No — every automation we build keeps a human in the loop on consequential decisions. The goal is removing manual busywork, not decision-making."
+    },
+    {
+     "q": "How do you handle hallucination or wrong answers?",
+     "a": "By grounding answers in your own data via RAG rather than relying on a model's general knowledge, and evaluating against real test cases before launch."
+    },
+    {
+     "q": "Is our data safe?",
+     "a": "We scope data access to exactly what the use case needs, and can work within your existing security and access-control requirements."
+    },
+    {
+     "q": "Do we need our documentation cleaned up first?",
+     "a": "Not perfectly — but a feasibility check happens early specifically to catch data gaps before we build on top of them."
+    },
+    {
+     "q": "Can you integrate with our existing tools?",
+     "a": "Yes — most AI and automation engagements are as much about integration (CRM, helpdesk, internal tools) as they are about the model itself."
+    },
+    {
+     "q": "How do we measure if it's working?",
+     "a": "We define success criteria — time saved, error rate, resolution speed — before launch, so impact is measurable, not anecdotal."
+    }
+   ],
+   "seo": {
+    "title": "AI Agents & Automation Services | CodeShaper",
+    "description": "AI agents and automation services that execute real business tasks inside your existing systems, with human approvals, logging, testing and monitoring."
+   }
+  },
+  "ai-software-development": {
+   "seo": {
+    "title": "AI & Software Development Services | CodeShaper",
+    "description": "AI and software development services for SaaS products, MVPs, web, mobile and enterprise applications, built production-ready and designed to scale."
+   }
+  },
+  "ai-integration-infrastructure": {
+   "seo": {
+    "title": "AI Integration & Infrastructure Services | CodeShaper",
+    "description": "AI integration and infrastructure services: connect AI to your systems and data, deploy private LLMs, and run AI securely with LLMOps and monitoring."
+   }
+  },
+  "ui-ux-product-design": {
+   "seo": {
+    "title": "UI/UX & Product Design Services | CodeShaper",
+    "description": "UI/UX and product design services for web, mobile and AI products: research, discovery, design systems and accessible interfaces users understand."
+   }
+  },
+  "websites-commerce": {
+   "seo": {
+    "title": "Websites & Commerce Services | CodeShaper",
+    "description": "Website and eCommerce development services: WordPress, Webflow, Shopify and WooCommerce builds optimized for Google and AI search, and built to convert."
+   }
+  },
+  "ai-consulting": {
+   "seo": {
+    "title": "AI Strategy & Consulting Services | CodeShaper",
+    "description": "AI strategy and consulting services that identify high-value use cases, check data readiness and deliver a practical roadmap to production-ready AI."
+   }
+  },
+  "ai-agent-development": {
+   "seo": {
+    "title": "Custom AI Agent Development | CodeShaper",
+    "description": "Custom AI agent development for real business tasks: agents that work inside your existing tools, with human approvals, audit logs, testing and monitoring."
+   }
+  },
+  "ai-workflow-automation": {
+   "seo": {
+    "title": "AI Workflow & Business Process Automation | CodeShaper",
+    "description": "AI workflow and business process automation that connects your existing tools, removes manual steps and keeps human approval where decisions matter."
+   }
+  },
+  "ai-chatbot-development": {
+   "seo": {
+    "title": "AI Chatbot & Virtual Assistant Development | CodeShaper",
+    "description": "AI chatbot and virtual assistant development for support, sales and internal teams, grounded in your data and integrated with your tools, with human handoff."
+   }
+  },
+  "voice-ai-agents": {
+   "seo": {
+    "title": "Voice AI Agent Development | CodeShaper",
+    "description": "Voice AI agent development for inbound and outbound calls: booking, qualification and support agents integrated with your phone system, CRM and calendar."
+   }
+  },
+  "intelligent-document-processing": {
+   "seo": {
+    "title": "Intelligent Document Processing & Automation | CodeShaper",
+    "description": "Intelligent document processing that extracts and validates data from invoices, forms and contracts, with human review of exceptions and full audit logs."
+   }
+  },
+  "saas-development": {
+   "seo": {
+    "title": "SaaS Application Development | CodeShaper",
+    "description": "SaaS application development from architecture to launch: multi-tenant platforms with billing, roles, analytics and AI features, built to scale reliably."
+   }
+  },
+  "mvp-development": {
+   "seo": {
+    "title": "MVP Development Services | CodeShaper",
+    "description": "MVP development services that turn your idea into a launchable product in weeks, scoped around real user value and built on a codebase ready to scale."
+   }
+  },
+  "generative-ai-development": {
+   "seo": {
+    "title": "Generative AI Application Development | CodeShaper",
+    "description": "Generative AI application development: LLM-powered copilots, search and content tools with evaluation, guardrails and cost controls built in from day one."
+   }
+  },
+  "web-application-development": {
+   "seo": {
+    "title": "Custom Web Application Development | CodeShaper",
+    "description": "Custom web application development for dashboards, customer portals and internal tools, built on a modern stack with automated testing and clean handover."
+   }
+  },
+  "enterprise-applications": {
+   "seo": {
+    "title": "Enterprise Applications & Business Portals | CodeShaper",
+    "description": "Enterprise application and business portal development with role-based access, integrations with your ERP and CRM, audit trails and secure deployment."
+   }
+  },
+  "mobile-app-development": {
+   "seo": {
+    "title": "Mobile Application Development | CodeShaper",
+    "description": "Mobile application development for iOS and Android, native or cross-platform, from UX to App Store release, with analytics, testing and ongoing support."
+   }
+  },
+  "qa-test-automation": {
+   "seo": {
+    "title": "QA & Test Automation Services | CodeShaper",
+    "description": "QA and test automation services covering web, mobile and APIs: automated regression suites, CI integration and manual testing for confident releases."
+   }
+  },
+  "ai-integration": {
+   "seo": {
+    "title": "Enterprise AI & Business Systems Integration | CodeShaper",
+    "description": "Enterprise AI integration services that connect LLMs to your ERP, CRM and internal business systems through secure APIs, with access controls and monitoring."
+   }
+  },
+  "rag-development": {
+   "seo": {
+    "title": "RAG & Enterprise Knowledge Systems | CodeShaper",
+    "description": "RAG development and enterprise knowledge systems that answer from your own documents and data, with cited sources, access controls and measured accuracy."
+   }
+  },
+  "mcp-server-development": {
+   "seo": {
+    "title": "MCP Server & Tool Development | CodeShaper",
+    "description": "MCP server and tool development that gives AI assistants and agents secure, permissioned access to your internal systems, APIs and business data sources."
+   }
+  },
+  "data-engineering": {
+   "seo": {
+    "title": "Data Engineering & AI Readiness | CodeShaper",
+    "description": "Data engineering and AI readiness services: pipelines, warehouses and data quality work that make your business data reliable enough for analytics and AI."
+   }
+  },
+  "legacy-modernization": {
+   "seo": {
+    "title": "Legacy Software Modernization | CodeShaper",
+    "description": "Legacy software modernization that migrates outdated applications to a modern, maintainable stack incrementally, with data intact and minimal downtime."
+   }
+  },
+  "private-llm": {
+   "seo": {
+    "title": "Private AI & On-Premises LLM Deployment | CodeShaper",
+    "description": "Private AI and on-premises LLM deployment in your own cloud or data center, keeping sensitive data under your control on secure, monitored infrastructure."
+   }
+  },
+  "cloud-devops": {
+   "seo": {
+    "title": "Cloud, DevOps & Platform Engineering | CodeShaper",
+    "description": "Cloud, DevOps and platform engineering services: infrastructure as code, CI/CD pipelines, containers and monitoring for secure, repeatable deployments."
+   }
+  },
+  "llmops": {
+   "seo": {
+    "title": "LLMOps, AI Evaluation & Observability | CodeShaper",
+    "description": "LLMOps, AI evaluation and observability services: test suites, tracing, cost tracking and monitoring that keep production AI systems accurate and reliable."
+   }
+  },
+  "ai-security-governance": {
+   "seo": {
+    "title": "AI Security & Governance | CodeShaper",
+    "description": "AI security and governance services: access controls, prompt-injection testing, data protection and usage policies so you can run AI safely and compliantly."
+   }
+  },
+  "ui-ux-design": {
+   "seo": {
+    "title": "UI/UX Design Services | CodeShaper",
+    "description": "UI/UX design services for web and mobile products: user flows, high-fidelity interfaces and clickable prototypes, accessible and tested with real users."
+   }
+  },
+  "product-discovery": {
+   "seo": {
+    "title": "Product Discovery & Strategy | CodeShaper",
+    "description": "Product discovery and strategy services that turn ideas into validated scope, a prioritized roadmap and clear success metrics before development starts."
+   }
+  },
+  "ai-ux-design": {
+   "seo": {
+    "title": "AI & Conversational UX Design | CodeShaper",
+    "description": "AI and conversational UX design for chatbots, copilots and agent workflows, with interfaces that build trust, explain AI actions and keep users in control."
+   }
+  },
+  "design-systems": {
+   "seo": {
+    "title": "Design System Development | CodeShaper",
+    "description": "Design system development: reusable components, design tokens and documentation that keep your product consistent and speed up design and engineering."
+   }
+  },
+  "ux-research": {
+   "seo": {
+    "title": "UX Research & Usability Testing | CodeShaper",
+    "description": "UX research and usability testing services: user interviews, moderated tests and analytics reviews that reveal where users struggle and what to fix first."
+   }
+  },
+  "website-development": {
+   "seo": {
+    "title": "Website Design & Development | CodeShaper",
+    "description": "Website design and development for fast, accessible, SEO-ready business websites with a CMS your team can manage, built to rank and convert visitors."
+   }
+  },
+  "wordpress-development": {
+   "seo": {
+    "title": "WordPress Development Services | CodeShaper",
+    "description": "WordPress development services: custom themes, plugins and performance-tuned builds that are secure, fast and easy for your marketing team to manage."
+   }
+  },
+  "webflow-framer-development": {
+   "seo": {
+    "title": "Webflow & Framer Development | CodeShaper",
+    "description": "Webflow and Framer development for polished, high-performance marketing sites your team can edit independently, with CMS setup, SEO and integrations."
+   }
+  },
+  "seo-aeo": {
+   "seo": {
+    "title": "SEO & AI Search Optimization (AEO) | CodeShaper",
+    "description": "SEO and AI search optimization (AEO) services: technical SEO, structured data and content strategy so you rank in Google and get cited in AI answers."
+   }
+  },
+  "cro": {
+   "seo": {
+    "title": "Conversion Rate Optimization (CRO) | CodeShaper",
+    "description": "Conversion rate optimization (CRO) services: funnel audits, A/B testing and data-backed UX changes that increase sign-ups, leads and checkout conversion."
+   }
+  },
+  "website-maintenance": {
+   "seo": {
+    "title": "Website Maintenance & Support | CodeShaper",
+    "description": "Website maintenance and support services: updates, security patches, backups, uptime monitoring and fixes that keep your website fast, secure and current."
+   }
+  },
+  "shopify-development": {
+   "seo": {
+    "title": "Shopify Development Services | CodeShaper",
+    "description": "Shopify development services: custom themes, private apps, Shopify Plus builds and integrations for stores that need more than an off-the-shelf template."
+   }
+  },
+  "woocommerce-development": {
+   "seo": {
+    "title": "WooCommerce Development | CodeShaper",
+    "description": "WooCommerce development for fast, scalable WordPress stores: custom themes, plugins, payment and shipping integrations, and performance optimization."
+   }
+  },
+  "headless-commerce": {
+   "seo": {
+    "title": "Headless Commerce Development | CodeShaper",
+    "description": "Headless commerce development: fast custom storefronts on Next.js connected to Shopify, BigCommerce or commercetools, built for speed and flexibility."
+   }
+  },
+  "marketplace-development": {
+   "seo": {
+    "title": "Marketplace Development | CodeShaper",
+    "description": "Marketplace development for multi-vendor platforms: vendor onboarding, split payments, search, reviews and moderation, built to scale with transactions."
+   }
+  },
+  "agentic-commerce": {
+   "seo": {
+    "title": "Agentic Commerce Readiness | CodeShaper",
+    "description": "Agentic commerce readiness: structured product data, feeds and checkout integrations so AI shopping agents and assistants can discover and buy your products."
+   }
+  },
+  "ecommerce-migration": {
+   "seo": {
+    "title": "eCommerce Migration & Integration | CodeShaper",
+    "description": "eCommerce migration and integration services: move to Shopify or WooCommerce and connect your ERP, PIM and payments without losing data, SEO or sales."
+   }
+  }
+ },
+ "industries": {
+  "ai": {},
+  "healthcare": {},
+  "crypto": {},
+  "saas": {
+   "outcomes": [
+    "A billing system that survives your next three pricing changes, not just the current one",
+    "Onboarding that gets new users to their first real result inside one session",
+    "Dashboards your team opens because they trust the numbers, not despite them",
+    "A permissions and tenancy model that scales past your next 10x in customers",
+    "Clean, documented handover so you're never dependent on one person's memory",
+    "A codebase your next engineering hire can actually ramp up on quickly"
+   ],
+   "snapshot": [
+    {
+     "icon": "users",
+     "title": "Who we build for",
+     "description": "Early-stage founders validating a first version, and growing SaaS teams scaling past their first hundred customers."
+    },
+    {
+     "icon": "layers",
+     "title": "What we build",
+     "description": "Multi-tenant architecture, billing and metering, role-based access, onboarding flows, and the analytics that prove it's working."
+    },
+    {
+     "icon": "target",
+     "title": "What matters most",
+     "description": "Time-to-value for new users, retention past the trial window, and a system that doesn't need a rebuild at the next growth stage."
+    }
+   ],
+   "problems": [
+    "Trial signups that don't convert to paid because onboarding takes too long to reach value",
+    "Billing logic hardcoded around the first pricing model, breaking the moment plans change",
+    "No clean way to separate tenant data as the customer base grows past the first few accounts",
+    "Admin and customer-facing dashboards built as an afterthought, not a real product surface",
+    "Feature flags and permissions managed by hand instead of by a real access model",
+    "Analytics that can't answer basic retention or activation questions with confidence",
+    "Integrations (Stripe, CRM, SSO) bolted on individually instead of designed as a system",
+    "Technical debt from the MVP phase slowing every release six months post-launch",
+    "No clear ownership of the codebase after the original founding engineers move on"
+   ],
+   "useCases": [
+    {
+     "icon": "layers",
+     "title": "Multi-tenant SaaS architecture",
+     "description": "Data isolation and tenancy boundaries built to hold up past your first hundred customers."
+    },
+    {
+     "icon": "credit-card",
+     "title": "Subscription billing & metering",
+     "description": "Plans, usage-based pricing, upgrades/downgrades, and invoicing via Stripe or your billing provider."
+    },
+    {
+     "icon": "users",
+     "title": "Onboarding & activation",
+     "description": "Guided first-run flows built around the specific action that predicts retention."
+    },
+    {
+     "icon": "layout-dashboard",
+     "title": "Admin & customer dashboards",
+     "description": "Two real products in one: an internal ops view and a customer-facing surface."
+    },
+    {
+     "icon": "bar-chart-2",
+     "title": "Product analytics",
+     "description": "Activation, retention, and usage reporting your team can actually make decisions from."
+    },
+    {
+     "icon": "plug",
+     "title": "Third-party & SSO integrations",
+     "description": "Stripe, CRM, support tools, and enterprise SSO wired in as first-class citizens."
+    },
+    {
+     "icon": "workflow",
+     "title": "Workflow & approval automation",
+     "description": "In-app review chains and automation that replace manual ops work."
+    },
+    {
+     "icon": "bot",
+     "title": "In-product AI features",
+     "description": "AI assistants and automation grounded in your own product data, not a generic chatbot."
+    },
+    {
+     "icon": "refresh-cw",
+     "title": "Legacy platform migration",
+     "description": "Moving an aging monolith to a modern, maintainable stack without a big-bang rewrite."
+    },
+    {
+     "icon": "shield",
+     "title": "Security & compliance readiness",
+     "description": "Audit logging, access control, and the groundwork SOC 2 / GDPR reviews expect."
+    }
+   ],
+   "process": [
+    {
+     "n": "1",
+     "title": "Discovery & audit",
+     "description": "We map your current product (or blank-slate goals), constraints, and the metrics that define success."
+    },
+    {
+     "n": "2",
+     "title": "Architecture & scope",
+     "description": "Multi-tenancy, billing model, and integration points get decided before a line of production code is written."
+    },
+    {
+     "n": "3",
+     "title": "Design",
+     "description": "Onboarding, dashboards, and core flows designed around the specific actions that drive activation."
+    },
+    {
+     "n": "4",
+     "title": "Engineering build",
+     "description": "Iterative delivery in weekly cycles, with a working build to review at every checkpoint."
+    },
+    {
+     "n": "5",
+     "title": "QA & launch readiness",
+     "description": "Cross-tenant testing, billing edge cases, and access-control checks before anything ships to real users."
+    },
+    {
+     "n": "6",
+     "title": "Launch & ongoing care",
+     "description": "Release, then continued iteration or maintenance — whichever cadence fits your team next."
+    }
+   ],
+   "stack": [
+    {
+     "category": "Frontend",
+     "tools": [
+      "Next.js",
+      "React",
+      "TypeScript",
+      "Tailwind CSS"
+     ],
+     "icon": "monitor"
+    },
+    {
+     "category": "Backend",
+     "tools": [
+      "Node.js",
+      "PostgreSQL",
+      "Redis",
+      "Prisma"
+     ],
+     "icon": "code-2"
+    },
+    {
+     "category": "Billing & Payments",
+     "tools": [
+      "Stripe",
+      "Paddle",
+      "Usage metering"
+     ],
+     "icon": "credit-card"
+    },
+    {
+     "category": "Infra & DevOps",
+     "tools": [
+      "AWS",
+      "Vercel",
+      "Docker",
+      "GitHub Actions"
+     ],
+     "icon": "cloud"
+    },
+    {
+     "category": "AI Agents & Automation",
+     "tools": [
+      "OpenAI / Anthropic APIs",
+      "RAG pipelines",
+      "Workflow automation"
+     ],
+     "icon": "bot"
+    }
+   ],
+   "solutions": [
+    {
+     "href": "/services/saas-development",
+     "icon": "code-2",
+     "items": [
+      "Multi-tenant architecture",
+      "Billing, metering & entitlements",
+      "Role-based access control",
+      "API design & integrations"
+     ],
+     "title": "AI & Software Development",
+     "accent": "#8a7bff"
+    },
+    {
+     "href": "/services/ui-ux-design",
+     "icon": "pen-tool",
+     "items": [
+      "Onboarding & activation flows",
+      "Admin & customer dashboards",
+      "Design systems for fast iteration",
+      "Conversion-focused pricing pages"
+     ],
+     "title": "UI/UX & Product Design",
+     "accent": "#5b9bdb"
+    },
+    {
+     "href": "/services/ai-agents-automation",
+     "icon": "sparkles",
+     "items": [
+      "In-product AI assistants",
+      "Usage-based automation triggers",
+      "Support & documentation search",
+      "Anomaly detection on usage data"
+     ],
+     "title": "AI Agents & Automation",
+     "accent": "#3fae82"
+    },
+    {
+     "href": "/services/website-development",
+     "icon": "globe",
+     "items": [
+      "Marketing site & landing pages",
+      "SEO & AI search-ready foundation",
+      "Changelog & docs infrastructure",
+      "Maintenance & support post-launch"
+     ],
+     "title": "Websites & Commerce",
+     "accent": "#d99a4e"
+    }
+   ],
+   "faqs": [
+    {
+     "q": "We already have an MVP — can you take over from here?",
+     "a": "Yes. Most SaaS engagements start with a codebase audit so we understand what's there before proposing changes, rather than recommending a rebuild by default."
+    },
+    {
+     "q": "Do you build multi-tenant architecture from scratch?",
+     "a": "We do, and we'll also tell you honestly if single-tenant with a later migration path is the faster, cheaper route for your current stage."
+    },
+    {
+     "q": "Can you integrate with Stripe, our CRM, or our existing auth provider?",
+     "a": "Yes — integration work like this is a large share of what we do for SaaS clients specifically, not a bolt-on afterthought."
+    },
+    {
+     "q": "What if our pricing model changes mid-build?",
+     "a": "We design billing logic to expect that — plans, metering, and entitlements are built as configurable data, not hardcoded assumptions."
+    },
+    {
+     "q": "How involved do we need to be during the build?",
+     "a": "Weekly demos and shared board visibility are standard, but day-to-day involvement scales to what your team has time for — from hands-on to lightly-checked-in."
+    },
+    {
+     "q": "Can you help after launch, not just build and leave?",
+     "a": "Yes — LLMOps & AI Observability, Website Maintenance & Support, and a Dedicated Development Team all exist specifically for the ongoing work after v1 ships."
+    }
+   ],
+   "related": [
+    "ai-software-development",
+    "ai-agents-automation",
+    "ui-ux-product-design"
+   ]
+  },
+  "ecommerce": {
+   "related": [
+    "websites-commerce",
+    "ai-agents-automation",
+    "ui-ux-product-design"
+   ]
+  },
+  "fintech": {
+   "related": [
+    "ai-software-development",
+    "ai-integration-infrastructure",
+    "ui-ux-product-design"
+   ]
+  },
+  "real-estate": {
+   "related": [
+    "ai-software-development",
+    "websites-commerce",
+    "ai-agents-automation"
+   ]
+  },
+  "logistics": {
+   "related": [
+    "ai-software-development",
+    "ai-agents-automation",
+    "ai-integration-infrastructure"
+   ]
+  },
+  "travel": {
+   "related": [
+    "websites-commerce",
+    "ai-software-development",
+    "ui-ux-product-design"
+   ]
+  },
+  "edtech": {},
+  "luxury": {},
+  "rmg": {},
+  "restaurant-food": {},
+  "enterprise": {}
+ },
+ "models": {
+  "mvp-sprint": {
+   "deliverables": [
+    {
+     "icon": "sparkles",
+     "title": "Blueprint"
+    },
+    {
+     "icon": "sparkles",
+     "title": "Design"
+    },
+    {
+     "icon": "sparkles",
+     "title": "Build"
+    },
+    {
+     "icon": "sparkles",
+     "title": "Release-ready"
+    }
+   ],
+   "benefits": [
+    {
+     "icon": "zap",
+     "title": "Speed to market",
+     "description": "Launch a usable v1 quickly, instead of waiting for a feature-complete version that never quite arrives."
+    },
+    {
+     "icon": "shield",
+     "title": "Lower risk",
+     "description": "Scope stays focused and measurable, so budget goes toward what actually validates the product."
+    },
+    {
+     "icon": "target",
+     "title": "Better decisions",
+     "description": "Real user feedback informs v2 — not internal opinions about what might matter."
+    }
+   ],
+   "goodFit": [
+    "Idea or prototype moving to a market-ready v1",
+    "MVP built for funding, partnerships, or early traction",
+    "An internal tool replacing manual operations",
+    "A new feature line that needs fast validation"
+   ],
+   "notIdeal": [
+    "You want a full platform in v1, without prioritization",
+    "Requirements are unknown and stakeholders can't align",
+    "Delivery depends on long external approvals or procurement"
+   ],
+   "process": [
+    {
+     "n": "1",
+     "title": "Kickoff + scope lock",
+     "description": "Days 1–5 — goals, success metrics, core journeys, MVP scope, and milestones."
+    },
+    {
+     "n": "2",
+     "title": "UX/UI + backlog shaping",
+     "description": "Week 1–2 — flows, prototype (if included), ticket breakdown, and build plan."
+    },
+    {
+     "n": "3",
+     "title": "Build + QA in weekly increments",
+     "description": "Week 2–10 — a weekly cadence of demo, feedback, and next increment."
+    },
+    {
+     "n": "4",
+     "title": "Hardening + release readiness",
+     "description": "Final 1–2 weeks — bug fixing, a performance baseline, and the launch checklist."
+    },
+    {
+     "n": "5",
+     "title": "Launch + handover + next roadmap",
+     "description": "Production release, full documentation, and a v2 plan."
+    }
+   ],
+   "faqs": [
+    {
+     "q": "What do you mean by \"MVP\"?",
+     "a": "A focused version of the product that delivers the core value and can be used by real users, without unnecessary features."
+    },
+    {
+     "q": "Can you help us define the MVP scope?",
+     "a": "Yes — scope definition is a core part of the MVP Sprint model, not something you're expected to arrive with already finished."
+    },
+    {
+     "q": "What if our scope changes mid-sprint?",
+     "a": "We handle changes transparently — we'll adjust priorities, trade features, or extend the timeline, based on what matters most."
+    },
+    {
+     "q": "Do you include UI design and prototyping?",
+     "a": "Yes, if your sprint includes the design track. If you already have designs, we can build directly from those instead."
+    },
+    {
+     "q": "Can you integrate with our existing stack?",
+     "a": "Yes. We can build within your stack, or recommend a pragmatic stack chosen for speed if you're starting from scratch."
+    },
+    {
+     "q": "Do we own the source code and IP?",
+     "a": "Yes. You own every deliverable once payments are completed."
+    },
+    {
+     "q": "Do you provide post-launch support?",
+     "a": "Yes — we can support fixes, improvements, and iterations as a follow-up engagement after the sprint ends."
+    },
+    {
+     "q": "How quickly can we start?",
+     "a": "Typically within 1–2 weeks, depending on availability and how ready the scope is."
+    }
+   ],
+   "seo": {
+    "description": "A focused 6–10 week sprint to take a validated idea to a working, launchable product — scoped tightly enough to actually ship on time."
+   }
+  },
+  "end-to-end-delivery": {
+   "seo": {
+    "description": "We own the full delivery cycle — design, engineering, QA, and launch — so you get one accountable team instead of coordinating several vendors."
+   }
+  },
+  "hire-dedicated-developers": {
+   "seo": {
+    "description": "Hire dedicated developers who work your roadmap as an extension of your team: AI, web and mobile engineers, QA and a delivery lead, managed by CodeShaper."
+   }
+  },
+  "staff-augmentation": {
+   "seo": {
+    "description": "IT staff augmentation services: add vetted AI, software and QA engineers to your existing team in days, working inside your process without hiring overhead."
+   }
+  },
+  "offshore-development-center": {
+   "seo": {
+    "description": "Offshore development center setup: we hire, onboard and manage a long-term engineering team for you, with timezone overlap, clear processes and one lead."
+   }
+  }
+ },
+ "caseStudies": {
+  "essentialist": {},
+  "fennec": {},
+  "acculance": {}
+ }
+}

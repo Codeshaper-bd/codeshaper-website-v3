@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { mainMeta } from "@/lib/mainPages";
 import type { CSSProperties, ReactNode } from "react";
 import Link from "next/link";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
@@ -26,12 +27,12 @@ import {
 } from "@/lib/industriesContent";
 import { SITE_URL } from "@/lib/site";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = mainMeta("industries", {
   title: "Industries",
   description:
     "Industry workflows built with product taste — SaaS, eCommerce, FinTech, real estate, logistics, travel, and more.",
   alternates: { canonical: "/industries" },
-};
+});
 
 const BREADCRUMB_JSON_LD = {
   "@context": "https://schema.org",

@@ -1,0 +1,539 @@
+{
+ "groups": [
+  {
+   "slug": "ai-agents-automation",
+   "name": "AI Agents & Automation",
+   "focus": "Reliable AI automation that executes real business tasks inside the systems clients already use.",
+   "flagship": true,
+   "icon": "sparkles",
+   "descriptorSlugs": [
+    "ai-consulting",
+    "ai-agent-development",
+    "ai-workflow-automation",
+    "ai-chatbot-development",
+    "voice-ai-agents",
+    "intelligent-document-processing"
+   ],
+   "metaTitle": "AI Agents & Automation Services | CodeShaper",
+   "metaDescription": "AI agents and automation services that execute real business tasks inside your existing systems, with human approvals, logging, testing and monitoring."
+  },
+  {
+   "slug": "ai-software-development",
+   "name": "AI & Software Development",
+   "focus": "AI-powered SaaS products, MVPs and business applications built to scale.",
+   "icon": "code-2",
+   "descriptorSlugs": [
+    "saas-development",
+    "mvp-development",
+    "generative-ai-development",
+    "web-application-development",
+    "mobile-app-development",
+    "qa-test-automation"
+   ],
+   "metaTitle": "AI & Software Development Services | CodeShaper",
+   "metaDescription": "AI and software development services for SaaS products, MVPs, web, mobile and enterprise applications, built production-ready and designed to scale."
+  },
+  {
+   "slug": "ai-integration-infrastructure",
+   "name": "AI Integration & Infrastructure",
+   "focus": "Connecting AI to existing systems and data, and running it securely and reliably in production.",
+   "icon": "network",
+   "descriptorSlugs": [
+    "ai-integration",
+    "rag-development",
+    "mcp-server-development",
+    "data-engineering",
+    "private-llm",
+    "llmops"
+   ],
+   "metaTitle": "AI Integration & Infrastructure Services | CodeShaper",
+   "metaDescription": "AI integration and infrastructure services: connect AI to your systems and data, deploy private LLMs, and run AI securely with LLMOps and monitoring."
+  },
+  {
+   "slug": "ui-ux-product-design",
+   "name": "UI/UX & Product Design",
+   "focus": "Intuitive, accessible product experiences, including interfaces for AI products.",
+   "icon": "pen-tool",
+   "descriptorSlugs": [
+    "ui-ux-design",
+    "product-discovery",
+    "ai-ux-design",
+    "design-systems",
+    "ux-research"
+   ],
+   "metaTitle": "UI/UX & Product Design Services | CodeShaper",
+   "metaDescription": "UI/UX and product design services for web, mobile and AI products: research, discovery, design systems and accessible interfaces users understand."
+  },
+  {
+   "slug": "websites-commerce",
+   "name": "Websites & Commerce",
+   "focus": "Websites and stores that get found in Google and AI search, and convert.",
+   "icon": "globe",
+   "subgroups": [
+    "Websites & Growth",
+    "Commerce Development"
+   ],
+   "descriptorSlugs": [
+    "website-development",
+    "wordpress-development",
+    "seo-aeo",
+    "shopify-development",
+    "woocommerce-development",
+    "headless-commerce"
+   ],
+   "metaTitle": "Websites & Commerce Services | CodeShaper",
+   "metaDescription": "Website and eCommerce development services: WordPress, Webflow, Shopify and WooCommerce builds optimized for Google and AI search, and built to convert."
+  }
+ ],
+ "services": [
+  {
+   "menuLabel": "AI Strategy & Consulting",
+   "title": "AI Strategy & Consulting Services",
+   "slug": "ai-consulting",
+   "groupSlug": "ai-agents-automation",
+   "summary": "We map where AI will actually save time or money in your operations, then turn it into a scoped, costed roadmap your team can build on.",
+   "metaTitle": "AI Strategy & Consulting Services | CodeShaper",
+   "metaDescription": "AI strategy and consulting services that identify high-value use cases, check data readiness and deliver a practical roadmap to production-ready AI.",
+   "icon": "brain"
+  },
+  {
+   "menuLabel": "Custom AI Agents",
+   "title": "Custom AI Agent Development",
+   "slug": "ai-agent-development",
+   "groupSlug": "ai-agents-automation",
+   "summary": "Custom AI agents that complete real tasks inside your CRM, helpdesk and internal tools, with human approval steps, logging and testing built in.",
+   "metaTitle": "Custom AI Agent Development | CodeShaper",
+   "metaDescription": "Custom AI agent development for real business tasks: agents that work inside your existing tools, with human approvals, audit logs, testing and monitoring.",
+   "icon": "bot"
+  },
+  {
+   "menuLabel": "AI Workflow Automation",
+   "title": "AI Workflow & Business Process Automation",
+   "slug": "ai-workflow-automation",
+   "groupSlug": "ai-agents-automation",
+   "summary": "We automate repetitive, multi-step business processes with AI, connecting the tools you already use and keeping a person in the loop where it matters.",
+   "metaTitle": "AI Workflow & Business Process Automation | CodeShaper",
+   "metaDescription": "AI workflow and business process automation that connects your existing tools, removes manual steps and keeps human approval where decisions matter.",
+   "icon": "workflow"
+  },
+  {
+   "menuLabel": "AI Chatbots & Assistants",
+   "title": "AI Chatbot & Virtual Assistant Development",
+   "slug": "ai-chatbot-development",
+   "groupSlug": "ai-agents-automation",
+   "summary": "Chatbots and virtual assistants grounded in your own content and systems, with a clear handoff to a person when a question needs one.",
+   "metaTitle": "AI Chatbot & Virtual Assistant Development | CodeShaper",
+   "metaDescription": "AI chatbot and virtual assistant development for support, sales and internal teams, grounded in your data and integrated with your tools, with human handoff.",
+   "icon": "message-square"
+  },
+  {
+   "menuLabel": "Voice AI Agents",
+   "title": "Voice AI Agent Development",
+   "slug": "voice-ai-agents",
+   "groupSlug": "ai-agents-automation",
+   "summary": "Voice AI agents that answer calls, book appointments and qualify leads, integrated with your phone system and CRM and monitored in production.",
+   "metaTitle": "Voice AI Agent Development | CodeShaper",
+   "metaDescription": "Voice AI agent development for inbound and outbound calls: booking, qualification and support agents integrated with your phone system, CRM and calendar.",
+   "icon": "mic"
+  },
+  {
+   "menuLabel": "Document Processing",
+   "title": "Intelligent Document Processing & Automation",
+   "slug": "intelligent-document-processing",
+   "groupSlug": "ai-agents-automation",
+   "summary": "We extract, classify and validate data from invoices, forms and contracts, routing exceptions to your team for review before anything is posted.",
+   "metaTitle": "Intelligent Document Processing & Automation | CodeShaper",
+   "metaDescription": "Intelligent document processing that extracts and validates data from invoices, forms and contracts, with human review of exceptions and full audit logs.",
+   "icon": "file-text"
+  },
+  {
+   "menuLabel": "SaaS Development",
+   "title": "SaaS Application Development",
+   "slug": "saas-development",
+   "groupSlug": "ai-software-development",
+   "summary": "Multi-tenant SaaS products with billing, roles, analytics and AI features, engineered to scale from your first customers to thousands.",
+   "metaTitle": "SaaS Application Development | CodeShaper",
+   "metaDescription": "SaaS application development from architecture to launch: multi-tenant platforms with billing, roles, analytics and AI features, built to scale reliably.",
+   "icon": "layers"
+  },
+  {
+   "menuLabel": "MVP Development",
+   "title": "MVP Development Services",
+   "slug": "mvp-development",
+   "groupSlug": "ai-software-development",
+   "summary": "A focused first version of your product, scoped to test your riskiest assumptions and built on a codebase you can keep growing.",
+   "metaTitle": "MVP Development Services | CodeShaper",
+   "metaDescription": "MVP development services that turn your idea into a launchable product in weeks, scoped around real user value and built on a codebase ready to scale.",
+   "icon": "zap"
+  },
+  {
+   "menuLabel": "Generative AI Apps",
+   "title": "Generative AI Application Development",
+   "slug": "generative-ai-development",
+   "groupSlug": "ai-software-development",
+   "summary": "Applications built on large language models, from copilots to search and content tools, with evaluation, guardrails and cost controls from day one.",
+   "metaTitle": "Generative AI Application Development | CodeShaper",
+   "metaDescription": "Generative AI application development: LLM-powered copilots, search and content tools with evaluation, guardrails and cost controls built in from day one.",
+   "icon": "wand-2"
+  },
+  {
+   "menuLabel": "Custom Web Apps",
+   "title": "Custom Web Application Development",
+   "slug": "web-application-development",
+   "groupSlug": "ai-software-development",
+   "summary": "Custom web applications, from dashboards to portals and internal tools, built on a modern, maintainable stack and tested before every release.",
+   "metaTitle": "Custom Web Application Development | CodeShaper",
+   "metaDescription": "Custom web application development for dashboards, customer portals and internal tools, built on a modern stack with automated testing and clean handover.",
+   "icon": "monitor"
+  },
+  {
+   "menuLabel": "Enterprise Apps & Portals",
+   "title": "Enterprise Applications & Business Portals",
+   "slug": "enterprise-applications",
+   "groupSlug": "ai-software-development",
+   "summary": "Business portals and enterprise applications shaped around how your teams work, with role-based access, integrations and audit trails.",
+   "metaTitle": "Enterprise Applications & Business Portals | CodeShaper",
+   "metaDescription": "Enterprise application and business portal development with role-based access, integrations with your ERP and CRM, audit trails and secure deployment.",
+   "icon": "building-2"
+  },
+  {
+   "menuLabel": "Mobile App Development",
+   "title": "Mobile Application Development",
+   "slug": "mobile-app-development",
+   "groupSlug": "ai-software-development",
+   "summary": "Native and cross-platform iOS and Android apps, built for performance and shipped through App Store and Google Play review.",
+   "metaTitle": "Mobile Application Development | CodeShaper",
+   "metaDescription": "Mobile application development for iOS and Android, native or cross-platform, from UX to App Store release, with analytics, testing and ongoing support.",
+   "icon": "smartphone"
+  },
+  {
+   "menuLabel": "QA & Test Automation",
+   "title": "QA & Test Automation Services",
+   "slug": "qa-test-automation",
+   "groupSlug": "ai-software-development",
+   "summary": "Automated and manual testing across web, mobile and APIs, so every release is verified before it reaches your users.",
+   "metaTitle": "QA & Test Automation Services | CodeShaper",
+   "metaDescription": "QA and test automation services covering web, mobile and APIs: automated regression suites, CI integration and manual testing for confident releases.",
+   "icon": "flask-conical"
+  },
+  {
+   "menuLabel": "AI Integration",
+   "title": "Enterprise AI & Business Systems Integration",
+   "slug": "ai-integration",
+   "groupSlug": "ai-integration-infrastructure",
+   "summary": "We connect AI models to your ERP, CRM, data warehouse and internal systems, with secure access controls and reliable APIs between them.",
+   "metaTitle": "Enterprise AI & Business Systems Integration | CodeShaper",
+   "metaDescription": "Enterprise AI integration services that connect LLMs to your ERP, CRM and internal business systems through secure APIs, with access controls and monitoring.",
+   "icon": "plug"
+  },
+  {
+   "menuLabel": "RAG & Knowledge Bases",
+   "title": "RAG & Enterprise Knowledge Systems",
+   "slug": "rag-development",
+   "groupSlug": "ai-integration-infrastructure",
+   "summary": "Retrieval-augmented generation systems that answer from your own documents and data, with sources cited and accuracy measured.",
+   "metaTitle": "RAG & Enterprise Knowledge Systems | CodeShaper",
+   "metaDescription": "RAG development and enterprise knowledge systems that answer from your own documents and data, with cited sources, access controls and measured accuracy.",
+   "icon": "book-open"
+  },
+  {
+   "menuLabel": "MCP Server Development",
+   "title": "MCP Server & Tool Development",
+   "slug": "mcp-server-development",
+   "groupSlug": "ai-integration-infrastructure",
+   "summary": "Model Context Protocol servers and tools that give AI assistants safe, permissioned access to your systems and data.",
+   "metaTitle": "MCP Server & Tool Development | CodeShaper",
+   "metaDescription": "MCP server and tool development that gives AI assistants and agents secure, permissioned access to your internal systems, APIs and business data sources.",
+   "icon": "server"
+  },
+  {
+   "menuLabel": "Data Engineering & AI Readiness",
+   "title": "Data Engineering & AI Readiness",
+   "slug": "data-engineering",
+   "groupSlug": "ai-integration-infrastructure",
+   "summary": "Data pipelines, warehouses and clean, well-governed datasets that make your business ready for analytics and AI.",
+   "metaTitle": "Data Engineering & AI Readiness | CodeShaper",
+   "metaDescription": "Data engineering and AI readiness services: pipelines, warehouses and data quality work that make your business data reliable enough for analytics and AI.",
+   "icon": "database"
+  },
+  {
+   "menuLabel": "Legacy Modernization",
+   "title": "Legacy Software Modernization",
+   "slug": "legacy-modernization",
+   "groupSlug": "ai-integration-infrastructure",
+   "summary": "We move legacy applications to a modern, supportable stack incrementally, keeping production data intact and downtime to a minimum.",
+   "metaTitle": "Legacy Software Modernization | CodeShaper",
+   "metaDescription": "Legacy software modernization that migrates outdated applications to a modern, maintainable stack incrementally, with data intact and minimal downtime.",
+   "icon": "refresh-cw"
+  },
+  {
+   "menuLabel": "Private & On-Prem AI",
+   "title": "Private AI & On-Premises LLM Deployment",
+   "slug": "private-llm",
+   "groupSlug": "ai-integration-infrastructure",
+   "summary": "Large language models deployed in your own cloud or data center, so sensitive data never leaves your control.",
+   "metaTitle": "Private AI & On-Premises LLM Deployment | CodeShaper",
+   "metaDescription": "Private AI and on-premises LLM deployment in your own cloud or data center, keeping sensitive data under your control on secure, monitored infrastructure.",
+   "icon": "lock"
+  },
+  {
+   "menuLabel": "Cloud, DevOps & Platform Engineering",
+   "title": "Cloud, DevOps & Platform Engineering",
+   "slug": "cloud-devops",
+   "groupSlug": "ai-integration-infrastructure",
+   "summary": "Cloud infrastructure, CI/CD pipelines and platform engineering that make deployments repeatable, secure and observable.",
+   "metaTitle": "Cloud, DevOps & Platform Engineering | CodeShaper",
+   "metaDescription": "Cloud, DevOps and platform engineering services: infrastructure as code, CI/CD pipelines, containers and monitoring for secure, repeatable deployments.",
+   "icon": "cloud"
+  },
+  {
+   "menuLabel": "LLMOps & AI Observability",
+   "title": "LLMOps, AI Evaluation & Observability",
+   "slug": "llmops",
+   "groupSlug": "ai-integration-infrastructure",
+   "summary": "Evaluation suites, tracing, cost tracking and monitoring that keep AI systems accurate and reliable after launch.",
+   "metaTitle": "LLMOps, AI Evaluation & Observability | CodeShaper",
+   "metaDescription": "LLMOps, AI evaluation and observability services: test suites, tracing, cost tracking and monitoring that keep production AI systems accurate and reliable.",
+   "icon": "activity"
+  },
+  {
+   "menuLabel": "AI Security & Governance",
+   "title": "AI Security & Governance",
+   "slug": "ai-security-governance",
+   "groupSlug": "ai-integration-infrastructure",
+   "summary": "Access controls, data protection, red-teaming and governance policies that let you run AI safely and meet compliance requirements.",
+   "metaTitle": "AI Security & Governance | CodeShaper",
+   "metaDescription": "AI security and governance services: access controls, prompt-injection testing, data protection and usage policies so you can run AI safely and compliantly.",
+   "icon": "shield"
+  },
+  {
+   "menuLabel": "UI/UX Design",
+   "title": "UI/UX Design Services",
+   "slug": "ui-ux-design",
+   "groupSlug": "ui-ux-product-design",
+   "summary": "User flows, high-fidelity screens and clickable prototypes, designed to be accessible and tested with real users before development.",
+   "metaTitle": "UI/UX Design Services | CodeShaper",
+   "metaDescription": "UI/UX design services for web and mobile products: user flows, high-fidelity interfaces and clickable prototypes, accessible and tested with real users.",
+   "icon": "layout-dashboard"
+  },
+  {
+   "menuLabel": "Product Discovery & Strategy",
+   "title": "Product Discovery & Strategy",
+   "slug": "product-discovery",
+   "groupSlug": "ui-ux-product-design",
+   "summary": "A focused discovery phase that turns an idea into a validated scope, roadmap and success metrics before you commit to a build.",
+   "metaTitle": "Product Discovery & Strategy | CodeShaper",
+   "metaDescription": "Product discovery and strategy services that turn ideas into validated scope, a prioritized roadmap and clear success metrics before development starts.",
+   "icon": "compass"
+  },
+  {
+   "menuLabel": "AI & Conversational UX",
+   "title": "AI & Conversational UX Design",
+   "slug": "ai-ux-design",
+   "groupSlug": "ui-ux-product-design",
+   "summary": "Interfaces for chat, copilots and agent workflows that show users what the AI is doing and keep them in control.",
+   "metaTitle": "AI & Conversational UX Design | CodeShaper",
+   "metaDescription": "AI and conversational UX design for chatbots, copilots and agent workflows, with interfaces that build trust, explain AI actions and keep users in control.",
+   "icon": "message-circle"
+  },
+  {
+   "menuLabel": "Design Systems",
+   "title": "Design System Development",
+   "slug": "design-systems",
+   "groupSlug": "ui-ux-product-design",
+   "summary": "Documented libraries of components, tokens and patterns that keep design and engineering consistent as your product grows.",
+   "metaTitle": "Design System Development | CodeShaper",
+   "metaDescription": "Design system development: reusable components, design tokens and documentation that keep your product consistent and speed up design and engineering.",
+   "icon": "component"
+  },
+  {
+   "menuLabel": "UX Research & Testing",
+   "title": "UX Research & Usability Testing",
+   "slug": "ux-research",
+   "groupSlug": "ui-ux-product-design",
+   "summary": "Interviews, usability tests and analytics reviews that show where users struggle and what to fix first.",
+   "metaTitle": "UX Research & Usability Testing | CodeShaper",
+   "metaDescription": "UX research and usability testing services: user interviews, moderated tests and analytics reviews that reveal where users struggle and what to fix first.",
+   "icon": "users"
+  },
+  {
+   "menuLabel": "Website Design & Development",
+   "title": "Website Design & Development",
+   "slug": "website-development",
+   "groupSlug": "websites-commerce",
+   "subgroup": "Websites & Growth",
+   "summary": "Fast, accessible business websites built for search from day one, with a CMS your team can update without developers.",
+   "metaTitle": "Website Design & Development | CodeShaper",
+   "metaDescription": "Website design and development for fast, accessible, SEO-ready business websites with a CMS your team can manage, built to rank and convert visitors.",
+   "icon": "globe"
+  },
+  {
+   "menuLabel": "WordPress Development",
+   "title": "WordPress Development Services",
+   "slug": "wordpress-development",
+   "groupSlug": "websites-commerce",
+   "subgroup": "Websites & Growth",
+   "summary": "Custom WordPress themes, plugins and builds that stay fast, secure and easy for your team to edit.",
+   "metaTitle": "WordPress Development Services | CodeShaper",
+   "metaDescription": "WordPress development services: custom themes, plugins and performance-tuned builds that are secure, fast and easy for your marketing team to manage.",
+   "icon": "layout-template"
+  },
+  {
+   "menuLabel": "Webflow & Framer Development",
+   "title": "Webflow & Framer Development",
+   "slug": "webflow-framer-development",
+   "groupSlug": "websites-commerce",
+   "subgroup": "Websites & Growth",
+   "summary": "Polished Webflow and Framer sites your marketing team can update and launch new pages on independently.",
+   "metaTitle": "Webflow & Framer Development | CodeShaper",
+   "metaDescription": "Webflow and Framer development for polished, high-performance marketing sites your team can edit independently, with CMS setup, SEO and integrations.",
+   "icon": "brush"
+  },
+  {
+   "menuLabel": "SEO & AI Search Optimization",
+   "title": "SEO & AI Search Optimization (AEO)",
+   "slug": "seo-aeo",
+   "groupSlug": "websites-commerce",
+   "subgroup": "Websites & Growth",
+   "summary": "Technical SEO, content structure and schema markup that help your site rank in Google and get cited by AI search assistants.",
+   "metaTitle": "SEO & AI Search Optimization (AEO) | CodeShaper",
+   "metaDescription": "SEO and AI search optimization (AEO) services: technical SEO, structured data and content strategy so you rank in Google and get cited in AI answers.",
+   "icon": "search"
+  },
+  {
+   "menuLabel": "Conversion Rate Optimization",
+   "title": "Conversion Rate Optimization (CRO)",
+   "slug": "cro",
+   "groupSlug": "websites-commerce",
+   "subgroup": "Websites & Growth",
+   "summary": "Funnel audits, A/B tests and data-backed changes that lift sign-ups, leads and checkout conversion.",
+   "metaTitle": "Conversion Rate Optimization (CRO) | CodeShaper",
+   "metaDescription": "Conversion rate optimization (CRO) services: funnel audits, A/B testing and data-backed UX changes that increase sign-ups, leads and checkout conversion.",
+   "icon": "trending-up"
+  },
+  {
+   "menuLabel": "Website Maintenance",
+   "title": "Website Maintenance & Support",
+   "slug": "website-maintenance",
+   "groupSlug": "websites-commerce",
+   "subgroup": "Websites & Growth",
+   "summary": "Updates, backups, uptime monitoring and fixes after launch, so your site stays fast, secure and current.",
+   "metaTitle": "Website Maintenance & Support | CodeShaper",
+   "metaDescription": "Website maintenance and support services: updates, security patches, backups, uptime monitoring and fixes that keep your website fast, secure and current.",
+   "icon": "life-buoy"
+  },
+  {
+   "menuLabel": "Shopify Development",
+   "title": "Shopify Development Services",
+   "slug": "shopify-development",
+   "groupSlug": "websites-commerce",
+   "subgroup": "Commerce Development",
+   "summary": "Custom Shopify themes, apps and integrations for stores that have outgrown off-the-shelf templates.",
+   "metaTitle": "Shopify Development Services | CodeShaper",
+   "metaDescription": "Shopify development services: custom themes, private apps, Shopify Plus builds and integrations for stores that need more than an off-the-shelf template.",
+   "icon": "shopping-bag"
+  },
+  {
+   "menuLabel": "WooCommerce Development",
+   "title": "WooCommerce Development",
+   "slug": "woocommerce-development",
+   "groupSlug": "websites-commerce",
+   "subgroup": "Commerce Development",
+   "summary": "WooCommerce stores tuned for performance and scale, with the flexibility of WordPress and none of the plugin bloat.",
+   "metaTitle": "WooCommerce Development | CodeShaper",
+   "metaDescription": "WooCommerce development for fast, scalable WordPress stores: custom themes, plugins, payment and shipping integrations, and performance optimization.",
+   "icon": "shopping-cart"
+  },
+  {
+   "menuLabel": "Headless Commerce",
+   "title": "Headless Commerce Development",
+   "slug": "headless-commerce",
+   "groupSlug": "websites-commerce",
+   "subgroup": "Commerce Development",
+   "summary": "Fast custom storefronts connected to Shopify, BigCommerce or commercetools, so you keep your commerce back end and gain front-end freedom.",
+   "metaTitle": "Headless Commerce Development | CodeShaper",
+   "metaDescription": "Headless commerce development: fast custom storefronts on Next.js connected to Shopify, BigCommerce or commercetools, built for speed and flexibility.",
+   "icon": "package"
+  },
+  {
+   "menuLabel": "Marketplace Development",
+   "title": "Marketplace Development",
+   "slug": "marketplace-development",
+   "groupSlug": "websites-commerce",
+   "subgroup": "Commerce Development",
+   "summary": "Multi-vendor marketplaces with vendor onboarding, split payments and moderation, built to handle real transaction volume.",
+   "metaTitle": "Marketplace Development | CodeShaper",
+   "metaDescription": "Marketplace development for multi-vendor platforms: vendor onboarding, split payments, search, reviews and moderation, built to scale with transactions.",
+   "icon": "store"
+  },
+  {
+   "menuLabel": "Agentic Commerce Readiness",
+   "title": "Agentic Commerce Readiness",
+   "slug": "agentic-commerce",
+   "groupSlug": "websites-commerce",
+   "subgroup": "Commerce Development",
+   "summary": "We prepare your catalog, product feeds and checkout so AI shopping agents and assistants can find, compare and buy your products.",
+   "metaTitle": "Agentic Commerce Readiness | CodeShaper",
+   "metaDescription": "Agentic commerce readiness: structured product data, feeds and checkout integrations so AI shopping agents and assistants can discover and buy your products.",
+   "icon": "cpu"
+  },
+  {
+   "menuLabel": "eCommerce Migration",
+   "title": "eCommerce Migration & Integration",
+   "slug": "ecommerce-migration",
+   "groupSlug": "websites-commerce",
+   "subgroup": "Commerce Development",
+   "summary": "Platform migrations and ERP, PIM and payment integrations that move your store without losing data, SEO rankings or sales.",
+   "metaTitle": "eCommerce Migration & Integration | CodeShaper",
+   "metaDescription": "eCommerce migration and integration services: move to Shopify or WooCommerce and connect your ERP, PIM and payments without losing data, SEO or sales.",
+   "icon": "route"
+  }
+ ],
+ "models": [
+  {
+   "label": "MVP Sprint",
+   "title": "MVP Sprint",
+   "href": "/engagement/mvp-sprint",
+   "icon": "zap",
+   "desc": "Idea → product in 6–10 weeks",
+   "longDescription": "A focused 6–10 week sprint to take a validated idea to a working, launchable product — scoped tightly enough to actually ship on time.",
+   "metaDescription": "A focused 6–10 week sprint to take a validated idea to a working, launchable product — scoped tightly enough to actually ship on time."
+  },
+  {
+   "label": "End-to-End Delivery",
+   "title": "End-to-End Delivery",
+   "href": "/engagement/end-to-end-delivery",
+   "icon": "layers",
+   "desc": "Full-cycle product ownership",
+   "longDescription": "We own the full delivery cycle — design, engineering, QA, and launch — so you get one accountable team instead of coordinating several vendors.",
+   "metaDescription": "We own the full delivery cycle — design, engineering, QA, and launch — so you get one accountable team instead of coordinating several vendors."
+  },
+  {
+   "label": "Dedicated Development Team",
+   "title": "Hire Dedicated Developers",
+   "href": "/hire-dedicated-developers",
+   "icon": "users",
+   "desc": "Embedded team, your roadmap",
+   "longDescription": "Hire a dedicated development team that works your roadmap and sprint cadence as an extension of your own product org — engineers, QA, and a delivery lead, managed by us.",
+   "metaDescription": "Hire dedicated developers who work your roadmap as an extension of your team: AI, web and mobile engineers, QA and a delivery lead, managed by CodeShaper."
+  },
+  {
+   "label": "IT Staff Augmentation",
+   "title": "IT Staff Augmentation Services",
+   "href": "/staff-augmentation",
+   "icon": "user-plus",
+   "desc": "Engineers who ramp fast",
+   "longDescription": "Add individual engineers, designers, or QA specialists to your existing team and process. They ramp fast and work your way, without adding management overhead.",
+   "metaDescription": "IT staff augmentation services: add vetted AI, software and QA engineers to your existing team in days, working inside your process without hiring overhead."
+  },
+  {
+   "label": "Offshore Development Center",
+   "title": "Offshore Development Center Setup",
+   "href": "/offshore-development-center",
+   "icon": "globe",
+   "desc": "Your own long-term offshore team",
+   "longDescription": "We set up and run an offshore development center for you — hiring, onboarding, delivery processes, and management — so you scale engineering capacity with working-hour overlap and one accountable lead.",
+   "metaDescription": "Offshore development center setup: we hire, onboard and manage a long-term engineering team for you, with timezone overlap, clear processes and one lead."
+  }
+ ]
+}

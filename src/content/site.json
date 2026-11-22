@@ -1,0 +1,30 @@
+{
+ "contact": {},
+ "footer": {
+  "tagline": "AI engineering & software development company. Reliable, production-ready AI and software that works with the tools you already use.",
+  "button": {
+   "label": "Company Profile",
+   "href": "/company/about"
+  },
+  "links": [
+   {
+    "label": "About",
+    "href": "/company/about"
+   },
+   {
+    "label": "Blog",
+    "href": "/blog"
+   }
+  ],
+  "places": [
+   "Bangladesh",
+   "Japan",
+   "USA",
+   "UK",
+   "Australia",
+   "New Zealand"
+  ],
+  "copyright": "CodeShaper. All rights reserved."
+ },
+ "seo": {}
+}

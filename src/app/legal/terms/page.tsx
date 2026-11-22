@@ -1,14 +1,15 @@
 import type { Metadata } from "next";
+import { mainMeta } from "@/lib/mainPages";
 import SiteShell from "@/components/system/SiteShell";
 import LegalDoc from "@/components/system/LegalDoc";
 import { SITE_NAME } from "@/lib/site";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = mainMeta("terms", {
   title: "Terms of Service",
   description: "The terms that govern use of CodeShaper's website and client engagements.",
   alternates: { canonical: "/legal/terms" },
   robots: { index: false, follow: true },
-};
+});
 
 export default function TermsOfServicePage() {
   return (

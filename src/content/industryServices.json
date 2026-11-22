@@ -1,0 +1,122 @@
+[
+ {
+  "industry": "SaaS",
+  "industryHref": "/industries/saas",
+  "icon": "cloud",
+  "accent": "#8a7bff",
+  "pillars": [
+   {
+    "title": "AI & Software Development",
+    "href": "/services/ai-software-development"
+   },
+   {
+    "title": "AI Agents & Automation",
+    "href": "/services/ai-agents-automation"
+   },
+   {
+    "title": "UI/UX & Product Design",
+    "href": "/services/ui-ux-product-design"
+   }
+  ]
+ },
+ {
+  "industry": "eCommerce & Retail",
+  "industryHref": "/industries/ecommerce",
+  "icon": "shopping-cart",
+  "accent": "#5b9bdb",
+  "pillars": [
+   {
+    "title": "Websites & Commerce",
+    "href": "/services/websites-commerce"
+   },
+   {
+    "title": "AI Agents & Automation",
+    "href": "/services/ai-agents-automation"
+   },
+   {
+    "title": "UI/UX & Product Design",
+    "href": "/services/ui-ux-product-design"
+   }
+  ]
+ },
+ {
+  "industry": "FinTech",
+  "industryHref": "/industries/fintech",
+  "icon": "credit-card",
+  "accent": "#3fae82",
+  "pillars": [
+   {
+    "title": "AI & Software Development",
+    "href": "/services/ai-software-development"
+   },
+   {
+    "title": "AI Integration & Infrastructure",
+    "href": "/services/ai-integration-infrastructure"
+   },
+   {
+    "title": "UI/UX & Product Design",
+    "href": "/services/ui-ux-product-design"
+   }
+  ]
+ },
+ {
+  "industry": "Real Estate",
+  "industryHref": "/industries/real-estate",
+  "icon": "building-2",
+  "accent": "#d99a4e",
+  "pillars": [
+   {
+    "title": "AI & Software Development",
+    "href": "/services/ai-software-development"
+   },
+   {
+    "title": "Websites & Commerce",
+    "href": "/services/websites-commerce"
+   },
+   {
+    "title": "AI Agents & Automation",
+    "href": "/services/ai-agents-automation"
+   }
+  ]
+ },
+ {
+  "industry": "Logistics",
+  "industryHref": "/industries/logistics",
+  "icon": "truck",
+  "accent": "#db5a89",
+  "pillars": [
+   {
+    "title": "AI & Software Development",
+    "href": "/services/ai-software-development"
+   },
+   {
+    "title": "AI Agents & Automation",
+    "href": "/services/ai-agents-automation"
+   },
+   {
+    "title": "AI Integration & Infrastructure",
+    "href": "/services/ai-integration-infrastructure"
+   }
+  ]
+ },
+ {
+  "industry": "Travel & Hospitality",
+  "industryHref": "/industries/travel",
+  "icon": "plane",
+  "accent": "#d97fc4",
+  "pillars": [
+   {
+    "title": "Websites & Commerce",
+    "href": "/services/websites-commerce"
+   },
+   {
+    "title": "AI & Software Development",
+    "href": "/services/ai-software-development"
+   },
+   {
+    "title": "UI/UX & Product Design",
+    "href": "/services/ui-ux-product-design"
+   }
+  ]
+ }
+]

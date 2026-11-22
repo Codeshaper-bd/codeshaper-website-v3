@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import SiteShell from "@/components/system/SiteShell";
-import DetailPage from "@/components/system/DetailPage";
+import IndustryPage from "@/components/industries/IndustryPage";
+import { industryDetail, withSeo } from "@/lib/details";
 import { INDUSTRIES, findBySlug, slugFromHref } from "@/lib/navigation";
 
 /**
@@ -23,11 +23,7 @@ export async function generateMetadata({
   const { industry } = await params;
   const ind = findBySlug(INDUSTRIES, industry);
   if (!ind) return {};
-  return {
-    title: ind.label,
-    description: ind.summary,
-    alternates: { canonical: ind.href },
-  };
+  return withSeo({ title: ind.label, description: ind.summary, alternates: { canonical: ind.href } }, industryDetail(industry).seo);
 }
 
 export default async function IndustryDetailPage({
@@ -39,21 +35,5 @@ export default async function IndustryDetailPage({
   const ind = findBySlug(INDUSTRIES, industry);
   if (!ind) notFound();
 
-  return (
-    <SiteShell>
-      <DetailPage
-        breadcrumbs={[{ label: "Home", href: "/" }, { label: "Industries", href: "/industries" }, { label: ind.label }]}
-        icon={ind.icon}
-        eyebrow="Industries"
-        title={ind.label}
-        intro={ind.summary}
-        facts={[ind.outcome, ...ind.systems]}
-        ctaLabel="Talk about your industry"
-        relatedTitle="Other industries"
-        related={INDUSTRIES.filter((i) => i.href !== ind.href)
-          .slice(0, 4)
-          .map((i) => ({ title: i.label, description: i.desc, href: i.href, icon: i.icon }))}
-      />
-    </SiteShell>
-  );
+  return <IndustryPage industry={ind} />;
 }

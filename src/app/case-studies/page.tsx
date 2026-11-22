@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { mainMeta } from "@/lib/mainPages";
 import SiteShell from "@/components/system/SiteShell";
 import CaseStudyHero from "@/components/case-studies/CaseStudyHero";
 import CaseStudyBrowser from "@/components/case-studies/CaseStudyBrowser";
@@ -10,12 +11,12 @@ import { CASE_STUDIES } from "@/lib/caseStudies";
 import { CASE_STUDIES_FAQ_JSON_LD } from "@/lib/caseStudiesFaq";
 import { SITE_URL } from "@/lib/site";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = mainMeta("case-studies", {
   title: "Case Studies — Real Delivery, Measurable Outcomes",
   description:
     "See how CodeShaper designs, engineers, and automates digital products — with measurable outcomes, clean handover, and a predictable delivery cadence.",
   alternates: { canonical: "/case-studies" },
-};
+});
 
 const BREADCRUMB_JSON_LD = {
   "@context": "https://schema.org",

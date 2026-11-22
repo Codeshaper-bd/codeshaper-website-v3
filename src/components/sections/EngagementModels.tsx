@@ -20,11 +20,11 @@ import { AT_A_GLANCE, COMPARISON_TABLE, MODEL_OVERVIEWS } from "@/lib/engagement
  *    comparison data) and lib/engagementModels.ts (icons), so the
  *    homepage can't drift from the hub page.
  */
-const MODELS = ENGAGEMENT_MODEL_CARDS.map((card) => {
+const MODELS = ENGAGEMENT_MODEL_CARDS.flatMap((card) => {
   const overview = MODEL_OVERVIEWS.find((m) => m.href === card.href);
   const spec = COMPARISON_TABLE.find((r) => r.href === card.href);
-  if (!overview || !spec) throw new Error(`Missing engagement content for ${card.href}`);
-  return { ...card, overview, spec };
+  if (!overview || !spec) return []; // not filled in yet in the CMS
+  return [{ ...card, overview, spec }];
 });
 type Model = (typeof MODELS)[number];
 

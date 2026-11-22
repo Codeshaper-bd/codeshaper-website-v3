@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { mainMeta } from "@/lib/mainPages";
 import type { ReactNode } from "react";
 import Link from "next/link";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
@@ -15,16 +16,17 @@ import { SERVICE_GROUPS, groupDescriptor, groupSections, servicePath } from "@/d
 import { pageMetadata } from "@/lib/pageMetadata";
 import { CASE_STUDIES } from "@/lib/caseStudies";
 import { WHAT_YOU_GET, MODEL_OVERVIEWS } from "@/lib/engagementContent";
+import { SHOW_UNCONFIRMED_QUOTES } from "@/components/system/QuoteGrid";
 import { TRUST_STATS, TRUST_QUOTE, STARTER_PATHS, PILLAR_OUTCOMES, SERVICES_FAQS } from "@/lib/servicesContent";
 import { SITE_URL } from "@/lib/site";
 
-export const metadata: Metadata = pageMetadata({
+export const metadata: Metadata = mainMeta("services", pageMetadata({
   title: "AI Engineering & Software Development Services | CodeShaper",
   // REVIEW
   description:
     "AI agents, software development, AI integration, UI/UX design, websites and commerce: production-ready systems that integrate with the tools you already use.",
   path: "/services",
-});
+}));
 
 const BREADCRUMB_JSON_LD = {
   "@context": "https://schema.org",
@@ -133,12 +135,14 @@ export default function ServicesIndexPage() {
                 ))}
               </div>
             </Reveal>
+            {SHOW_UNCONFIRMED_QUOTES && (
             <Reveal delay={100}>
               <blockquote className="mt-8 text-center font-urbanist text-[17px] italic leading-relaxed text-ink">
                 &ldquo;{TRUST_QUOTE.quote}&rdquo;
                 <footer className="mt-2 font-urbanist text-[13px] not-italic text-ink-faint">— {TRUST_QUOTE.role}</footer>
               </blockquote>
             </Reveal>
+            )}
           </div>
         </section>
 

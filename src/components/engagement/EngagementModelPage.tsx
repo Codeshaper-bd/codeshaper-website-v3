@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import SiteShell from "@/components/system/SiteShell";
 import DetailPage from "@/components/system/DetailPage";
 import { ENGAGEMENT_MODELS, getEngagementModel, type EngagementModel } from "@/data/services";
+import DetailSections from "@/components/cms/DetailSections";
+import { modelDetail, type Detail } from "@/lib/details";
 import { pageMetadata } from "@/lib/pageMetadata";
 import { SITE_NAME } from "@/lib/site";
 
@@ -24,7 +26,7 @@ export function requireEngagementModel(slug: string): EngagementModel {
   return m;
 }
 
-export default function EngagementModelPage({ model: m }: { model: EngagementModel }) {
+export default function EngagementModelPage({ model: m, detail = modelDetail(m.href.split("/").pop()!) }: { model: EngagementModel; detail?: Detail }) {
   return (
     <SiteShell>
       <DetailPage
@@ -42,7 +44,9 @@ export default function EngagementModelPage({ model: m }: { model: EngagementMod
           href: x.href,
           icon: x.icon,
         }))}
-      />
+      >
+        <DetailSections detail={detail} name={m.label} first />
+      </DetailPage>
     </SiteShell>
   );
 }

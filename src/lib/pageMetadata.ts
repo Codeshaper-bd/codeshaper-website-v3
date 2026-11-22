@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { SITE_NAME } from "./site";
+import { SITE } from "./siteSettings";
 
 /**
  * Metadata for a page whose title is already fully branded ("… | CodeShaper").
@@ -12,7 +13,7 @@ export function pageMetadata({ title, description, path }: { title: string; desc
     title: { absolute: title },
     description,
     alternates: { canonical: path },
-    openGraph: { type: "website", siteName: SITE_NAME, url: path, title, description },
+    openGraph: { type: "website", siteName: SITE_NAME, url: path, title, description, ...(SITE.seo.image ? { images: [SITE.seo.image] } : {}) },
     twitter: { card: "summary_large_image", title, description },
   };
 }

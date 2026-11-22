@@ -1,0 +1,25 @@
+{
+ "home": {
+  "sections": [
+   "trustStrip",
+   "servicesBento",
+   "caseStudies",
+   "industries",
+   "humanAiFlow",
+   "testimonials",
+   "techStack",
+   "impactWorkflow",
+   "engagementModels"
+  ]
+ },
+ "services": {},
+ "industries": {},
+ "engagement": {},
+ "case-studies": {},
+ "blog": {},
+ "products": {},
+ "about": {},
+ "contact": {},
+ "privacy": {},
+ "terms": {}
+}

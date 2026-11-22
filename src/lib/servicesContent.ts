@@ -17,17 +17,19 @@
  * inventing company history.
  */
 
+import ai from "@/content/ai.json";
+import outcomes from "@/content/outcomes.json";
 import { getEngagementModel, getGroup, getService, servicePath, type ServiceGroupSlug } from "@/data/services";
 
 /** A chip/link to a service or group page, labelled with its menu label. */
-function link(slug: string): { label: string; href: string } {
+function link(slug: string): { label: string; href: string } | null {
   const svc = getService(slug);
   if (svc) return { label: svc.menuLabel, href: servicePath(slug) };
   const group = getGroup(slug);
   if (group) return { label: group.name, href: servicePath(slug) };
   const model = getEngagementModel(slug);
   if (model) return { label: model.label, href: model.href };
-  throw new Error(`servicesContent: unknown service/group/engagement slug "${slug}"`);
+  return null; // taken off the website in the CMS
 }
 
 export type TrustStat = { icon: string; value: string; label: string };
@@ -46,7 +48,7 @@ export const TRUST_QUOTE = {
 
 export type StarterPath = { goal: string; steps: { label: string; href: string }[] };
 
-export const STARTER_PATHS: StarterPath[] = [
+const PATHS: { goal: string; steps: ({ label: string; href: string } | null)[] }[] = [
   { goal: "Launch a new MVP", steps: [link("product-discovery"), link("mvp-sprint"), link("mvp-development")] },
   { goal: "Automate a manual business process", steps: [link("ai-consulting"), link("ai-workflow-automation"), link("llmops")] },
   { goal: "Connect AI to your existing systems", steps: [link("ai-integration"), link("rag-development"), link("ai-security-governance")] },
@@ -54,14 +56,10 @@ export const STARTER_PATHS: StarterPath[] = [
   { goal: "Grow eCommerce revenue", steps: [link("shopify-development"), link("cro"), link("seo-aeo")] },
 ];
 
+export const STARTER_PATHS: StarterPath[] = PATHS.map((p) => ({ ...p, steps: p.steps.filter((s) => s !== null) })).filter((p) => p.steps.length);
+
 /** Short, honest capability framing per service group — not metrics, just what tends to improve. */
-export const PILLAR_OUTCOMES: Record<ServiceGroupSlug, string[]> = {
-  "ai-agents-automation": ["Less manual work", "Human approval where it matters", "Every action logged", "Measurable time saved"],
-  "ai-software-development": ["Maintainable code", "Tested before every release", "Built to scale", "Clean handover"],
-  "ai-integration-infrastructure": ["Works with your existing systems", "Secure data access", "Monitored in production", "Grounded, not generic answers"],
-  "ui-ux-product-design": ["Clearer flows", "Accessible by default", "Faster dev handoff", "Consistent UI"],
-  "websites-commerce": ["Found in Google and AI search", "Fast load times", "Higher conversion", "Content teams can self-serve"],
-};
+export const PILLAR_OUTCOMES: Record<ServiceGroupSlug, string[]> = outcomes;
 
 export type Faq = { q: string; a: string };
 export type Quote = { quote: string; name: string; role: string; accent: string };
@@ -77,64 +75,25 @@ export const SERVICES_FAQS: Faq[] = [
 
 /** AI Agents & Automation group page content */
 
-export const AI_SNAPSHOT = [
-  { icon: "target", title: "Who this is for", description: "Teams with a specific, repetitive workflow to speed up — not a general appetite for \"adding AI\" somewhere." },
-  { icon: "layers", title: "What we build", description: "AI strategy, custom agents and RAG search grounded in your own data, and automation across the tools you already run." },
-  { icon: "shield", title: "What matters most", description: "Accuracy, human oversight on anything consequential, and a measurable reduction in manual work." },
-];
+export const AI_SNAPSHOT: UseCase[] = ai.snapshot;
 
 export type UseCase = { icon: string; title: string; description: string };
 
-export const AI_USE_CASES: UseCase[] = [
-  { icon: "book-open", title: "Internal knowledge base search", description: "Answers grounded in your own docs and SOPs, with sources — not a generic model's guess." },
-  { icon: "bot", title: "Support copilots", description: "Draft responses and surface relevant history for support agents, human-reviewed before sending." },
-  { icon: "workflow", title: "Document capture & review", description: "Extract, classify, and route documents through an approval chain instead of manual entry." },
-  { icon: "clipboard-list", title: "Structured reporting", description: "Turn recurring manual reports into an automated pipeline with a human check before it ships." },
-  { icon: "plug", title: "Cross-tool automation", description: "Trigger actions across CRM, helpdesk, and internal tools without a person manually bridging them." },
-  { icon: "bar-chart-2", title: "Anomaly & usage detection", description: "Flag unusual patterns in operational or product usage data for a human to investigate." },
-  { icon: "brain", title: "AI strategy & feasibility", description: "An honest map of where AI actually pays off in your workflow, before any building starts." },
-  { icon: "component", title: "UX microcopy & content drafts", description: "Faster first drafts for in-product copy and documentation, edited and approved by your team." },
-];
+export const AI_USE_CASES: UseCase[] = ai.useCases;
 
-export const AI_GOOD_FIT = [
-  "A specific, repetitive workflow with a clear before/after",
-  "Internal documentation or SOPs that support/ops teams search constantly",
-  "Reporting or approval steps that are manual today but rule-based enough to automate",
-  "A team willing to keep a human in the loop on anything consequential",
-];
+export const AI_GOOD_FIT: string[] = ai.goodFit;
 
-export const AI_NOT_IDEAL = [
-  "You want a general-purpose chatbot with no specific workflow attached",
-  "The task requires judgment calls with no acceptable error rate and no human review step",
-  "Source data is too inconsistent or sparse to ground answers in yet",
-];
+export const AI_NOT_IDEAL: string[] = ai.notIdeal;
 
 export type ProcessStep = { n: string; title: string; description: string };
 
-export const AI_PROCESS: ProcessStep[] = [
-  { n: "1", title: "Use-case mapping", description: "We map where AI could realistically save time or reduce error in your actual workflow — not a generic capability list." },
-  { n: "2", title: "Feasibility & data check", description: "We check whether the data needed to ground the system reliably actually exists and is accessible." },
-  { n: "3", title: "Design & guardrails", description: "Scope what the system can and can't do on its own, and where a human reviews before anything ships." },
-  { n: "4", title: "Build & evaluate", description: "Iterative build with real test cases, evaluated against accuracy and failure-mode criteria, not just a demo." },
-  { n: "5", title: "Launch & monitor", description: "Release with monitoring in place, so drift or failure modes get caught early, not after they compound." },
-];
+export const AI_PROCESS: ProcessStep[] = ai.process;
 
-export const AI_GUARDRAILS = [
-  "Human review on anything consequential — no fully autonomous high-stakes actions by default",
-  "Grounded in your own data via RAG, not relying on a model's unverified general knowledge",
-  "Evaluation against real test cases before launch, not just a working demo",
-  "Clear logging of what the system did and why, for anything that touches real operations",
-  "Data handling scoped to what the use case actually needs — no unnecessary data exposure",
-];
+export const AI_GUARDRAILS: string[] = ai.guardrails;
 
 export type StackCategory = { category: string; tools: string[] };
 
-export const AI_STACK: StackCategory[] = [
-  { category: "LLM Providers", tools: ["OpenAI", "Anthropic", "Open-source models where appropriate"] },
-  { category: "Retrieval & RAG", tools: ["Vector databases", "Embedding pipelines", "Document chunking & indexing"] },
-  { category: "Automation & Orchestration", tools: ["Workflow automation platforms", "Custom agent orchestration", "Webhooks & schedulers"] },
-  { category: "Integration Layer", tools: ["REST/GraphQL APIs", "CRM & helpdesk connectors", "Internal auth & permissions"] },
-];
+export const AI_STACK: StackCategory[] = ai.stack;
 
 export const AI_TESTIMONIALS: Quote[] = [
   { quote: "It answers from our actual docs, not a generic guess — that alone changed how support handles tickets.", name: "Head of Support", role: "B2B Platform", accent: "#8a7bff" },
@@ -142,11 +101,4 @@ export const AI_TESTIMONIALS: Quote[] = [
   { quote: "The human-review step meant we could trust it in production from week one.", name: "VP Engineering", role: "Fintech Startup", accent: "#3fae82" },
 ];
 
-export const AI_FAQS: Faq[] = [
-  { q: "Will this replace our team?", a: "No — every automation we build keeps a human in the loop on consequential decisions. The goal is removing manual busywork, not decision-making." },
-  { q: "How do you handle hallucination or wrong answers?", a: "By grounding answers in your own data via RAG rather than relying on a model's general knowledge, and evaluating against real test cases before launch." },
-  { q: "Is our data safe?", a: "We scope data access to exactly what the use case needs, and can work within your existing security and access-control requirements." },
-  { q: "Do we need our documentation cleaned up first?", a: "Not perfectly — but a feasibility check happens early specifically to catch data gaps before we build on top of them." },
-  { q: "Can you integrate with our existing tools?", a: "Yes — most AI and automation engagements are as much about integration (CRM, helpdesk, internal tools) as they are about the model itself." },
-  { q: "How do we measure if it's working?", a: "We define success criteria — time saved, error rate, resolution speed — before launch, so impact is measurable, not anecdotal." },
-];
+export const AI_FAQS: Faq[] = ai.faqs;

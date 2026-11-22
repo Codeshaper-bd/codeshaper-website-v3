@@ -1,3 +1,5 @@
+import reviews from "@/content/reviews.json";
+
 /**
  * Real client reviews, quoted word for word (shared by the Testimonials
  * section and the service pop-ups). Only add reviews a client actually gave,
@@ -16,14 +18,4 @@ export type Review = {
   video?: { src: string; duration: string };
 };
 
-export const REAL_REVIEWS: Review[] = [
-  {
-    real: true,
-    quote: "This was a web development project and we were very pleased with the service and responsiveness… Definitely recommend this seller!",
-    name: "Joan Roca",
-    role: "Founder & CEO",
-    company: "Essentialist",
-    market: "Spain",
-    caseSlug: "essentialist",
-  },
-];
+export const REAL_REVIEWS: Review[] = reviews;
