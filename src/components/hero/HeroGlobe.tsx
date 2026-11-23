@@ -298,7 +298,7 @@ export default function HeroGlobe({ priority = false }: { priority?: boolean }) 
             sizes="(min-width: 1024px) 880px, (min-width: 640px) 75vw, 490px"
             alt=""
             aria-hidden
-            decoding="async"
+            decoding={priority ? "sync" : "async"}
             loading={priority ? "eager" : "lazy"}
             fetchPriority={priority ? "high" : "low"}
             className={`absolute inset-0 h-full w-full transition-opacity duration-500 ${live ? "opacity-0" : "opacity-100"}`}

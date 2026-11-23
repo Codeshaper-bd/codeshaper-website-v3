@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { SiEnvato, SiUpwork } from "react-icons/si";
 import { RiOpenaiFill } from "react-icons/ri";
 import { FcGoogle } from "react-icons/fc";
@@ -27,8 +28,7 @@ const STARRED: Kind[] = ["google", "envato"];
 function BadgeVisual({ kind }: { kind: Kind }) {
   if (kind === "clutch")
     // the official Clutch award artwork supplied by the owner
-    // eslint-disable-next-line @next/next/no-img-element
-    return <img src="/media/badges/clutch-top-software-developers-auckland-2026.png" alt="" width={30} height={32} className="h-8 w-auto shrink-0" />;
+    return <Image src="/media/badges/clutch-top-software-developers-auckland-2026.png" alt="" width={60} height={64} style={{ width: 30, height: 32 }} className="shrink-0 object-contain" />;
   const icon =
     kind === "openai" ? <RiOpenaiFill size={16} className="text-[#0b0f19]" aria-hidden />
     : kind === "google" ? <FcGoogle size={16} aria-hidden />

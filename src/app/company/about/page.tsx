@@ -33,7 +33,7 @@ const STATS = [
 export default function AboutPage() {
   return (
     <SiteShell>
-      <section className="bg-canvas pb-16 pt-32 lg:py-24">
+      <section className="theme-light bg-canvas pb-16 pt-32 lg:py-24">
         <div className="mx-auto max-w-3xl px-6 lg:px-10">
           <Breadcrumbs items={[{ label: "Home", href: "/" }, { label: "Company" }, { label: "About" }]} />
           <SectionEyebrow>Company</SectionEyebrow>
@@ -48,17 +48,16 @@ export default function AboutPage() {
 
           <dl className="mt-10 grid grid-cols-2 gap-x-6 gap-y-6 border-y border-hairline py-8 sm:grid-cols-4">
             {STATS.map((s) => (
-              <div key={s.label}>
-                <dt className="sr-only">{s.label}</dt>
+              <div key={s.label} className="flex flex-col-reverse">
+                <dt className="mt-1 font-urbanist text-[13px] text-ink-dim">{s.label}</dt>
                 <dd className="font-urbanist text-3xl font-bold tracking-tight text-ink">{s.value}</dd>
-                <p className="mt-1 font-urbanist text-[13px] text-ink-dim">{s.label}</p>
               </div>
             ))}
           </dl>
         </div>
       </section>
 
-      <section className="border-t border-hairline bg-canvas-raised py-16 lg:py-20">
+      <section className="theme-light border-t border-hairline bg-canvas-raised py-16 lg:py-20">
         <div className="mx-auto max-w-3xl px-6 lg:px-10">
           <p className="mb-6 font-urbanist text-[11px] font-medium uppercase tracking-[0.2em] text-ink-faint">
             What we do
@@ -83,7 +82,7 @@ export default function AboutPage() {
         </div>
       </section>
 
-      <section className="border-t border-hairline bg-canvas py-16 lg:py-20">
+      <section className="theme-light border-t border-hairline bg-canvas py-16 lg:py-20">
         <div className="mx-auto max-w-3xl px-6 lg:px-10">
           <p className="mb-6 font-urbanist text-[11px] font-medium uppercase tracking-[0.2em] text-ink-faint">
             How we work

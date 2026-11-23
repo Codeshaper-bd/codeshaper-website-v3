@@ -6,7 +6,7 @@ import { usePrefersReducedMotion } from "@/lib/motion";
 
 /**
  * Lenis smooth scroll wired into GSAP ScrollTrigger. Disabled for reduced
- * motion. Lenis and GSAP (~70 KB) are loaded after the page has painted, on
+ * motion and on touch screens (phones scroll natively; this saves ~60 KB). Lenis and GSAP (~70 KB) are loaded after the page has painted, on
  * the visitor's first scroll/pointer/key or at idle time, so they never sit
  * in the first load. Until then the browser's native scrolling works as usual.
  */
@@ -14,7 +14,8 @@ export default function SmoothScroll({ children }: { children: React.ReactNode }
   const reduced = usePrefersReducedMotion();
 
   useEffect(() => {
-    if (reduced) return;
+    // touch screens scroll natively (Lenis leaves touch alone anyway): don't download it there
+    if (reduced || window.matchMedia("(hover: none), (pointer: coarse)").matches) return;
     let cancelled = false;
     let teardown: (() => void) | null = null;
 

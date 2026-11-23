@@ -246,7 +246,7 @@ export default function Footer() {
               aria-label="Member of BASIS, the Bangladesh Association of Software and Information Services"
             >
               {/* eslint-disable-next-line @next/next/no-img-element -- the association's own mark (white artwork), shown in ink */}
-              <img src="/media/badges/basis.svg" alt="" width={113} height={40} className="h-9 w-auto brightness-0" />
+              <img src="/media/badges/basis.svg" alt="" width={113} height={40} loading="lazy" decoding="async" className="h-9 w-auto brightness-0" />
               <span className="font-urbanist text-[11px] font-semibold uppercase tracking-[0.16em] text-ink-dim">Member</span>
             </a>
           </div>

@@ -15,6 +15,8 @@ export default function CaseStudyVideo({
   project: string;
   className?: string;
 }) {
+  // local posters go through the Next image optimiser (WebP, sized): a poster is fetched at page load
+  if (poster.startsWith("/") && !poster.startsWith("/_next/")) poster = `/_next/image?url=${encodeURIComponent(poster)}&w=1080&q=70`;
   const videoRef = useRef<HTMLVideoElement>(null);
   const userPaused = useRef(false);
   const manuallyStarted = useRef(false);

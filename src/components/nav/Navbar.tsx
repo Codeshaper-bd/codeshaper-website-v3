@@ -3,13 +3,33 @@
 import MarkSvg from "@/components/brand/MarkSvg";
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from "react";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import * as Nav from "@radix-ui/react-navigation-menu";
 import { ArrowRight, ChevronDown } from "lucide-react";
 import { HEADER_BUTTON, HEADER_ITEMS, type MenuLink } from "@/lib/navigation";
-import { Icon } from "@/lib/icons";
-import MegaPanel from "./MegaPanel";
-import IndustriesMegaPanel from "./IndustriesMegaPanel";
-import MobileMenu from "./MobileMenu";
+/*
+ * The menus' insides (mega panels, dropdown rows, the mobile sheet) and the
+ * icon map they use are loaded when first needed, not with the page: none of
+ * it is in the server HTML anyway (closed menus render nothing). preloadMenus
+ * starts the download as soon as the pointer reaches the bar, so opening a
+ * menu never waits.
+ */
+const loadMega = () => import("./MegaPanel");
+const loadIndustries = () => import("./IndustriesMegaPanel");
+const loadDropdown = () => import("./DropdownLinks");
+const loadMobile = () => import("./MobileMenu");
+const MegaPanel = dynamic(loadMega, { ssr: false });
+const IndustriesMegaPanel = dynamic(loadIndustries, { ssr: false });
+const DropdownLinks = dynamic(loadDropdown, { ssr: false });
+const MobileMenu = dynamic(loadMobile, { ssr: false });
+let menusPreloaded = false;
+const preloadMenus = () => {
+  if (menusPreloaded) return;
+  menusPreloaded = true;
+  void loadMega();
+  void loadIndustries();
+  void loadDropdown();
+};
 import MobileTabBar from "./MobileTabBar";
 import Magnetic from "@/components/system/Magnetic";
 
@@ -61,6 +81,18 @@ export default function Navbar() {
   const [phase, setPhase] = useState<Phase>("idle");
   const [openValue, setOpenValue] = useState("");
   const [sheet, setSheet] = useState<null | "menu" | "services">(null);
+  const [sheetUsed, setSheetUsed] = useState(false);
+  // the sheet is mounted (closed) once the page is idle, out of the first load, so its slide-in still animates
+  useEffect(() => {
+    if (sheet) return setSheetUsed(true);
+    const w = window as Window & { requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => number; cancelIdleCallback?: (h: number) => void };
+    if (w.requestIdleCallback) {
+      const h = w.requestIdleCallback(() => setSheetUsed(true), { timeout: 4000 });
+      return () => w.cancelIdleCallback?.(h);
+    }
+    const t = window.setTimeout(() => setSheetUsed(true), 2500);
+    return () => window.clearTimeout(t);
+  }, [sheet]);
   const barRef = useRef<HTMLDivElement>(null);
   // glass capsule: the white pill that slides behind the hovered link
   const pillRef = useRef<HTMLSpanElement>(null);
@@ -290,7 +322,7 @@ export default function Navbar() {
                   className="pointer-events-none absolute left-0 top-1 h-[calc(100%-8px)] rounded-full border border-white/90 bg-white/75 opacity-0 shadow-[inset_0_1px_0_#fff,0_2px_8px_-2px_rgba(50,40,120,0.18)] transition-[transform,width,opacity] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]"
                 />
               )}
-              <Nav.Root value={openValue} onValueChange={setOpenValue}>
+              <Nav.Root value={openValue} onValueChange={setOpenValue} onPointerEnter={preloadMenus} onFocus={preloadMenus}>
                 <Nav.List className={`flex items-center ${docked ? "gap-0.5" : "gap-0.5"}`}>
                   {HEADER_ITEMS.map((it, i) => {
                     if (it.type === "group") return <DropdownItem key={i} id={it.label.toLowerCase().replace(/[^a-z0-9]+/g, "-") || `group-${i}`} label={it.label} links={it.links} docked={docked} triggerClassName={tc} order={2 + i} />;
@@ -359,7 +391,8 @@ export default function Navbar() {
       </header>
 
       <MobileTabBar active={sheet} onOpen={setSheet} />
-      <MobileMenu open={sheet !== null} section={sheet === "services" ? "services" : null} onClose={() => setSheet(null)} />
+      {/* the mobile sheet is fetched at idle time (or on first open), then kept */}
+      {sheetUsed && <MobileMenu open={sheet !== null} section={sheet === "services" ? "services" : null} onClose={() => setSheet(null)} />}
     </>
   );
 }
@@ -402,24 +435,7 @@ function DropdownItem({
           docked ? "bottom-full mb-6" : "top-full mt-3"
         }`}
       >
-        <ul>
-          {links.map((l, i) => (
-            <li key={l.href}>
-              <Nav.Link asChild>
-                <Link
-                  href={l.href}
-                  className="menu-row group flex items-center gap-3 rounded-[12px] px-2.5 py-2 font-urbanist text-[15px] font-semibold text-ink-dim transition-colors hover:text-ink"
-                >
-                  <span className="mega-icon-tile flex h-8 w-8 shrink-0 items-center justify-center rounded-[10px]">
-                    <Icon name={l.icon} size={14} />
-                  </span>
-                  {l.label}
-                </Link>
-              </Nav.Link>
-              {i === 0 && links.length > 1 && <div className="mx-2 my-1 h-px bg-[#0b0f19]/[0.07] shadow-[0_1px_0_rgba(255,255,255,0.8)]" aria-hidden />}
-            </li>
-          ))}
-        </ul>
+        <DropdownLinks links={links} />
       </Nav.Content>
     </Nav.Item>
   );

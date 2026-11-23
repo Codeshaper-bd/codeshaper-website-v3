@@ -125,6 +125,11 @@ function Wash({ palette }: { palette: Palette }) {
 export default function ServicesBento({ copy }: { copy?: CopyOf<"servicesBento"> }) {
   const c = homeCopy("servicesBento", copy);
   const [openIdx, setOpenIdx] = useState<number | null>(null);
+  // the card visuals are decorative (aria-hidden) and heavy (hundreds of SVG nodes):
+  // drawn in the browser only, never in the server HTML, so the page ships lighter.
+  // This section wakes ~800px before it is seen, so they are there before anyone looks.
+  const [drawn, setDrawn] = useState(false);
+  useEffect(() => setDrawn(true), []);
   const dialogRef = useRef<HTMLDialogElement>(null);
 
   useEffect(() => {
@@ -218,7 +223,7 @@ export default function ServicesBento({ copy }: { copy?: CopyOf<"servicesBento">
                         aria-hidden
                         className="pointer-events-none relative min-h-0 flex-1 select-none transition-transform duration-500 ease-out group-hover/card:-translate-y-1.5"
                       >
-                        <Visual />
+                        {drawn && <Visual />}
                       </div>
                     </article>
                   </Reveal>
