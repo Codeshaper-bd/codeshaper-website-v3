@@ -33,7 +33,7 @@ const decode = (s) => s.replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&qu
 export const headingsOf = (html) => [...html.matchAll(/<h2 id="([^"]+)"[^>]*>(.*?)<\/h2>/g)].map((m) => ({ id: m[1], text: decode(m[2].replace(/<[^>]+>/g, "")) })).filter((h) => h.text);
 
 // ── the homepage (Pages, Home) ─────────────────────────────────────────────
-const HOME_BUILT_IN = ["trustStrip", "servicesBento", "caseStudies", "industries", "humanAiFlow", "testimonials", "techStack", "impactWorkflow", "engagementModels", "aboutStudio", "faq", "blogPosts", "letsTalk"];
+const HOME_BUILT_IN = ["trustStrip", "servicesBento", "caseStudies", "products", "industries", "humanAiFlow", "testimonials", "techStack", "impactWorkflow", "engagementModels", "aboutStudio", "faq", "blogPosts", "letsTalk"];
 const HOME_ADDED = { textImage: "Text and picture", cta: "Call to action", stats: "Numbers", cards: "Cards", logos: "Logo strip", video: "Video", faq: "Questions", text: "Free text" };
 const words = (v) => (typeof v === "string" && v.trim() ? v.trim() : undefined);
 const lines = (v) => (typeof v === "string" ? v.split(/\r?\n/).map((x) => x.trim()).filter(Boolean) : list(v));
@@ -270,8 +270,14 @@ export function toSite(raw, warn = () => {}) {
     once.add(i.type);
     return [{ type: i.type, label: i.label }];
   });
+  // your own products get a top-level link (after Case studies), unless the header already links there
+  const linksTo = (href) => items.some((i) => i.href === href || i.links?.some((l) => l.href === href));
+  if (products.length && !linksTo("/products")) {
+    const at = items.findIndex((i) => i.href === "/case-studies");
+    items.splice(at >= 0 ? at + 1 : items.length, 0, { type: "link", label: "Products", href: "/products" });
+  }
   // pages that asked for the Company menu
-  const extra = menu.filter((m) => m.where !== "footer").map((m) => ({ label: m.label, href: m.href, icon: "file-text" }));
+  const extra = menu.filter((m) => m.where !== "footer" && m.href !== "/products").map((m) => ({ label: m.label, href: m.href, icon: "file-text" }));
   const company = items.find((i) => i.type === "group" && i.label === "Company") ?? items.find((i) => i.type === "group");
   if (company) company.links.push(...extra.filter((e) => !company.links.some((l) => l.href === e.href)));
   else if (extra.length) items.push({ type: "group", label: "Company", links: extra });

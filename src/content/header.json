@@ -15,6 +15,11 @@
   },
   {
    "type": "link",
+   "label": "Products",
+   "href": "/products"
+  },
+  {
+   "type": "link",
    "label": "Blog",
    "href": "/blog"
   },

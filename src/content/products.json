@@ -1,1 +1,221 @@
-[]
+[
+ {
+  "slug": "acculance",
+  "title": "Acculance",
+  "stage": "live",
+  "tagline": "Sales, inventory and accounting in one system.",
+  "summary": "Acculance is a point-of-sale, inventory and accounting system for retailers, wholesalers and distributors. Sell at the counter, track stock across warehouses and keep the books up to date from one dashboard. Run it on your own server, or as SaaS for many businesses at once.",
+  "category": "Business software",
+  "image": "/cms/9fb5fcd94b97-acculance.jpg",
+  "imageAlt": "The Acculance dashboard with sales, purchases, profit and stock at a glance",
+  "accent": "#1d5f9e",
+  "platforms": [
+   "Web",
+   "Self-hosted",
+   "SaaS"
+  ],
+  "featured": true,
+  "features": [
+   {
+    "icon": "store",
+    "title": "Point of sale",
+    "description": "A fast counter screen with barcode scanning, discounts, taxes and printed or emailed receipts."
+   },
+   {
+    "icon": "package",
+    "title": "Inventory and warehouses",
+    "description": "Stock levels per warehouse, transfers, adjustments and low-stock alerts."
+   },
+   {
+    "icon": "truck",
+    "title": "Purchases and suppliers",
+    "description": "Purchase orders, supplier balances and returns, all linked to stock."
+   },
+   {
+    "icon": "landmark",
+    "title": "Accounting",
+    "description": "Accounts, expenses, payments and balances that update with every sale and purchase."
+   },
+   {
+    "icon": "activity",
+    "title": "Reports",
+    "description": "Sales, profit, stock and tax reports you can filter and export."
+   },
+   {
+    "icon": "lock",
+    "title": "Users and roles",
+    "description": "Give cashiers, managers and accountants exactly the access they need."
+   }
+  ],
+  "benefits": [
+   "One system instead of separate POS, stock and accounting tools",
+   "Stock and books that always match what was sold",
+   "Clear daily numbers for owners and managers",
+   "Your data on your own server, or hosted as SaaS"
+  ],
+  "for": [
+   "Retail shops and chains",
+   "Wholesalers and distributors",
+   "Businesses with several branches or warehouses",
+   "Software resellers who want to offer POS as SaaS"
+  ],
+  "stats": [
+   {
+    "label": "Copies sold on CodeCanyon",
+    "value": "400+"
+   },
+   {
+    "label": "Editions: self-hosted and SaaS",
+    "value": "2"
+   },
+   {
+    "label": "Built on PHP 8 and Laravel",
+    "value": "Laravel"
+   }
+  ],
+  "pricing": {
+   "mode": "demo"
+  },
+  "faqs": [
+   {
+    "q": "Can we host Acculance on our own server?",
+    "a": "Yes. The standard edition runs on your own server, so your data stays with you. A SaaS edition is available if you want to serve many businesses from one installation."
+   },
+   {
+    "q": "Can you customise it for our business?",
+    "a": "Yes. Our team built Acculance, so we can add the workflows, reports and integrations your business needs."
+   },
+   {
+    "q": "Do you help with setup and training?",
+    "a": "Yes. We can install it, move your existing data in and train your team."
+   }
+  ]
+ },
+ {
+  "slug": "dashcode",
+  "title": "Dashcode",
+  "stage": "live",
+  "tagline": "The admin dashboard template teams ship with.",
+  "summary": "Dashcode is a premium admin dashboard template built with Tailwind CSS, available in React, Next.js, Vue, Laravel and plain HTML. Ready dashboards, pages and components for analytics, eCommerce, CRM, projects, banking and chat help teams launch internal tools and SaaS products in days instead of months.",
+  "category": "Developer tools",
+  "image": "/cms/3433fe658e8c-dashcode.jpg",
+  "imageAlt": "The Dashcode analytics dashboard with revenue, users and traffic charts",
+  "accent": "#6366f1",
+  "platforms": [
+   "React",
+   "Next.js",
+   "Vue",
+   "Laravel",
+   "HTML"
+  ],
+  "features": [
+   {
+    "icon": "layers",
+    "title": "Five versions in one",
+    "description": "React, Next.js, Vue, Laravel and HTML versions, so it fits the stack you already use."
+   },
+   {
+    "icon": "monitor",
+    "title": "Ready dashboards",
+    "description": "Analytics, eCommerce, CRM, project, banking and more, ready to connect to your data."
+   },
+   {
+    "icon": "component",
+    "title": "Components and pages",
+    "description": "Tables, forms, charts, auth screens and app pages built on one design system."
+   },
+   {
+    "icon": "brush",
+    "title": "Themes and dark mode",
+    "description": "Light and dark modes and several colour schemes, easy to match to your brand."
+   },
+   {
+    "icon": "smartphone",
+    "title": "Responsive",
+    "description": "Every page works on phones, tablets and large screens."
+   },
+   {
+    "icon": "zap",
+    "title": "Next.js with shadcn/ui",
+    "description": "A separate TypeScript edition built on Next.js and shadcn/ui."
+   }
+  ],
+  "benefits": [
+   "Skip months of dashboard groundwork",
+   "Clean, consistent code your developers can extend",
+   "One purchase covers every framework version",
+   "Regular updates from the team that built it"
+  ],
+  "for": [
+   "Startups building SaaS dashboards",
+   "Agencies delivering admin panels for clients",
+   "Teams building internal tools",
+   "Developers who want a solid Tailwind base"
+  ],
+  "stats": [
+   {
+    "label": "Copies sold on ThemeForest",
+    "value": "2,900+"
+   },
+   {
+    "label": "Framework versions",
+    "value": "5"
+   },
+   {
+    "label": "Built on Tailwind CSS",
+    "value": "Tailwind"
+   }
+  ],
+  "pricing": {
+   "mode": "from",
+   "from": "$19"
+  },
+  "faqs": [
+   {
+    "q": "Which versions do I get?",
+    "a": "One purchase includes the HTML, React, Next.js, Vue and Laravel versions."
+   },
+   {
+    "q": "Can you build our dashboard on Dashcode?",
+    "a": "Yes. We built Dashcode, so we can turn it into your finished product, connected to your data and APIs."
+   }
+  ],
+  "links": {
+   "site": "https://themeforest.net/item/dashcode-admin-dashboard-template/42600453"
+  }
+ },
+ {
+  "slug": "banizo",
+  "title": "Banizo",
+  "stage": "soon",
+  "tagline": "Run your online store from one place.",
+  "summary": "Banizo brings orders, products, customers and payments together for growing retailers, so you can sell online and in store without juggling separate tools.",
+  "category": "Business software",
+  "image": "/cms/699afbfd7746-banizo.jpg",
+  "imageAlt": "The Banizo store dashboard with orders, revenue and best sellers",
+  "accent": "#f59e0b",
+  "platforms": [
+   "Web"
+  ],
+  "features": [
+   {
+    "icon": "store",
+    "title": "Storefront",
+    "description": "A fast online store that matches your brand."
+   },
+   {
+    "icon": "package",
+    "title": "Orders and products",
+    "description": "Manage catalogue, stock and orders in one place."
+   },
+   {
+    "icon": "users",
+    "title": "Customers",
+    "description": "Profiles, order history and repeat-purchase insights."
+   }
+  ],
+  "pricing": {
+   "mode": "demo"
+  }
+ }
+]

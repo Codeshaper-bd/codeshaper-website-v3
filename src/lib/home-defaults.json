@@ -1,8 +1,15 @@
 {
   "hero": {
     "eyebrow": "AI Native Software Solution Partner",
-    "line1": "From AI automation to scalable software,",
-    "line2": "we build what grows your business."
+    "line1": "Tell us what you want to build.",
+    "line2": "We’ll design, build and automate it.",
+    "sub": "An AI-native software partner for startups and global brands, from first prototype to enterprise scale.",
+    "proof": "Trusted by 350+ brands in {countries} countries",
+    "ratingScore": "",
+    "ratingText": "",
+    "ratingHref": "",
+    "callText": "Rather talk?",
+    "callLink": "Book a call"
   },
   "trustStrip": {
     "title": "The choice of fast-moving teams,",
@@ -17,6 +24,13 @@
     "eyebrow": "Case Studies",
     "title": "Work that shipped, and what it changed.",
     "button": "All case studies"
+  },
+  "products": {
+    "eyebrow": "Our products",
+    "title": "Software we build, own and run.",
+    "button": "All products",
+    "demoButton": "Book a demo",
+    "viewButton": "View product"
   },
   "industries": {
     "eyebrow": "Industries",

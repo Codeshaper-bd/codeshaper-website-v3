@@ -5,6 +5,7 @@ import Hero from "@/components/hero/Hero";
 import TrustStrip from "@/components/sections/TrustStrip";
 import BlogLatest from "@/components/sections/BlogLatest";
 import LetsTalk from "@/components/sections/LetsTalk";
+import ProductsShowcase from "@/components/sections/ProductsShowcase";
 import HomeBlock, { type Block } from "@/components/home/HomeBlock";
 import type { CopyOf } from "@/lib/homeCopy";
 
@@ -22,7 +23,7 @@ const isLazy = (s: string): s is SectionName => (LAZY as string[]).includes(s);
 /** CMS live preview: after each reload, go to the section being edited (#edit-…), past the smooth scroller. */
 const TO_EDITED = `(function(){var go=function(){var el=location.hash&&document.getElementById(location.hash.slice(1));if(!el)return;var y=el.getBoundingClientRect().top+window.scrollY-24;var l=window.__lenis;if(l)l.scrollTo(y,{immediate:true,force:true});else window.scrollTo(0,y);};var moved=false;["wheel","touchstart","keydown"].forEach(function(e){window.addEventListener(e,function(){moved=true;},{once:true,passive:true});});[0,300,900,2000,3500].forEach(function(t){setTimeout(function(){if(!moved)go();},t);});})();`;
 
-const ORIGINAL: HomeItem[] = ["trustStrip", ...LAZY.slice(0, 8), "faq", "blogPosts", "letsTalk"].map((key) => ({ key }));
+const ORIGINAL: HomeItem[] = ["trustStrip", ...LAZY.slice(0, 2), "products", ...LAZY.slice(2, 8), "faq", "blogPosts", "letsTalk"].map((key) => ({ key }));
 
 export default function HomeView({ data, preview = false }: { data: HomeData; preview?: boolean }) {
   const items = (data.sections ?? ORIGINAL).map((s) => (typeof s === "string" ? { key: s } : s));
@@ -36,6 +37,7 @@ export default function HomeView({ data, preview = false }: { data: HomeData; pr
           : item.key === "trustStrip" ? <TrustStrip copy={item.copy} />
           : item.key === "blogPosts" ? <BlogLatest copy={item.copy} />
           : item.key === "letsTalk" ? <LetsTalk copy={item.copy} />
+          : item.key === "products" ? <ProductsShowcase copy={item.copy} />
           : isLazy(item.key) ? <LazySection name={item.key} props={item.copy ? { copy: item.copy } : undefined} rootMargin={preview ? "4000px 0px" : undefined} />
           : null;
         if (!view) return null;

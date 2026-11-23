@@ -1,9 +1,13 @@
 {
  "home": {
   "hero": {
-   "line1": "From AI automation to scalable software,",
-   "line2": "we build what grows your business.",
-   "eyebrow": "AI Native Software Solution Partner"
+   "sub": "An AI-native software partner for startups and global brands, from first prototype to enterprise scale.",
+   "line1": "Tell us what you want to build.",
+   "line2": "We’ll design, build and automate it.",
+   "proof": "Trusted by 350+ brands in {countries} countries",
+   "eyebrow": "AI Native Software Solution Partner",
+   "callLink": "Book a call",
+   "callText": "Rather talk?"
   },
   "sections": [
    {
@@ -27,6 +31,17 @@
      "title": "Work that shipped, and what it changed.",
      "button": "All case studies",
      "eyebrow": "Case Studies"
+    }
+   },
+   {
+    "key": "products",
+    "copy": {
+     "intro": "Alongside client work, we build and sell our own software, bought by more than 3,000 businesses and developers. The same team and the same standards you get on your project.",
+     "title": "Software we build, own and run.",
+     "button": "All products",
+     "eyebrow": "Our products",
+     "demoButton": "Book a demo",
+     "viewButton": "View product"
     }
    },
    {

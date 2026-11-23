@@ -8,6 +8,37 @@ import { SERVED } from "./globe/servedCountries";
 import Link from "next/link";
 import { getAnnouncement, KIND_STYLE } from "@/data/announcement";
 import { homeCopy, type CopyOf } from "@/lib/homeCopy";
+import { SiFramer, SiUpwork, SiWebflow } from "react-icons/si";
+
+/** Four of the clients in the logo strip below, as a small stack beside the proof line. */
+/** Microsoft's four-colour mark (the icon sets only carry it in one colour). */
+function MicrosoftMark({ size = 12 }: { size?: number }) {
+  return (
+    <svg viewBox="0 0 22 22" width={size} height={size}>
+      <rect width="10" height="10" fill="#F25022" />
+      <rect x="12" width="10" height="10" fill="#7FBA00" />
+      <rect y="12" width="10" height="10" fill="#00A4EF" />
+      <rect x="12" y="12" width="10" height="10" fill="#FFB900" />
+    </svg>
+  );
+}
+
+/** Each in its brand colour: the mark on its own colour, Microsoft on white. */
+const PROOF_MARKS = [
+  { icon: MicrosoftMark, name: "Microsoft", bg: "#ffffff", fg: "" },
+  { icon: SiWebflow, name: "Webflow", bg: "#146EF5", fg: "#ffffff" },
+  { icon: SiUpwork, name: "Upwork", bg: "#14A800", fg: "#ffffff" },
+  { icon: SiFramer, name: "Framer", bg: "#0b0f19", fg: "#ffffff" },
+];
+
+/** "Trusted by 350+ brands in 33 countries", with the figures set in dark ink. */
+function ProofText({ text }: { text: string }) {
+  return (
+    <>
+      {text.split(/(\d[\d,.]*\+?)/).map((part, i) => (i % 2 ? <span key={i} className="font-semibold text-[#0b0f19]">{part}</span> : part))}
+    </>
+  );
+}
 
 /**
  * Hero: centred copy above a flowing light that rises from the bottom
@@ -85,6 +116,18 @@ const HAND_LABELS = [
 /** Monochrome fractal noise, tiled (≈0.5KB inline, no request). */
 const NOISE = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`;
 
+/** The rating, as a link to its source when there is one. */
+function RatingWrap({ href, children }: { href?: string; children: React.ReactNode }) {
+  const cls = "inline-flex items-center gap-1.5";
+  return (href ?? "").startsWith("https://") ? (
+    <a href={href} target="_blank" rel="noopener noreferrer" className={`${cls} transition-colors duration-200 hover:text-[#0b0f19]`}>
+      {children}
+    </a>
+  ) : (
+    <span className={cls}>{children}</span>
+  );
+}
+
 export default function Hero({ copy }: { copy?: CopyOf<"hero"> }) {
   const c = homeCopy("hero", copy);
   return (
@@ -137,7 +180,12 @@ export default function Hero({ copy }: { copy?: CopyOf<"hero"> }) {
                 the mist, so the card meets the white page edges without a seam
                 (glyphs stay above it) */}
             <div className="absolute inset-x-0 top-0 h-[46%] bg-gradient-to-b from-white via-white/80 to-transparent" />
-            <HeroGlyphs />
+            {/* the glyphs fill the card during the intro; on the finished hero
+                they step back to the edges, so the copy and the prompt
+                sit on a calm surface */}
+            <div className="absolute inset-0 opacity-50 transition-opacity duration-700 [mask-image:radial-gradient(ellipse_62%_58%_at_50%_40%,transparent_55%,black_92%)] intro:opacity-100 intro:[mask-image:none]">
+              <HeroGlyphs />
+            </div>
           </div>
           {/* film grain: static SVG noise tile, overlay-blended so it only
               textures the coloured light and vanishes on the white top */}
@@ -200,7 +248,7 @@ export default function Hero({ copy }: { copy?: CopyOf<"hero"> }) {
         </div>
 
         <div
-          className="relative z-[2] mx-auto flex w-full max-w-[1040px] flex-col items-center px-5 xl:max-w-[1240px] pb-10 pt-[120px] text-center sm:px-8 sm:pt-[116px] lg:pb-8 lg:pt-[clamp(150px,22vh,230px)]"
+          className="relative z-[2] mx-auto flex w-full max-w-[1040px] flex-col items-center px-5 xl:max-w-[1240px] pb-10 pt-[112px] text-center sm:px-8 sm:pt-[112px] lg:pb-8 lg:pt-[clamp(128px,17vh,200px)]"
           data-hero-column
         >
           {/* Announcement chip: [TAG] text → (data/announcement.ts; the newest
@@ -235,19 +283,58 @@ export default function Hero({ copy }: { copy?: CopyOf<"hero"> }) {
           {/* two lines from lg (explicit breaks); natural wrapping below */}
           <h1
             id="hero-heading"
-            className="mt-6 text-balance text-[clamp(26px,6.9vw,30px)] font-[560] leading-[1.14] tracking-[-0.025em] text-[#0b0f19] sm:text-[34px] lg:text-[38px] xl:text-[41px] 2xl:text-[44px]"
+            className="mt-6 text-balance text-[clamp(28px,7.6vw,34px)] font-[580] leading-[1.1] tracking-[-0.032em] text-[#0b0f19] sm:text-[40px] lg:text-[44px] xl:text-[48px] 2xl:text-[52px]"
           >
             <span className="inline-block lg:block lg:whitespace-nowrap" data-reveal>
               {c.line1}
             </span>{" "}
             <span className="inline-block lg:block lg:whitespace-nowrap" data-reveal>
-              <span className="text-[#363d4f]">{c.line2}</span>
+              <span className="text-[#757b8c]">{c.line2}</span>
             </span>
           </h1>
 
-          {/* project prompt (replaces the CTA buttons and the review capsule) */}
-          <div className="mt-9 flex w-full justify-center sm:mt-10" data-reveal>
+          {c.sub && (
+            <p className="mt-5 max-w-[34rem] text-pretty text-[15.5px] leading-relaxed text-[#4b5263] sm:text-[17px]" data-reveal>
+              {c.sub}
+            </p>
+          )}
+
+          {/* project prompt: the one main action of the hero */}
+          <div className="mt-8 flex w-full justify-center sm:mt-9" data-reveal>
             <HeroAsk />
+          </div>
+
+          {/* proof at the point of decision, and a quiet way out for people
+              who would rather talk than type. The rating shows only once real
+              figures are entered in the CMS (Pages › Home › Hero). */}
+          <div className="mt-7 flex flex-wrap items-center justify-center gap-x-5 gap-y-3 text-[13px] leading-none text-[#4b5263] sm:text-[13.5px]" data-reveal>
+            <span className="flex w-full flex-col items-center gap-2.5 sm:inline-flex sm:w-auto sm:flex-row">
+              <span aria-hidden className="flex -space-x-1.5">
+                {PROOF_MARKS.map(({ icon: Icon, name, bg, fg }) => (
+                  <span key={name} title={name} className="grid h-7 w-7 place-items-center rounded-full shadow-[0_1px_3px_rgba(11,15,25,0.14)] ring-2 ring-white" style={{ backgroundColor: bg, color: fg || undefined }}>
+                    <Icon size={12} />
+                  </span>
+                ))}
+              </span>
+              <span>
+                <ProofText text={c.proof.replace("{countries}", String(SERVED.length))} />
+              </span>
+            </span>
+            {c.ratingScore && (
+              <RatingWrap href={c.ratingHref}>
+                <span aria-hidden className="tracking-[0.04em] text-[#f5a524]">★★★★★</span>
+                <span className="font-semibold text-[#0b0f19]">{c.ratingScore}</span>
+                {c.ratingText && <span>{c.ratingText}</span>}
+              </RatingWrap>
+            )}
+            <span aria-hidden className="hidden h-4 w-px bg-[#0b0f19]/12 sm:block" />
+            <Link href="/contact" className="group inline-flex items-center gap-1.5 text-[#4b5263] transition-colors duration-200 hover:text-[#0b0f19]">
+              {c.callText}
+              <span className="font-semibold text-[#0b0f19] underline decoration-[#0b0f19]/25 underline-offset-[5px] transition-[text-decoration-color] duration-200 group-hover:decoration-[#0b0f19]">{c.callLink}</span>
+              <svg aria-hidden viewBox="0 0 16 16" className="h-3.5 w-3.5 text-[#0b0f19] transition-transform duration-200 group-hover:translate-x-0.5" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M3 8h10M9 4l4 4-4 4" />
+              </svg>
+            </Link>
           </div>
         </div>
 
