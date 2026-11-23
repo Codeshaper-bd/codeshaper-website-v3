@@ -24,6 +24,7 @@ import {
   HUB_FAQS,
 } from "@/lib/engagementContent";
 import { SITE_URL } from "@/lib/site";
+import HeroBackdrop from "@/components/system/HeroBackdrop";
 
 export const metadata: Metadata = mainMeta("engagement", {
   title: "How We Work — Engagement Models",
@@ -65,32 +66,23 @@ export default function EngagementIndexPage() {
 
       <div className="theme-light">
         {/* 1. Hero */}
-        <div className="bg-light-surface p-3 sm:p-4">
+        <div className="bg-gradient-to-b from-white from-30% to-light-surface px-3 pb-3 sm:px-4 sm:pb-4">
           <Reveal distance={0}>
-            <section className="relative overflow-hidden rounded-[32px] bg-canvas px-6 pb-16 pt-32 lg:px-10 lg:pb-20 lg:pt-32" aria-labelledby="engagement-hero-heading">
-              <div
-                aria-hidden
-                className="absolute inset-0 opacity-[0.03]"
-                style={{ backgroundImage: "url(/media/hex-pattern-tile.svg)", backgroundSize: "112px 194px" }}
-              />
-              <div
-                aria-hidden
-                className="absolute left-1/2 top-0 h-[420px] w-[640px] -translate-x-1/2 -translate-y-1/3 rounded-full opacity-30 blur-3xl"
-                style={{ background: "radial-gradient(closest-side, rgba(124,108,255,0.16), transparent)" }}
-              />
-              <div className="relative mx-auto max-w-3xl text-center">
-                <div className="flex justify-center">
+            <section className="page-hero relative isolate overflow-hidden theme-light rounded-b-[28px] sm:rounded-b-[32px] bg-canvas px-6 pb-16 pt-32 lg:px-10 lg:pb-20 lg:pt-36" aria-labelledby="engagement-hero-heading">
+              <HeroBackdrop />
+              <div className="relative mx-auto max-w-[1200px] [&>*]:max-w-3xl">
+                <div className="flex">
                   <Breadcrumbs items={[{ label: "Home", href: "/" }, { label: "Engagement Models" }]} />
                 </div>
-                <SectionEyebrow className="mx-auto w-fit">How We Work</SectionEyebrow>
+                <SectionEyebrow className="w-fit">How We Work</SectionEyebrow>
                 <SectionTitle as="h1" size="lg" id="engagement-hero-heading">
                   Flexible engagement models for predictable delivery.
                 </SectionTitle>
-                <SectionDescription className="mx-auto mt-5 max-w-2xl">
+                <SectionDescription className="mt-5 max-w-2xl">
                   Choose the working model that fits your timeline, scope certainty, and team structure — without
                   compromising quality.
                 </SectionDescription>
-                <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+                <div className="mt-8 flex flex-wrap items-center gap-3">
                   <Link
                     href="/contact"
                     className="inline-flex items-center gap-2 rounded-full bg-ink px-7 py-3.5 font-urbanist text-sm font-semibold text-canvas transition-transform duration-300 hover:scale-[1.02]"
@@ -107,7 +99,7 @@ export default function EngagementIndexPage() {
                 </div>
 
                 <Reveal delay={150}>
-                  <ul className="mx-auto mt-12 flex max-w-2xl flex-col gap-3 text-left sm:flex-row sm:justify-center">
+                  <ul className="mt-12 flex max-w-2xl flex-col gap-3 text-left sm:flex-row">
                     {PROOF_STRIP.map((p) => (
                       <li
                         key={p}
@@ -332,17 +324,8 @@ export default function EngagementIndexPage() {
       </div>
 
       {/* 10. Final CTA */}
-      <section className="relative overflow-hidden bg-canvas py-16 lg:py-24" aria-labelledby="engagement-cta-heading">
-        <div
-          aria-hidden
-          className="absolute inset-0 opacity-[0.04]"
-          style={{ backgroundImage: "url(/media/hex-pattern-tile.svg)", backgroundSize: "112px 194px" }}
-        />
-        <div
-          aria-hidden
-          className="absolute left-1/4 top-1/3 h-[420px] w-[640px] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-25 blur-3xl"
-          style={{ background: "radial-gradient(closest-side, rgba(255,255,255,0.16), rgba(255,255,255,0.06), transparent)" }}
-        />
+      <div className="bg-light-surface p-3 sm:p-4">
+      <section className="theme-light relative overflow-hidden rounded-[32px] bg-canvas py-16 lg:py-24" aria-labelledby="engagement-cta-heading">
 
         <div className="relative z-10 mx-auto grid max-w-7xl gap-14 px-6 lg:grid-cols-2 lg:gap-20 lg:px-10">
           <div>
@@ -378,6 +361,7 @@ export default function EngagementIndexPage() {
           </Reveal>
         </div>
       </section>
+      </div>
     </SiteShell>
   );
 }

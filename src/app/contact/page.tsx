@@ -2,7 +2,10 @@ import type { Metadata } from "next";
 import { mainMeta } from "@/lib/mainPages";
 import SiteShell from "@/components/system/SiteShell";
 import Reveal from "@/components/system/Reveal";
+import Breadcrumbs from "@/components/system/Breadcrumbs";
+import { SectionEyebrow } from "@/components/system/SectionHeading";
 import ContactForm from "@/components/sections/ContactForm";
+import HeroBackdrop from "@/components/system/HeroBackdrop";
 
 export const metadata: Metadata = mainMeta("contact", {
   title: "Contact — Book a Call",
@@ -28,24 +31,15 @@ const NEXT_STEPS = [
 export default function ContactPage() {
   return (
     <SiteShell>
-      <section className="relative overflow-hidden bg-canvas py-16 lg:py-32" aria-labelledby="cta-heading">
-        <div
-          aria-hidden
-          className="absolute inset-0 opacity-[0.04]"
-          style={{ backgroundImage: "url(/media/hex-pattern-tile.svg)", backgroundSize: "112px 194px" }}
-        />
-        <div
-          aria-hidden
-          className="absolute left-1/4 top-1/3 h-[420px] w-[640px] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-25 blur-3xl"
-          style={{ background: "radial-gradient(closest-side, rgba(255,255,255,0.16), rgba(255,255,255,0.06), transparent)" }}
-        />
+      <div className="bg-gradient-to-b from-white from-30% to-light-surface px-3 pb-3 sm:px-4 sm:pb-4">
+      <section className="page-hero theme-light relative isolate overflow-hidden rounded-b-[28px] sm:rounded-b-[32px] bg-canvas pb-16 pt-32 lg:pb-24 lg:pt-36" aria-labelledby="cta-heading">
+        <HeroBackdrop />
 
-        <div className="relative z-10 mx-auto grid max-w-7xl gap-14 px-6 pt-24 lg:grid-cols-2 lg:gap-20 lg:px-10 lg:pt-32">
+        <div className="relative z-10 mx-auto grid max-w-7xl gap-14 px-6 lg:grid-cols-2 lg:gap-20 lg:px-10">
           <div>
+            <Breadcrumbs items={[{ label: "Home", href: "/" }, { label: "Contact" }]} />
             <Reveal>
-              <p className="mb-3 font-urbanist text-xs font-medium uppercase tracking-[0.25em] text-ink-faint">
-                Contact
-              </p>
+              <SectionEyebrow>Contact</SectionEyebrow>
               <h1 id="cta-heading" className="font-urbanist text-3xl font-bold tracking-tight text-ink sm:text-4xl lg:text-5xl">
                 Tell us your goal — we&apos;ll recommend the best path.
               </h1>
@@ -62,13 +56,13 @@ export default function ContactPage() {
                 <li key={s.n}>
                   <Reveal delay={200 + i * 180}>
                     <span className="flex items-start gap-4">
-                      <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-aurora-violet/50 font-urbanist text-xs font-medium text-ink">
+                      <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-[#0b0f19]/[0.1] bg-white font-urbanist text-xs font-semibold text-ink shadow-[0_1px_2px_rgba(11,15,25,0.05)]">
                         {s.n}
                       </span>
                       <span className="font-urbanist text-sm leading-relaxed text-ink-dim">{s.text}</span>
                     </span>
                     {i < NEXT_STEPS.length - 1 && (
-                      <span className="connector-line mt-3 ml-3.5 block h-px w-10 bg-aurora-violet/30" aria-hidden />
+                      <span className="connector-line mt-3 ml-3.5 block h-px w-10 bg-[#0b0f19]/[0.1]" aria-hidden />
                     )}
                   </Reveal>
                 </li>
@@ -82,6 +76,7 @@ export default function ContactPage() {
           </Reveal>
         </div>
       </section>
+      </div>
     </SiteShell>
   );
 }

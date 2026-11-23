@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import SiteShell from "@/components/system/SiteShell";
+import Breadcrumbs from "@/components/system/Breadcrumbs";
 import { SectionEyebrow, SectionTitle } from "@/components/system/SectionHeading";
 import { INDUSTRIES } from "@/lib/navigation";
 import { SERVICE_GROUPS, ENGAGEMENT_MODELS, servicePath, servicesInGroup } from "@/data/services";
 import { CASE_STUDIES } from "@/lib/caseStudies";
 import { PRODUCTS } from "@/lib/products";
 import { BLOG_POSTS } from "@/lib/blog";
+import HeroBackdrop from "@/components/system/HeroBackdrop";
 
 /**
  * Human sitemap (/site-map): every real page, grouped, from the same data the
@@ -41,12 +43,21 @@ export default function SiteMapPage() {
   const posts = [...BLOG_POSTS].sort((a, b) => b.date.localeCompare(a.date));
   return (
     <SiteShell>
-      <div className="bg-light-surface p-3 sm:p-4">
-        <section className="theme-light rounded-[32px] bg-canvas py-16 lg:py-24">
+      <div className="bg-gradient-to-b from-white from-30% to-light-surface px-3 pb-3 sm:px-4 sm:pb-4">
+        <section className="page-hero theme-light relative isolate overflow-hidden rounded-b-[28px] sm:rounded-b-[32px] bg-canvas pb-16 pt-32 lg:pb-24 lg:pt-36">
+          <HeroBackdrop />
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10">
+            <Breadcrumbs items={[{ label: "Home", href: "/" }, { label: "Sitemap" }]} />
             <SectionEyebrow>Sitemap</SectionEyebrow>
-            <SectionTitle>Every page, in one place.</SectionTitle>
-            <div className="mt-12 grid gap-x-10 gap-y-12 sm:grid-cols-2 lg:grid-cols-4">
+            <SectionTitle as="h1">Every page, in one place.</SectionTitle>
+          </div>
+        </section>
+      </div>
+      {/* the list: a white card on the page background */}
+      <div className="bg-light-surface px-3 pb-3 sm:px-4 sm:pb-4">
+        <section className="theme-light rounded-[28px] bg-canvas py-14 sm:rounded-[32px] lg:py-20">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10">
+            <div className="grid gap-x-10 gap-y-12 sm:grid-cols-2 lg:grid-cols-4">
               <Group
                 title="Company"
                 items={[

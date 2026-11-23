@@ -246,7 +246,7 @@ export default function Navbar() {
           className={
             docked
               ? `pointer-events-auto relative rounded-full ${animCls}`
-              : `mx-auto w-full ${animCls}`
+              : `mx-auto w-full max-w-7xl ${animCls}`
           }
         >
           {docked && (
@@ -258,7 +258,7 @@ export default function Navbar() {
             className={
               docked
                 ? "relative flex h-[60px] items-center gap-1 pl-2 pr-2"
-                : "relative flex h-16 items-center justify-between px-3 sm:px-5 lg:px-8 xl:px-12"
+                : "relative flex h-16 items-center justify-between px-3 sm:px-5 lg:px-10"
             }
           >
             {/* Desktop top bar: transparent (owner preference), no bar,
