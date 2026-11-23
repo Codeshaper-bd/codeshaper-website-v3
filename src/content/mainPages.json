@@ -20,10 +20,50 @@
    {
     "key": "atAGlance",
     "copy": {
-     "title": "A decade of shipping software for teams around the world.",
-     "eyebrow": "At a glance",
-     "hubLabel": "Delivery hub, Dhaka",
-     "mapLabel": "Client countries"
+     "story": "We started with a simple goal: build software we are proud to put our name on. Ten years on, we work from 6 business locations, partner with 100+ world-class brands, including a NASDAQ-listed company, and have delivered 500+ projects for clients in 60+ countries.",
+     "title": "10+ years of building what businesses run on.",
+     "years": "10",
+     "eyebrow": "Our journey",
+     "yearsLabel": "Years in tech",
+     "stats": [
+      {
+       "value": "6M+",
+       "label": "Users reached"
+      },
+      {
+       "value": "500+",
+       "label": "Projects delivered"
+      },
+      {
+       "value": "60+",
+       "label": "Countries served"
+      },
+      {
+       "value": "6",
+       "label": "Business locations"
+      },
+      {
+       "value": "8+",
+       "label": "Products launched"
+      }
+     ],
+     "badges": [
+      {
+       "title": "Top Software Developers",
+       "text": "Clutch · Auckland 2026"
+      },
+      {
+       "title": "OpenAI Select Partner"
+      },
+      {
+       "title": "Reviewed on Google",
+       "text": "5-star client reviews"
+      },
+      {
+       "title": "157+ five-star reviews",
+       "text": "Envato Market"
+      }
+     ]
     }
    },
    {
@@ -144,27 +184,6 @@
      "title": "One team, five ways to work together.",
      "button": "Help me choose",
      "eyebrow": "Engagement Models"
-    }
-   },
-   {
-    "key": "leadership",
-    "copy": {
-     "title": "Led by people who still build.",
-     "eyebrow": "Leadership",
-     "people": [
-      {
-       "role": "Founder & CEO"
-      },
-      {
-       "role": "Head of Engineering"
-      },
-      {
-       "role": "Head of Design"
-      },
-      {
-       "role": "Head of Delivery"
-      }
-     ]
     }
    },
    {

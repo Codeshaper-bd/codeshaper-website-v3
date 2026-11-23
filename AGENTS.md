@@ -21,7 +21,7 @@ Everything is written once in `ai/` (map and how to extend: [`ai/README.md`](ai/
 | Roles | `ai/agents/` (`ui-designer`, `design-reviewer`) |
 | Step-by-step workflows | `ai/skills/` (`design-section`, `design-review`) |
 
-**Loading order for any task:** this file → `ai/rules/global.md` → `ai/rules/<domain>.md` → `ai/context/*` → the skill you follow → the knowledge it names.
+**Loading order:** this file → `ai/rules/global.md` → relevant `ai/context/*` (owner decisions are authoritative) → `ai/rules/<domain>.md` → the skill you follow → the knowledge it names. For design work, read `ai/context/decisions.md` before proposing or changing a visual direction; always read Design Handbook chapter 11 for token/global CSS work.
 
 ## Commands
 

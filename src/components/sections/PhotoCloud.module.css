@@ -1,5 +1,7 @@
 .track { position: relative; }
 .stage {
+  /* same gap above, below and at the sides (the wrapper's p-3 / sm:p-4) */
+  --frame: 12px;
   --loose: 0;
   --reveal: 1;
   position: relative;
@@ -7,8 +9,9 @@
   overflow: clip;
   container-type: inline-size;
   display: grid;
-  grid-template-rows: 23% 20% 57%;
-  height: max(590px, 96svh);
+  /* heading, then the photo wall */
+  grid-template-rows: auto minmax(0, 1fr);
+  height: max(560px, calc(100svh - 2 * var(--frame)));
   border-radius: 32px;
   background: linear-gradient(180deg, #fff 0%, #fdfcfb 45%, #f5f3f1 100%);
 }
@@ -28,41 +31,13 @@
   0%, 27%, 100% { opacity: 0; }
   6%, 20% { opacity: .9; }
 }
-.heading, .stats { position: relative; z-index: 2; }
+.heading { position: relative; z-index: 2; }
+@media (min-width: 640px) { .stage { --frame: 16px; } }
 .heading {
-  align-self: center;
-  padding: .75rem 1rem 0;
+  align-self: end;
+  padding: clamp(40px, 7svh, 84px) 1rem clamp(8px, 1.5svh, 18px);
   text-align: center;
   text-shadow: 0 1px 0 #fff;
-}
-.stats {
-  width: min(100% - 2rem, 80rem);
-  margin-inline: auto;
-}
-.stats dl > div {
-  position: relative;
-  transition: transform .35s ease;
-}
-.stats dl > div::after {
-  content: "";
-  position: absolute;
-  bottom: 17%;
-  left: 50%;
-  width: 3px;
-  height: 3px;
-  border-radius: 999px;
-  background: #615fff;
-  opacity: 0;
-  transform: translate(-50%, 7px) scale(.5);
-  transition: opacity .3s ease, transform .4s cubic-bezier(.16, 1, .3, 1), width .4s cubic-bezier(.16, 1, .3, 1);
-}
-.stats dl > div:hover {
-  transform: translateY(-2px);
-}
-.stats dl > div:hover::after {
-  width: 18px;
-  opacity: .85;
-  transform: translate(-50%, 7px) scale(1);
 }
 .gallery {
   --wall-width: min(86cqw, 122svh, 77rem);
@@ -95,7 +70,7 @@
   display: grid;
   min-height: 0;
   width: var(--wall-width);
-  gap: clamp(4px, .55vw, 9px);
+  gap: clamp(8px, 1vw, 16px);
   grid-template-columns: repeat(7, minmax(0, 1fr));
   grid-template-rows: repeat(3, minmax(0, 1fr));
   grid-template-areas: "duo year year hero hero portrait sign"
@@ -114,7 +89,8 @@
   filter:
     blur(calc((1 - var(--reveal)) * .85px))
     saturate(calc(.58 + var(--reveal) * .42))
-    contrast(calc(.96 + var(--reveal) * .04));
+    contrast(calc(.96 + var(--reveal) * .04))
+    drop-shadow(0 calc(var(--reveal) * 14px) calc(var(--reveal) * 22px) rgb(40 30 90 / calc(var(--reveal) * .16)));
   transition: transform .18s ease-out, opacity .12s linear, filter .12s linear;
   will-change: transform, opacity, filter;
 }
@@ -123,10 +99,12 @@
   inset: 0 auto auto 0;
   width: calc(100% + var(--dw, 0px) * var(--loose));
   height: calc(100% + var(--dh, 0px) * var(--loose));
-  transform: rotate(calc(var(--angle) * var(--loose)));
+  /* scattered: the full angle; settled: a gentle tilt, like prints pinned up */
+  transform: rotate(calc(var(--angle) * (.35 + var(--loose) * .65)));
   overflow: hidden;
-  border-radius: clamp(4px, .45vw, 8px);
-  background: transparent;
+  border-radius: clamp(6px, .6vw, 10px);
+  background: #fff;
+  box-shadow: inset 0 0 0 1px rgb(11 15 25 / .05);
   -webkit-mask-image: radial-gradient(ellipse 100% 100% at center, #000 calc(100% - var(--loose) * 22%), transparent 100%);
   mask-image: radial-gradient(ellipse 100% 100% at center, #000 calc(100% - var(--loose) * 22%), transparent 100%);
   transition: filter .4s ease;
@@ -142,6 +120,13 @@
   mix-blend-mode: screen;
   pointer-events: none;
 }
+.photo {
+  position: absolute;
+  inset: clamp(4px, .45vw, 8px);
+  overflow: hidden;
+  border-radius: clamp(3px, .3vw, 5px);
+  background: #f3f1ee;
+}
 .image {
   object-fit: cover;
   object-position: center 42%;
@@ -154,7 +139,7 @@
 }
 .tile:hover .image { transform: scale(1.035); filter: saturate(1.03) contrast(1.03); }
 @media (max-width: 700px) {
-  .stage { grid-template-rows: 21% 23% 56%; }
+
   .gallery { --wall-width: min(91cqw, 35rem); }
   .wall {
     grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -165,7 +150,7 @@
 }
 @media (prefers-reduced-motion: no-preference) and (min-height: 600px) {
   .track { height: 170svh; }
-  .stage { --loose: 1; --reveal: 0; position: sticky; top: 1svh; }
+  .stage { --loose: 1; --reveal: 0; position: sticky; top: var(--frame); }
   .print { animation: drift 5s ease-in-out var(--delay) infinite alternate; }
   @keyframes drift {
     from { translate: 0 calc(-4px * var(--loose)); }

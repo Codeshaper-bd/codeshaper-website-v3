@@ -8,6 +8,6 @@
 
 **Brand feel.** Clean white, minimal, modern, premium, factual. A serious engineering company with taste. Never a template, never an "AI demo".
 
-**Figures in use (owner-supplied, confirm before launch):** 10+ years, 350+ brands, 33 countries (from the globe list), 150+ client reviews. Product facts: Acculance 400+ copies sold (CodeCanyon), Dashcode 2,900+ copies sold (ThemeForest).
+**Figures in use (owner-supplied, confirm before launch). OPEN CONFLICT: the hero/globe say 350+ brands in 33 countries; Our journey says 100+ world-class brands, 60+ countries, 500+ projects, 6M+ users, 6 locations, 8+ products. Reconcile before launch.** Earlier figures: 10+ years, 350+ brands, 33 countries (from the globe list), 150+ client reviews. Product facts: Acculance 400+ copies sold (CodeCanyon), Dashcode 2,900+ copies sold (ThemeForest).
 
 **Known gaps (owner to supply):** real client reviews (3 of 4 testimonials are placeholders), review ratings and links, leadership names/photos, Banizo details, real product screenshots, contact details (email, phone, WhatsApp, address), starting prices.

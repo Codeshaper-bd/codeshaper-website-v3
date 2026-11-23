@@ -16,7 +16,7 @@ ai/
 │  ├─ development.md     code (website + CMS)
 │  └─ devops.md          build, deploy, servers (stub until the VPS launch)
 ├─ knowledge/            ← reference handbooks, one folder per domain
-│  ├─ design/            Codeshaper Design Handbook (10 chapters + QA checklist)
+│  ├─ design/            Codeshaper Design Handbook (11 chapters; ch. 09 is the QA checklist)
 │  ├─ development/       (to come)
 │  └─ devops/            (to come)
 ├─ agents/               ← roles: who does the work (front matter + Markdown)
@@ -45,7 +45,7 @@ scripts/ai/              ← tools agents run (screenshot.mjs)
 | **skills** | What are the steps? | when a workflow improves |
 | **prompts** | How do I brief a chat AI? | as needed |
 
-An agent loads: `AGENTS.md` → `rules/global.md` → `rules/<domain>.md` → `context/*` → the skill it follows → the knowledge chapters the skill names.
+A design agent loads: `AGENTS.md` → `context/decisions.md` → `rules/global.md` → `rules/design.md` → relevant `context/*` → the skill it follows → the Design Handbook chapters (always chapter 11 for tokens/global CSS). Other domains follow the domain-specific loading order in `AGENTS.md`.
 
 ## Using it from each tool
 

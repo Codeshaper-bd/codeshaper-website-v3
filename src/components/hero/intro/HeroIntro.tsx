@@ -100,7 +100,12 @@ export default function HeroIntro() {
           // same geometry as the hands (createHands.ts): a 1200 x 700 "meet"
           // box with the mark ~220 units across, so the clasp sits under it
           markHeight: (w, h) => Math.min((w * 220) / 1200, (h * 220) / 700) * 0.92,
-          onReady: () => !cancelled && setStatus("ready"),
+          onReady: () => {
+            if (cancelled) return;
+            // opens the scroll gate (Hero.tsx): the mark is on screen, the intro can be scrolled
+            root.setAttribute("data-intro-ready", "");
+            setStatus("ready");
+          },
           onFail: () => giveUp("webgl"),
           onHover: placeTip,
         });
@@ -416,17 +421,18 @@ export default function HeroIntro() {
     const go = () => {
       if (started) return;
       started = true;
-      START_EVENTS.forEach((ev) => window.removeEventListener(ev, go));
+      START_EVENTS.forEach((ev) => window.removeEventListener(ev, go, { capture: true }));
       window.clearTimeout(fallbackTimer);
       void setup();
     };
     root.setAttribute("data-intro-armed", "");
-    START_EVENTS.forEach((ev) => window.addEventListener(ev, go, { passive: true }));
+    // capture: the scroll gate in Hero.tsx stops wheel/keys from going further while the intro loads
+    START_EVENTS.forEach((ev) => window.addEventListener(ev, go, { capture: true, passive: true }));
     const fallbackTimer = window.setTimeout(go, FALLBACK_MS);
 
     return () => {
       cancelled = true;
-      START_EVENTS.forEach((ev) => window.removeEventListener(ev, go));
+      START_EVENTS.forEach((ev) => window.removeEventListener(ev, go, { capture: true }));
       window.clearTimeout(fallbackTimer);
       cleanup?.();
       cleanup = null;

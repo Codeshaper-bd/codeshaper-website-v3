@@ -24,6 +24,7 @@ import type { IconType } from "react-icons";
 import { SERVICE_GROUPS, servicePath, servicesInGroup, type ServiceGroupSlug } from "@/data/services";
 import Reveal from "@/components/system/Reveal";
 import { SectionEyebrow, SectionTitle } from "@/components/system/SectionHeading";
+import ExpandIcon from "@/components/system/ExpandIcon";
 import ServiceDialogBody, { type Tool } from "./ServiceDialogBody";
 import { AgentsVisual, SoftwareVisual, IntegrationVisual, DesignVisual, WebVisual } from "./visuals";
 import { homeCopy, type CopyOf } from "@/lib/homeCopy";
@@ -107,16 +108,6 @@ const ITEMS = SERVICE_GROUPS.filter((g) => CARDS[g.slug]).map((g) => ({
   ...CARDS[g.slug],
   services: servicesInGroup(g.slug),
 }));
-
-/** Stripe-style "expand" mark: two corner brackets that spread apart on card hover. */
-function ExpandIcon() {
-  return (
-    <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-      <path d="M9.5 3.5h3v3" className="transition-transform duration-300 ease-out group-hover/card:translate-x-[1.5px] group-hover/card:-translate-y-[1.5px]" />
-      <path d="M6.5 12.5h-3v-3" className="transition-transform duration-300 ease-out group-hover/card:-translate-x-[1.5px] group-hover/card:translate-y-[1.5px]" />
-    </svg>
-  );
-}
 
 function Wash({ palette }: { palette: Palette }) {
   return (

@@ -86,6 +86,13 @@ const INTRO_STATS = [
  * never flashes. A safety timer cancels it if the island has not taken over
  * within 6s (slow network or a failed chunk; 30s in dev, where chunks compile on demand). ?intro=off previews the
  * finished hero.
+ *
+ * Scroll gate: the intro is the page's preloader, so until its 3D mark is
+ * on screen ([data-intro-ready], set by HeroIntro) wheel, touch and scroll keys do not
+ * move the page; otherwise a visitor could scroll past a half-loaded intro
+ * into the content below. The gate opens for good once the mark is ready or
+ * cancelled (data-intro removed), or after 15s whatever happens. Typing in
+ * fields is never blocked.
  */
 const INTRO_SCRIPT = `(function(){try{
 var m=window.matchMedia('(min-width:1024px) and (min-height:640px) and (hover:hover) and (pointer:fine) and (prefers-reduced-motion:no-preference)').matches;
@@ -94,6 +101,15 @@ var c=document.createElement('canvas'),gl=c.getContext('webgl2')||c.getContext('
 var l=gl.getExtension('WEBGL_lose_context');if(l)l.loseContext();
 var r=document.currentScript&&document.currentScript.parentElement;if(!r)return;r.setAttribute('data-intro','');
 setTimeout(function(){if(!r.hasAttribute('data-intro-live')&&!r.hasAttribute('data-intro-armed'))r.removeAttribute('data-intro');},${process.env.NODE_ENV === "production" ? 6000 : 30000});
+var open=false,K={32:1,33:1,34:1,35:1,36:1,38:1,40:1},T=['wheel','touchmove','keydown','scroll'];
+var gate=function(e){if(open)return;
+if(!r.hasAttribute('data-intro')||r.hasAttribute('data-intro-ready')){open=true;T.forEach(function(t){window.removeEventListener(t,gate,{capture:true});});return;}
+if(e.type==='scroll'){if(window.scrollY>0)window.scrollTo(0,0);return;}
+if(e.type==='keydown'&&!K[e.keyCode])return;
+var t=e.target;if(e.type==='keydown'&&t&&(t.isContentEditable||/^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName)))return;
+e.preventDefault();e.stopPropagation();};
+T.forEach(function(t){window.addEventListener(t,gate,{capture:true,passive:false});});
+setTimeout(function(){open=true;},${process.env.NODE_ENV === "production" ? 15000 : 45000});
 }catch(e){}})();`;
 
 /** The mist behind the hero (and its intro): pale lavender and sky. */
@@ -257,7 +273,7 @@ export default function Hero({ copy }: { copy?: CopyOf<"hero"> }) {
             <Link
               href={ANNOUNCEMENT.href}
               data-reveal
-              className="group inline-flex max-w-full items-center gap-2 rounded-full border border-[#0b0f19]/[0.08] bg-white/70 py-1 pl-1 pr-3 text-[12.5px] font-medium leading-none text-[#3f4657] shadow-[0_1px_2px_rgba(11,15,25,0.04)] backdrop-blur-sm transition-[border-color,background-color,box-shadow] duration-300 hover:border-[#615fff]/30 hover:bg-white hover:shadow-[0_4px_14px_-6px_rgba(97,95,255,0.35)] sm:text-[13px]"
+              className="group inline-flex max-w-full items-center gap-2 rounded-full border border-[#0b0f19]/[0.08] bg-white/70 py-1 pl-1 pr-3 text-[12px] font-medium leading-none text-[#3f4657] shadow-[0_1px_2px_rgba(11,15,25,0.04)] backdrop-blur-sm transition-[border-color,background-color,box-shadow] duration-300 hover:border-[#615fff]/30 hover:bg-white hover:shadow-[0_4px_14px_-6px_rgba(97,95,255,0.35)]"
             >
               <span
                 className="shrink-0 rounded-full px-2 py-[5px] text-[10px] font-bold uppercase leading-none tracking-[0.1em] text-white"
@@ -283,7 +299,7 @@ export default function Hero({ copy }: { copy?: CopyOf<"hero"> }) {
           {/* two lines from lg (explicit breaks); natural wrapping below */}
           <h1
             id="hero-heading"
-            className="mt-6 text-balance text-[clamp(28px,7.6vw,34px)] font-[580] leading-[1.1] tracking-[-0.032em] text-[#0b0f19] sm:text-[40px] lg:text-[44px] xl:text-[48px] 2xl:text-[52px]"
+            className="mt-6 text-balance text-[clamp(28px,7.6vw,34px)] font-[580] leading-[1.1] tracking-[-0.032em] text-[#0b0f19] sm:text-[40px] lg:text-[44px] xl:text-[48px]"
           >
             <span className="inline-block lg:block lg:whitespace-nowrap" data-reveal>
               {c.line1}
@@ -294,7 +310,7 @@ export default function Hero({ copy }: { copy?: CopyOf<"hero"> }) {
           </h1>
 
           {c.sub && (
-            <p className="mt-5 max-w-[34rem] text-pretty text-[15.5px] leading-relaxed text-[#4b5263] sm:text-[17px]" data-reveal>
+            <p className="mt-5 max-w-[34rem] text-pretty text-[16px] leading-relaxed text-[#4b5263] sm:text-[18px]" data-reveal>
               {c.sub}
             </p>
           )}

@@ -55,6 +55,8 @@ const SECTIONS = Object.fromEntries(Object.entries(LOADERS).map(([name, load]) =
  * normal). Cuts the first load's layout work on long pages.
  */
 const DORMANT = { contentVisibility: "auto", containIntrinsicSize: "auto 1000px" } as const;
+/** Sections whose real height is far from the 1000px placeholder (Tools pins for 3 screens): skipping is not worth the jump when they first render. */
+const ALWAYS_LAID_OUT = new Set<string>(["techStack"]);
 
 export default function LazySection({ name, props, rootMargin = "800px 0px" }: { name: SectionName; props?: Record<string, unknown>; rootMargin?: string }) {
   const ref = useRef<HTMLDivElement>(null);
@@ -95,10 +97,11 @@ export default function LazySection({ name, props, rootMargin = "800px 0px" }: {
     };
   }, [awake, rootMargin]);
 
-  if (!awake) return <div ref={ref} style={DORMANT} suppressHydrationWarning dangerouslySetInnerHTML={{ __html: "" }} />;
+  const dormant = ALWAYS_LAID_OUT.has(name) ? undefined : DORMANT;
+  if (!awake) return <div ref={ref} style={dormant} suppressHydrationWarning dangerouslySetInnerHTML={{ __html: "" }} />;
   const Section = SECTIONS[name];
   return (
-    <div ref={ref} style={typeof window === "undefined" ? DORMANT : undefined}>
+    <div ref={ref} style={typeof window === "undefined" ? dormant : undefined}>
       <Suspense fallback={serverHtml.current ? <div dangerouslySetInnerHTML={{ __html: serverHtml.current }} /> : null}>
         <Section {...props} />
       </Suspense>

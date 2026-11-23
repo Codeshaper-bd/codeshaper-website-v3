@@ -8,6 +8,7 @@ import { SectionEyebrow, SectionTitle } from "@/components/system/SectionHeading
 import { ENGAGEMENT_MODEL_CARDS } from "@/lib/engagementModels";
 import { AT_A_GLANCE, COMPARISON_TABLE, MODEL_OVERVIEWS } from "@/lib/engagementContent";
 import { homeCopy, type CopyOf } from "@/lib/homeCopy";
+import DotField from "@/components/sections/human-ai-flow/DotField";
 
 /**
  * Engagement models as a straight comparison (Apple "compare models"
@@ -38,7 +39,7 @@ function Involvement({ value }: { value: string }) {
     <span className="inline-flex items-center gap-2.5">
       <span className="flex gap-1" aria-hidden>
         {[1, 2, 3, 4, 5].map((i) => (
-          <span key={i} className={`h-1.5 w-1.5 rounded-full ${i <= n ? "bg-ink" : "bg-ink/15"}`} />
+          <span key={i} className={`h-1.5 w-1.5 rounded-full ${i <= n ? "bg-[#615fff]" : "bg-[#0b0f19]/[0.12]"}`} />
         ))}
       </span>
       <span>{value}</span>
@@ -56,35 +57,47 @@ const ROWS: { label: string; render: (m: Model) => ReactNode }[] = [
   { label: "Scope", render: (m) => m.spec.certainty },
 ];
 
-function ModelHead({ m }: { m: Model }) {
+/** Same icon tile as "Our journey" (white-to-lavender, inset highlight); turns indigo when its column is active. */
+function ModelHead({ m, active = false }: { m: Model; active?: boolean }) {
   const Icon = m.icon;
   return (
     <>
-      <span className="grid h-10 w-10 place-items-center rounded-[11px] border border-[#0b0f19]/[0.07] bg-[#f6f6f4] text-ink">
-        <Icon size={18} strokeWidth={1.7} aria-hidden />
-      </span>
-      <span className="mt-4 block font-urbanist text-[17px] font-semibold leading-snug tracking-[-0.01em] text-ink">{m.name}</span>
-      <span className="mt-1.5 block font-urbanist text-[13.5px] font-normal leading-relaxed text-ink-dim">{m.overview.oneLiner}</span>
-      <Link
-        href={m.href}
-        className="mt-3 inline-flex items-center gap-0.5 font-urbanist text-[13.5px] font-semibold text-ink underline-offset-4 hover:underline"
+      <span
+        className={`grid h-10 w-10 place-items-center rounded-[12px] border border-[#0b0f19]/[0.07] bg-gradient-to-b from-white to-[#f3f2fa] shadow-[inset_0_1px_0_rgba(255,255,255,0.95),0_1px_2px_rgba(11,15,25,0.06),0_8px_18px_-10px_rgba(59,47,122,0.3)] transition-[color,transform] duration-300 ${active ? "-translate-y-0.5 text-[#4f46e5]" : "text-[#0b0f19]"}`}
       >
-        Learn more
-        <ChevronRight size={14} strokeWidth={2} aria-hidden />
-        <span className="sr-only"> about {m.name}</span>
-      </Link>
+        <Icon size={17} strokeWidth={1.6} aria-hidden />
+      </span>
+      {/* two lines reserved, so every description starts on the same line */}
+      <span className="mt-4 block font-urbanist text-[16.5px] font-semibold leading-snug tracking-[-0.01em] text-ink lg:min-h-[2.75em]">{m.name}</span>
+      <span className="mt-1 block font-urbanist text-[13.5px] font-normal leading-relaxed text-ink-dim">{m.overview.oneLiner}</span>
     </>
+  );
+}
+
+function LearnMore({ m }: { m: Model }) {
+  return (
+    <Link
+      href={m.href}
+      className="group/lm inline-flex items-center gap-1 rounded-full border border-[#0b0f19]/[0.08] bg-white py-1.5 pl-3.5 pr-2.5 font-urbanist text-[13px] font-semibold text-ink transition-colors hover:border-[#0b0f19] hover:bg-[#0b0f19] hover:text-white"
+    >
+      Learn more
+      <ChevronRight size={14} strokeWidth={2} aria-hidden className="transition-transform duration-200 group-hover/lm:translate-x-0.5" />
+      <span className="sr-only"> about {m.name}</span>
+    </Link>
   );
 }
 
 export default function EngagementModels({ copy }: { copy?: CopyOf<"engagementModels"> }) {
   const c = homeCopy("engagementModels", copy);
   const [col, setCol] = useState(-1);
-  const tint = (i: number) => (i === col ? "bg-[#f7f7f5]" : "");
+  // every other column carries a whisper of lavender so each reads top to bottom; the hovered one deepens
+  const tint = (i: number) => (i === col ? "bg-[#f3f1ff]" : i % 2 === 1 ? "bg-[#faf9fe]" : "");
 
   return (
-    <section className="theme-light relative bg-light-surface py-16 lg:py-24" aria-labelledby="engagement-heading">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10">
+    <section className="theme-light relative overflow-clip bg-light-surface py-16 lg:py-24" aria-labelledby="engagement-heading">
+      {/* the shared dotted background (as Human + AI), fading out at the top and bottom */}
+      <DotField className="[mask-image:linear-gradient(to_bottom,transparent,black_22%,black_78%,transparent)]" />
+      <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-10">
         <Reveal>
           <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
             <div>
@@ -109,7 +122,7 @@ export default function EngagementModels({ copy }: { copy?: CopyOf<"engagementMo
             <table className="hidden w-full table-fixed border-collapse text-left lg:table" onMouseLeave={() => setCol(-1)}>
               <caption className="sr-only">Engagement models compared</caption>
               <colgroup>
-                <col className="w-[15%]" />
+                <col className="w-[13%]" />
                 {MODELS.map((m) => (
                   <col key={m.href} />
                 ))}
@@ -122,17 +135,18 @@ export default function EngagementModels({ copy }: { copy?: CopyOf<"engagementMo
                       key={m.href}
                       scope="col"
                       onMouseEnter={() => setCol(i)}
-                      className={`px-5 pb-7 pt-8 align-top font-normal transition-colors duration-200 ${tint(i)}`}
+                      className={`relative px-5 pb-7 pt-8 align-top font-normal transition-colors duration-200 ${tint(i)}`}
                     >
-                      <ModelHead m={m} />
+                      <span aria-hidden className={`absolute inset-x-5 top-0 h-[2px] rounded-b-full bg-[#615fff] transition-opacity duration-200 ${i === col ? "opacity-100" : "opacity-0"}`} />
+                      <ModelHead m={m} active={i === col} />
                     </th>
                   ))}
                 </tr>
               </thead>
               <tbody>
                 {ROWS.map((row) => (
-                  <tr key={row.label} className="border-t border-[#0b0f19]/[0.07]">
-                    <th scope="row" className="py-4 pl-8 pr-4 align-top font-urbanist text-[13px] font-medium text-ink-dim">
+                  <tr key={row.label} className="group/row border-t border-[#0b0f19]/[0.07]">
+                    <th scope="row" className="py-4 pl-8 pr-4 align-top font-urbanist text-[13px] font-medium text-ink-dim transition-colors group-hover/row:text-ink">
                       {row.label}
                     </th>
                     {MODELS.map((m, i) => (
@@ -146,6 +160,14 @@ export default function EngagementModels({ copy }: { copy?: CopyOf<"engagementMo
                     ))}
                   </tr>
                 ))}
+                <tr className="border-t border-[#0b0f19]/[0.07]">
+                  <td className="p-0" />
+                  {MODELS.map((m, i) => (
+                    <td key={m.href} onMouseEnter={() => setCol(i)} className={`px-5 py-5 transition-colors duration-200 ${tint(i)}`}>
+                      <LearnMore m={m} />
+                    </td>
+                  ))}
+                </tr>
               </tbody>
             </table>
 
@@ -165,17 +187,22 @@ export default function EngagementModels({ copy }: { copy?: CopyOf<"engagementMo
                       </div>
                     ))}
                   </dl>
+                  <div className="mt-5">
+                    <LearnMore m={m} />
+                  </div>
                 </li>
               ))}
             </ul>
 
             {/* what never changes */}
             <div className="border-t border-[#0b0f19]/[0.07] bg-[#fafaf9] px-6 py-6 sm:px-8 lg:flex lg:items-center lg:gap-10">
-              <p className="font-urbanist text-[13px] font-semibold text-ink lg:w-[15%] lg:shrink-0">Included in every model</p>
+              <p className="font-urbanist text-[13px] font-semibold text-ink lg:w-[13%] lg:shrink-0">Included in every model</p>
               <ul className="mt-4 grid gap-3 sm:grid-cols-2 lg:mt-0 lg:flex lg:flex-1 lg:justify-between">
                 {AT_A_GLANCE.map((g) => (
                   <li key={g.label} className="flex items-center gap-2 font-urbanist text-[13.5px] text-ink">
-                    <Check size={14} strokeWidth={2.4} className="shrink-0" aria-hidden />
+                    <span aria-hidden className="grid h-5 w-5 shrink-0 place-items-center rounded-full bg-[#615fff]/10 text-[#4f46e5]">
+                      <Check size={12} strokeWidth={2.6} />
+                    </span>
                     {g.label === "Start time" ? `Start in ${g.value}` : g.value}
                   </li>
                 ))}

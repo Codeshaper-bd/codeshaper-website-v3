@@ -24,7 +24,7 @@ const isLazy = (s: string): s is SectionName => (LAZY as string[]).includes(s);
 const TO_EDITED = `(function(){var go=function(){var el=location.hash&&document.getElementById(location.hash.slice(1));if(!el)return;var y=el.getBoundingClientRect().top+window.scrollY-24;var l=window.__lenis;if(l)l.scrollTo(y,{immediate:true,force:true});else window.scrollTo(0,y);};var moved=false;["wheel","touchstart","keydown"].forEach(function(e){window.addEventListener(e,function(){moved=true;},{once:true,passive:true});});[0,300,900,2000,3500].forEach(function(t){setTimeout(function(){if(!moved)go();},t);});})();`;
 
 /** The owner's order (23 Nov 2026), used when the CMS sends none: page background and white cards alternate. */
-const ORIGINAL: HomeItem[] = ["trustStrip", "atAGlance", "caseStudies", "servicesBento", "products", "testimonials", "humanAiFlow", "industries", "techStack", "impactWorkflow", "engagementModels", "leadership", "faq", "blogPosts", "letsTalk"].map((key) => ({ key }));
+const ORIGINAL: HomeItem[] = ["trustStrip", "atAGlance", "caseStudies", "servicesBento", "products", "testimonials", "humanAiFlow", "industries", "techStack", "impactWorkflow", "engagementModels", "faq", "blogPosts", "letsTalk"].map((key) => ({ key }));
 
 export default function HomeView({ data, preview = false }: { data: HomeData; preview?: boolean }) {
   const items = (data.sections ?? ORIGINAL).map((s) => (typeof s === "string" ? { key: s } : s));

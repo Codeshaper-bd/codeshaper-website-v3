@@ -1,3 +1,1 @@
-# Copilot instructions
-
-Follow `AGENTS.md` and `ai/rules/global.md`. For UI work also `ai/rules/design.md` and `ai/knowledge/design/`; for code `ai/rules/development.md`. Never invent colours, sizes, numbers or reviews.
+Follow `AGENTS.md`, `ai/context/decisions.md` and `ai/rules/global.md`. For UI work follow `ai/rules/design.md` and the relevant `ai/knowledge/design/` chapters; always read chapter 11 for token/global CSS changes. Prefer semantic CSS tokens and preserve legacy aliases. Do not silently override owner-approved section order/backgrounds, add dark homepage sections or add homepage sub-headings. Never invent colours, sizes, numbers, reviews or clients. Verify screenshots and type checks before claiming completion.
