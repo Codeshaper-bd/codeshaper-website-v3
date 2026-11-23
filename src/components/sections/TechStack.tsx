@@ -61,6 +61,7 @@ import { FaJava, FaMagento } from "react-icons/fa6";
 import Reveal from "@/components/system/Reveal";
 import DotField from "@/components/sections/human-ai-flow/DotField";
 import { SectionEyebrow, SectionTitle } from "@/components/system/SectionHeading";
+import { homeCopy, type CopyOf } from "@/lib/homeCopy";
 
 /**
  * Tools & technology as a scroll story (reference: exodusconsulting.com).
@@ -214,7 +215,8 @@ function Chip({ t }: { t: Tech }) {
   );
 }
 
-export default function TechStack() {
+export default function TechStack({ copy }: { copy?: CopyOf<"techStack"> }) {
+  const c = homeCopy("techStack", copy);
   const trackRef = useRef<HTMLDivElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
   const fieldRef = useRef<HTMLDivElement>(null);
@@ -526,9 +528,9 @@ export default function TechStack() {
               <Reveal>
                 <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
                   <div>
-                    <SectionEyebrow>Tools &amp; technology</SectionEyebrow>
+                    <SectionEyebrow>{c.eyebrow}</SectionEyebrow>
                     <SectionTitle id="tech-stack-heading" className="max-w-[16ch] text-balance">
-                      Many tools. One working system.
+                      {c.title}
                     </SectionTitle>
                   </div>
                 </div>

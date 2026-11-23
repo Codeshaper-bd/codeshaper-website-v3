@@ -6,6 +6,7 @@ import { ArrowRight, ArrowUpRight, Bitcoin, Brain, Building2, Cloud, CreditCard,
 import Reveal from "@/components/system/Reveal";
 import { SectionEyebrow, SectionTitle } from "@/components/system/SectionHeading";
 import Image from "next/image";
+import { homeCopy, type CopyOf } from "@/lib/homeCopy";
 
 /** solid accent, soft tint (icon tile), readable text shade, deep shade (scrim tint) */
 type Tone = { solid: string; tint: string; text: string; deep: string };
@@ -285,7 +286,8 @@ function IndustryCard({
   );
 }
 
-export default function Industries() {
+export default function Industries({ copy }: { copy?: CopyOf<"industries"> }) {
+  const c = homeCopy("industries", copy);
   const [active, setActive] = useState(-1); // none open until hovered or focused
 
   return (
@@ -295,16 +297,16 @@ export default function Industries() {
           <Reveal>
             <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
               <div>
-                <SectionEyebrow>Industries</SectionEyebrow>
+                <SectionEyebrow>{c.eyebrow}</SectionEyebrow>
                 <SectionTitle id="industries-heading" className="max-w-[17ch] text-balance">
-                  Built for the way your industry works.
+                  {c.title}
                 </SectionTitle>
               </div>
               <Link
                 href="/industries"
                 className="inline-flex w-fit items-center gap-2 rounded-full border border-[#0b0f19]/10 bg-white px-4 py-2.5 font-urbanist text-[13px] font-semibold text-ink transition-colors hover:bg-[#f6f6f4]"
               >
-                All industries
+                {c.button}
                 <ArrowRight size={14} strokeWidth={1.9} aria-hidden />
               </Link>
             </div>

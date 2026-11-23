@@ -20,7 +20,8 @@ import { lazy, Suspense, useEffect, useRef, useState, type ComponentType, type L
  *    arrives, shows the same server HTML as the Suspense fallback, so the
  *    section never blinks; then the live section takes over.
  *
- * The page passes a name (a server component cannot pass functions).
+ * The page passes a name (a server component cannot pass functions) and,
+ * optionally, the section's words from the CMS as plain data.
  */
 const LOADERS = {
   servicesBento: () => import("@/components/sections/services-bento/ServicesBento"),
@@ -33,13 +34,15 @@ const LOADERS = {
   aboutStudio: () => import("@/components/sections/AboutStudio"),
   faq: () => import("@/components/sections/FAQ"),
   impactWorkflow: () => import("@/components/sections/ImpactWorkflow"),
-} satisfies Record<string, () => Promise<{ default: ComponentType }>>;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+} satisfies Record<string, () => Promise<{ default: ComponentType<any> }>>;
 
 export type SectionName = keyof typeof LOADERS;
 
 const SECTIONS = Object.fromEntries(Object.entries(LOADERS).map(([name, load]) => [name, lazy(load)])) as unknown as Record<
   SectionName,
-  LazyExoticComponent<ComponentType>
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  LazyExoticComponent<ComponentType<any>>
 >;
 
 /**
@@ -51,7 +54,7 @@ const SECTIONS = Object.fromEntries(Object.entries(LOADERS).map(([name, load]) =
  */
 const DORMANT = { contentVisibility: "auto", containIntrinsicSize: "auto 1000px" } as const;
 
-export default function LazySection({ name, rootMargin = "800px 0px" }: { name: SectionName; rootMargin?: string }) {
+export default function LazySection({ name, props, rootMargin = "800px 0px" }: { name: SectionName; props?: Record<string, unknown>; rootMargin?: string }) {
   const ref = useRef<HTMLDivElement>(null);
   // server: render the section; client: start dormant (keep the server HTML)
   const [awake, setAwake] = useState(() => typeof window === "undefined");
@@ -95,7 +98,7 @@ export default function LazySection({ name, rootMargin = "800px 0px" }: { name: 
   return (
     <div ref={ref} style={typeof window === "undefined" ? DORMANT : undefined}>
       <Suspense fallback={serverHtml.current ? <div dangerouslySetInnerHTML={{ __html: serverHtml.current }} /> : null}>
-        <Section />
+        <Section {...props} />
       </Suspense>
     </div>
   );

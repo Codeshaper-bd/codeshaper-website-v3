@@ -7,6 +7,7 @@ import Reveal from "@/components/system/Reveal";
 import { SectionEyebrow, SectionTitle } from "@/components/system/SectionHeading";
 import { ENGAGEMENT_MODEL_CARDS } from "@/lib/engagementModels";
 import { AT_A_GLANCE, COMPARISON_TABLE, MODEL_OVERVIEWS } from "@/lib/engagementContent";
+import { homeCopy, type CopyOf } from "@/lib/homeCopy";
 
 /**
  * Engagement models as a straight comparison (Apple "compare models"
@@ -76,7 +77,8 @@ function ModelHead({ m }: { m: Model }) {
   );
 }
 
-export default function EngagementModels() {
+export default function EngagementModels({ copy }: { copy?: CopyOf<"engagementModels"> }) {
+  const c = homeCopy("engagementModels", copy);
   const [col, setCol] = useState(-1);
   const tint = (i: number) => (i === col ? "bg-[#f7f7f5]" : "");
 
@@ -86,16 +88,16 @@ export default function EngagementModels() {
         <Reveal>
           <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
             <div>
-              <SectionEyebrow>Engagement Models</SectionEyebrow>
+              <SectionEyebrow>{c.eyebrow}</SectionEyebrow>
               <SectionTitle id="engagement-heading" className="max-w-[16ch] text-balance">
-                One team, five ways to work together.
+                {c.title}
               </SectionTitle>
             </div>
             <Link
               href="/engagement"
               className="inline-flex w-fit items-center gap-2 rounded-full bg-[#0b0f19] px-5 py-2.5 font-urbanist text-[13px] font-semibold text-white transition-colors hover:bg-[#1f2433]"
             >
-              Help me choose
+              {c.button}
               <ArrowRight size={14} strokeWidth={1.9} aria-hidden />
             </Link>
           </div>

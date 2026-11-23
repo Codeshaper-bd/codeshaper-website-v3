@@ -4,7 +4,7 @@ import { withSeo, type Seo } from "@/lib/details";
 import { SITE_NAME } from "@/lib/site";
 
 /** The website's own pages (Home, Services, About…): what the CMS says about them (Pages, Main pages). */
-type MainPage = { seo?: Seo; sections?: string[] };
+type MainPage = { seo?: Seo; hero?: Record<string, string>; sections?: unknown[] };
 const PAGES = data as unknown as Record<string, MainPage>;
 export const mainPage = (key: string): MainPage => PAGES[key] ?? {};
 

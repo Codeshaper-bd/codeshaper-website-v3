@@ -1,0 +1,148 @@
+{
+  "hero": {
+    "eyebrow": "AI Native Software Solution Partner",
+    "line1": "From AI automation to scalable software,",
+    "line2": "we build what grows your business."
+  },
+  "trustStrip": {
+    "title": "The choice of fast-moving teams,",
+    "titleDim": "from startups to global brands."
+  },
+  "servicesBento": {
+    "eyebrow": "Our Services",
+    "title": "One team to design, build, and automate your product.",
+    "button": "Explore all"
+  },
+  "caseStudies": {
+    "eyebrow": "Case Studies",
+    "title": "Work that shipped, and what it changed.",
+    "button": "All case studies"
+  },
+  "industries": {
+    "eyebrow": "Industries",
+    "title": "Built for the way your industry works.",
+    "button": "All industries"
+  },
+  "humanAiFlow": {
+    "eyebrow": "Human + AI",
+    "title": "Humans lead. AI does the heavy lifting.",
+    "phases": [
+      {
+        "title": "Planning with a head start",
+        "body": "Your brief becomes a clear plan you can react to in days, not weeks.",
+        "ai": [
+          "Drafts specs and user flows from your brief",
+          "Spots gaps and open questions"
+        ],
+        "people": [
+          "Run the discovery workshop with you",
+          "Decide scope and priorities"
+        ]
+      },
+      {
+        "title": "Building, reviewed by humans",
+        "body": "Engineers move faster on the routine parts and spend their time on what makes your product different.",
+        "ai": [
+          "Writes boilerplate and first drafts of code",
+          "Suggests fixes during review"
+        ],
+        "people": [
+          "Design the architecture",
+          "Review and approve every change"
+        ]
+      },
+      {
+        "title": "Testing from every angle",
+        "body": "More scenarios are covered earlier, so problems are found before your customers find them.",
+        "ai": [
+          "Generates test cases and edge cases",
+          "Runs regression checks on every change"
+        ],
+        "people": [
+          "Test real user journeys by hand",
+          "Decide what is ready to ship"
+        ]
+      },
+      {
+        "title": "Releases that stay calm",
+        "body": "Shipping becomes routine: small, safe releases with a human at the wheel.",
+        "ai": [
+          "Prepares release notes and rollback plans",
+          "Watches for errors after launch"
+        ],
+        "people": [
+          "Approve each release",
+          "Stay on call in production"
+        ]
+      }
+    ]
+  },
+  "testimonials": {
+    "eyebrow": "Client reviews",
+    "title": "Hear it from the people we build with."
+  },
+  "techStack": {
+    "eyebrow": "Tools & technology",
+    "title": "Many tools. One working system."
+  },
+  "impactWorkflow": {
+    "eyebrow": "In numbers",
+    "title": "A decade of shipping software for teams around the world."
+  },
+  "engagementModels": {
+    "eyebrow": "Engagement Models",
+    "title": "One team, five ways to work together.",
+    "button": "Help me choose"
+  },
+  "aboutStudio": {
+    "eyebrow": "Who we are",
+    "title": "A distributed team that works like one room.",
+    "intro": "CodeShaper brings design, engineering, commerce, and AI automation together under one roof. Our delivery hub is in Bangladesh, with collaboration hubs across the US, UK, Japan, Australia, and New Zealand, so there's real timezone overlap wherever a client is based."
+  },
+  "faq": {
+    "eyebrow": "FAQ",
+    "title": "What clients ask before we start.",
+    "items": [
+      {
+        "q": "What services does CodeShaper offer?",
+        "a": "We're an AI engineering and software development company with five service groups: {groups}. We also provide dedicated development teams, IT staff augmentation, and offshore development centers if you'd rather extend your own team. See Services for the full breakdown of each."
+      },
+      {
+        "q": "Which engagement model fits our project?",
+        "a": "It depends on where you're starting from: an MVP Sprint for a fast first build, End-to-End Delivery when we own the whole scope, a Dedicated Development Team or IT Staff Augmentation to extend yours, or an Offshore Development Center for a long-term team we set up and run for you. Tell us where you are and we'll recommend a fit."
+      },
+      {
+        "q": "How do you use AI in the development process?",
+        "a": "AI is assisted, not autonomous — it speeds up discovery, engineering, QA, and release, but a person still reviews the decisions that matter at every phase."
+      },
+      {
+        "q": "Can you redesign or maintain an existing product?",
+        "a": "Yes — Legacy Software Modernization, eCommerce Migration, and Website Maintenance & Support cover platform migrations, UI refreshes, and ongoing upkeep without a ground-up rebuild."
+      },
+      {
+        "q": "What industries do you have experience in?",
+        "a": "SaaS, eCommerce & retail, and eight more — see Industries for the full list and how each workflow is adapted to what makes that business different."
+      },
+      {
+        "q": "Where is your team based, and how do you handle time zones?",
+        "a": "Bangladesh is our delivery hub. Japan, the USA, the UK, Australia, and New Zealand give us collaboration hubs across time zones, so there's working overlap wherever you're based."
+      },
+      {
+        "q": "Do you work with early-stage startups or only larger companies?",
+        "a": "Both. MVP Sprint and Dedicated Development Team engagements suit early-stage teams moving fast; End-to-End Delivery and an Offshore Development Center suit larger, more established organizations with more scope to cover."
+      },
+      {
+        "q": "How do we get started?",
+        "a": "Book a call or send us a brief — we'll walk through scope, timeline, and the engagement model that fits before anything is signed."
+      }
+    ],
+    "askTitle": "Still have questions?",
+    "askText": "Tell us about your project and we'll point you to the right fit.",
+    "askButton": "Book a Call"
+  },
+  "blogPosts": {
+    "eyebrow": "From the blog",
+    "title": "Field notes from the work we ship.",
+    "button": "All articles"
+  }
+}

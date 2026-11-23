@@ -8,6 +8,7 @@ import { ArrowLeft, ArrowRight, ArrowUpRight, Play, X } from "lucide-react";
 import Reveal from "@/components/system/Reveal";
 import { SectionEyebrow, SectionTitle } from "@/components/system/SectionHeading";
 import Flag from "@/components/system/Flag";
+import { homeCopy, type CopyOf } from "@/lib/homeCopy";
 
 /**
  * Client reviews: a row of tall portrait cards, face first (the
@@ -200,7 +201,8 @@ function QuoteCard({ r }: { r: Review }) {
   );
 }
 
-export default function Testimonials() {
+export default function Testimonials({ copy }: { copy?: CopyOf<"testimonials"> }) {
+  const c = homeCopy("testimonials", copy);
   const railRef = useRef<HTMLUListElement>(null);
   const dialogRef = useRef<HTMLDialogElement>(null);
   const playerRef = useRef<HTMLVideoElement>(null);
@@ -248,9 +250,9 @@ export default function Testimonials() {
           <Reveal>
             <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
               <div>
-                <SectionEyebrow>Client reviews</SectionEyebrow>
+                <SectionEyebrow>{c.eyebrow}</SectionEyebrow>
                 <SectionTitle id="testimonials-heading" className="max-w-[16ch] text-balance">
-                  Hear it from the people we build with.
+                  {c.title}
                 </SectionTitle>
               </div>
               {scrolls && (

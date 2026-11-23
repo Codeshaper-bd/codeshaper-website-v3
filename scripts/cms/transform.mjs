@@ -32,6 +32,87 @@ export function simpleSections(html) {
 const decode = (s) => s.replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"').replace(/&apos;/g, "'").replace(/&#(\d+);/g, (_, n) => String.fromCodePoint(+n)).replace(/&amp;/g, "&");
 export const headingsOf = (html) => [...html.matchAll(/<h2 id="([^"]+)"[^>]*>(.*?)<\/h2>/g)].map((m) => ({ id: m[1], text: decode(m[2].replace(/<[^>]+>/g, "")) })).filter((h) => h.text);
 
+// ── the homepage (Pages, Home) ─────────────────────────────────────────────
+const HOME_BUILT_IN = ["trustStrip", "servicesBento", "caseStudies", "industries", "humanAiFlow", "testimonials", "techStack", "impactWorkflow", "engagementModels", "aboutStudio", "faq", "blogPosts"];
+const HOME_ADDED = { textImage: "Text and picture", cta: "Call to action", stats: "Numbers", cards: "Cards", logos: "Logo strip", video: "Video", faq: "Questions", text: "Free text" };
+const words = (v) => (typeof v === "string" && v.trim() ? v.trim() : undefined);
+const lines = (v) => (typeof v === "string" ? v.split(/\r?\n/).map((x) => x.trim()).filter(Boolean) : list(v));
+const picture = (i) => (i?.url ? strip({ url: i.url, alt: i.alt, width: i.width, height: i.height }) : undefined);
+const homeButton = (label, href) => (words(label) && safeHref(href) ? { label: words(label), href } : undefined);
+const VIDEO_LINK = /(youtube\.com\/(watch\?|shorts\/|embed\/)|youtu\.be\/|vimeo\.com\/)/i;
+
+/** A built-in section's words. Only text: anything left empty keeps the website's original. */
+function homeWords(d = {}, key) {
+  const out = {};
+  for (const [k, v] of Object.entries(d ?? {})) if (typeof v === "string" && words(v)) out[k] = words(v);
+  if (key === "humanAiFlow" && Array.isArray(d.phases)) {
+    const phases = d.phases.slice(0, 4).map((p) => strip({ title: words(p?.title), body: words(p?.body), ai: lines(p?.ai), people: lines(p?.people) }));
+    if (phases.some(has)) out.phases = phases;
+  }
+  if (key === "faq" && faqs(d.items).length) out.items = faqs(d.items);
+  return has(out) ? out : undefined;
+}
+
+/** A section added in the CMS, in the shape components/home/HomeBlock draws. Half-filled ones are left out. */
+function homeBlock(type, d) {
+  const head = { eyebrow: words(d.eyebrow), title: words(d.title) };
+  switch (type) {
+    case "textImage":
+      return head.title && strip({ type, ...head, text: words(d.text), image: picture(d.image), side: d.side === "left" ? "left" : "right", button: homeButton(d.button_label, d.button_href) });
+    case "cta": {
+      const button = homeButton(d.button_label, d.button_href);
+      return head.title && button && strip({ type, title: head.title, text: words(d.text), button, second: homeButton(d.second_label, d.second_href) });
+    }
+    case "stats": {
+      const items = rows(d.items, ["value", "label"]).slice(0, 4).map((x) => ({ value: String(x.value).trim(), label: String(x.label).trim() }));
+      return items.length >= 2 && strip({ type, ...head, items });
+    }
+    case "cards": {
+      const items = rows(d.items, ["title"]).slice(0, 8).map((x) => strip({ icon: x.icon, title: x.title, text: words(x.text) }));
+      return head.title && items.length > 0 && strip({ type, ...head, intro: words(d.intro), items });
+    }
+    case "logos": {
+      const logos = (Array.isArray(d.logos) ? d.logos : []).map((l) => picture(l?.image) && strip({ ...picture(l.image), href: /^https?:\/\//i.test(l?.href ?? "") ? l.href : undefined })).filter(Boolean);
+      return logos.length > 0 && strip({ type, title: head.title, logos });
+    }
+    case "video": {
+      const video = d.video?.url ? strip({ url: d.video.url, poster: d.poster?.url }) : undefined;
+      const link = !video && /^https:\/\//i.test(d.link ?? "") && VIDEO_LINK.test(d.link) ? d.link : undefined;
+      return (video || link) && strip({ type, ...head, text: words(d.text), video, link });
+    }
+    case "faq": {
+      const items = faqs(d.items);
+      return head.title && items.length > 0 && strip({ type, title: head.title, intro: words(d.intro), items });
+    }
+    case "text":
+      return has(d.body) && strip({ type, ...head, html: d.body });
+  }
+  return undefined;
+}
+
+/** The sections that show, in order: built-ins with their words, added ones with their content. */
+function homeSections(v, warn) {
+  const seen = new Set();
+  return (Array.isArray(v) ? v : []).flatMap((r, i) => {
+    const type = r?.type ?? r?.key; // older pages kept {key, on}
+    const d = r?.data ?? r ?? {};
+    if (!d.on) return [];
+    if (HOME_BUILT_IN.includes(type)) {
+      if (seen.has(type)) return [];
+      seen.add(type);
+      return [strip({ key: type, copy: homeWords(d, type) })];
+    }
+    const added = type === "faqBlock" ? "faq" : type;
+    if (!HOME_ADDED[added]) return [];
+    const block = homeBlock(added, d);
+    if (!block) {
+      warn(`Home: the "${HOME_ADDED[added]}" section is not complete, so it is not shown`);
+      return [];
+    }
+    return [{ key: "block", id: `s${i + 1}`, block }];
+  });
+}
+
 export function toSite(raw, warn = () => {}) {
   const by = (k) => Object.fromEntries((raw[k] ?? []).map((x) => [x.slug, x]));
   const cats = by("post_categories"), tags = by("tags"), authors = by("authors"), tech = by("technologies");
@@ -171,7 +252,7 @@ export function toSite(raw, warn = () => {}) {
   const pages = uniq("pages").filter((p) => !p.system).map((p) => strip({ path: p.path, title: p.title, intro: p.data?.intro, eyebrow: p.data?.eyebrow, layout: p.data?.layout || "hero", html: p.body, image: p.cover?.url, seo: seo(p), menu: p.data?.menu, menuLabel: p.data?.menu_label }));
   const menu = pages.filter((p) => p.menu && p.menu !== "none").map((p) => ({ label: p.menuLabel || p.title, href: p.path, where: p.menu }));
   if (products.length) menu.unshift({ label: "Products", href: "/products", where: "both" });
-  const mainPages = Object.fromEntries((raw.pages ?? []).filter((p) => p.system).map((p) => [p.system, strip({ seo: seo(p), sections: p.system === "home" ? rows(p.data?.sections, ["key"]).filter((x) => x.on).map((x) => x.key) : undefined })]));
+  const mainPages = Object.fromEntries((raw.pages ?? []).filter((p) => p.system).map((p) => [p.system, p.system === "home" ? { ...strip({ seo: seo(p), hero: homeWords(p.data?.hero) }), sections: homeSections(p.data?.sections, warn) } : strip({ seo: seo(p) })]));
 
   // ── the whole website ────────────────────────────────────────────────────
   const S = raw.site ?? {};

@@ -1,4 +1,5 @@
 "use client";
+import { homeCopy, type CopyOf } from "@/lib/homeCopy";
 
 import { useEffect, useRef } from "react";
 import type { CSSProperties } from "react";
@@ -346,7 +347,8 @@ function useDragScroll(trackRef: React.RefObject<HTMLDivElement | null>) {
   }, [trackRef]);
 }
 
-export default function AboutStudio() {
+export default function AboutStudio({ copy }: { copy?: CopyOf<"aboutStudio"> }) {
+  const c = homeCopy("aboutStudio", copy);
   const reduced = usePrefersReducedMotion();
   const stripRef = useRef<HTMLDivElement>(null);
   useDragScroll(stripRef);
@@ -408,14 +410,12 @@ export default function AboutStudio() {
             </Reveal>
 
             <Reveal delay={100}>
-              <SectionEyebrow>Who we are</SectionEyebrow>
+              <SectionEyebrow>{c.eyebrow}</SectionEyebrow>
               <SectionTitle id="about-heading" className="max-w-sm">
-                A distributed team that works like one room.
+                {c.title}
               </SectionTitle>
               <SectionDescription className="mt-5 max-w-md">
-                CodeShaper brings design, engineering, commerce, and AI automation together under one roof. Our
-                delivery hub is in Bangladesh, with collaboration hubs across the US, UK, Japan, Australia, and New
-                Zealand, so there's real timezone overlap wherever a client is based.
+                {c.intro}
               </SectionDescription>
 
               <div className="mt-6 grid grid-cols-2 gap-2.5">

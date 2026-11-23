@@ -76,6 +76,7 @@ export default function FaqAccordion({
   description,
   stats,
   cta,
+  spaced = false,
 }: {
   id: string;
   title: string;
@@ -83,6 +84,8 @@ export default function FaqAccordion({
   description?: string;
   stats?: FaqStat[];
   cta?: FaqCta;
+  /** Homepage sections: the intro under the title, and room before the list. */
+  spaced?: boolean;
 }) {
   const [open, setOpen] = useState<Set<number>>(new Set([0]));
 
@@ -156,9 +159,10 @@ export default function FaqAccordion({
           <SectionTitle id={id} className="mx-auto max-w-xl text-center">
             {title}
           </SectionTitle>
+          {spaced && description && <SectionDescription className="mx-auto mt-4 max-w-xl text-center">{description}</SectionDescription>}
         </Reveal>
 
-        <Reveal delay={80}>
+        <Reveal delay={80} className={spaced ? "mt-10" : ""}>
           <AccordionList items={items} open={open} toggle={toggle} />
         </Reveal>
       </div>

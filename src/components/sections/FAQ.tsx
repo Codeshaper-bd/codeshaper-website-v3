@@ -7,6 +7,7 @@ import Reveal from "@/components/system/Reveal";
 import CountUp from "@/components/system/CountUp";
 import { SectionEyebrow, SectionTitle } from "@/components/system/SectionHeading";
 import { SERVICE_GROUPS } from "@/data/services";
+import { homeCopy, type CopyOf } from "@/lib/homeCopy";
 
 /** "A, B, C, D, and E" — the five group names, in locked order. */
 function listGroups(): string {
@@ -39,48 +40,12 @@ function listGroups(): string {
  * services in data/services.ts, the 10-entry INDUSTRIES list), not
  * invented claims.
  */
-const FAQS: { q: string; a: string }[] = [
-  {
-    q: "What services does CodeShaper offer?",
-    // REVIEW
-    a: `We're an AI engineering and software development company with five service groups: ${listGroups()}. We also provide dedicated development teams, IT staff augmentation, and offshore development centers if you'd rather extend your own team. See Services for the full breakdown of each.`,
-  },
-  {
-    q: "Which engagement model fits our project?",
-    a: "It depends on where you're starting from: an MVP Sprint for a fast first build, End-to-End Delivery when we own the whole scope, a Dedicated Development Team or IT Staff Augmentation to extend yours, or an Offshore Development Center for a long-term team we set up and run for you. Tell us where you are and we'll recommend a fit.",
-  },
-  {
-    q: "How do you use AI in the development process?",
-    a: "AI is assisted, not autonomous — it speeds up discovery, engineering, QA, and release, but a person still reviews the decisions that matter at every phase.",
-  },
-  {
-    q: "Can you redesign or maintain an existing product?",
-    a: "Yes — Legacy Software Modernization, eCommerce Migration, and Website Maintenance & Support cover platform migrations, UI refreshes, and ongoing upkeep without a ground-up rebuild.",
-  },
-  {
-    q: "What industries do you have experience in?",
-    a: "SaaS, eCommerce & retail, and eight more — see Industries for the full list and how each workflow is adapted to what makes that business different.",
-  },
-  {
-    q: "Where is your team based, and how do you handle time zones?",
-    a: "Bangladesh is our delivery hub. Japan, the USA, the UK, Australia, and New Zealand give us collaboration hubs across time zones, so there's working overlap wherever you're based.",
-  },
-  {
-    q: "Do you work with early-stage startups or only larger companies?",
-    a: "Both. MVP Sprint and Dedicated Development Team engagements suit early-stage teams moving fast; End-to-End Delivery and an Offshore Development Center suit larger, more established organizations with more scope to cover.",
-  },
-  {
-    q: "How do we get started?",
-    a: "Book a call or send us a brief — we'll walk through scope, timeline, and the engagement model that fits before anything is signed.",
-  },
-];
-
 const STATS: { value: number; suffix: string; label: string }[] = [
   { value: SERVICE_GROUPS.length, suffix: "", label: "Service groups" },
   { value: 6, suffix: "", label: "Global hubs" },
 ];
 
-const FAQ_JSON_LD = {
+const faqJsonLd = (FAQS: { q: string; a: string }[]) => ({
   "@context": "https://schema.org",
   "@type": "FAQPage",
   mainEntity: FAQS.map((f) => ({
@@ -88,9 +53,14 @@ const FAQ_JSON_LD = {
     name: f.q,
     acceptedAnswer: { "@type": "Answer", text: f.a },
   })),
-};
+});
 
-export default function FAQ() {
+export default function FAQ({ copy }: { copy?: CopyOf<"faq"> }) {
+  const c = homeCopy("faq", copy);
+  const faqs = c.items.map((f) => ({
+    ...f,
+    a: f.a.replace("{groups}", listGroups()),
+  }));
   const [open, setOpen] = useState<Set<number>>(new Set([0]));
 
   const toggle = (i: number) => {
@@ -103,99 +73,106 @@ export default function FAQ() {
   };
 
   return (
-    <section className="theme-light relative overflow-hidden bg-light-surface py-16 lg:py-24" aria-labelledby="faq-heading">
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 opacity-[0.5]"
-        style={{
-          backgroundImage: "repeating-linear-gradient(90deg, rgba(11,15,25,0.05) 0, rgba(11,15,25,0.05) 1px, transparent 1px, transparent 120px)",
-        }}
-      />
+    <div className="bg-light-surface p-3 sm:p-4">
+      <section className="theme-light relative overflow-hidden rounded-[32px] bg-canvas py-16 lg:py-24" aria-labelledby="faq-heading">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 opacity-[0.5]"
+          style={{
+            backgroundImage: "repeating-linear-gradient(90deg, rgba(11,15,25,0.05) 0, rgba(11,15,25,0.05) 1px, transparent 1px, transparent 120px)",
+          }}
+        />
 
-      <div className="relative mx-auto max-w-7xl px-6 lg:px-10">
-        <div className="grid gap-12 lg:grid-cols-[360px_1fr] lg:gap-16">
-          <div>
-            <Reveal>
-              <SectionEyebrow>FAQ</SectionEyebrow>
-              <SectionTitle id="faq-heading">What clients ask before we start.</SectionTitle>
-            </Reveal>
+        <div className="relative mx-auto max-w-7xl px-6 lg:px-10">
+          <div className="grid gap-12 lg:grid-cols-[360px_1fr] lg:gap-16">
+            <div>
+              <Reveal>
+                <SectionEyebrow>{c.eyebrow}</SectionEyebrow>
+                <SectionTitle id="faq-heading">{c.title}</SectionTitle>
+              </Reveal>
 
-            <Reveal delay={100}>
-              <div className="mt-8 flex gap-8 border-y border-hairline py-6">
-                {STATS.map((s) => (
-                  <div key={s.label}>
-                    <p className="font-urbanist text-3xl font-bold tracking-tight text-ink">
-                      <CountUp value={s.value} suffix={s.suffix} />
-                    </p>
-                    <p className="mt-1 font-urbanist text-[12.5px] leading-snug text-ink-dim">{s.label}</p>
-                  </div>
-                ))}
-              </div>
-            </Reveal>
+              <Reveal delay={100}>
+                <div className="mt-8 flex gap-8 border-y border-hairline py-6">
+                  {STATS.map((s) => (
+                    <div key={s.label}>
+                      <p className="font-urbanist text-3xl font-bold tracking-tight text-ink">
+                        <CountUp value={s.value} suffix={s.suffix} />
+                      </p>
+                      <p className="mt-1 font-urbanist text-[12.5px] leading-snug text-ink-dim">{s.label}</p>
+                    </div>
+                  ))}
+                </div>
+              </Reveal>
 
-            <Reveal delay={160}>
-              <div className="mt-8 overflow-hidden rounded-[24px] bg-ink p-6 text-white">
-                <p className="font-urbanist text-base font-bold leading-snug">Still have questions?</p>
-                <p className="mt-1.5 font-urbanist text-[13px] leading-relaxed text-white/55">
-                  Tell us about your project and we&apos;ll point you to the right fit.
-                </p>
-                <Link
-                  href="/contact"
-                  className="mt-5 inline-flex items-center gap-2 rounded-full bg-white px-5 py-2.5 font-urbanist text-[13px] font-semibold text-ink transition-transform duration-300 hover:scale-[1.03]"
-                >
-                  Book a Call
-                  <ArrowRight size={14} strokeWidth={1.75} />
-                </Link>
+              <Reveal delay={160}>
+                <div className="mt-8 overflow-hidden rounded-[24px] bg-ink p-6 text-white">
+                  <p className="font-urbanist text-base font-bold leading-snug">{c.askTitle}</p>
+                  <p className="mt-1.5 font-urbanist text-[13px] leading-relaxed text-white/55">{c.askText}</p>
+                  <Link
+                    href="/contact"
+                    className="mt-5 inline-flex items-center gap-2 rounded-full bg-white px-5 py-2.5 font-urbanist text-[13px] font-semibold text-ink transition-transform duration-300 hover:scale-[1.03]"
+                  >
+                    {c.askButton}
+                    <ArrowRight size={14} strokeWidth={1.75} />
+                  </Link>
+                </div>
+              </Reveal>
+            </div>
+
+            <Reveal delay={80}>
+              <div className="overflow-hidden rounded-[28px] border border-hairline bg-[#fafafa] shadow-[0_20px_50px_rgba(9,9,11,0.06)]">
+                {faqs.map((item, i) => {
+                  const isOpen = open.has(i);
+                  return (
+                    <div key={item.q} className={i > 0 ? "border-t border-hairline" : ""}>
+                      <button
+                        type="button"
+                        onClick={() => toggle(i)}
+                        aria-expanded={isOpen}
+                        className="flex w-full items-center gap-4 px-6 py-5 text-left transition-colors duration-200 hover:bg-black/[0.02] sm:px-8"
+                      >
+                        <span
+                          className="shrink-0 font-urbanist text-[13px] font-semibold tabular-nums transition-colors duration-300"
+                          style={{
+                            color: isOpen ? "var(--color-aurora-violet)" : "var(--color-ink-faint)",
+                          }}
+                        >
+                          {String(i + 1).padStart(2, "0")}
+                        </span>
+                        <span className="flex-1 font-urbanist text-[15px] font-semibold leading-snug text-ink sm:text-base">{item.q}</span>
+                        <span
+                          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border transition-[background-color,border-color,transform] duration-300"
+                          style={{
+                            borderColor: isOpen ? "var(--color-aurora-violet)" : "var(--color-hairline)",
+                            backgroundColor: isOpen ? "var(--color-aurora-violet)" : "transparent",
+                            transform: isOpen ? "rotate(180deg)" : "rotate(0deg)",
+                          }}
+                        >
+                          <ChevronDown size={15} strokeWidth={2} className={isOpen ? "text-white" : "text-ink-faint"} />
+                        </span>
+                      </button>
+                      <div className="faq-panel" data-open={isOpen}>
+                        <div>
+                          <p className="max-w-2xl px-6 pb-6 pl-[46px] font-urbanist text-[14px] leading-relaxed text-ink-dim sm:px-8 sm:pl-[54px]">
+                            {item.a}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </Reveal>
           </div>
-
-          <Reveal delay={80}>
-            <div className="overflow-hidden rounded-[28px] border border-hairline bg-[#fafafa] shadow-[0_20px_50px_rgba(9,9,11,0.06)]">
-              {FAQS.map((item, i) => {
-                const isOpen = open.has(i);
-                return (
-                  <div key={item.q} className={i > 0 ? "border-t border-hairline" : ""}>
-                    <button
-                      type="button"
-                      onClick={() => toggle(i)}
-                      aria-expanded={isOpen}
-                      className="flex w-full items-center gap-4 px-6 py-5 text-left transition-colors duration-200 hover:bg-black/[0.02] sm:px-8"
-                    >
-                      <span
-                        className="shrink-0 font-urbanist text-[13px] font-semibold tabular-nums transition-colors duration-300"
-                        style={{ color: isOpen ? "var(--color-aurora-violet)" : "var(--color-ink-faint)" }}
-                      >
-                        {String(i + 1).padStart(2, "0")}
-                      </span>
-                      <span className="flex-1 font-urbanist text-[15px] font-semibold leading-snug text-ink sm:text-base">{item.q}</span>
-                      <span
-                        className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border transition-[background-color,border-color,transform] duration-300"
-                        style={{
-                          borderColor: isOpen ? "var(--color-aurora-violet)" : "var(--color-hairline)",
-                          backgroundColor: isOpen ? "var(--color-aurora-violet)" : "transparent",
-                          transform: isOpen ? "rotate(180deg)" : "rotate(0deg)",
-                        }}
-                      >
-                        <ChevronDown size={15} strokeWidth={2} className={isOpen ? "text-white" : "text-ink-faint"} />
-                      </span>
-                    </button>
-                    <div className="faq-panel" data-open={isOpen}>
-                      <div>
-                        <p className="max-w-2xl px-6 pb-6 pl-[46px] font-urbanist text-[14px] leading-relaxed text-ink-dim sm:px-8 sm:pl-[54px]">
-                          {item.a}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </Reveal>
         </div>
-      </div>
 
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(FAQ_JSON_LD) }} />
-    </section>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(faqJsonLd(faqs)).replace(/</g, "\\u003c"),
+          }}
+        />
+      </section>
+    </div>
   );
 }

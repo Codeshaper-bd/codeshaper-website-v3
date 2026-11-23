@@ -7,6 +7,7 @@ import HeroGlyphs from "./intro/HeroGlyphs";
 import { SERVED } from "./globe/servedCountries";
 import Link from "next/link";
 import { getAnnouncement, KIND_STYLE } from "@/data/announcement";
+import { homeCopy, type CopyOf } from "@/lib/homeCopy";
 
 /**
  * Hero: centred copy above a flowing light that rises from the bottom
@@ -35,7 +36,6 @@ import { getAnnouncement, KIND_STYLE } from "@/data/announcement";
  * Server component; the interactive parts are islands: HeroAsk (project
  * prompt that hands off to /contact), HeroGlobe and the intro.
  */
-const EYEBROW = "AI Native Software Solution Partner";
 const ANNOUNCEMENT = getAnnouncement();
 
 /**
@@ -85,7 +85,8 @@ const HAND_LABELS = [
 /** Monochrome fractal noise, tiled (≈0.5KB inline, no request). */
 const NOISE = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`;
 
-export default function Hero() {
+export default function Hero({ copy }: { copy?: CopyOf<"hero"> }) {
+  const c = homeCopy("hero", copy);
   return (
     <div className="bg-white px-3 pb-3 sm:px-4 sm:pb-4" data-hero suppressHydrationWarning>
       <script dangerouslySetInnerHTML={{ __html: INTRO_SCRIPT }} />
@@ -227,7 +228,7 @@ export default function Hero() {
               className="inline-flex max-w-full items-center gap-2 rounded-full border border-[#0b0f19]/[0.08] bg-white/70 px-3 py-1.5 text-[10.5px] font-bold uppercase leading-none tracking-[0.12em] text-[#3f4657] backdrop-blur-sm sm:text-[11px]"
             >
               <span aria-hidden className="h-[5px] w-[5px] shrink-0 rounded-full bg-[#7c5cff]/80" />
-              <span className="hero-shimmer">{EYEBROW}</span>
+              <span className="hero-shimmer">{c.eyebrow}</span>
             </p>
           )}
 
@@ -237,10 +238,10 @@ export default function Hero() {
             className="mt-6 text-balance text-[clamp(26px,6.9vw,30px)] font-[560] leading-[1.14] tracking-[-0.025em] text-[#0b0f19] sm:text-[34px] lg:text-[38px] xl:text-[41px] 2xl:text-[44px]"
           >
             <span className="inline-block lg:block lg:whitespace-nowrap" data-reveal>
-              From AI automation to scalable software,
+              {c.line1}
             </span>{" "}
             <span className="inline-block lg:block lg:whitespace-nowrap" data-reveal>
-              <span className="text-[#363d4f]">we build what grows your business.</span>
+              <span className="text-[#363d4f]">{c.line2}</span>
             </span>
           </h1>
 

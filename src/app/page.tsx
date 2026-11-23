@@ -1,11 +1,8 @@
 // Below-the-fold sections load their code on approach (LazySection); the
 // server still renders their full HTML.
 import type { Metadata } from "next";
-import LazySection, { type SectionName } from "@/components/system/LazySection";
 import { mainMeta, mainPage } from "@/lib/mainPages";
-import SiteShell from "@/components/system/SiteShell";
-import Hero from "@/components/hero/Hero";
-import TrustStrip from "@/components/sections/TrustStrip";
+import HomeView, { type HomeData } from "@/components/home/HomeView";
 // ServicePillars is the previous card-grid Services section — kept but
 // unmounted below, pending a side-by-side decision against ServicesShowcase.
 // import ServicePillars from "@/components/sections/ServicePillars";
@@ -29,20 +26,12 @@ import TrustStrip from "@/components/sections/TrustStrip";
  * homepage per direct request; that conversion path now lives at the
  * real /contact page, which every "Book a Call" link already points to.
  *
- * The order of the sections, and which ones show, is edited in the CMS
- * (Pages, Home). The hero is always first.
+ * The sections, their order and their words are edited in the CMS
+ * (Pages, Home) and drawn by components/home/HomeView. The hero is
+ * always first.
  */
-const SECTIONS = ["servicesBento", "caseStudies", "industries", "humanAiFlow", "testimonials", "techStack", "impactWorkflow", "engagementModels", "aboutStudio", "faq"] satisfies SectionName[];
-const isSection = (s: string): s is SectionName => (SECTIONS as string[]).includes(s);
-const ORDER = mainPage("home").sections ?? ["trustStrip", ...SECTIONS.slice(0, 8)];
-
 export const metadata: Metadata = mainMeta("home", {});
 
 export default function Home() {
-  return (
-    <SiteShell>
-      <Hero />
-      {ORDER.map((name) => (name === "trustStrip" ? <TrustStrip key={name} /> : isSection(name) ? <LazySection key={name} name={name} /> : null))}
-    </SiteShell>
-  );
+  return <HomeView data={mainPage("home") as HomeData} />;
 }

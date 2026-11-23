@@ -1,4 +1,5 @@
 "use client";
+import { homeCopy, type CopyOf } from "@/lib/homeCopy";
 
 import { useEffect, useRef } from "react";
 import Image from "next/image";
@@ -132,7 +133,8 @@ function Media({ cs, e }: { cs: CaseStudy; e: Entry }) {
   );
 }
 
-export default function CaseStudiesFeatured() {
+export default function CaseStudiesFeatured({ copy }: { copy?: CopyOf<"caseStudies"> }) {
+  const c = homeCopy("caseStudies", copy);
   const listRef = useRef<HTMLOListElement>(null);
 
   // ease each pinned card back as the next one slides over it
@@ -178,16 +180,16 @@ export default function CaseStudiesFeatured() {
         <Reveal>
           <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
             <div>
-              <SectionEyebrow>Case Studies</SectionEyebrow>
+              <SectionEyebrow>{c.eyebrow}</SectionEyebrow>
               <SectionTitle id="cases-heading" className="max-w-[16ch] text-balance">
-                Work that shipped, and what it changed.
+                {c.title}
               </SectionTitle>
             </div>
             <Link
               href="/case-studies"
               className="inline-flex w-fit items-center gap-2 rounded-full border border-[#0b0f19]/10 bg-white px-4 py-2.5 font-urbanist text-[13px] font-semibold text-ink transition-colors hover:bg-[#f6f6f4]"
             >
-              All case studies
+              {c.button}
               <ArrowRight size={14} strokeWidth={1.9} aria-hidden />
             </Link>
           </div>

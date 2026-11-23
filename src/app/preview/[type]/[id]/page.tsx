@@ -6,6 +6,7 @@ import { toSite } from "../../../../../scripts/cms/transform.mjs";
 import BlogArticle from "@/components/blog/BlogArticle";
 import CaseStudyArticle from "@/components/case-studies/CaseStudyArticle";
 import CmsPageView from "@/components/cms/CmsPageView";
+import HomeView from "@/components/home/HomeView";
 import EngagementModelPage from "@/components/engagement/EngagementModelPage";
 import IndustryPage from "@/components/industries/IndustryPage";
 import ProductPage from "@/components/products/ProductPage";
@@ -16,7 +17,7 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "Preview", robots: { index: false, follow: false } };
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
-type Props = { params: Promise<{ type: string; id: string }>; searchParams: Promise<{ until?: string; sign?: string }> };
+type Props = { params: Promise<{ type: string; id: string }>; searchParams: Promise<{ until?: string; sign?: string; draft?: string }> };
 
 function valid(type: string, id: string, until: string, sign: string) {
   const token = process.env.CMS_INTAKE_TOKEN;
@@ -29,10 +30,10 @@ function valid(type: string, id: string, until: string, sign: string) {
 /** One draft from the CMS in the real design. The link comes from the CMS and works for one hour. */
 export default async function PreviewPage({ params, searchParams }: Props) {
   const { type, id } = await params;
-  const { until = "", sign = "" } = await searchParams;
+  const { until = "", sign = "", draft = "" } = await searchParams;
   if (!valid(type, id, until, sign)) notFound();
 
-  const r = await fetch(`${process.env.CMS_URL}/api/intake/content?preview=${type}:${id}`, { headers: { Authorization: `Bearer ${process.env.CMS_INTAKE_TOKEN}`, Accept: "application/json" }, cache: "no-store" });
+  const r = await fetch(`${process.env.CMS_URL}/api/intake/content?preview=${type}:${id}${/^[A-Za-z0-9]{40}$/.test(draft) ? `&draft=${draft}` : ""}`, { headers: { Authorization: `Bearer ${process.env.CMS_INTAKE_TOKEN}`, Accept: "application/json" }, cache: "no-store" });
   if (!r.ok) notFound();
   const raw = await r.json();
   const missing: string[] = [];
@@ -47,7 +48,11 @@ export default async function PreviewPage({ params, searchParams }: Props) {
   if (type === "industries") { const i = site.industries.find((x: any) => x.href === `/industries/${slug}`); view = i && <IndustryPage industry={i} detail={site.details.industries[slug]} />; }
   if (type === "engagement_models") { const path = raw.engagement_models.find((x: any) => x.slug === slug)?.path; const m = site.services.models.find((x: any) => x.href === path); view = m && <EngagementModelPage model={m} detail={site.details.models[slug]} />; }
   if (type === "products") view = has(site.products) && <ProductPage product={has(site.products)} />;
-  if (type === "pages") { const p = site.pages.find((x: any) => x.path === `/${slug}`); view = p && <CmsPageView page={p} />; }
+  if (type === "pages") {
+    // the homepage, with what is typed in the CMS (live preview)
+    if (raw.pages.find((x: any) => x.id === Number(id))?.system === "home") return <HomeView data={site.mainPages.home} preview />;
+    const p = site.pages.find((x: any) => x.path === `/${slug}`); view = p && <CmsPageView page={p} />;
+  }
 
   return (
     <>

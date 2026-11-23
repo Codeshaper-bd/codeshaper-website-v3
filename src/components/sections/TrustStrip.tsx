@@ -4,6 +4,7 @@ import { SiWebflow, SiFiverr, SiUpwork, SiFramer } from "react-icons/si";
 import type { IconType } from "react-icons";
 import Reveal from "@/components/system/Reveal";
 import { SERVED } from "@/components/hero/globe/servedCountries";
+import { homeCopy, type CopyOf } from "@/lib/homeCopy";
 
 /**
  * Clients strip, between the hero and Services: three rows of monochrome
@@ -121,7 +122,8 @@ function Row({ clients, duration, reverse }: { clients: Client[]; duration: numb
   );
 }
 
-export default function TrustStrip() {
+export default function TrustStrip({ copy }: { copy?: CopyOf<"trustStrip"> }) {
+  const c = homeCopy("trustStrip", copy);
   const countries = SERVED.length;
   return (
     <section
@@ -134,7 +136,7 @@ export default function TrustStrip() {
             id="clients-heading"
             className="mx-auto max-w-[34ch] text-balance text-center text-[19px] font-semibold leading-snug tracking-[-0.01em] text-ink sm:text-[22px]"
           >
-            The choice of fast-moving teams, <span className="text-ink-dim">from startups to global brands.</span>
+            {c.title} <span className="text-ink-dim">{c.titleDim}</span>
           </h2>
         </Reveal>
 

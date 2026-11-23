@@ -26,6 +26,7 @@ import Reveal from "@/components/system/Reveal";
 import { SectionEyebrow, SectionTitle } from "@/components/system/SectionHeading";
 import ServiceDialogBody, { type Tool } from "./ServiceDialogBody";
 import { AgentsVisual, SoftwareVisual, IntegrationVisual, DesignVisual, WebVisual } from "./visuals";
+import { homeCopy, type CopyOf } from "@/lib/homeCopy";
 
 /**
  * Services as a bento of product cards (Stripe "Payments" pattern).
@@ -130,7 +131,8 @@ function Wash({ palette }: { palette: Palette }) {
   );
 }
 
-export default function ServicesBento() {
+export default function ServicesBento({ copy }: { copy?: CopyOf<"servicesBento"> }) {
+  const c = homeCopy("servicesBento", copy);
   const [openIdx, setOpenIdx] = useState<number | null>(null);
   const dialogRef = useRef<HTMLDialogElement>(null);
 
@@ -168,9 +170,9 @@ export default function ServicesBento() {
           <Reveal>
             <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
               <div>
-                <SectionEyebrow>Our Services</SectionEyebrow>
+                <SectionEyebrow>{c.eyebrow}</SectionEyebrow>
                 <SectionTitle id="services-heading" className="max-w-xl">
-                  One team to design, build, and automate your product.
+                  {c.title}
                 </SectionTitle>
               </div>
               <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
@@ -178,7 +180,7 @@ export default function ServicesBento() {
                   href="/services"
                   className="inline-flex w-fit shrink-0 items-center gap-2 rounded-full bg-aurora-violet px-5 py-2.5 font-urbanist text-[13px] font-semibold text-white transition-[background-color,transform] duration-300 hover:scale-[1.02] hover:bg-aurora-violet-dark"
                 >
-                  Explore all
+                  {c.button}
                   <ArrowRight size={14} strokeWidth={1.75} />
                 </Link>
               </div>

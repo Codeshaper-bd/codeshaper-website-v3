@@ -1,4 +1,5 @@
 "use client";
+import { homeCopy, type CopyOf } from "@/lib/homeCopy";
 
 import { useEffect, useRef, useState } from "react";
 import { SERVED } from "@/components/hero/globe/servedCountries";
@@ -19,7 +20,8 @@ const parse = (v: string) => {
   return m ? { n: Number(m[1]), suffix: m[2] } : { n: 0, suffix: v };
 };
 
-export default function ImpactWorkflow() {
+export default function ImpactWorkflow({ copy }: { copy?: CopyOf<"impactWorkflow"> }) {
+  const c = homeCopy("impactWorkflow", copy);
   const ref = useRef<HTMLDListElement>(null);
   const [active, setActive] = useState(-1);
   const [t, setT] = useState(1);
@@ -55,9 +57,9 @@ export default function ImpactWorkflow() {
     <div className="bg-light-surface p-3 sm:p-4">
       <PhotoCloud>
         <div className={styles.heading}>
-          <SectionEyebrow className="mx-auto">In numbers</SectionEyebrow>
+          <SectionEyebrow className="mx-auto">{c.eyebrow}</SectionEyebrow>
           <SectionTitle id="impact-heading" className="mx-auto max-w-[22ch] text-balance">
-            A decade of shipping software for teams around the world.
+            {c.title}
           </SectionTitle>
         </div>
         <div className={styles.stats}>

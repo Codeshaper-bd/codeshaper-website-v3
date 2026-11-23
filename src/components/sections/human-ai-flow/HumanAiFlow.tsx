@@ -7,6 +7,7 @@ import Reveal from "@/components/system/Reveal";
 import { SectionEyebrow, SectionTitle } from "@/components/system/SectionHeading";
 import { usePrefersReducedMotion } from "@/lib/motion";
 import DotField, { type DotFieldHandle } from "./DotField";
+import { homeCopy, type CopyOf } from "@/lib/homeCopy";
 
 /**
  * Human + AI: a node-flow diagram (node-editor style: card nodes, icon
@@ -291,7 +292,10 @@ function Diagram({
   );
 }
 
-export default function HumanAiFlow() {
+export default function HumanAiFlow({ copy }: { copy?: CopyOf<"humanAiFlow"> }) {
+  const c = homeCopy("humanAiFlow", copy);
+  // the words come from the CMS; names, icons and colours stay with the design
+  const phases = PHASES.map((p, i) => ({ ...p, ...c.phases[i] }));
   const reduced = usePrefersReducedMotion();
   const [active, setActive] = useState(0);
   const [stopped, setStopped] = useState(false);
@@ -353,7 +357,7 @@ export default function HumanAiFlow() {
     setStopped(true);
   };
   const compact = scale < 0.84;
-  const phase = PHASES[active];
+  const phase = phases[active];
 
   return (
     <section aria-labelledby="human-ai-heading" className="theme-light relative overflow-hidden bg-light-surface py-16 lg:py-24">
@@ -363,9 +367,9 @@ export default function HumanAiFlow() {
         <Reveal>
           <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
             <div>
-              <SectionEyebrow>Human + AI</SectionEyebrow>
+              <SectionEyebrow>{c.eyebrow}</SectionEyebrow>
               <SectionTitle id="human-ai-heading" className="max-w-[18ch] text-balance">
-                Humans lead. AI does the heavy lifting.
+                {c.title}
               </SectionTitle>
             </div>
           </div>
@@ -409,7 +413,7 @@ export default function HumanAiFlow() {
                 {/* phase switcher for narrow screens (the diagram's buttons are too small there) */}
                 {compact && (
                   <div className="mb-6 grid grid-cols-4 gap-1 rounded-[14px] border border-[#0b0f19]/[0.07] bg-white/80 p-1 backdrop-blur-sm">
-                    {PHASES.map((p, i) => {
+                    {phases.map((p, i) => {
                       const on = i === active;
                       return (
                         <button
