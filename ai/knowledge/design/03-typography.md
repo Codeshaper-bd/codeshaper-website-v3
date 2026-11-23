@@ -13,7 +13,10 @@ Two families only. Do not add a third typeface or use a font role inconsistently
 
 | Role | Size | Weight | Line height / tracking |
 |---|---|---|---|
-| Hero heading | Responsive 28–52px | 580 (Inter) | ~1.1 / tight negative tracking |
+| Hero heading | Responsive 28–48px (max 48px from `xl`) | 580 (Inter) | ~1.1 / tight negative tracking |
+| Hero line under heading | 18px (16px on phones) | 400 | relaxed |
+| Hero chat input | 14px (16px on phones: iOS zoom guard) | 400 | 1.6 |
+| Hero announcement chip | 12px | 500 | none |
 | Section title | 30–36px; large variants 36–48px | 700 | Tight; use `text-balance` |
 | Lead card headline | 26–36px | 700 | 1.08–1.15 |
 | Card title | 17–22px | 700 | Tight |

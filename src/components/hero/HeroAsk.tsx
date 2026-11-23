@@ -127,7 +127,7 @@ export default function HeroAsk() {
             // the global unlayered :focus-visible outline would draw a box
             // inside the card; the card's focus-within ring marks focus instead
             style={{ outline: "none", boxShadow: "none" }}
-            className={`block w-full resize-none overflow-y-auto bg-transparent text-[15.5px] leading-[1.6] text-[#0b0f19] placeholder:text-[#6b7180] sm:text-[16px] ${
+            className={`block w-full resize-none overflow-y-auto bg-transparent text-[16px] leading-[1.6] text-[#0b0f19] placeholder:text-[#6b7180] sm:text-[14px] ${
               idle ? "placeholder:text-transparent" : ""
             }`}
           />
@@ -135,7 +135,7 @@ export default function HeroAsk() {
           {idle && (
             <p
               aria-hidden
-              className="pointer-events-none absolute inset-x-4 top-3.5 flex min-w-0 gap-1 text-[15.5px] leading-[1.6] text-[#6b7180] sm:inset-x-[18px] sm:text-[16px]"
+              className="pointer-events-none absolute inset-x-4 top-3.5 flex min-w-0 gap-1 text-[16px] leading-[1.6] text-[#6b7180] sm:inset-x-[18px] sm:text-[14px]"
             >
               <span className="hidden shrink-0 sm:inline">Describe your idea:</span>
               <span key={example} className="hero-ask-example min-w-0 truncate">

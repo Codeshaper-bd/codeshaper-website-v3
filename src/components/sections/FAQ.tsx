@@ -8,6 +8,7 @@ import CountUp from "@/components/system/CountUp";
 import { SectionEyebrow, SectionTitle } from "@/components/system/SectionHeading";
 import { SERVICE_GROUPS } from "@/data/services";
 import { homeCopy, type CopyOf } from "@/lib/homeCopy";
+import DotField from "@/components/sections/human-ai-flow/DotField";
 
 /** "A, B, C, D, and E" — the five group names, in locked order. */
 function listGroups(): string {
@@ -74,14 +75,8 @@ export default function FAQ({ copy }: { copy?: CopyOf<"faq"> }) {
 
   return (
     <section className="theme-light relative overflow-hidden bg-light-surface py-16 lg:py-24" aria-labelledby="faq-heading">
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 opacity-[0.5]"
-        style={{
-          backgroundImage:
-            "repeating-linear-gradient(90deg, rgba(11,15,25,0.05) 0, rgba(11,15,25,0.05) 1px, transparent 1px, transparent 120px)",
-        }}
-      />
+      {/* the shared dotted background (as Human + AI), fading out at the top and bottom */}
+      <DotField className="[mask-image:linear-gradient(to_bottom,transparent,black_22%,black_78%,transparent)]" />
 
       <div className="relative mx-auto max-w-7xl px-6 lg:px-10">
         <div className="grid gap-12 lg:grid-cols-[360px_1fr] lg:gap-16">

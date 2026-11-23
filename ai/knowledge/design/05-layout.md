@@ -59,7 +59,7 @@ Each homepage section, the component that renders it, and its background. All ma
 |---|---|---|---|
 | 1 | Hero | `hero/Hero.tsx` | its own white hero card |
 | 2 | Brands | `sections/TrustStrip.tsx` | default (white → page gradient) |
-| 3 | At a glance | `sections/AtAGlance.tsx` (+ `WorldMap.tsx`) | white card |
+| 3 | Our journey (CMS key `atAGlance`) | `sections/AtAGlance.tsx` (+ `glass/GlassTen3D.tsx`) | white card |
 | 4 | Case studies | `sections/CaseStudiesFeatured.tsx` | default |
 | 5 | Services | `sections/services-bento/ServicesBento.tsx` | white card |
 | 6 | Products | `sections/ProductsShowcase.tsx` | default |

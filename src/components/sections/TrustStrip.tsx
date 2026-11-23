@@ -1,10 +1,10 @@
 import { Globe2 } from "lucide-react";
-import { FaMicrosoft } from "react-icons/fa";
 import { SiWebflow, SiFiverr, SiUpwork, SiFramer } from "react-icons/si";
 import type { IconType } from "react-icons";
 import Reveal from "@/components/system/Reveal";
 import { SERVED } from "@/components/hero/globe/servedCountries";
 import { homeCopy, type CopyOf } from "@/lib/homeCopy";
+import DotField from "@/components/sections/human-ai-flow/DotField";
 
 /**
  * Clients strip, between the hero and Services: three rows of monochrome
@@ -23,38 +23,56 @@ import { homeCopy, type CopyOf } from "@/lib/homeCopy";
  *
  * `industry` marked // CHECK was inferred from the company name; confirm it.
  */
-type Client = { name: string; industry: string; icon?: IconType };
+/**
+ * A client: a real logo where one is confirmed (brand icon, or an image the
+ * owner supplied / the client publishes in public/media/clients), otherwise
+ * the name alone. Never an invented mark. `wordmark`: the logo already
+ * spells the name, so the name is not repeated.
+ */
+type Client = { name: string; industry: string; icon?: IconType | (() => React.ReactElement); color?: string; size?: number; nudge?: number; img?: string; w?: number; wordmark?: boolean; textmark?: string };
+
+/** Microsoft's four-colour mark (the icon sets carry it in one colour only). */
+function MicrosoftMark() {
+  return (
+    <svg viewBox="0 0 22 22" width="18" height="18" aria-hidden>
+      <rect width="10" height="10" fill="#F25022" />
+      <rect x="12" width="10" height="10" fill="#7FBA00" />
+      <rect y="12" width="10" height="10" fill="#00A4EF" />
+      <rect x="12" y="12" width="10" height="10" fill="#FFB900" />
+    </svg>
+  );
+}
 
 const ROWS: Client[][] = [
   [
-    { name: "Microsoft", industry: "Technology", icon: FaMicrosoft },
+    { name: "Desh Group", industry: "Conglomerate", img: "/media/clients/desh-mark.png", w: 20 },
+    { name: "Microsoft", industry: "Technology", icon: MicrosoftMark },
+    { name: "Quality Feeds Limited", industry: "Agro & food", img: "/media/clients/quality-feeds.png", w: 150, wordmark: true },
     { name: "Q Hotel Dhaka", industry: "Hospitality" },
     { name: "Elite Capital Group", industry: "FinTech" }, // CHECK
-    { name: "Essentialist", industry: "Travel" }, // CHECK
-    { name: "Webflow", industry: "SaaS", icon: SiWebflow },
+    { name: "Essentialist", industry: "Travel", img: "/media/clients/essentialist.png", w: 46 },
+    { name: "Webflow", industry: "SaaS", icon: SiWebflow, color: "#146EF5" },
     { name: "Lexa Shield", industry: "Security" }, // CHECK
   ],
   [
-    { name: "Fiverr", industry: "Marketplace", icon: SiFiverr },
-    { name: "Quinta dos Vales", industry: "Hospitality" }, // CHECK
+    { name: "Shinest Group", industry: "Apparel", textmark: "#d32f1f" },
+    { name: "Fiverr", industry: "Marketplace", icon: SiFiverr, color: "#1DBF73", size: 58, nudge: -10, wordmark: true },
+    { name: "Quinta dos Vales", industry: "Hospitality", img: "/media/clients/quinta-dos-vales.png", w: 26 },
+    { name: "Envato", industry: "Marketplace", img: "/media/clients/envato.svg", w: 96, wordmark: true },
     { name: "DTech Corporation", industry: "Technology" }, // CHECK
-    { name: "MYTH LIFESTYLE", industry: "Fashion" }, // CHECK
-    { name: "Upwork", industry: "Marketplace", icon: SiUpwork },
+    { name: "MYTH LIFESTYLE", industry: "Fashion", img: "/media/clients/myth.png", w: 64, wordmark: true },
+    { name: "Upwork", industry: "Marketplace", icon: SiUpwork, color: "#14A800" },
   ],
   [
-    { name: "Framer", industry: "Design tools", icon: SiFramer },
-    { name: "Fennec", industry: "eCommerce" }, // CHECK
+    { name: "Framer", industry: "Design tools", icon: SiFramer, color: "#0b0f19" },
+    { name: "Fennec", industry: "eCommerce", img: "/media/clients/fennec.png", w: 24 },
+    { name: "Super Oil Refinery", industry: "Energy" },
     { name: "Astrica Trading", industry: "Trading" }, // CHECK
     { name: "GoPosly", industry: "SaaS" }, // CHECK
     { name: "Regray Stone", industry: "Real estate" }, // CHECK
   ],
 ];
 
-/**
- * Industry tag tints: one soft pastel per family (from the hero palettes),
- * so the same kind of business always reads in the same colour. Background
- * is very light and text is the dark shade of the same hue (≥4.5:1 on its bg).
- */
 const TINTS = {
   violet: "bg-[#f1eeff] text-[#4b3fb8] border-[#5b4fd6]/15", // technology, SaaS, design
   blue: "bg-[#eaf3fd] text-[#1d5f9e] border-[#1b78cc]/15", // finance, security
@@ -75,50 +93,34 @@ const INDUSTRY_TINT: Record<string, keyof typeof TINTS> = {
   Marketplace: "pink",
   Fashion: "pink",
   Trading: "amber",
+  Conglomerate: "blue",
+  "Agro & food": "amber",
+  Apparel: "pink",
+  Energy: "amber",
   "Real estate": "amber",
 };
 
-/** Per-row drift: duration (s) and direction. */
-const MOTION = [
-  { duration: 46, reverse: false },
-  { duration: 54, reverse: true },
-  { duration: 50, reverse: false },
-];
-
-function Wordmark({ name, industry, icon: Icon }: Client) {
+function Wordmark({ name, industry, icon: Icon, color, size = 20, nudge = 0, img, w, wordmark, textmark }: Client) {
+  const hasLogo = Boolean(Icon || img);
   return (
-    <li className="group flex shrink-0 items-center gap-2.5 whitespace-nowrap">
-      <span className="flex items-center gap-2 text-[17px] font-semibold tracking-[-0.01em] text-[#868b98] transition-colors duration-300 group-hover:text-[#0b0f19] sm:text-[19px]">
-        {Icon && <Icon aria-hidden size={18} />}
-        {name}
-      </span>
-      <span
-        className={`rounded-full border px-2 py-[3px] text-[10.5px] font-semibold leading-none ${TINTS[INDUSTRY_TINT[industry] ?? "violet"]}`}
-      >
-        {industry}
-      </span>
+    <li title={`${name} (${industry})`} className="group flex shrink-0 items-center gap-2.5 whitespace-nowrap rounded-2xl py-2 pl-2.5 pr-3 sm:gap-3 sm:py-2.5 sm:pl-3 sm:pr-3.5 transition-transform duration-300 hover:-translate-y-0.5">
+      {img ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={img} alt="" loading="lazy" decoding="async" style={{ width: w }} className={`shrink-0 object-contain ${wordmark ? "h-8" : "h-7"}`} />
+      ) : Icon ? (
+        <span className="grid h-7 shrink-0 place-items-center" style={{ color, minWidth: 28, transform: nudge ? `translateY(${nudge}px)` : undefined }}>
+          <Icon aria-hidden size={size} />
+        </span>
+      ) : null}
+      {textmark && (
+        <span className="text-[15px] font-extrabold uppercase tracking-[0.02em]" style={{ color: textmark, fontFamily: "var(--font-hero), sans-serif" }}>
+          {name}
+        </span>
+      )}
+      {!wordmark && !textmark && (
+        <span className={`text-[14px] font-semibold tracking-[-0.01em] sm:text-[17px] ${hasLogo ? "text-[#0b0f19]" : "text-[#4b5263]"}`}>{name}</span>
+      )}
     </li>
-  );
-}
-
-function Row({ clients, duration, reverse }: { clients: Client[]; duration: number; reverse: boolean }) {
-  // each half is the row twice, so one half is always wider than the viewport
-  const half = [...clients, ...clients];
-  return (
-    <div className="overflow-hidden py-2.5 sm:py-3">
-      <div
-        className={`marquee-track flex w-max ${reverse ? "marquee-reverse" : ""}`}
-        style={{ animationDuration: `${duration}s` }}
-      >
-        {[0, 1].map((copy) => (
-          <ul key={copy} className="flex shrink-0 items-center gap-10 pr-10 sm:gap-14 sm:pr-14">
-            {half.map((c, i) => (
-              <Wordmark key={`${c.name}-${i}`} {...c} />
-            ))}
-          </ul>
-        ))}
-      </div>
-    </div>
   );
 }
 
@@ -128,9 +130,11 @@ export default function TrustStrip({ copy }: { copy?: CopyOf<"trustStrip"> }) {
   return (
     <section
       aria-labelledby="clients-heading"
-      className="theme-light relative bg-gradient-to-b from-white to-light-surface py-16 font-urbanist lg:py-24"
+      className="theme-light relative overflow-clip bg-gradient-to-b from-white to-light-surface py-16 font-urbanist lg:py-24"
     >
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10">
+      {/* the shared dotted background (as Human + AI), fading out at the top and bottom */}
+      <DotField className="[mask-image:linear-gradient(to_bottom,transparent,black_22%,black_78%,transparent)]" />
+      <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-10">
         <Reveal>
           <h2
             id="clients-heading"
@@ -141,23 +145,10 @@ export default function TrustStrip({ copy }: { copy?: CopyOf<"trustStrip"> }) {
         </Reveal>
 
         <Reveal delay={100}>
-          <div
-            aria-hidden
-            className="mt-8 lg:mt-10"
-            style={{
-              WebkitMaskImage: "linear-gradient(to right, transparent, black 14%, black 86%, transparent)",
-              maskImage: "linear-gradient(to right, transparent, black 14%, black 86%, transparent)",
-            }}
-          >
-            {ROWS.map((clients, i) => (
-              <Row key={i} clients={clients} {...MOTION[i]} />
-            ))}
-          </div>
-          <ul className="sr-only">
+          {/* every client at once, static (owner: no moving carousel); rows wrap and stay centred */}
+          <ul aria-label="Clients" className="mx-auto mt-8 flex max-w-6xl flex-wrap items-center justify-center gap-x-6 gap-y-3 sm:gap-x-10 sm:gap-y-5 lg:mt-10">
             {ROWS.flat().map((c) => (
-              <li key={c.name}>
-                {c.name} ({c.industry})
-              </li>
+              <Wordmark key={c.name} {...c} />
             ))}
           </ul>
         </Reveal>

@@ -1,7 +1,7 @@
 "use client";
 import { homeCopy, type CopyOf } from "@/lib/homeCopy";
 
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState, type MouseEvent } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, ArrowUpRight, Calculator, Check, Package, ShoppingCart, type LucideIcon } from "lucide-react";
@@ -10,6 +10,9 @@ import Reveal from "@/components/system/Reveal";
 import { SectionEyebrow, SectionTitle } from "@/components/system/SectionHeading";
 import { CASE_STUDIES, getCaseStudyBySlug, type CaseStudy } from "@/lib/caseStudies";
 import CaseStudyVideo from "@/components/case-studies/CaseStudyVideo";
+import DotField from "@/components/sections/human-ai-flow/DotField";
+import ExpandIcon from "@/components/system/ExpandIcon";
+import CaseStudyDialogBody from "@/components/sections/CaseStudyDialogBody";
 
 /**
  * Case studies, homepage: stacked sticky cards (the studio-portfolio
@@ -78,11 +81,23 @@ function story(slug: string): CaseStudy {
   return getCaseStudyBySlug(slug)!;
 }
 
-function Media({ cs, e }: { cs: CaseStudy; e: Entry }) {
+function Media({ cs, e, onExpand }: { cs: CaseStudy; e: Entry; onExpand: () => void }) {
   const host = cs.liveUrl?.replace(/^https?:\/\//, "").replace(/\/$/, "");
   return (
     <div className="relative h-full overflow-hidden rounded-[22px] bg-[#f6f4f1]">
       <div aria-hidden className="absolute inset-0 transition-transform duration-[1200ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover/card:scale-[1.05]" style={{ background: e.wash }} />
+
+      {/* opens the whole case study in a full-screen pop-up, like the service cards */}
+      <button
+        type="button"
+        onClick={onExpand}
+        aria-haspopup="dialog"
+        aria-label={`${cs.project}: open the full case study`}
+        title="Open the full case study"
+        className="absolute right-4 top-4 z-10 grid h-10 w-10 place-items-center rounded-[10px] bg-white/85 text-[#0b0f19] shadow-[inset_0_1px_0_#fff,0_1px_2px_rgba(11,15,25,0.08),0_0_0_1px_rgba(11,15,25,0.06)] backdrop-blur-sm transition-colors duration-200 hover:bg-[#0b0f19] hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#5b4fd6] sm:right-5 sm:top-5"
+      >
+        <ExpandIcon size={15} />
+      </button>
 
       <div className={`relative flex h-full flex-col px-[7%] pt-5 sm:pt-7 lg:pt-8 lg:pb-[8%] ${e.screens?.mobile ? "pb-[10%]" : "pb-6"}`}>
         <p className="font-urbanist text-xl font-semibold leading-tight tracking-tight text-ink sm:text-2xl">
@@ -136,6 +151,29 @@ function Media({ cs, e }: { cs: CaseStudy; e: Entry }) {
 export default function CaseStudiesFeatured({ copy }: { copy?: CopyOf<"caseStudies"> }) {
   const c = homeCopy("caseStudies", copy);
   const listRef = useRef<HTMLOListElement>(null);
+  const [openSlug, setOpenSlug] = useState<string | null>(null);
+  const dialogRef = useRef<HTMLDialogElement>(null);
+
+  // the pop-up: native <dialog> + showModal (Esc, focus trap), as the service cards
+  useEffect(() => {
+    const d = dialogRef.current;
+    if (!d) return;
+    if (openSlug) {
+      if (!d.open) d.showModal();
+      d.querySelector<HTMLElement>("[data-autofocus]")?.focus();
+      document.body.style.overflow = "hidden";
+    } else if (d.open) {
+      d.close();
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [openSlug]);
+  const close = useCallback(() => setOpenSlug(null), []);
+  const onBackdrop = (ev: MouseEvent<HTMLDivElement>) => {
+    if (ev.target === ev.currentTarget) close();
+  };
+  const active = openSlug ? ENTRIES.find((x) => x.slug === openSlug) : undefined;
 
   // ease each pinned card back as the next one slides over it
   useEffect(() => {
@@ -175,8 +213,11 @@ export default function CaseStudiesFeatured({ copy }: { copy?: CopyOf<"caseStudi
   }, []);
 
   return (
-    <section className="theme-light relative bg-light-surface py-16 lg:py-24" aria-labelledby="cases-heading">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10">
+    <>
+    <section className="theme-light relative overflow-clip bg-light-surface py-16 lg:py-24" aria-labelledby="cases-heading">
+      {/* the shared dotted background (as Human + AI), fading out at the top and bottom */}
+      <DotField className="[mask-image:linear-gradient(to_bottom,transparent,black_22%,black_78%,transparent)]" />
+      <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-10">
         <Reveal>
           <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
             <div>
@@ -273,7 +314,7 @@ export default function CaseStudiesFeatured({ copy }: { copy?: CopyOf<"caseStudi
 
                     {/* media */}
                     <div className="order-1 lg:order-2 lg:h-full">
-                      <Media cs={cs} e={e} />
+                      <Media cs={cs} e={e} onExpand={() => setOpenSlug(e.slug)} />
                     </div>
                   </div>
                 </article>
@@ -283,5 +324,21 @@ export default function CaseStudiesFeatured({ copy }: { copy?: CopyOf<"caseStudi
         </ol>
       </div>
     </section>
+
+    <dialog
+      ref={dialogRef}
+      onClose={close}
+      aria-labelledby={active ? "case-dialog-title" : undefined}
+      className="svc-dialog fixed inset-0 m-0 h-[100dvh] max-h-none w-full max-w-none bg-transparent p-0"
+    >
+      {active && (
+        <div data-lenis-prevent onClick={onBackdrop} className="theme-light h-full overflow-y-auto overscroll-contain p-2 sm:p-3">
+          <div className="svc-dialog-panel">
+            <CaseStudyDialogBody cs={story(active.slug)} accent={active.accent} onClose={close} />
+          </div>
+        </div>
+      )}
+    </dialog>
+    </>
   );
 }

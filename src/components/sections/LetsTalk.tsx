@@ -3,6 +3,7 @@ import { SectionEyebrow, SectionTitle } from "@/components/system/SectionHeading
 import Reveal from "@/components/system/Reveal";
 import BookingForm from "@/components/sections/BookingForm";
 import { homeCopy, type CopyOf } from "@/lib/homeCopy";
+import DotField from "@/components/sections/human-ai-flow/DotField";
 
 /**
  * Homepage › let's talk: the page's closing move, on the page background
@@ -21,8 +22,10 @@ export default function LetsTalk({ copy }: { copy?: CopyOf<"letsTalk"> }) {
   const steps = base.map((s, i) => ({ ...s, ...Object.fromEntries(Object.entries(c.steps[i] ?? {}).filter(([, v]) => v)) }));
 
   return (
-    <section aria-labelledby="lets-talk-heading" className="theme-light relative bg-light-surface py-16 lg:py-24">
-      <div className="mx-auto grid max-w-7xl gap-12 px-4 sm:px-6 lg:grid-cols-12 lg:gap-16 lg:px-10">
+    <section aria-labelledby="lets-talk-heading" className="theme-light relative overflow-clip bg-light-surface py-16 lg:py-24">
+      {/* the shared dotted background (as Human + AI), fading out at the top and bottom */}
+      <DotField className="[mask-image:linear-gradient(to_bottom,transparent,black_22%,black_78%,transparent)]" />
+      <div className="relative mx-auto grid max-w-7xl gap-12 px-4 sm:px-6 lg:grid-cols-12 lg:gap-16 lg:px-10">
         <div className="lg:col-span-6">
           <Reveal>
             <SectionEyebrow>{c.eyebrow}</SectionEyebrow>

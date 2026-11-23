@@ -257,7 +257,7 @@ export default function Hero({ copy }: { copy?: CopyOf<"hero"> }) {
             <Link
               href={ANNOUNCEMENT.href}
               data-reveal
-              className="group inline-flex max-w-full items-center gap-2 rounded-full border border-[#0b0f19]/[0.08] bg-white/70 py-1 pl-1 pr-3 text-[12.5px] font-medium leading-none text-[#3f4657] shadow-[0_1px_2px_rgba(11,15,25,0.04)] backdrop-blur-sm transition-[border-color,background-color,box-shadow] duration-300 hover:border-[#615fff]/30 hover:bg-white hover:shadow-[0_4px_14px_-6px_rgba(97,95,255,0.35)] sm:text-[13px]"
+              className="group inline-flex max-w-full items-center gap-2 rounded-full border border-[#0b0f19]/[0.08] bg-white/70 py-1 pl-1 pr-3 text-[12px] font-medium leading-none text-[#3f4657] shadow-[0_1px_2px_rgba(11,15,25,0.04)] backdrop-blur-sm transition-[border-color,background-color,box-shadow] duration-300 hover:border-[#615fff]/30 hover:bg-white hover:shadow-[0_4px_14px_-6px_rgba(97,95,255,0.35)]"
             >
               <span
                 className="shrink-0 rounded-full px-2 py-[5px] text-[10px] font-bold uppercase leading-none tracking-[0.1em] text-white"
@@ -283,7 +283,7 @@ export default function Hero({ copy }: { copy?: CopyOf<"hero"> }) {
           {/* two lines from lg (explicit breaks); natural wrapping below */}
           <h1
             id="hero-heading"
-            className="mt-6 text-balance text-[clamp(28px,7.6vw,34px)] font-[580] leading-[1.1] tracking-[-0.032em] text-[#0b0f19] sm:text-[40px] lg:text-[44px] xl:text-[48px] 2xl:text-[52px]"
+            className="mt-6 text-balance text-[clamp(28px,7.6vw,34px)] font-[580] leading-[1.1] tracking-[-0.032em] text-[#0b0f19] sm:text-[40px] lg:text-[44px] xl:text-[48px]"
           >
             <span className="inline-block lg:block lg:whitespace-nowrap" data-reveal>
               {c.line1}
@@ -294,7 +294,7 @@ export default function Hero({ copy }: { copy?: CopyOf<"hero"> }) {
           </h1>
 
           {c.sub && (
-            <p className="mt-5 max-w-[34rem] text-pretty text-[15.5px] leading-relaxed text-[#4b5263] sm:text-[17px]" data-reveal>
+            <p className="mt-5 max-w-[34rem] text-pretty text-[16px] leading-relaxed text-[#4b5263] sm:text-[18px]" data-reveal>
               {c.sub}
             </p>
           )}

@@ -50,6 +50,14 @@ function homeWords(d = {}, key) {
     if (phases.some(has)) out.phases = phases;
   }
   if (key === "faq" && faqs(d.items).length) out.items = faqs(d.items);
+  if (key === "atAGlance" && Array.isArray(d.stats)) {
+    const stats = d.stats.slice(0, 6).map((s) => ({ value: words(s?.value), label: words(s?.label) })).filter((s) => s.value && s.label);
+    if (stats.length) out.stats = stats;
+  }
+  if (key === "atAGlance" && Array.isArray(d.badges)) {
+    const badges = d.badges.slice(0, 5).map((b) => strip({ title: words(b?.title), text: words(b?.text), href: (b?.href ?? "").startsWith("https://") ? b.href : undefined })).filter((b) => b.title);
+    if (badges.length) out.badges = badges;
+  }
   if (key === "leadership" && Array.isArray(d.people)) {
     const people = d.people.slice(0, 8).map((p) => strip({ name: words(p?.name), role: words(p?.role), bio: words(p?.bio), linkedin: (p?.linkedin ?? "").startsWith("https://") ? p.linkedin : undefined, photo: picture(p?.photo) })).filter((p) => p.name || p.role);
     if (people.length) out.people = people;

@@ -8,6 +8,7 @@ import { SectionEyebrow, SectionTitle } from "@/components/system/SectionHeading
 import { ENGAGEMENT_MODEL_CARDS } from "@/lib/engagementModels";
 import { AT_A_GLANCE, COMPARISON_TABLE, MODEL_OVERVIEWS } from "@/lib/engagementContent";
 import { homeCopy, type CopyOf } from "@/lib/homeCopy";
+import DotField from "@/components/sections/human-ai-flow/DotField";
 
 /**
  * Engagement models as a straight comparison (Apple "compare models"
@@ -83,8 +84,10 @@ export default function EngagementModels({ copy }: { copy?: CopyOf<"engagementMo
   const tint = (i: number) => (i === col ? "bg-[#f7f7f5]" : "");
 
   return (
-    <section className="theme-light relative bg-light-surface py-16 lg:py-24" aria-labelledby="engagement-heading">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10">
+    <section className="theme-light relative overflow-clip bg-light-surface py-16 lg:py-24" aria-labelledby="engagement-heading">
+      {/* the shared dotted background (as Human + AI), fading out at the top and bottom */}
+      <DotField className="[mask-image:linear-gradient(to_bottom,transparent,black_22%,black_78%,transparent)]" />
+      <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-10">
         <Reveal>
           <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
             <div>

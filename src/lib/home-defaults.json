@@ -16,10 +16,55 @@
     "titleDim": "from startups to global brands."
   },
   "atAGlance": {
-    "eyebrow": "At a glance",
-    "title": "A decade of shipping software for teams around the world.",
-    "mapLabel": "Client countries",
-    "hubLabel": "Delivery hub, Dhaka"
+    "eyebrow": "Our journey",
+    "title": "10+ years of building what businesses run on.",
+    "story": "We started with a simple goal: build software we are proud to put our name on. Ten years on, we work from 6 business locations, partner with 100+ world-class brands, including a NASDAQ-listed company, and have delivered 500+ projects for clients in 60+ countries.",
+    "years": "10",
+    "yearsLabel": "Years in tech",
+    "stats": [
+      {
+        "value": "6M+",
+        "label": "Users reached"
+      },
+      {
+        "value": "500+",
+        "label": "Projects delivered"
+      },
+      {
+        "value": "60+",
+        "label": "Countries served"
+      },
+      {
+        "value": "6",
+        "label": "Business locations"
+      },
+      {
+        "value": "8+",
+        "label": "Products launched"
+      }
+    ],
+    "badges": [
+      {
+        "title": "Top Software Developers",
+        "text": "Clutch · Auckland 2026",
+        "href": ""
+      },
+      {
+        "title": "OpenAI Select Partner",
+        "text": "",
+        "href": ""
+      },
+      {
+        "title": "Reviewed on Google",
+        "text": "5-star client reviews",
+        "href": ""
+      },
+      {
+        "title": "157+ five-star reviews",
+        "text": "Envato Market",
+        "href": ""
+      }
+    ]
   },
   "caseStudies": {
     "eyebrow": "Case Studies",
