@@ -37,8 +37,8 @@ export default function LetsTalk({ copy }: { copy?: CopyOf<"letsTalk"> }) {
               const Icon = ICONS[i] ?? Rocket;
               const last = i === steps.length - 1;
               return (
-                <Reveal key={i} delay={80 + i * 90}>
-                  <li className="relative flex gap-5 pb-8 last:pb-0">
+                <li key={i} className="relative pb-8 last:pb-0">
+                  <Reveal delay={80 + i * 90} className="flex gap-5">
                     {!last && <span aria-hidden className="absolute bottom-1 left-[21px] top-12 w-px bg-gradient-to-b from-[#0b0f19]/15 to-[#0b0f19]/[0.03]" />}
                     <span className="relative grid h-11 w-11 shrink-0 place-items-center rounded-full border border-[#0b0f19]/[0.08] bg-white text-ink shadow-[0_1px_2px_rgba(11,15,25,0.05)]">
                       <Icon size={18} strokeWidth={1.75} aria-hidden />
@@ -48,8 +48,8 @@ export default function LetsTalk({ copy }: { copy?: CopyOf<"letsTalk"> }) {
                       <h3 className="mt-1 font-urbanist text-[19px] font-bold leading-snug tracking-tight text-ink">{s.title}</h3>
                       <p className="mt-2 max-w-[48ch] font-urbanist text-[14.5px] leading-relaxed text-ink-dim">{s.body}</p>
                     </div>
-                  </li>
-                </Reveal>
+                  </Reveal>
+                </li>
               );
             })}
           </ol>

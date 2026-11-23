@@ -78,7 +78,7 @@ export default function Newsletter() {
                   type="email"
                   autoComplete="email"
                   placeholder="you@company.com"
-                  className="min-w-0 flex-1 bg-transparent py-2 font-urbanist text-[15px] text-ink outline-none placeholder:text-[#9aa0ad] focus-visible:outline-none!"
+                  className="min-w-0 flex-1 bg-transparent py-2 font-urbanist text-[15px] text-ink outline-none placeholder:text-[#6b7183] focus-visible:outline-none!"
                 />
                 <button
                   type="submit"

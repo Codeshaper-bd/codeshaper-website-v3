@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import Breadcrumbs, { type Crumb } from "./Breadcrumbs";
 import { SectionEyebrow, SectionTitle } from "./SectionHeading";
+import HeroBackdrop from "@/components/system/HeroBackdrop";
 
 /**
  * Shared prose shell for the two legal pages (Privacy, Terms). Both are
@@ -21,15 +22,26 @@ export default function LegalDoc({
   children: ReactNode;
 }) {
   return (
-    <section className="bg-canvas pb-16 pt-32 lg:py-24">
-      <div className="mx-auto max-w-3xl px-6 lg:px-10">
+    <>
+    <div className="bg-gradient-to-b from-white from-30% to-light-surface px-3 pb-3 sm:px-4 sm:pb-4">
+    <section className="page-hero theme-light relative isolate overflow-hidden rounded-b-[28px] sm:rounded-b-[32px] bg-canvas pb-16 pt-32 lg:pb-20 lg:pt-36">
+      <HeroBackdrop />
+      <div className="mx-auto max-w-7xl px-6 lg:px-10 [&>*]:max-w-3xl">
         <Breadcrumbs items={breadcrumbs} />
         <SectionEyebrow>Legal</SectionEyebrow>
         <SectionTitle as="h1" size="lg">
           {title}
         </SectionTitle>
+      </div>
+    </section>
+    </div>
 
-        <div className="mt-8 rounded-xl border border-hairline bg-canvas-raised px-5 py-4 font-urbanist text-[13px] leading-relaxed text-ink-dim">
+    {/* the document: a calm white card, so the long text never sits on the hero's colour */}
+    <div className="bg-light-surface px-3 pb-3 sm:px-4 sm:pb-4">
+    <section className="theme-light rounded-[28px] bg-canvas py-14 sm:rounded-[32px] lg:py-20">
+      <div className="mx-auto max-w-7xl px-6 lg:px-10 [&>*]:max-w-3xl">
+
+        <div className="rounded-xl border border-hairline bg-[#fafaf9] px-5 py-4 font-urbanist text-[13px] leading-relaxed text-ink-dim">
           <strong className="text-ink">Draft — not yet in effect.</strong> This is placeholder legal content
           covering the standard topics a policy like this needs, written to replace a broken link rather than
           to stand in as CodeShaper&apos;s reviewed, final policy. Anything marked <span className="text-ink">[TBD]</span> is
@@ -42,5 +54,7 @@ export default function LegalDoc({
         </div>
       </div>
     </section>
+    </div>
+    </>
   );
 }

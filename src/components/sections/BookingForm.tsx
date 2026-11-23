@@ -2,9 +2,8 @@
 
 import { useEffect, useId, useRef, useState, type FormEvent, type KeyboardEvent } from "react";
 import Image from "next/image";
-import { ArrowUpRight, Check, ChevronDown } from "lucide-react";
+import { ArrowUpRight, Check, ChevronDown, Code2, Globe, HelpCircle, Network, Package, PenTool, Sparkles, type LucideIcon } from "lucide-react";
 import { SERVICE_GROUPS } from "@/data/services";
-import { Icon } from "@/lib/icons";
 
 /**
  * The short booking form in "Let's talk" (homepage): four fields instead of
@@ -15,7 +14,7 @@ import { Icon } from "@/lib/icons";
  */
 /** Soft field: off-white at rest, darker edge on hover; on focus it turns white with an indigo edge and halo (no browser outline). */
 const field =
-  "w-full rounded-[14px] border border-[#0b0f19]/[0.09] bg-[#fafaf9] px-4 py-3.5 font-urbanist text-[14.5px] text-ink shadow-[inset_0_1px_2px_rgba(11,15,25,0.03)] outline-none transition-[border-color,box-shadow,background-color] duration-200 placeholder:text-[#9aa0ad] hover:border-[#0b0f19]/[0.16] focus:border-[#615fff] focus:bg-white focus:shadow-[0_0_0_4px_rgba(97,95,255,0.12)] focus-visible:outline-none!";
+  "w-full rounded-[14px] border border-[#0b0f19]/[0.09] bg-[#fafaf9] px-4 py-3.5 font-urbanist text-[14.5px] text-ink shadow-[inset_0_1px_2px_rgba(11,15,25,0.03)] outline-none transition-[border-color,box-shadow,background-color] duration-200 placeholder:text-[#6b7183] hover:border-[#0b0f19]/[0.16] focus:border-[#615fff] focus:bg-white focus:shadow-[0_0_0_4px_rgba(97,95,255,0.12)] focus-visible:outline-none!";
 const label = "mb-1.5 block font-urbanist text-[12.5px] font-semibold text-ink";
 
 /**
@@ -24,6 +23,13 @@ const label = "mb-1.5 block font-urbanist text-[12.5px] font-semibold text-ink";
  * Space or arrows open it; arrows move, Enter picks, Esc or Tab closes.
  * The choice is sent in a hidden input named "service".
  */
+/** Only the icons this list uses (the full icon map would add ~26 KB to the page load). Unknown keys get a neutral box. */
+const GLYPH: Record<string, LucideIcon> = { sparkles: Sparkles, "code-2": Code2, network: Network, "pen-tool": PenTool, globe: Globe, "help-circle": HelpCircle };
+function Icon({ name, size }: { name: string; size: number }) {
+  const G = GLYPH[name] ?? Package;
+  return <G size={size} aria-hidden />;
+}
+
 const OPTIONS = [
   ...SERVICE_GROUPS.map((g) => ({ value: g.slug, name: g.name, icon: g.icon })),
   { value: "Other", name: "Other", icon: "help-circle" },
@@ -112,7 +118,7 @@ function ServiceSelect({ invalid, onPick }: { invalid: boolean; onPick: () => vo
             <span className="flex-1 truncate text-ink">{chosen.name}</span>
           </>
         ) : (
-          <span className="flex-1 text-[#9aa0ad]">Choose a service</span>
+          <span className="flex-1 text-[#6b7183]">Choose a service</span>
         )}
         <ChevronDown
           size={16}

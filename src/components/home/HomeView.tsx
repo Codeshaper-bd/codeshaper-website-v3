@@ -42,6 +42,10 @@ export default function HomeView({ data, preview = false }: { data: HomeData; pr
           : isLazy(item.key) ? <LazySection name={item.key} props={item.copy ? { copy: item.copy } : undefined} rootMargin={preview ? "4000px 0px" : undefined} />
           : null;
         if (!view) return null;
+        // eager sections far down the page: the browser skips their rendering work until they come near
+        if (!preview && (item.key === "products" || item.key === "blogPosts")) {
+          return <div key={id} style={{ contentVisibility: "auto", containIntrinsicSize: "auto 1100px" }}>{view}</div>;
+        }
         return preview ? <div key={id} id={`edit-${id}`}>{view}</div> : <Fragment key={id}>{view}</Fragment>;
       })}
       {preview && <script dangerouslySetInnerHTML={{ __html: TO_EDITED }} />}

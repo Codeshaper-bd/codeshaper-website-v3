@@ -37,6 +37,7 @@ import { getRelatedCaseStudies, type CaseStudy } from "@/lib/caseStudies";
 import { storyDetail, videoEmbed, type StoryDetail } from "@/lib/details";
 import { textSafeAccent } from "@/lib/color";
 import { SITE_URL } from "@/lib/site";
+import HeroBackdrop from "@/components/system/HeroBackdrop";
 
 const SNAPSHOT_ICON: Record<string, typeof Target> = {
   Industry: Target,
@@ -125,12 +126,12 @@ export default function CaseStudyArticle({ story, detail = storyDetail(story.slu
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(BREADCRUMB_JSON_LD) }} />
 
         {/* Impact hero */}
-        <div className="bg-light-surface p-3 sm:p-4">
-          <section className="relative overflow-hidden rounded-[32px] bg-canvas px-6 pb-16 pt-32 lg:px-10 lg:pb-20 lg:pt-32">
-            <div aria-hidden className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: "url(/media/hex-pattern-tile.svg)", backgroundSize: "112px 194px" }} />
-            <div className="relative mx-auto max-w-3xl text-center">
+        <div className="bg-gradient-to-b from-white from-30% to-light-surface px-3 pb-3 sm:px-4 sm:pb-4">
+          <section className="page-hero relative isolate overflow-hidden theme-light rounded-b-[28px] sm:rounded-b-[32px] bg-canvas px-6 pb-16 pt-32 lg:px-10 lg:pb-20 lg:pt-36">
+            <HeroBackdrop />
+            <div className="relative mx-auto max-w-[1200px] [&>*]:max-w-3xl">
               <Reveal>
-                <div className="flex justify-center">
+                <div className="flex">
                   <Breadcrumbs items={[{ label: "Home", href: "/" }, { label: "Case Studies", href: "/case-studies" }, { label: story.project }]} />
                 </div>
                 <p className="mt-5 font-urbanist text-[12.5px] font-semibold uppercase tracking-[0.08em] text-aurora-violet">
@@ -139,7 +140,7 @@ export default function CaseStudyArticle({ story, detail = storyDetail(story.slu
                 <h1 className="mt-3 font-urbanist text-3xl font-bold leading-tight tracking-tight text-ink sm:text-4xl">
                   {story.headline}
                 </h1>
-                <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+                <div className="mt-8 flex flex-wrap items-center gap-3">
                   <Link
                     href="/contact"
                     className="inline-flex items-center gap-2 rounded-full bg-ink px-7 py-3.5 font-urbanist text-sm font-semibold text-canvas transition-transform duration-300 hover:scale-[1.02]"

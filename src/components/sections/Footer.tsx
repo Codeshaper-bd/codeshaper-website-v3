@@ -9,6 +9,7 @@ import { SERVICE_GROUPS, servicePath } from "@/data/services";
 import FooterWordmark from "./FooterWordmark";
 import FooterStage from "./footer/FooterStage";
 import LocalTime from "./footer/LocalTime";
+import FooterActions from "./footer/AskAI";
 import Reveal from "@/components/system/Reveal";
 
 /**
@@ -20,9 +21,10 @@ import Reveal from "@/components/system/Reveal";
  * gradient" rule is set aside, by the owner's request (decisions.md).
  *
  * Top to bottom:
- *  1. Left: logo, company profile (download once the PDF is in
- *     public/media), contact lines, social links, BASIS. Right: four link
- *     columns (Services, Company, Useful links, Tools).
+ *  1. Left: logo, contact lines, BASIS. Right: four link columns
+ *     (Services, Company, Useful links, Tools), and under them one action
+ *     row: Follow us, Ask AI about CodeShaper, company profile
+ *     (footer/AskAI.tsx). Every icon has a tooltip.
  *  2. Offices, as text (owner + design review, 23 Nov 2026: photo cards
  *     made the footer heavy and stock landmarks read as unproven): address,
  *     phone and live local time, the same for all six offices.
@@ -147,46 +149,6 @@ const DEV = process.env.NODE_ENV !== "production";
 
 const SOCIAL = LIVE_SOCIAL_LINKS;
 
-function SocialRow() {
-  if (!SOCIAL.length) return null;
-  return (
-    <div>
-      <ul className="flex flex-wrap gap-2">
-        {SOCIAL.map((x) => {
-          const glyph = x.icon ? <x.icon size={16} aria-hidden /> : (
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
-              <path d={x.d} />
-            </svg>
-          );
-          return (
-            <li key={x.key}>
-              {x.href ? (
-                <a
-                  href={x.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label={x.label}
-                  className="group grid h-10 w-10 place-items-center rounded-full border border-white/70 bg-white/60 text-ink shadow-[0_1px_2px_rgba(11,15,25,0.05)] backdrop-blur-md transition-[transform,background-color] duration-300 hover:-translate-y-0.5 hover:bg-white"
-                  style={{ ["--brand" as string]: x.color }}
-                >
-                  <span className="transition-colors duration-300 group-hover:text-[var(--brand)]">{glyph}</span>
-                </a>
-              ) : (
-                <span
-                  title={`${x.label}: add the link in CMS › Settings › Contact and social`}
-                  className="grid h-10 w-10 place-items-center rounded-full border border-dashed border-[#0b0f19]/25 text-ink-faint"
-                >
-                  {glyph}
-                </span>
-              )}
-            </li>
-          );
-        })}
-      </ul>
-    </div>
-  );
-}
-
 export default function Footer() {
   return (
     <FooterStage>
@@ -197,30 +159,6 @@ export default function Footer() {
             <Link href="/" className="inline-flex items-center" aria-label="CodeShaper home">
               <Image src="/brand/logo.png" alt="codeShaper" width={169} height={60} className="h-8 w-auto" />
             </Link>
-            {HAS_PROFILE_PDF ? (
-              <a
-                href={PROFILE_PDF}
-                download
-                className="group mt-6 flex w-fit items-center gap-2 rounded-full bg-[#0b0f19] py-2 pl-4 pr-2 font-urbanist text-[13px] font-semibold text-white transition-colors hover:bg-[#1f2433]"
-              >
-                <FileText size={14} strokeWidth={1.8} aria-hidden />
-                Download company profile
-                <span className="grid h-7 w-7 place-items-center rounded-full bg-white/15 transition-transform duration-300 group-hover:translate-y-0.5">
-                  <Download size={13} strokeWidth={2} aria-hidden />
-                </span>
-              </a>
-            ) : (
-              FOOTER.button && (
-                <Link
-                  href={FOOTER.button.href}
-                  className="group mt-6 flex w-fit items-center gap-2 rounded-full border border-white/70 bg-white/60 py-2 pl-4 pr-3 font-urbanist text-[13px] font-semibold text-ink backdrop-blur-md transition-colors hover:bg-white"
-                >
-                  <FileText size={14} strokeWidth={1.8} aria-hidden />
-                  {FOOTER.button.label}
-                  <ArrowUpRight size={14} strokeWidth={2} aria-hidden className="transition-transform duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
-                </Link>
-              )
-            )}
             {CONTACT_LINES.length > 0 && (
               <ul className="mt-6 space-y-2.5">
                 {CONTACT_LINES.map((l) => (
@@ -235,9 +173,6 @@ export default function Footer() {
                 ))}
               </ul>
             )}
-            <div className="mt-7">
-              <SocialRow />
-            </div>
             <a
               href="https://basis.org.bd"
               target="_blank"
@@ -246,7 +181,7 @@ export default function Footer() {
               aria-label="Member of BASIS, the Bangladesh Association of Software and Information Services"
             >
               {/* eslint-disable-next-line @next/next/no-img-element -- the association's own mark (white artwork), shown in ink */}
-              <img src="/media/badges/basis.svg" alt="" width={113} height={40} className="h-9 w-auto brightness-0" />
+              <img src="/media/badges/basis.svg" alt="" width={113} height={40} loading="lazy" decoding="async" className="h-9 w-auto brightness-0" />
               <span className="font-urbanist text-[11px] font-semibold uppercase tracking-[0.16em] text-ink-dim">Member</span>
             </a>
           </div>
@@ -297,6 +232,50 @@ export default function Footer() {
             </div>
           </nav>
         </div>
+
+        {/* one full-width row: follow us (left), ask AI (middle), company profile (right) */}
+        <FooterActions
+          social={SOCIAL.map((x) => ({
+            key: x.key,
+            label: x.label,
+            href: x.href,
+            color: x.color,
+            glyph: x.icon ? <x.icon size={16} aria-hidden /> : (
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+                <path d={x.d} />
+              </svg>
+            ),
+          }))}
+          profile={
+            <>
+              {HAS_PROFILE_PDF ? (
+                <a
+                  href={PROFILE_PDF}
+                  download
+                  className="group flex w-fit items-center gap-2 rounded-full bg-[#0b0f19] py-2 pl-4 pr-2 font-urbanist text-[13px] font-semibold text-white transition-colors hover:bg-[#1f2433]"
+                >
+                  <FileText size={14} strokeWidth={1.8} aria-hidden />
+                  Download company profile
+                  <span className="grid h-7 w-7 place-items-center rounded-full bg-white/15 transition-transform duration-300 group-hover:translate-y-0.5">
+                    <Download size={13} strokeWidth={2} aria-hidden />
+                  </span>
+                </a>
+              ) : (
+                FOOTER.button && (
+                  <Link
+                    href={FOOTER.button.href}
+                    className="group flex w-fit items-center gap-2 rounded-full border border-white/70 bg-white/60 py-2 pl-4 pr-3 font-urbanist text-[13px] font-semibold text-ink backdrop-blur-md transition-colors hover:bg-white"
+                  >
+                    <FileText size={14} strokeWidth={1.8} aria-hidden />
+                    {FOOTER.button.label}
+                    <ArrowUpRight size={14} strokeWidth={2} aria-hidden className="transition-transform duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+                  </Link>
+                )
+              )}
+            </>
+          }
+        />
+
 
         {/* 2 · offices: text, like the link columns (no cards, no photos); each with its local time */}
         {OFFICE_LIST.length > 0 && (

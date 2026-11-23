@@ -16,6 +16,7 @@ import RichContent from "@/components/cms/RichContent";
 import { getPostBySlug, getRelatedPosts, slugifyHeading, type BlogPost } from "@/lib/blog";
 import { postDetail, type PostDetail } from "@/lib/details";
 import { SITE_URL } from "@/lib/site";
+import HeroBackdrop from "@/components/system/HeroBackdrop";
 
 function formatDate(iso: string) {
   return new Date(iso).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
@@ -74,20 +75,21 @@ export default function BlogArticle({ post, detail = postDetail(post.slug) }: { 
         )}
 
         {/* Hero — same floating-card treatment as the blog index, centered to match */}
-        <div className="bg-light-surface p-3 sm:p-4">
-          <section className="relative overflow-hidden rounded-[32px] bg-canvas px-6 pb-16 pt-32 lg:px-10 lg:pb-20 lg:pt-32">
-            <div className="mx-auto max-w-3xl text-center">
+        <div className="bg-gradient-to-b from-white from-30% to-light-surface px-3 pb-3 sm:px-4 sm:pb-4">
+          <section className="page-hero relative isolate overflow-hidden theme-light rounded-b-[28px] sm:rounded-b-[32px] bg-canvas px-6 pb-16 pt-32 lg:px-10 lg:pb-20 lg:pt-36">
+            <HeroBackdrop />
+            <div className="relative mx-auto max-w-[1200px] [&>*]:max-w-3xl">
               <Reveal>
-                <div className="flex justify-center">
+                <div className="flex">
                   <Breadcrumbs
                     items={[{ label: "Home", href: "/" }, { label: "Blog", href: "/blog" }, { label: post.title }]}
                   />
                 </div>
-                <SectionEyebrow className="mx-auto mt-5 w-fit">{post.topic}</SectionEyebrow>
-                <SectionTitle as="h1" size="lg" className="mx-auto max-w-3xl">
+                <SectionEyebrow className="mt-5 w-fit">{post.topic}</SectionEyebrow>
+                <SectionTitle as="h1" size="lg" className="max-w-3xl">
                   {post.title}
                 </SectionTitle>
-                <div className="mt-7 flex flex-wrap items-center justify-center gap-3 font-urbanist text-[13.5px] leading-tight">
+                <div className="mt-7 flex flex-wrap items-center gap-3 font-urbanist text-[13.5px] leading-tight">
                   <Image src="/brand/favicon.png" alt="" width={30} height={30} className="h-[30px] w-[30px] shrink-0 rounded-full" />
                   <span className="font-semibold text-ink">{post.author}</span>
                   <span aria-hidden className="h-1 w-1 rounded-full bg-hairline-light" />

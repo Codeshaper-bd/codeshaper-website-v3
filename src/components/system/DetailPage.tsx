@@ -3,6 +3,8 @@ import { ArrowRight } from "lucide-react";
 import { Icon } from "@/lib/icons";
 import Breadcrumbs, { type Crumb } from "./Breadcrumbs";
 import { SectionEyebrow, SectionTitle, SectionDescription } from "./SectionHeading";
+import HeroBackdrop from "@/components/system/HeroBackdrop";
+import DotField from "@/components/sections/human-ai-flow/DotField";
 
 export type RelatedLink = { title: string; description: string; href: string; icon: string };
 
@@ -38,8 +40,10 @@ export default function DetailPage({
 }) {
   return (
     <>
-      <section className="bg-canvas pb-16 pt-32 lg:py-24">
-        <div className="mx-auto max-w-3xl px-6 lg:px-10">
+      <div className="bg-gradient-to-b from-white from-30% to-light-surface px-3 pb-3 sm:px-4 sm:pb-4">
+      <section className="page-hero theme-light relative isolate overflow-hidden rounded-b-[28px] sm:rounded-b-[32px] bg-canvas pb-16 pt-32 lg:pb-20 lg:pt-36">
+        <HeroBackdrop />
+        <div className="mx-auto max-w-7xl px-6 lg:px-10 [&>*]:max-w-3xl">
           <Breadcrumbs items={breadcrumbs} />
           <span className="mb-5 flex h-12 w-12 items-center justify-center rounded-full border border-hairline text-ink-dim">
             <Icon name={icon} size={20} />
@@ -65,28 +69,30 @@ export default function DetailPage({
 
           <Link
             href="/contact"
-            className="mt-10 inline-flex items-center gap-2 rounded-full border border-aurora-violet/70 px-6 py-3 font-urbanist text-sm font-semibold text-ink transition-colors hover:border-aurora-violet"
+            className="mt-10 inline-flex items-center gap-2 rounded-full bg-[#0b0f19] px-6 py-3 font-urbanist text-sm font-semibold text-white transition-colors hover:bg-[#1f2433]"
           >
             {ctaLabel}
             <ArrowRight size={15} strokeWidth={1.75} />
           </Link>
         </div>
       </section>
+      </div>
 
       {children}
 
       {related.length > 0 && (
-        <section className="border-t border-hairline bg-canvas-raised py-14 lg:py-16">
-          <div className="mx-auto max-w-3xl px-6 lg:px-10">
+        <section className="theme-light relative overflow-clip bg-light-surface py-16 lg:py-24">
+        <DotField className="[mask-image:linear-gradient(to_bottom,transparent,black_22%,black_78%,transparent)]" />
+          <div className="relative mx-auto max-w-7xl px-6 lg:px-10">
             <p className="mb-6 font-urbanist text-[11px] font-medium uppercase tracking-[0.2em] text-ink-faint">
               {relatedTitle}
             </p>
-            <div className="grid gap-4 sm:grid-cols-2">
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {related.map((r) => (
                 <Link
                   key={r.href}
                   href={r.href}
-                  className="group flex items-start gap-3 rounded-xl border border-hairline p-4 transition-colors duration-300 hover:border-aurora-violet/50"
+                  className="group flex items-start gap-3 rounded-[18px] border border-[#0b0f19]/[0.07] bg-white p-5 shadow-[0_1px_2px_rgba(11,15,25,0.03)] transition-[border-color,box-shadow,transform] duration-300 hover:-translate-y-0.5 hover:border-[#0b0f19]/[0.12] hover:shadow-[0_18px_40px_-28px_rgba(11,15,25,0.35)]"
                 >
                   <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-hairline text-ink-dim">
                     <Icon name={r.icon} size={15} />

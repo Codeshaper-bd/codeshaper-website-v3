@@ -7,6 +7,7 @@ import { SectionEyebrow, SectionTitle, SectionDescription } from "@/components/s
 import { Icon } from "@/lib/icons";
 import { servicePath, type Service } from "@/data/services";
 import { SITE_URL } from "@/lib/site";
+import HeroBackdrop from "@/components/system/HeroBackdrop";
 
 /**
  * Building blocks shared by every page under /services/* — the AI Agents
@@ -60,32 +61,23 @@ export function ServicesHero({
   secondary?: CtaLink;
 }) {
   return (
-    <div className="bg-light-surface p-3 sm:p-4">
+    <div className="bg-gradient-to-b from-white from-30% to-light-surface px-3 pb-3 sm:px-4 sm:pb-4">
       <Reveal distance={0}>
-        <section className="relative overflow-hidden rounded-[32px] bg-canvas px-6 pb-16 pt-32 lg:px-10 lg:pb-20 lg:pt-32" aria-labelledby={id}>
-          <div
-            aria-hidden
-            className="absolute inset-0 opacity-[0.03]"
-            style={{ backgroundImage: "url(/media/hex-pattern-tile.svg)", backgroundSize: "112px 194px" }}
-          />
-          <div
-            aria-hidden
-            className="absolute left-1/2 top-0 h-[420px] w-[640px] -translate-x-1/2 -translate-y-1/3 rounded-full opacity-30 blur-3xl"
-            style={{ background: "radial-gradient(closest-side, rgba(124,108,255,0.16), transparent)" }}
-          />
-          <div className="relative mx-auto max-w-3xl text-center">
-            <div className="flex justify-center">
+        <section className="page-hero relative isolate overflow-hidden theme-light rounded-b-[28px] sm:rounded-b-[32px] bg-canvas px-6 pb-16 pt-32 lg:px-10 lg:pb-20 lg:pt-36" aria-labelledby={id}>
+          <HeroBackdrop />
+          <div className="relative mx-auto max-w-[1200px] [&>*]:max-w-3xl">
+            <div className="flex">
               <Breadcrumbs items={breadcrumbs} />
             </div>
-            <span className="mx-auto mb-5 flex h-12 w-12 items-center justify-center rounded-full border border-hairline-light text-ink-dim">
+            <span className="mb-5 flex h-12 w-12 items-center justify-center rounded-full border border-hairline-light text-ink-dim">
               <Icon name={icon} size={20} />
             </span>
-            <SectionEyebrow className="mx-auto w-fit">{eyebrow}</SectionEyebrow>
+            <SectionEyebrow className="w-fit">{eyebrow}</SectionEyebrow>
             <SectionTitle as="h1" size="lg" id={id}>
               {title}
             </SectionTitle>
-            <SectionDescription className="mx-auto mt-5 max-w-2xl">{intro}</SectionDescription>
-            <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+            <SectionDescription className="mt-5 max-w-2xl">{intro}</SectionDescription>
+            <div className="mt-8 flex flex-wrap items-center gap-3">
               <Link
                 href={primary.href}
                 className="inline-flex items-center gap-2 rounded-full bg-ink px-7 py-3.5 font-urbanist text-sm font-semibold text-canvas transition-transform duration-300 hover:scale-[1.02]"

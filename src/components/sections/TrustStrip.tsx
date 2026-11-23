@@ -1,6 +1,7 @@
 import { Globe2 } from "lucide-react";
 import { SiWebflow, SiFiverr, SiUpwork, SiFramer } from "react-icons/si";
 import type { IconType } from "react-icons";
+import Image from "next/image";
 import Reveal from "@/components/system/Reveal";
 import { SERVED } from "@/components/hero/globe/servedCountries";
 import { homeCopy, type CopyOf } from "@/lib/homeCopy";
@@ -105,8 +106,7 @@ function Wordmark({ name, industry, icon: Icon, color, size = 20, nudge = 0, img
   return (
     <li title={`${name} (${industry})`} className="group flex shrink-0 items-center gap-2.5 whitespace-nowrap rounded-2xl py-2 pl-2.5 pr-3 sm:gap-3 sm:py-2.5 sm:pl-3 sm:pr-3.5 transition-transform duration-300 hover:-translate-y-0.5">
       {img ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img src={img} alt="" loading="lazy" decoding="async" style={{ width: w }} className={`shrink-0 object-contain ${wordmark ? "h-8" : "h-7"}`} />
+        <Image src={img} alt="" width={(w ?? 32) * 2} height={wordmark ? 64 : 56} style={{ width: w, height: wordmark ? 32 : 28 }} className="shrink-0 object-contain" />
       ) : Icon ? (
         <span className="grid h-7 shrink-0 place-items-center" style={{ color, minWidth: 28, transform: nudge ? `translateY(${nudge}px)` : undefined }}>
           <Icon aria-hidden size={size} />

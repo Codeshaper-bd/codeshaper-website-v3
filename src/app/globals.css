@@ -134,7 +134,9 @@ html {
 }
 
 body {
-  background: var(--color-canvas);
+  /* the light page background (no dark surfaces anywhere, owner 23 Nov): also what shows
+     for a moment where a lazily rendered block has not painted yet */
+  background: var(--color-light-surface);
   color: var(--color-ink);
   font-family: var(--font-hero), ui-sans-serif, system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -1526,3 +1528,8 @@ a.svc-card:hover .mega-icon-tile {
 @media (prefers-reduced-motion: reduce) { .la-ribbon, .la-burst, .la-grid-pan, .la-topo-turn { animation: none; } }
 
 
+
+/* ── Page hero ───────────────────────────────────────────────────────
+   Every inner page opens with the homepage hero's card and background
+   (components/system/HeroBackdrop.tsx): flush to the top, white side
+   gutters, rounded bottom. `.page-hero` only marks it. */
