@@ -1,0 +1,6 @@
+---
+description: Codeshaper project rules for every task
+alwaysApply: true
+---
+
+Read `AGENTS.md`, then follow `ai/rules/global.md`. Domain rules live in `ai/rules/` (design, development, devops); project facts in `ai/context/`.

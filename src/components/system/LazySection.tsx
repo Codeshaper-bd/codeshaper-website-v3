@@ -34,6 +34,8 @@ const LOADERS = {
   aboutStudio: () => import("@/components/sections/AboutStudio"),
   faq: () => import("@/components/sections/FAQ"),
   impactWorkflow: () => import("@/components/sections/ImpactWorkflow"),
+  atAGlance: () => import("@/components/sections/AtAGlance"),
+  leadership: () => import("@/components/sections/Leadership"),
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 } satisfies Record<string, () => Promise<{ default: ComponentType<any> }>>;
 

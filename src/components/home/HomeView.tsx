@@ -18,12 +18,13 @@ import type { CopyOf } from "@/lib/homeCopy";
 export type HomeItem = { key: string; copy?: Record<string, unknown> } | { key: "block"; id: string; block: Block };
 export type HomeData = { hero?: CopyOf<"hero">; sections?: (HomeItem | string)[] };
 
-const LAZY = ["servicesBento", "caseStudies", "industries", "humanAiFlow", "testimonials", "techStack", "impactWorkflow", "engagementModels", "aboutStudio", "faq"] satisfies SectionName[];
+const LAZY = ["atAGlance", "caseStudies", "servicesBento", "testimonials", "humanAiFlow", "industries", "techStack", "impactWorkflow", "engagementModels", "leadership", "aboutStudio", "faq"] satisfies SectionName[];
 const isLazy = (s: string): s is SectionName => (LAZY as string[]).includes(s);
 /** CMS live preview: after each reload, go to the section being edited (#edit-…), past the smooth scroller. */
 const TO_EDITED = `(function(){var go=function(){var el=location.hash&&document.getElementById(location.hash.slice(1));if(!el)return;var y=el.getBoundingClientRect().top+window.scrollY-24;var l=window.__lenis;if(l)l.scrollTo(y,{immediate:true,force:true});else window.scrollTo(0,y);};var moved=false;["wheel","touchstart","keydown"].forEach(function(e){window.addEventListener(e,function(){moved=true;},{once:true,passive:true});});[0,300,900,2000,3500].forEach(function(t){setTimeout(function(){if(!moved)go();},t);});})();`;
 
-const ORIGINAL: HomeItem[] = ["trustStrip", ...LAZY.slice(0, 2), "products", ...LAZY.slice(2, 8), "faq", "blogPosts", "letsTalk"].map((key) => ({ key }));
+/** The owner's order (23 Nov 2026), used when the CMS sends none: page background and white cards alternate. */
+const ORIGINAL: HomeItem[] = ["trustStrip", "atAGlance", "caseStudies", "servicesBento", "products", "testimonials", "humanAiFlow", "industries", "techStack", "impactWorkflow", "engagementModels", "leadership", "faq", "blogPosts", "letsTalk"].map((key) => ({ key }));
 
 export default function HomeView({ data, preview = false }: { data: HomeData; preview?: boolean }) {
   const items = (data.sections ?? ORIGINAL).map((s) => (typeof s === "string" ? { key: s } : s));

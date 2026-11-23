@@ -18,11 +18,12 @@
     }
    },
    {
-    "key": "servicesBento",
+    "key": "atAGlance",
     "copy": {
-     "title": "One team to design, build, and automate your product.",
-     "button": "Explore all",
-     "eyebrow": "Our Services"
+     "title": "A decade of shipping software for teams around the world.",
+     "eyebrow": "At a glance",
+     "hubLabel": "Delivery hub, Dhaka",
+     "mapLabel": "Client countries"
     }
    },
    {
@@ -34,9 +35,16 @@
     }
    },
    {
+    "key": "servicesBento",
+    "copy": {
+     "title": "One team to design, build, and automate your product.",
+     "button": "Explore all",
+     "eyebrow": "Our Services"
+    }
+   },
+   {
     "key": "products",
     "copy": {
-     "intro": "Alongside client work, we build and sell our own software, bought by more than 3,000 businesses and developers. The same team and the same standards you get on your project.",
      "title": "Software we build, own and run.",
      "button": "All products",
      "eyebrow": "Our products",
@@ -45,11 +53,10 @@
     }
    },
    {
-    "key": "industries",
+    "key": "testimonials",
     "copy": {
-     "title": "Built for the way your industry works.",
-     "button": "All industries",
-     "eyebrow": "Industries"
+     "title": "Hear it from the people we build with.",
+     "eyebrow": "Client reviews"
     }
    },
    {
@@ -110,10 +117,11 @@
     }
    },
    {
-    "key": "testimonials",
+    "key": "industries",
     "copy": {
-     "title": "Hear it from the people we build with.",
-     "eyebrow": "Client reviews"
+     "title": "Built for the way your industry works.",
+     "button": "All industries",
+     "eyebrow": "Industries"
     }
    },
    {
@@ -126,8 +134,8 @@
    {
     "key": "impactWorkflow",
     "copy": {
-     "title": "A decade of shipping software for teams around the world.",
-     "eyebrow": "In numbers"
+     "title": "The people behind the work.",
+     "eyebrow": "Life at CodeShaper"
     }
    },
    {
@@ -136,6 +144,27 @@
      "title": "One team, five ways to work together.",
      "button": "Help me choose",
      "eyebrow": "Engagement Models"
+    }
+   },
+   {
+    "key": "leadership",
+    "copy": {
+     "title": "Led by people who still build.",
+     "eyebrow": "Leadership",
+     "people": [
+      {
+       "role": "Founder & CEO"
+      },
+      {
+       "role": "Head of Engineering"
+      },
+      {
+       "role": "Head of Design"
+      },
+      {
+       "role": "Head of Delivery"
+      }
+     ]
     }
    },
    {
@@ -195,10 +224,10 @@
     "copy": {
      "note": "Most projects start within 3–10 days.",
      "title": "From first call to first release.",
-     "button": "Book a Call",
      "eyebrow": "Let’s talk",
-     "photoPlace": "Delivery hub · Dhaka, Bangladesh",
-     "photoCaption": "The people behind your product",
+     "formText": "Tell us a little about your project. We reply within one business day.",
+     "formTitle": "Book a call",
+     "formButton": "Request a call",
      "steps": [
       {
        "title": "Start with a discovery call",

@@ -15,15 +15,21 @@
     "title": "The choice of fast-moving teams,",
     "titleDim": "from startups to global brands."
   },
-  "servicesBento": {
-    "eyebrow": "Our Services",
-    "title": "One team to design, build, and automate your product.",
-    "button": "Explore all"
+  "atAGlance": {
+    "eyebrow": "At a glance",
+    "title": "A decade of shipping software for teams around the world.",
+    "mapLabel": "Client countries",
+    "hubLabel": "Delivery hub, Dhaka"
   },
   "caseStudies": {
     "eyebrow": "Case Studies",
     "title": "Work that shipped, and what it changed.",
     "button": "All case studies"
+  },
+  "servicesBento": {
+    "eyebrow": "Our Services",
+    "title": "One team to design, build, and automate your product.",
+    "button": "Explore all"
   },
   "products": {
     "eyebrow": "Our products",
@@ -32,10 +38,9 @@
     "demoButton": "Book a demo",
     "viewButton": "View product"
   },
-  "industries": {
-    "eyebrow": "Industries",
-    "title": "Built for the way your industry works.",
-    "button": "All industries"
+  "testimonials": {
+    "eyebrow": "Client reviews",
+    "title": "Hear it from the people we build with."
   },
   "humanAiFlow": {
     "eyebrow": "Human + AI",
@@ -91,22 +96,55 @@
       }
     ]
   },
-  "testimonials": {
-    "eyebrow": "Client reviews",
-    "title": "Hear it from the people we build with."
+  "industries": {
+    "eyebrow": "Industries",
+    "title": "Built for the way your industry works.",
+    "button": "All industries"
   },
   "techStack": {
     "eyebrow": "Tools & technology",
     "title": "Many tools. One working system."
   },
   "impactWorkflow": {
-    "eyebrow": "In numbers",
-    "title": "A decade of shipping software for teams around the world."
+    "eyebrow": "Life at CodeShaper",
+    "title": "The people behind the work."
   },
   "engagementModels": {
     "eyebrow": "Engagement Models",
     "title": "One team, five ways to work together.",
     "button": "Help me choose"
+  },
+  "leadership": {
+    "eyebrow": "Leadership",
+    "title": "Led by people who still build.",
+    "message": "",
+    "signature": "",
+    "people": [
+      {
+        "name": "",
+        "role": "Founder & CEO",
+        "bio": "",
+        "linkedin": ""
+      },
+      {
+        "name": "",
+        "role": "Head of Engineering",
+        "bio": "",
+        "linkedin": ""
+      },
+      {
+        "name": "",
+        "role": "Head of Design",
+        "bio": "",
+        "linkedin": ""
+      },
+      {
+        "name": "",
+        "role": "Head of Delivery",
+        "bio": "",
+        "linkedin": ""
+      }
+    ]
   },
   "aboutStudio": {
     "eyebrow": "Who we are",
@@ -176,9 +214,9 @@
         "body": "Work starts within days. You get weekly demos, a shared backlog and one point of contact the whole way."
       }
     ],
-    "button": "Book a Call",
     "note": "Most projects start within 3–10 days.",
-    "photoCaption": "The people behind your product",
-    "photoPlace": "Delivery hub · Dhaka, Bangladesh"
+    "formTitle": "Book a call",
+    "formText": "Tell us a little about your project. We reply within one business day.",
+    "formButton": "Request a call"
   }
 }

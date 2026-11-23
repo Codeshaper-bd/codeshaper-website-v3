@@ -89,24 +89,6 @@
   --color-aurora-violet-dark: #09090b; /* zinc-950, CTA hover, ~19:1 on white ✓ */
 }
 
-/* .glass is used by Locations.tsx, which stays dark —
-   override rather than edit the base rule. */
-.theme-light .glass {
-  background: rgba(255, 255, 255, 0.85);
-  border-color: rgba(11, 15, 25, 0.08);
-  box-shadow:
-    0 0 0 1px rgba(9, 9, 11, 0.06),
-    0 8px 32px rgba(11, 15, 25, 0.1);
-}
-
-/* .glass sets border-color unconditionally above; that unlayered rule beats
-   any layered Tailwind hover:border-* utility at equal specificity (Tailwind
-   utilities ship inside @layer, and unlayered rules always win regardless of
-   specificity), so the promo card's hover border needs to live here instead. */
-.theme-light .glass:hover {
-  border-color: var(--color-hairline-strong);
-}
-
 /* ── Base ────────────────────────────────────────────────── */
 html {
   scroll-behavior: auto; /* Lenis owns scrolling */
@@ -166,17 +148,6 @@ body {
   box-shadow:
     0 0 0 1px rgba(255, 255, 255, 0.1),
     0 0 56px rgba(255, 255, 255, 0.1);
-}
-
-/* Glass — decorative blur over a solid base + dark-card elevation */
-.glass {
-  background: rgba(19, 19, 26, 0.92);
-  backdrop-filter: blur(20px) saturate(1.3);
-  -webkit-backdrop-filter: blur(20px) saturate(1.3);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  box-shadow:
-    0 0 0 1px rgba(255, 255, 255, 0.06),
-    0 0 48px rgba(255, 255, 255, 0.06);
 }
 
 /* Mega menu panel: fully opaque solid — content behind must NEVER be legible.
