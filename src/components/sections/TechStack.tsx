@@ -458,6 +458,11 @@ export default function TechStack({ copy }: { copy?: CopyOf<"techStack"> }) {
       measure();
       kick();
     };
+    const ro = new ResizeObserver(() => {
+      measure();
+      kick();
+    });
+    ro.observe(stage);
     measure();
     frame(performance.now());
     window.addEventListener("scroll", onScroll, { passive: true });
@@ -465,6 +470,7 @@ export default function TechStack({ copy }: { copy?: CopyOf<"techStack"> }) {
     return () => {
       cancelAnimationFrame(raf);
       io.disconnect();
+      ro.disconnect();
       chips.forEach((el) => el.removeEventListener("pointerdown", onDown));
       window.removeEventListener("pointermove", onMove);
       window.removeEventListener("pointerup", onUp);
@@ -518,13 +524,16 @@ export default function TechStack({ copy }: { copy?: CopyOf<"techStack"> }) {
   return (
     <div className="bg-light-surface">
       <section className="theme-light relative overflow-clip bg-light-surface" aria-labelledby="tech-stack-heading">
-        <div ref={trackRef} className={animated ? "relative h-[300vh]" : "relative"}>
-          <div ref={stageRef} className={animated ? "sticky top-0 flex flex-col overflow-hidden" : "relative py-16 lg:py-24"}>
+        {/* The pinned layout is set in CSS (same media query as the JS), so the
+            server HTML already has its final height: the page never jumps when
+            this section loads late, and it still pins before it has loaded. */}
+        <div ref={trackRef} className="relative [@media(min-width:1024px)_and_(min-height:860px)_and_(prefers-reduced-motion:no-preference)]:h-[300vh]">
+          <div ref={stageRef} className="relative py-16 lg:py-24 [@media(min-width:1024px)_and_(min-height:860px)_and_(prefers-reduced-motion:no-preference)]:sticky [@media(min-width:1024px)_and_(min-height:860px)_and_(prefers-reduced-motion:no-preference)]:top-0 [@media(min-width:1024px)_and_(min-height:860px)_and_(prefers-reduced-motion:no-preference)]:flex [@media(min-width:1024px)_and_(min-height:860px)_and_(prefers-reduced-motion:no-preference)]:flex-col [@media(min-width:1024px)_and_(min-height:860px)_and_(prefers-reduced-motion:no-preference)]:overflow-hidden [@media(min-width:1024px)_and_(min-height:860px)_and_(prefers-reduced-motion:no-preference)]:py-0">
             {/* the animated dot grid of the Human + AI section (mouse wave); inside the
                 sticky stage, so the canvas stays viewport-sized */}
             <DotField className="[mask-image:linear-gradient(to_bottom,transparent,black_18%,black_82%,transparent)]" />
 
-            <div className={`relative mx-auto flex w-full max-w-7xl flex-col px-4 sm:px-6 lg:px-10 ${animated ? "py-24" : ""}`}>
+            <div className="relative mx-auto flex w-full max-w-7xl flex-col px-4 sm:px-6 lg:px-10 [@media(min-width:1024px)_and_(min-height:860px)_and_(prefers-reduced-motion:no-preference)]:py-24">
               <Reveal>
                 <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
                   <div>

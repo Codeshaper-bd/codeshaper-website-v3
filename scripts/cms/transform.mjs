@@ -62,6 +62,8 @@ function homeWords(d = {}, key) {
     const people = d.people.slice(0, 8).map((p) => strip({ name: words(p?.name), role: words(p?.role), bio: words(p?.bio), linkedin: (p?.linkedin ?? "").startsWith("https://") ? p.linkedin : undefined, photo: picture(p?.photo) })).filter((p) => p.name || p.role);
     if (people.length) out.people = people;
   }
+  // the person on the booking form: their photo from the media library (the words copy over as text)
+  if (key === "letsTalk" && picture(d.photo)) out.personPhoto = picture(d.photo).url;
   if (key === "letsTalk" && Array.isArray(d.steps)) {
     const steps = d.steps.slice(0, 3).map((p) => strip({ title: words(p?.title), body: words(p?.body) }) ?? {});
     if (steps.some(has)) out.steps = steps;

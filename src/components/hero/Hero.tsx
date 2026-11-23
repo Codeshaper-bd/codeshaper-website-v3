@@ -86,6 +86,13 @@ const INTRO_STATS = [
  * never flashes. A safety timer cancels it if the island has not taken over
  * within 6s (slow network or a failed chunk; 30s in dev, where chunks compile on demand). ?intro=off previews the
  * finished hero.
+ *
+ * Scroll gate: the intro is the page's preloader, so until its 3D mark is
+ * on screen ([data-intro-ready], set by HeroIntro) wheel, touch and scroll keys do not
+ * move the page; otherwise a visitor could scroll past a half-loaded intro
+ * into the content below. The gate opens for good once the mark is ready or
+ * cancelled (data-intro removed), or after 15s whatever happens. Typing in
+ * fields is never blocked.
  */
 const INTRO_SCRIPT = `(function(){try{
 var m=window.matchMedia('(min-width:1024px) and (min-height:640px) and (hover:hover) and (pointer:fine) and (prefers-reduced-motion:no-preference)').matches;
@@ -94,6 +101,15 @@ var c=document.createElement('canvas'),gl=c.getContext('webgl2')||c.getContext('
 var l=gl.getExtension('WEBGL_lose_context');if(l)l.loseContext();
 var r=document.currentScript&&document.currentScript.parentElement;if(!r)return;r.setAttribute('data-intro','');
 setTimeout(function(){if(!r.hasAttribute('data-intro-live')&&!r.hasAttribute('data-intro-armed'))r.removeAttribute('data-intro');},${process.env.NODE_ENV === "production" ? 6000 : 30000});
+var open=false,K={32:1,33:1,34:1,35:1,36:1,38:1,40:1},T=['wheel','touchmove','keydown','scroll'];
+var gate=function(e){if(open)return;
+if(!r.hasAttribute('data-intro')||r.hasAttribute('data-intro-ready')){open=true;T.forEach(function(t){window.removeEventListener(t,gate,{capture:true});});return;}
+if(e.type==='scroll'){if(window.scrollY>0)window.scrollTo(0,0);return;}
+if(e.type==='keydown'&&!K[e.keyCode])return;
+var t=e.target;if(e.type==='keydown'&&t&&(t.isContentEditable||/^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName)))return;
+e.preventDefault();e.stopPropagation();};
+T.forEach(function(t){window.addEventListener(t,gate,{capture:true,passive:false});});
+setTimeout(function(){open=true;},${process.env.NODE_ENV === "production" ? 15000 : 45000});
 }catch(e){}})();`;
 
 /** The mist behind the hero (and its intro): pale lavender and sky. */

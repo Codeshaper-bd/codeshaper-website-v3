@@ -140,9 +140,12 @@ export default function PhotoCloud({ children }: { children: ReactNode }) {
                 "--angle": angle + "deg", "--delay": -index * .7 + "s",
               } as CSSProperties}>
                 <div className={styles.print}>
-                  <Image src={`/media/studio/${file}.webp`} alt={alt} fill
-                    sizes={area === "hero" ? "(min-width: 768px) 520px, 74vw" : "(min-width: 768px) 390px, 48vw"}
-                    className={styles.image} />
+                  {/* the photo sits inside a white print frame (collage look) */}
+                  <div className={styles.photo}>
+                    <Image src={`/media/studio/${file}.webp`} alt={alt} fill
+                      sizes={area === "hero" ? "(min-width: 768px) 560px, 74vw" : "(min-width: 768px) 420px, 48vw"}
+                      className={styles.image} />
+                  </div>
                 </div>
               </li>
             ))}

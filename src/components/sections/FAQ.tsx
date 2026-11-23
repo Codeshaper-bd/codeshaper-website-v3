@@ -4,11 +4,9 @@ import { useState } from "react";
 import Link from "next/link";
 import { ChevronDown, ArrowRight } from "lucide-react";
 import Reveal from "@/components/system/Reveal";
-import CountUp from "@/components/system/CountUp";
 import { SectionEyebrow, SectionTitle } from "@/components/system/SectionHeading";
 import { SERVICE_GROUPS } from "@/data/services";
 import { homeCopy, type CopyOf } from "@/lib/homeCopy";
-import DotField from "@/components/sections/human-ai-flow/DotField";
 
 /** "A, B, C, D, and E" — the five group names, in locked order. */
 function listGroups(): string {
@@ -41,11 +39,6 @@ function listGroups(): string {
  * services in data/services.ts, the 10-entry INDUSTRIES list), not
  * invented claims.
  */
-const STATS: { value: number; suffix: string; label: string }[] = [
-  { value: SERVICE_GROUPS.length, suffix: "", label: "Service groups" },
-  { value: 6, suffix: "", label: "Global hubs" },
-];
-
 const faqJsonLd = (FAQS: { q: string; a: string }[]) => ({
   "@context": "https://schema.org",
   "@type": "FAQPage",
@@ -74,41 +67,30 @@ export default function FAQ({ copy }: { copy?: CopyOf<"faq"> }) {
   };
 
   return (
-    <section className="theme-light relative overflow-hidden bg-light-surface py-16 lg:py-24" aria-labelledby="faq-heading">
-      {/* the shared dotted background (as Human + AI), fading out at the top and bottom */}
-      <DotField className="[mask-image:linear-gradient(to_bottom,transparent,black_22%,black_78%,transparent)]" />
+    <div className="bg-light-surface p-3 sm:p-4">
+    <section className="theme-light relative overflow-hidden rounded-[32px] bg-canvas py-16 lg:py-24" aria-labelledby="faq-heading">
 
       <div className="relative mx-auto max-w-7xl px-6 lg:px-10">
         <div className="grid gap-12 lg:grid-cols-[360px_1fr] lg:gap-16">
           <div>
             <Reveal>
               <SectionEyebrow>{c.eyebrow}</SectionEyebrow>
-              <SectionTitle id="faq-heading">{c.title}</SectionTitle>
+              <SectionTitle id="faq-heading" className="max-w-[13ch] text-balance">{c.title}</SectionTitle>
             </Reveal>
 
-            <Reveal delay={100}>
-              <div className="mt-8 flex gap-8 border-y border-hairline py-6">
-                {STATS.map((s) => (
-                  <div key={s.label}>
-                    <p className="font-urbanist text-3xl font-bold tracking-tight text-ink">
-                      <CountUp value={s.value} suffix={s.suffix} />
-                    </p>
-                    <p className="mt-1 font-urbanist text-[12.5px] leading-snug text-ink-dim">{s.label}</p>
-                  </div>
-                ))}
-              </div>
-            </Reveal>
-
-            <Reveal delay={160}>
-              <div className="mt-8 overflow-hidden rounded-[24px] bg-ink p-6 text-white">
-                <p className="font-urbanist text-base font-bold leading-snug">{c.askTitle}</p>
-                <p className="mt-1.5 font-urbanist text-[13px] leading-relaxed text-white/55">{c.askText}</p>
+            <Reveal delay={120}>
+              {/* no box: a quiet line and one button */}
+              <div className="mt-8 border-t border-[#0b0f19]/[0.08] pt-6">
+                <p className="font-urbanist text-[16px] font-semibold text-ink">{c.askTitle}</p>
+                <p className="mt-1 max-w-[34ch] font-urbanist text-[14px] leading-relaxed text-ink-dim">{c.askText}</p>
                 <Link
                   href="/contact"
-                  className="mt-5 inline-flex items-center gap-2 rounded-full bg-white px-5 py-2.5 font-urbanist text-[13px] font-semibold text-ink transition-transform duration-300 hover:scale-[1.03]"
+                  className="group/cta mt-5 inline-flex items-center gap-2 rounded-full bg-[#0b0f19] py-2 pl-5 pr-2 font-urbanist text-[13.5px] font-semibold text-white transition-colors hover:bg-[#1f2433]"
                 >
                   {c.askButton}
-                  <ArrowRight size={14} strokeWidth={1.75} />
+                  <span className="grid h-7 w-7 place-items-center rounded-full bg-white/15 transition-transform duration-300 group-hover/cta:translate-x-0.5">
+                    <ArrowRight size={14} strokeWidth={2} aria-hidden />
+                  </span>
                 </Link>
               </div>
             </Reveal>
@@ -168,5 +150,6 @@ export default function FAQ({ copy }: { copy?: CopyOf<"faq"> }) {
         }}
       />
     </section>
+    </div>
   );
 }

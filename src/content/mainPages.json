@@ -187,27 +187,6 @@
     }
    },
    {
-    "key": "leadership",
-    "copy": {
-     "title": "Led by people who still build.",
-     "eyebrow": "Leadership",
-     "people": [
-      {
-       "role": "Founder & CEO"
-      },
-      {
-       "role": "Head of Engineering"
-      },
-      {
-       "role": "Head of Design"
-      },
-      {
-       "role": "Head of Delivery"
-      }
-     ]
-    }
-   },
-   {
     "key": "faq",
     "copy": {
      "title": "What clients ask before we start.",
