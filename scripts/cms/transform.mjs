@@ -33,7 +33,7 @@ const decode = (s) => s.replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&qu
 export const headingsOf = (html) => [...html.matchAll(/<h2 id="([^"]+)"[^>]*>(.*?)<\/h2>/g)].map((m) => ({ id: m[1], text: decode(m[2].replace(/<[^>]+>/g, "")) })).filter((h) => h.text);
 
 // ── the homepage (Pages, Home) ─────────────────────────────────────────────
-const HOME_BUILT_IN = ["trustStrip", "servicesBento", "caseStudies", "industries", "humanAiFlow", "testimonials", "techStack", "impactWorkflow", "engagementModels", "aboutStudio", "faq", "blogPosts"];
+const HOME_BUILT_IN = ["trustStrip", "servicesBento", "caseStudies", "industries", "humanAiFlow", "testimonials", "techStack", "impactWorkflow", "engagementModels", "aboutStudio", "faq", "blogPosts", "letsTalk"];
 const HOME_ADDED = { textImage: "Text and picture", cta: "Call to action", stats: "Numbers", cards: "Cards", logos: "Logo strip", video: "Video", faq: "Questions", text: "Free text" };
 const words = (v) => (typeof v === "string" && v.trim() ? v.trim() : undefined);
 const lines = (v) => (typeof v === "string" ? v.split(/\r?\n/).map((x) => x.trim()).filter(Boolean) : list(v));
@@ -50,6 +50,10 @@ function homeWords(d = {}, key) {
     if (phases.some(has)) out.phases = phases;
   }
   if (key === "faq" && faqs(d.items).length) out.items = faqs(d.items);
+  if (key === "letsTalk" && Array.isArray(d.steps)) {
+    const steps = d.steps.slice(0, 3).map((p) => strip({ title: words(p?.title), body: words(p?.body) }) ?? {});
+    if (steps.some(has)) out.steps = steps;
+  }
   return has(out) ? out : undefined;
 }
 

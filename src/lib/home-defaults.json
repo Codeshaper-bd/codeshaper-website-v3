@@ -144,5 +144,27 @@
     "eyebrow": "From the blog",
     "title": "Field notes from the work we ship.",
     "button": "All articles"
+  },
+  "letsTalk": {
+    "eyebrow": "Let’s talk",
+    "title": "From first call to first release.",
+    "steps": [
+      {
+        "title": "Start with a discovery call",
+        "body": "Tell us about your business, your goals, timeline and budget. We listen first, then tell you honestly where we can help."
+      },
+      {
+        "title": "Shape the plan together",
+        "body": "We turn what we heard into a clear scope, then pick the engagement model and the people with the right skills."
+      },
+      {
+        "title": "Kick off and ship early",
+        "body": "Work starts within days. You get weekly demos, a shared backlog and one point of contact the whole way."
+      }
+    ],
+    "button": "Book a Call",
+    "note": "Most projects start within 3–10 days.",
+    "photoCaption": "The people behind your product",
+    "photoPlace": "Delivery hub · Dhaka, Bangladesh"
   }
 }
