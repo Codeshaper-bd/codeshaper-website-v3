@@ -1,7 +1,7 @@
 ---
 description: Codeshaper design rules for any UI, styling, layout or copy change
 globs: src/**/*.tsx, src/**/*.css
-alwaysApply: false
+alwaysApply: true
 ---
 
-Follow `ai/rules/global.md` and `ai/rules/design.md`. Knowledge: `ai/knowledge/design/`. Owner decisions: `ai/context/decisions.md`. Workflows: `ai/skills/design-section.md`, `ai/skills/design-review.md`.
+Read `ai/context/decisions.md` first, then follow `ai/rules/global.md` and `ai/rules/design.md`. Use `ai/knowledge/design/` as the handbook (always read chapter 11 for tokens). Workflows: `ai/skills/design-section.md`, `ai/skills/design-review.md`. Preserve legacy token aliases; do not mass-migrate without scope.

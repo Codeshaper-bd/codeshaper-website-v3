@@ -6,6 +6,8 @@ Standing decisions from the owner. They override general best practice. Add new 
 
 | Date | Decision |
 |---|---|
+| 2026-11-23 | **Foundation corrections (C1–C4):** `surface-soft` is warm `#f6f4f1`; `theme-light` stays per section (never global on `html`/`body`/`SiteShell`); Inter is the default body font, no `font-hero` class; the unused `CaseStudies.tsx` is deleted. |
+| 2026-11-23 | **Foundation first:** synchronize the Design Handbook, semantic CSS tokens and AI design instructions before making homepage visual changes. Preserve existing legacy token utilities during this pass; do not mass-refactor components. |
 | 2026-11-23 | **Homepage order, backgrounds alternate:** Hero → Brands *(default)* → At a glance + world map *(white)* → Case studies *(default)* → Services *(white)* → Products *(default)* → Client reviews *(white)* → Human + AI *(default)* → Industries *(white)* → Tools & technology *(default)* → Team photos *(white)* → Engagement models *(default)* → Leadership *(white)* → FAQ *(default)* → Blog *(white)* → Let's talk + booking *(default)* → Footer. |
 | 2026-11-23 | **No dark sections** on the homepage (dark Products and dark Let's talk were rejected). |
 | 2026-11-23 | **No sub-heading line under section titles** (eyebrow + title only). |

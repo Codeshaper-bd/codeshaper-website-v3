@@ -11,6 +11,32 @@
   --color-light-surface: #f5f4f2;     /* off-white (light surface) */
   --color-light-raised: #ffffff;      /* light elevated (light cards) */
 
+  /* ── Semantic design tokens (legacy palette remains supported) ── */
+  --color-page: #0a0a0f;
+  --color-surface: #13131a;
+  --color-surface-soft: #0b0b10;
+  --color-content: #f5f4f2;
+  --color-content-muted: #adadb8;
+  --color-content-subtle: #8f8f9c;
+  --color-border: rgba(255, 255, 255, 0.08);
+  --color-border-strong: rgba(255, 255, 255, 0.16);
+  --color-brand: #615fff;
+  --color-brand-soft: rgba(97, 95, 255, 0.12);
+  --color-success: #16a34a;
+  --color-info: #0284c7;
+  --color-warning: #d97706;
+  --color-danger: #dc2626;
+
+  /* Named geometry/spacing tokens; Tailwind v4 generates utilities. */
+  --radius-section: 32px;
+  --radius-card: 28px;
+  --radius-panel: 24px;
+  --radius-control: 12px;
+  --spacing-section: 4rem;
+  --spacing-section-lg: 6rem;
+  --spacing-frame: 0.75rem;
+  --spacing-frame-lg: 1rem;
+
   --color-ink: #f5f4f2;               /* text on dark, primary */
   /* secondary text lifted from #9C9CA8 → #ADADB8 (≈8.4:1 on #0A0A0F) so menu
      links and body copy stay comfortably readable, not just AA-passing */
@@ -43,19 +69,16 @@
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* ── Light theme scope (Navbar + Hero, pass 1) ──────────────
-   Redefines the SAME custom-property names the dark theme uses, so every
-   existing `bg-canvas` / `text-ink` / `text-aurora-indigo` utility already
-   in Navbar/MegaPanel/MobileMenu/Hero resolves to light values here without
-   per-component className changes. Do NOT move these values to :root — they
-   are only correct for this subtree; every other section still needs the
-   dark originals.
+/* ── Light theme scope ─────────────────────────────────────
+   Used by the Navbar, Hero, homepage sections and light marketing-page
+   regions. It redefines the legacy utility names plus the semantic tokens,
+   so existing components can migrate incrementally without a site-wide
+   className rewrite. Keep dark-surface defaults at :root for any explicitly
+   dark utility context; the homepage itself must remain light.
 
-   Within this scope, --color-aurora-* is the monochrome Zinc-scale accent
-   system (see the dark-theme comment above): accent means darker-than-base
-   here, since the canvas is white. The class names stay "aurora-*" to avoid
-   a site-wide token rename in this pass; a later cleanup could rename them
-   to brand-neutral names once every section has migrated. */
+   Within this scope, --color-aurora-* is a legacy monochrome Zinc-scale family,
+   not the brand accent. New work should use --color-brand for the indigo
+   identity accent. The old names remain until a separately scoped migration. */
 .theme-light {
   --color-canvas: #ffffff;
   --color-canvas-raised: #f7f8fb;
@@ -78,6 +101,22 @@
   --color-hairline: #e5e7eb;
   --color-hairline-strong: #d1d5db;
   --color-menu-label: #6b7280;
+
+  /* Semantic light-theme aliases. Prefer these for all new UI work. */
+  --color-page: #f5f4f2;
+  --color-surface: #ffffff;
+  --color-surface-soft: #f6f4f1; /* warm: matches the media panels (owner decision C1, 2026-11-23) */
+  --color-content: #0b0f19;
+  --color-content-muted: #626873;
+  --color-content-subtle: #626873;
+  --color-border: rgba(11, 15, 25, 0.08);
+  --color-border-strong: #d1d5db;
+  --color-brand: #615fff;
+  --color-brand-soft: rgba(97, 95, 255, 0.12);
+  --color-success: #16a34a;
+  --color-info: #0284c7;
+  --color-warning: #d97706;
+  --color-danger: #dc2626;
 
   --color-aurora-indigo: #71717a; /* zinc-500: icon/border/decorative, 3:1-class */
   --color-aurora-violet: #18181b; /* zinc-900: CTA fill + text-safe accent */
