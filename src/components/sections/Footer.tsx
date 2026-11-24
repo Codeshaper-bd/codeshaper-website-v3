@@ -10,6 +10,8 @@ import { FOOTER_OFFICES } from "@/lib/offices";
 import { SERVICE_GROUPS, servicePath } from "@/data/services";
 import FooterWordmark from "./FooterWordmark";
 import FooterStage from "./footer/FooterStage";
+import Landmark from "./footer/Landmark";
+import FooterLandscape from "./footer/FooterLandscape";
 import LocalTime from "./footer/LocalTime";
 import FooterActions from "./footer/AskAI";
 import Reveal from "@/components/system/Reveal";
@@ -121,14 +123,13 @@ const ALIAS: Record<string, string> = {
 const PLACES = (FOOTER.places ?? []).map((name) => ({ name, office: OFFICES[name.toLowerCase()] ?? OFFICES[ALIAS[name.toLowerCase()] ?? ""] }));
 // the two head offices first, then the rest in the CMS order
 const OFFICE_LIST = PLACES.filter((p) => p.office).sort((a, b) => Number(/HQ/.test(b.office!.title)) - Number(/HQ/.test(a.office!.title)));
-const DEV = process.env.NODE_ENV !== "production";
 
 const SOCIAL = LIVE_SOCIAL_LINKS;
 
 export default function Footer() {
   return (
     <FooterStage>
-      <div className="relative mx-auto max-w-7xl px-4 pb-10 pt-20 sm:px-6 lg:px-10 lg:pb-32 lg:pt-24">
+      <div className="relative mx-auto max-w-7xl px-4 pb-8 pt-20 sm:px-6 lg:px-10 lg:pb-10 lg:pt-24">
         {/* 1 · brand + links */}
         <div className="grid gap-12 lg:grid-cols-[minmax(0,300px)_1fr] lg:gap-16">
           <div>
@@ -253,28 +254,24 @@ export default function Footer() {
         />
 
 
-        {/* 2 · offices: text, like the link columns (no cards, no photos); each with its local time */}
+        {/* 4 · the wordmark standing on the offices (owner, 24 Nov 2026: concept from a reference, our own way):
+            the builder works on the letters; the six offices sit in a frosted band right under them,
+            each with a small landmark drawing, so brand and places read as one */}
+        <div className="mt-16 overflow-hidden">
+          <FooterWordmark />
+        </div>
         {OFFICE_LIST.length > 0 && (
           <Reveal>
-            <div className="mt-12 border-t border-[#0b0f19]/[0.08] pt-10">
-              <ColHead>Offices</ColHead>
-              {/* all six in one row on desktop */}
-              <ul className="grid grid-cols-2 gap-x-6 gap-y-8 sm:grid-cols-3 lg:grid-cols-6">
+            <div className="relative z-10 -mt-[0.6vw] rounded-[28px] bg-white/60 px-5 py-7 shadow-[0_30px_60px_-40px_rgba(45,38,120,0.45)] ring-1 ring-white/80 backdrop-blur-xl sm:px-8 sm:py-8">
+              <ul className="grid grid-cols-2 gap-x-6 gap-y-8 sm:grid-cols-3 lg:grid-cols-6 lg:gap-x-0 lg:divide-x lg:divide-[#0b0f19]/[0.07]">
                 {OFFICE_LIST.map((p) => (
-                  <li key={p.name}>
-                    <p className="font-urbanist text-[10.5px] font-semibold uppercase tracking-[0.12em] text-[#4f46e5]">{p.office!.title}</p>
-                    <p className="mt-1 font-urbanist text-[15px] font-bold tracking-[-0.01em] text-ink">{p.name}</p>
+                  <li key={p.name} className="group lg:px-5 lg:first:pl-0 lg:last:pr-0">
+                    <Landmark place={p.name} className="text-[#4f46e5] transition-transform duration-300 group-hover:-translate-y-0.5" />
+                    <p className="mt-3 font-urbanist text-[10.5px] font-semibold uppercase tracking-[0.12em] text-[#4f46e5]">{p.office!.title.split(" · ")[0]}</p>
+                    <p className="mt-0.5 font-urbanist text-[16px] font-bold tracking-[-0.01em] text-ink">{p.office!.title.includes(" · ") && /HQ/.test(p.office!.title) ? p.office!.title.split(" · ")[1] : p.name}</p>
                     {p.office!.lines?.length ? (
-                      <address className="mt-1.5 font-urbanist text-[12.5px] not-italic leading-relaxed text-ink-dim">
-                        {p.office!.lines.join(" ")}
-                      </address>
-                    ) : (
-                      DEV && (
-                        <p className="mt-1.5 rounded-lg border border-dashed border-[#0b0f19]/25 px-2.5 py-1.5 font-urbanist text-[12px] text-ink-faint">
-                          Placeholder (development only): address and phone to add in Footer.tsx, OFFICES.
-                        </p>
-                      )
-                    )}
+                      <address className="mt-1.5 font-urbanist text-[12.5px] not-italic leading-relaxed text-ink-dim">{p.office!.lines.join(" ")}</address>
+                    ) : null}
                     <p className="mt-2 flex flex-col items-start gap-1 font-urbanist text-[12.5px] text-ink-dim">
                       {p.office!.tel && (
                         <a href={`tel:${p.office!.tel}`} className="inline-flex items-center gap-1.5 font-semibold text-ink transition-colors hover:text-[#4f46e5]">
@@ -290,11 +287,6 @@ export default function Footer() {
             </div>
           </Reveal>
         )}
-
-        {/* 4 · wordmark + legal */}
-        <div className="mt-16 overflow-hidden">
-          <FooterWordmark />
-        </div>
         <div className="mt-6 flex flex-wrap items-center justify-between gap-4 border-t border-[#0b0f19]/[0.08] pt-6">
           <p className="font-urbanist text-[12.5px] text-ink-dim">
             © {FOUNDED}–{new Date().getFullYear()} {FOOTER.copyright}
@@ -313,6 +305,8 @@ export default function Footer() {
           </div>
         </div>
       </div>
+      {/* 5 · the landscape: hills, a village, the builder putting up a CodeShaper house, and a small game */}
+      <FooterLandscape />
     </FooterStage>
   );
 }
