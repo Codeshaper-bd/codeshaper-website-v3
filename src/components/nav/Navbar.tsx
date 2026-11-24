@@ -214,7 +214,7 @@ export default function Navbar() {
   const megaOpen = openValue === "services" || openValue === "industries";
   const docked = mode === "dock";
   const megaPos = docked
-    ? "bottom-[var(--nav-panel-bottom,96px)] max-h-[calc(100vh-var(--nav-panel-bottom,96px)-24px)] overflow-y-auto"
+    ? "top-[var(--nav-panel-top,96px)] max-h-[calc(100vh-var(--nav-panel-top,96px)-24px)] overflow-y-auto"
     : "top-[var(--nav-panel-top,100px)]";
   const tc = docked ? dockTriggerCls : triggerCls;
 
@@ -236,7 +236,7 @@ export default function Navbar() {
         data-site-header
         className={`theme-light z-50 font-urbanist ${
           docked
-            ? "pointer-events-none fixed inset-x-0 bottom-5 hidden justify-center px-4 lg:flex"
+            ? "pointer-events-none fixed inset-x-0 top-5 hidden justify-center px-4 lg:flex"
             : "absolute inset-x-0 top-[calc(10px+var(--intro-shift,0px))] px-3 sm:px-4"
         }`}
       >
@@ -343,7 +343,7 @@ export default function Navbar() {
                           <ChevronDown
                             size={13}
                             strokeWidth={1.75}
-                            className={`transition-transform duration-200 ${docked ? "rotate-180 group-data-[state=open]:rotate-0" : "group-data-[state=open]:rotate-180"}`}
+                            className={`transition-transform duration-200 group-data-[state=open]:rotate-180`}
                           />
                         </Nav.Trigger>
                         <Nav.Content
@@ -427,12 +427,12 @@ function DropdownItem({
         <ChevronDown
           size={13}
           strokeWidth={1.75}
-          className={`transition-transform duration-200 ${docked ? "rotate-180 group-data-[state=open]:rotate-0" : "group-data-[state=open]:rotate-180"}`}
+          className={`transition-transform duration-200 group-data-[state=open]:rotate-180`}
         />
       </Nav.Trigger>
       <Nav.Content
         className={`dropdown-panel absolute left-1/2 z-40 w-[264px] -translate-x-1/2 p-2 ${
-          docked ? "bottom-full mb-6" : "top-full mt-3"
+          docked ? "top-full mt-5" : "top-full mt-3"
         }`}
       >
         <DropdownLinks links={links} />

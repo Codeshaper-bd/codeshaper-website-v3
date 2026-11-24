@@ -771,15 +771,15 @@ form[data-show-errors="true"] :invalid {
    fixed mega panels, so the entrance animation uses fill-mode none: no
    transform lingers afterwards to become their containing block. */
 @keyframes nav-dock-in {
-  from { opacity: 0; transform: translateY(36px) scale(0.94); }
+  from { opacity: 0; transform: translateY(-36px) scale(0.94); }
   to { opacity: 1; transform: none; }
 }
 @keyframes nav-dock-out {
   from { opacity: 1; transform: none; }
-  to { opacity: 0; transform: translateY(36px) scale(0.96); }
+  to { opacity: 0; transform: translateY(-36px) scale(0.96); }
 }
 @keyframes nav-dock-item {
-  from { opacity: 0; transform: translateY(8px); }
+  from { opacity: 0; transform: translateY(-8px); }
   to { opacity: 1; transform: none; }
 }
 @keyframes nav-top-in {
@@ -1547,3 +1547,28 @@ a.svc-card:hover .mega-icon-tile {
    Every inner page opens with the homepage hero's card and background
    (components/system/HeroBackdrop.tsx): flush to the top, white side
    gutters, rounded bottom. `.page-hero` only marks it. */
+
+/* Footer builder (owner, 24 Nov 2026): the little character in the footer landscape (FooterLandscape.tsx) */
+.builder-bot { will-change: transform; }
+.builder-bot[data-walk="1"] .builder-leg-a { animation: builder-step 0.32s ease-in-out infinite alternate; transform-box: fill-box; transform-origin: top center; }
+.builder-bot[data-walk="1"] .builder-leg-b { animation: builder-step 0.32s ease-in-out infinite alternate-reverse; transform-box: fill-box; transform-origin: top center; }
+.builder-bot[data-walk="1"] > div { animation: builder-bob 0.32s ease-in-out infinite alternate; }
+.builder-bot[data-hammer="1"] .builder-arm { animation: builder-hammer 0.18s ease-in-out 3 alternate; }
+.builder-bot[data-air="1"] .builder-leg-a { transform: rotate(-22deg); transform-box: fill-box; transform-origin: top center; }
+.builder-bot[data-air="1"] .builder-leg-b { transform: rotate(18deg); transform-box: fill-box; transform-origin: top center; }
+@keyframes builder-step { from { transform: rotate(-16deg); } to { transform: rotate(16deg); } }
+@keyframes builder-bob { from { translate: 0 0; } to { translate: 0 -1.5px; } }
+@keyframes builder-hammer { from { transform: rotate(0deg); } to { transform: rotate(52deg); } }
+.builder-spark { position: absolute; width: 5px; height: 5px; border-radius: 9999px; background: #f5b700; pointer-events: none; animation: builder-spark 0.55s ease-out forwards; }
+.builder-spark:nth-child(odd) { background: #8f8cff; }
+@keyframes builder-spark { from { transform: translate(0, 0) scale(1); opacity: 1; } to { transform: translate(var(--dx), var(--dy)) scale(0.3); opacity: 0; } }
+.builder-bug { position: absolute; left: 0; top: 0; width: 22px; height: 18px; will-change: transform; }
+.builder-bug svg { animation: builder-crawl 0.24s ease-in-out infinite alternate; }
+@keyframes builder-crawl { from { transform: translateY(0) rotate(-3deg); } to { transform: translateY(-1.5px) rotate(3deg); } }
+@media (prefers-reduced-motion: reduce) {
+  .builder-bot[data-walk="1"] .builder-leg-a, .builder-bot[data-walk="1"] .builder-leg-b, .builder-bot[data-walk="1"] > div, .builder-bug svg { animation: none; }
+}
+/* footer landscape: clouds drift slowly across (FooterLandscape.tsx) */
+.landscape-clouds { animation: landscape-drift 90s linear infinite alternate; }
+@keyframes landscape-drift { from { transform: translateX(-4%); } to { transform: translateX(6%); } }
+@media (prefers-reduced-motion: reduce) { .landscape-clouds { animation: none; } }
