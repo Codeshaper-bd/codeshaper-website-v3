@@ -46,6 +46,8 @@ export type BlogPost = {
   industry?: string;
   techTags?: string[];
   author: string;
+  /** The author page (/blog/author/[slug]); missing in older synced content, see lib/authors. */
+  authorSlug?: string;
   date: string; // ISO
   lastUpdated: string; // ISO — equals `date` until a post is genuinely revised
   readingTime: number; // minutes

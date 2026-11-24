@@ -1,72 +1,52 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { Eye, ThumbsUp, Lightbulb, Heart } from "lucide-react";
-import { REACTIONS, type PostStats } from "@/lib/blogStats";
+import { useEffect, useState } from "react";
+import { ThumbsUp, Lightbulb, Heart } from "lucide-react";
+import { REACTIONS, type ReactionId } from "@/lib/blogReactions";
+import { sendEvent, useBlogStats } from "./blogStatsClient";
 
-const REACTION_ICONS = {
-  helpful: ThumbsUp,
-  insightful: Lightbulb,
-  love: Heart,
-} as const;
+const REACTION_ICONS = { helpful: ThumbsUp, insightful: Lightbulb, love: Heart } as const;
+const key = (slug: string, id: string) => `codeshaper:blog:reacted:${slug}:${id}`;
 
-function reactedKey(slug: string, reactionId: string) {
-  return `codeshaper:blog:reacted:${slug}:${reactionId}`;
-}
-
+/**
+ * "Was this article helpful?" at the end of the article. Each reaction once
+ * per browser; counts are the real totals from the CMS. A small pop on
+ * click, so the reader feels it landed.
+ */
 export default function ViewsReactions({ slug }: { slug: string }) {
-  const [stats, setStats] = useState<PostStats | null>(null);
+  const stats = useBlogStats();
   const [reacted, setReacted] = useState<Set<string>>(new Set());
-  const countedRef = useRef(false);
+  const [popped, setPopped] = useState<string | null>(null);
 
   useEffect(() => {
-    if (countedRef.current) return;
-    countedRef.current = true;
-
-    fetch("/api/blog/stats", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ slug, action: "view" }),
-    })
-      .then((res) => (res.ok ? res.json() : null))
-      .then((data) => data && setStats(data));
-
     try {
-      const already = new Set<string>();
-      for (const r of REACTIONS) {
-        if (localStorage.getItem(reactedKey(slug, r.id))) already.add(r.id);
-      }
-      setReacted(already);
+      setReacted(new Set(REACTIONS.filter((r) => localStorage.getItem(key(slug, r.id))).map((r) => r.id)));
     } catch {
-      // localStorage unavailable (private mode, etc.) — reactions just won't be remembered locally
+      // storage unavailable
     }
   }, [slug]);
 
-  const react = async (reactionId: string) => {
-    if (reacted.has(reactionId)) return; // one reaction of each kind per browser
-    setReacted((s) => new Set(s).add(reactionId));
+  const react = (id: ReactionId) => {
+    if (reacted.has(id)) return;
+    setReacted((s) => new Set(s).add(id));
+    setPopped(id);
+    window.setTimeout(() => setPopped(null), 600);
     try {
-      localStorage.setItem(reactedKey(slug, reactionId), "1");
+      localStorage.setItem(key(slug, id), "1");
     } catch {
-      // ignore — the click still counts server-side this session
+      // ignore
     }
-    const res = await fetch("/api/blog/stats", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ slug, action: "react", reaction: reactionId }),
-    }).catch(() => null);
-    if (res?.ok) setStats(await res.json());
+    sendEvent({ slug, event: "react", reaction: id });
   };
 
   return (
-    <div className="rounded-2xl border border-hairline-light bg-light-raised px-5 py-4">
-      <span className="inline-flex items-center gap-1.5 font-urbanist text-[13px] text-ink-faint">
-        <Eye size={15} strokeWidth={1.75} />
-        {stats ? stats.views.toLocaleString() : "—"} {stats?.views === 1 ? "view" : "views"}
-      </span>
-      <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-hairline-light pt-4">
+    <div>
+      <p aria-live="polite" className="font-urbanist text-[15px] font-semibold text-ink">
+        {reacted.size > 0 ? "Thanks, that helps us write better." : "Was this article helpful?"}
+      </p>
+      <div className="mt-3 flex flex-wrap items-center gap-2">
         {REACTIONS.map((r) => {
-          const count = stats?.reactions[r.id] ?? 0;
+          const count = stats?.[slug]?.reactions[r.id] ?? 0;
           const active = reacted.has(r.id);
           const Icon = REACTION_ICONS[r.id];
           return (
@@ -74,17 +54,19 @@ export default function ViewsReactions({ slug }: { slug: string }) {
               key={r.id}
               type="button"
               onClick={() => react(r.id)}
-              disabled={active}
               aria-pressed={active}
-              title={r.label}
-              className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded-full border px-3 py-1.5 font-urbanist text-[12.5px] font-medium transition-colors duration-200 ${
-                active
-                  ? "border-aurora-violet bg-aurora-violet/10 text-aurora-violet"
-                  : "border-hairline-light text-ink-dim hover:border-ink-faint hover:text-ink"
+              className={`inline-flex items-center gap-2 whitespace-nowrap rounded-full border px-4 py-2 font-urbanist text-[13px] font-semibold transition-[background-color,border-color,color,transform] duration-200 active:scale-95 ${
+                active ? "cursor-default border-[#4f46e5]/40 bg-[#eef0ff] text-[#4f46e5]" : "border-hairline-light bg-white text-ink-dim hover:-translate-y-0.5 hover:border-[#0b0f19]/[0.2] hover:text-ink"
               }`}
             >
-              <Icon size={14} strokeWidth={1.75} aria-hidden />
-              {count > 0 ? count : r.label}
+              <Icon
+                size={14}
+                strokeWidth={1.9}
+                aria-hidden
+                className={`transition-transform duration-300 ${popped === r.id ? "scale-150 -rotate-12" : ""} ${active ? "fill-current" : ""}`}
+              />
+              {r.label}
+              {count > 0 && <span className="tabular-nums opacity-70">{count}</span>}
             </button>
           );
         })}

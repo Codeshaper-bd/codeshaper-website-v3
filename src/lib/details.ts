@@ -14,7 +14,7 @@ export type Detail = {
   solutions?: { title: string; href?: string; items?: string[]; icon?: string; accent?: string }[]; faqs?: { q: string; a: string }[]; gallery?: { src: string; alt?: string; caption?: string }[]; video?: { url: string; poster?: string };
   html?: string; cta?: Cta; seo?: Seo; caseStudies?: string[]; reviews?: Review[]; related?: string[]; posts?: string[]; technologies?: string[];
 };
-export type PostDetail = { html?: string; seo?: Seo; cta?: Cta; author?: { name: string; role?: string; bio?: string; photo?: string; linkedin?: string; website?: string }; sources?: { title: string; url: string }[]; related?: string[]; hideToc?: boolean };
+export type PostDetail = { html?: string; seo?: Seo; cta?: Cta; author?: { name: string; role?: string; bio?: string; photo?: string; linkedin?: string; website?: string }; sources?: { title: string; url: string }[]; related?: string[]; hideToc?: boolean; founderNote?: { by: "founder" | "cofounder"; quote: string } };
 export type StoryDetail = { html?: string; seo?: Seo; cta?: Cta; faqs?: { q: string; a: string }[]; video?: { url: string }; beforeAfter?: { title: string; before: string; after: string }[] };
 
 const d = details as unknown as { posts: Record<string, PostDetail>; services: Record<string, Detail>; industries: Record<string, Detail>; models: Record<string, Detail>; caseStudies: Record<string, StoryDetail> };

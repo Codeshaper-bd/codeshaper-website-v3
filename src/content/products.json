@@ -6,7 +6,7 @@
   "tagline": "Sales, inventory and accounting in one system.",
   "summary": "Acculance is a point-of-sale, inventory and accounting system for retailers, wholesalers and distributors. Sell at the counter, track stock across warehouses and keep the books up to date from one dashboard. Run it on your own server, or as SaaS for many businesses at once.",
   "category": "Business software",
-  "image": "/cms/9fb5fcd94b97-acculance.jpg",
+  "image": "/cms/ad350b46fe00-acculance-web.webp",
   "imageAlt": "The Acculance dashboard with sales, purchases, profit and stock at a glance",
   "accent": "#1d5f9e",
   "platforms": [
@@ -98,7 +98,7 @@
   "tagline": "The admin dashboard template teams ship with.",
   "summary": "Dashcode is a premium admin dashboard template built with Tailwind CSS, available in React, Next.js, Vue, Laravel and plain HTML. Ready dashboards, pages and components for analytics, eCommerce, CRM, projects, banking and chat help teams launch internal tools and SaaS products in days instead of months.",
   "category": "Developer tools",
-  "image": "/cms/3433fe658e8c-dashcode.jpg",
+  "image": "/cms/c99b7683cfb0-dashcode-web.webp",
   "imageAlt": "The Dashcode analytics dashboard with revenue, users and traffic charts",
   "accent": "#6366f1",
   "platforms": [
@@ -191,7 +191,7 @@
   "tagline": "Run your online store from one place.",
   "summary": "Banizo brings orders, products, customers and payments together for growing retailers, so you can sell online and in store without juggling separate tools.",
   "category": "Business software",
-  "image": "/cms/699afbfd7746-banizo.jpg",
+  "image": "/cms/eaf89b5034d0-banizo-web.webp",
   "imageAlt": "The Banizo store dashboard with orders, revenue and best sellers",
   "accent": "#f59e0b",
   "platforms": [

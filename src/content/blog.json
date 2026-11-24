@@ -3,79 +3,40 @@
   {
    "slug": "ai-agents-automation",
    "title": "AI Agents & Automation",
-   "count": 2
+   "count": 1
   },
   {
    "slug": "product-strategy",
    "title": "Product Strategy",
-   "count": 3
+   "count": 6
   },
   {
    "slug": "commerce",
    "title": "Commerce",
-   "count": 2
+   "count": 3
   },
   {
    "slug": "ux-ui",
    "title": "UX/UI",
-   "count": 1
+   "count": 2
   },
   {
    "slug": "web-engineering",
    "title": "Web Engineering",
-   "count": 1
+   "count": 14
   },
   {
-   "slug": "integrations",
-   "title": "Integrations",
-   "count": 1
+   "slug": "teams-outsourcing",
+   "title": "Teams & Outsourcing",
+   "count": 11
   }
  ],
- "tags": [
+ "tags": [],
+ "authors": [
   {
-   "slug": "llm",
-   "title": "LLM",
-   "count": 1
-  },
-  {
-   "slug": "vector-db",
-   "title": "Vector DB",
-   "count": 1
-  },
-  {
-   "slug": "nextjs",
-   "title": "Next.js",
-   "count": 1
-  },
-  {
-   "slug": "figma",
-   "title": "Figma",
-   "count": 1
-  },
-  {
-   "slug": "react",
-   "title": "React",
-   "count": 1
-  },
-  {
-   "slug": "shopify",
-   "title": "Shopify",
-   "count": 1
-  },
-  {
-   "slug": "headless",
-   "title": "Headless",
-   "count": 1
-  },
-  {
-   "slug": "rest",
-   "title": "REST",
-   "count": 1
-  },
-  {
-   "slug": "webhooks",
-   "title": "Webhooks",
-   "count": 1
+   "slug": "the-codeshaper-team",
+   "title": "The CodeShaper Team",
+   "count": 37
   }
  ]
 }

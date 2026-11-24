@@ -13,7 +13,7 @@ const LINKEDIN_PATH =
 const X_PATH = "M3 3h4.6l4 5.8L16.2 3H21l-6.9 8.9L21.4 21h-4.6l-4.4-6.3L6.6 21H2l7.3-9.3L3 3Z";
 
 const iconBtnCls =
-  "flex h-9 w-9 items-center justify-center rounded-full border border-hairline-light text-ink-dim transition-colors hover:border-ink-faint hover:text-ink";
+  "flex h-9 w-9 items-center justify-center rounded-full border border-hairline-light bg-white text-ink-dim transition-colors hover:border-[#0b0f19]/[0.2] hover:text-ink";
 
 export default function ShareButtons({ url, title }: { url: string; title: string }) {
   const [copied, setCopied] = useState<"link" | "instagram" | null>(null);
@@ -35,7 +35,7 @@ export default function ShareButtons({ url, title }: { url: string; title: strin
 
   return (
     <div>
-      <p className="mb-3 font-urbanist text-[11px] font-semibold uppercase tracking-[0.14em] text-ink-faint">Share</p>
+      <p className="mb-3 font-urbanist text-[11px] font-semibold uppercase tracking-[0.16em] text-ink-faint">Share this article</p>
       <div className="flex flex-wrap items-center gap-2">
         <a href={linkedInHref} target="_blank" rel="noopener noreferrer" aria-label="Share on LinkedIn" className={iconBtnCls}>
           <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden>

@@ -5,6 +5,8 @@ import Image from "next/image";
 import { ArrowUp, ArrowUpRight, Clock, Download, FileText, Mail, MapPin, MessageCircle, Phone } from "lucide-react";
 import { SiBehance, SiDribbble, SiFacebook, SiGithub, SiPinterest } from "react-icons/si";
 import { SITE } from "@/lib/siteSettings";
+import { PUBLISHED } from "@/lib/publishedContact";
+import { FOOTER_OFFICES } from "@/lib/offices";
 import { SERVICE_GROUPS, servicePath } from "@/data/services";
 import FooterWordmark from "./FooterWordmark";
 import FooterStage from "./footer/FooterStage";
@@ -39,24 +41,7 @@ import Reveal from "@/components/system/Reveal";
  */
 const { contact: CMS_CONTACT, footer: FOOTER } = SITE;
 
-/**
- * Company facts as published on codeshaper.net's footer (owner-supplied,
- * 23 Nov 2026). Used until the same fields are filled in CMS › Settings ›
- * Contact and social, which then win field by field.
- */
-const PUBLISHED = {
-  email: "info@codeshaper.net",
-  support: "support@codeshaper.net",
-  phone: "+880-1754218741",
-  whatsapp: "+8801787662759",
-  social: {
-    facebook: "https://www.facebook.com/Codeshaperbd/",
-    x: "https://twitter.com/codeshaperbd",
-    linkedin: "https://www.linkedin.com/company/codeshaper",
-    pinterest: "https://www.pinterest.com/codeshaperbd/",
-    behance: "https://www.behance.net/codeshaper",
-  } as Record<string, string>,
-};
+// company facts as published on codeshaper.net (shared with the booking window)
 const CONTACT = {
   ...CMS_CONTACT,
   email: CMS_CONTACT?.email || PUBLISHED.email,
@@ -71,17 +56,8 @@ const CONTACT = {
  * (for the time zone) still to come from the owner; until then a labelled
  * placeholder in development, and nothing invented in production.
  */
-type Office = { title: string; lines?: string[]; tel?: string; zone?: string };
-// TEMP (owner, 23 Nov 2026): until each branch address arrives, Japan, USA, UK and Australia show the Dhaka address and phone. Replace each with the real one.
-const DHAKA = { lines: ["3rd Floor, Road# 29, House# 395,", "New DOHS, Mohakhali, Dhaka 1206"], tel: "+8801787662759" };
-const OFFICES: Record<string, Office> = {
-  bangladesh: { title: "Operations HQ · Dhaka", lines: ["3rd Floor, Road# 29, House# 395,", "New DOHS, Mohakhali, Dhaka 1206"], tel: "+8801787662759", zone: "Asia/Dhaka" },
-  "new zealand": { title: "Global HQ · Auckland", lines: ["3 Herekino Street, Westgate,", "Auckland 0814"], tel: "+64277758777", zone: "Pacific/Auckland" },
-  japan: { title: "Office · Japan", zone: "Asia/Tokyo", ...DHAKA }, // TEMP address
-  usa: { title: "Office · USA", ...DHAKA }, // TEMP address; add the city for local time
-  uk: { title: "Office · UK", zone: "Europe/London", ...DHAKA }, // TEMP address
-  australia: { title: "Office · Australia", ...DHAKA }, // TEMP address; add the city for local time
-};
+// the offices live in lib/offices.ts (shared with the contact page); TEMP stand-in addresses are applied there
+const OFFICES = FOOTER_OFFICES;
 const FOUNDED = 2017;
 
 /** Shown only with a real profile link (CMS: Settings, Contact and social). */

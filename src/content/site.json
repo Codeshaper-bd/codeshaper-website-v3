@@ -1,5 +1,7 @@
 {
- "contact": {},
+ "contact": {
+  "booking": "https://cal.com/codeshaper/30min"
+ },
  "footer": {
   "tagline": "AI engineering & software development company. Reliable, production-ready AI and software that works with the tools you already use.",
   "button": {

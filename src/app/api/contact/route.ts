@@ -2,6 +2,7 @@ import { randomUUID } from "node:crypto";
 import { NextResponse } from "next/server";
 import { SERVICE_GROUPS } from "@/data/services";
 import { isEmail, submit, text, tooMany } from "@/lib/intake";
+import { BUDGETS, CONTACT_REASONS, NEW_PROJECT } from "@/lib/contactOptions";
 
 export const runtime = "nodejs";
 
@@ -26,22 +27,34 @@ export async function POST(request: Request) {
   const name = text(body.name, 120);
   if (!name) return fail("Name is required.");
   if (!isEmail(body.email)) return fail("A valid email is required.");
-  const service = text(body.service, 120);
-  if (!service) return fail("Service interest is required.");
+  // why they write (the contact form asks; the homepage form does not, so it means a project)
+  const reasonIn = text(body.reason, 40);
+  const reason = CONTACT_REASONS.find((r) => r === reasonIn);
+  if (reasonIn && !reason) return fail("Please choose why you are writing.");
+  const isProject = !reason || reason === NEW_PROJECT;
+  const service = isProject ? text(body.service, 120) : reason;
+  if (!service) return fail("Please choose what you are looking for.");
+  const budgetIn = text(body.budget, 40);
+  const budget = isProject ? BUDGETS.find((b) => b === budgetIn) : undefined;
 
   const id = text(body.submission_id, 36);
+  const fields: Record<string, string | undefined> = {
+    submission_id: UUID.test(id) ? id.toLowerCase() : randomUUID(),
+    name,
+    email: body.email.trim(),
+    service: service === "other" ? "Other" : (SERVICE_GROUPS.find((g) => g.slug === service)?.name ?? service),
+    reason: reason ?? NEW_PROJECT,
+    budget,
+    phone: text(body.phone, 40),
+    industry: text(body.industry, 120),
+    timeline: text(body.timeline, 60),
+    brief: text(body.brief, 5000),
+    page_url: text(request.headers.get("referer"), 500),
+  };
   const result = await submit({
     kind: "leads",
-    data: {
-      submission_id: UUID.test(id) ? id.toLowerCase() : randomUUID(),
-      name,
-      email: body.email.trim(),
-      service: SERVICE_GROUPS.find((g) => g.slug === service)?.name ?? service,
-      industry: text(body.industry, 120),
-      timeline: text(body.timeline, 60),
-      brief: text(body.brief, 5000),
-      page_url: text(request.headers.get("referer"), 500),
-    },
+    // only what was given: empty optional fields are not sent
+    data: Object.fromEntries(Object.entries(fields).filter((e): e is [string, string] => !!e[1])),
   });
 
   if (result === "invalid") return fail("Please check your email address and try again.");

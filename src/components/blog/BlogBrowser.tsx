@@ -1,341 +1,332 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { Search, X, ChevronLeft, ChevronRight, ArrowRight } from "lucide-react";
+import { Search, X, ChevronLeft, ChevronRight, ArrowUpRight } from "lucide-react";
 import { TOPICS, type BlogPost } from "@/lib/blog";
-import PostCard from "./PostCard";
-import NewsletterForm from "./NewsletterForm";
-import { SectionEyebrow, SectionTitle, SectionDescription } from "@/components/system/SectionHeading";
+import PostCard, { PostMeta } from "./PostCard";
+import ReadCount from "./ReadCount";
+import { SectionEyebrow, SectionTitle } from "@/components/system/SectionHeading";
+import DotField from "@/components/sections/human-ai-flow/DotField";
+import { useBlogStats } from "./blogStatsClient";
+import { topicColor } from "@/lib/topicColors";
 
-const PAGE_SIZE = 7;
+/**
+ * Blog index › browse (owner, 24 Nov 2026: "more organized, easier to read").
+ *  1. One toolbar: title left, search right; topics underneath as one row
+ *     of chips, each with its article count (one topic at a time, kept in
+ *     the URL as ?topic= so a filtered view can be shared).
+ *  2. A status line that says what is shown ("3 articles in Commerce").
+ *  3. Sort: Latest, or Most read (real read counts from the CMS).
+ *  4. With no filter, page 1 opens with the newest article as a lead story;
+ *     everything else is a calm three-column grid. While filtering there is
+ *     no lead story, so the results read as one list.
+ * The sidebar (newsletter + "need help") is gone: the newsletter sits above
+ * the footer on every page, and the call to action closes this page.
+ */
+const PAGE_SIZE = 9;
 
-function formatDate(iso: string) {
-  return new Date(iso).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
-}
-
-/** The current page's first result, shown as a large horizontal card — only on page 1, so it's always the single most recent match, never a page-2+ item picked arbitrarily. */
-function FeaturedRow({ post }: { post: BlogPost }) {
+function LeadStory({ post }: { post: BlogPost }) {
   return (
     <Link
       href={`/blog/${post.slug}`}
-      className="group grid overflow-hidden rounded-[28px] border border-hairline-light bg-light-raised transition-shadow duration-300 ease-out-expo hover:shadow-[0_24px_50px_rgba(11,15,25,0.09)] sm:grid-cols-2"
+      className="group grid overflow-hidden rounded-[28px] border border-hairline-light bg-white p-2.5 transition-[transform,box-shadow,border-color] duration-300 ease-out-expo hover:-translate-y-1 hover:border-[#0b0f19]/[0.12] hover:shadow-[0_28px_60px_-30px_rgba(11,15,25,0.35)] lg:grid-cols-12"
     >
-      <div className="relative aspect-[16/10] overflow-hidden sm:aspect-auto">
+      <div className="relative aspect-[16/9] overflow-hidden rounded-[20px] bg-light-surface lg:col-span-7 lg:aspect-auto lg:min-h-[360px]">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={post.image}
-          alt=""
-          className="h-full w-full object-cover transition-transform duration-500 ease-out-expo group-hover:scale-[1.04]"
+          alt={post.imageAlt ?? ""}
+          decoding="async"
+          className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out-expo group-hover:scale-[1.04]"
         />
+        <span className="absolute left-4 top-4 rounded-full bg-white/90 px-3 py-1 font-urbanist text-[10.5px] font-semibold uppercase tracking-[0.12em] text-ink shadow-[0_2px_8px_-2px_rgba(11,15,25,0.2)] backdrop-blur-sm">
+          Latest
+        </span>
+        <ReadCount slug={post.slug} badge className="bottom-4! left-4!" />
       </div>
-      <div className="flex flex-col justify-center p-6 sm:p-8 lg:p-10">
-        <p className="font-urbanist text-[12px] font-semibold uppercase tracking-[0.08em] text-aurora-violet">
-          {post.topic} · {post.readingTime} min read
-        </p>
-        <h2 className="mt-3 font-urbanist text-xl font-bold leading-tight tracking-tight text-ink sm:text-2xl">
+      <div className="flex flex-col px-4 pb-4 pt-6 sm:px-6 lg:col-span-5 lg:px-9 lg:py-9">
+        <PostMeta post={post} />
+        <h3 className="mt-3 text-balance font-urbanist text-[24px] font-bold leading-[1.18] tracking-[-0.02em] text-ink transition-colors duration-300 group-hover:text-aurora-violet sm:text-[30px]">
           {post.title}
-        </h2>
-        <p className="mt-3 font-urbanist text-[14px] leading-relaxed text-ink-dim line-clamp-2">{post.excerpt}</p>
-        <p className="mt-4 font-urbanist text-[12.5px] text-ink-faint">
-          {post.author} · {formatDate(post.date)}
-        </p>
-        <span className="mt-5 inline-flex w-fit items-center gap-2 font-urbanist text-sm font-semibold text-ink transition-colors duration-300 group-hover:text-aurora-violet">
-          Read article
-          <ArrowRight size={15} strokeWidth={1.75} className="transition-transform duration-300 group-hover:translate-x-1" />
+        </h3>
+        <p className="mt-4 line-clamp-3 font-urbanist text-[15px] leading-relaxed text-ink-dim">{post.excerpt}</p>
+        <span className="mt-auto flex items-center justify-between gap-4 pt-8 font-urbanist text-[13.5px] font-semibold text-ink">
+          Read the article
+          <span className="grid h-10 w-10 place-items-center rounded-full border border-[#0b0f19]/[0.1] transition-[background-color,border-color,color,transform] duration-300 group-hover:rotate-45 group-hover:border-[#0b0f19] group-hover:bg-[#0b0f19] group-hover:text-white">
+            <ArrowUpRight size={16} strokeWidth={2} aria-hidden />
+          </span>
         </span>
       </div>
     </Link>
   );
 }
 
+function Chip({ active, label, count, color, onClick }: { active: boolean; label: string; count: number; color?: string; onClick: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-pressed={active}
+      // a selected topic takes its own colour (white text, ≥ 5:1)
+      style={active && color ? { backgroundColor: color, borderColor: color } : undefined}
+      className={`inline-flex shrink-0 items-center gap-2 rounded-full border py-2 ${color ? "pl-3.5" : "pl-4"} pr-2 font-urbanist text-[13.5px] font-semibold transition-[background-color,border-color,color] duration-200 ${
+        active
+          ? "border-[#0b0f19] bg-[#0b0f19] text-white"
+          : "border-hairline-light bg-white text-ink-dim hover:border-[#0b0f19]/[0.2] hover:text-ink"
+      }`}
+    >
+      {color && <span aria-hidden className="h-2 w-2 rounded-full" style={{ backgroundColor: active ? "#fff" : color }} />}
+      {label}
+      <span
+        className={`grid h-[22px] min-w-[22px] place-items-center rounded-full px-1.5 text-[11px] font-semibold tabular-nums ${
+          active ? "bg-white/15 text-white" : "bg-[#f3f2ef] text-ink-faint"
+        }`}
+      >
+        {count}
+      </span>
+    </button>
+  );
+}
+
 export default function BlogBrowser({ posts }: { posts: BlogPost[] }) {
-  // Read from the URL client-side instead of the page reading `searchParams`
-  // server-side — that made the whole /blog route opt out of static
-  // rendering, which was interfering with this page's metadata (Lighthouse
-  // consistently reported the meta description missing only on this page,
-  // among every other page audited). BlogBrowser is entirely client-driven
-  // already, so this is a purely local change.
+  // Read from the URL client-side (a server `searchParams` read would make
+  // /blog dynamic and broke its metadata in Lighthouse).
   const searchParams = useSearchParams();
-  const initialTopic = searchParams.get("topic") ?? undefined;
+  const [topic, setTopic] = useState<string | null>(() => {
+    const t = searchParams.get("topic");
+    return t && TOPICS.includes(t) ? t : null;
+  });
   const [query, setQuery] = useState("");
-  const [topics, setTopics] = useState<Set<string>>(() => (initialTopic ? new Set([initialTopic]) : new Set()));
   const [page, setPage] = useState(1);
-  const chipRowRef = useRef<HTMLDivElement>(null);
-  const draggedRef = useRef(false);
+  const [sort, setSort] = useState<"latest" | "popular">("latest");
+  const stats = useBlogStats();
 
-  // Drag-to-scroll on the topic chip row (mouse only — touch already
-  // scrolls natively). Same mechanics as Testimonials'/CaseStudies'
-  // draggable rows, except a press starting ON a chip is allowed to
-  // begin a drag too (the chips fill the row, so excluding them would
-  // leave almost no draggable surface) — a real drag still suppresses
-  // that chip's click via the same capture-phase technique.
-  useEffect(() => {
-    const el = chipRowRef.current;
-    if (!el) return;
-    let dragging = false;
-    let startX = 0;
-    let startScroll = 0;
-
-    const onPointerDown = (e: PointerEvent) => {
-      if (e.pointerType !== "mouse") return;
-      dragging = true;
-      draggedRef.current = false;
-      startX = e.clientX;
-      startScroll = el.scrollLeft;
-      // Pointer capture is deliberately NOT taken here — only once a real
-      // drag is confirmed in onPointerMove. Capturing eagerly on every
-      // mousedown (even a plain click with near-zero movement) intercepted
-      // the browser's own click-target resolution for chips underneath the
-      // pointer, silently swallowing ordinary clicks — confirmed via a
-      // Playwright click (which has natural mouse jitter) failing to
-      // toggle a chip, while a raw DOM `.click()` (no pointer events at
-      // all) worked fine.
-      el.style.cursor = "grabbing";
-    };
-    const onPointerMove = (e: PointerEvent) => {
-      if (!dragging) return;
-      const dx = e.clientX - startX;
-      if (!draggedRef.current && Math.abs(dx) > 6) {
-        draggedRef.current = true;
-        el.setPointerCapture(e.pointerId);
-      }
-      if (draggedRef.current) el.scrollLeft = startScroll - dx;
-    };
-    const endDrag = (e: PointerEvent) => {
-      if (!dragging) return;
-      dragging = false;
-      el.style.cursor = "grab";
-      if (el.hasPointerCapture(e.pointerId)) el.releasePointerCapture(e.pointerId);
-    };
-    const onClickCapture = (e: MouseEvent) => {
-      if (draggedRef.current) {
-        e.preventDefault();
-        e.stopPropagation();
-        draggedRef.current = false;
-      }
-    };
-
-    el.addEventListener("pointerdown", onPointerDown);
-    el.addEventListener("pointermove", onPointerMove);
-    el.addEventListener("pointerup", endDrag);
-    el.addEventListener("pointercancel", endDrag);
-    el.addEventListener("click", onClickCapture, true);
-    return () => {
-      el.removeEventListener("pointerdown", onPointerDown);
-      el.removeEventListener("pointermove", onPointerMove);
-      el.removeEventListener("pointerup", endDrag);
-      el.removeEventListener("pointercancel", endDrag);
-      el.removeEventListener("click", onClickCapture, true);
-    };
-  }, []);
+  const sorted = useMemo(() => {
+    const byDate = [...posts].sort((a, b) => b.date.localeCompare(a.date));
+    if (sort === "latest") return byDate;
+    const reads = (slug: string) => stats?.[slug]?.reads ?? 0;
+    return byDate.sort((a, b) => reads(b.slug) - reads(a.slug));
+  }, [posts, sort, stats]);
+  const counts = useMemo(() => {
+    const m = new Map<string, number>();
+    for (const p of posts) m.set(p.topic, (m.get(p.topic) ?? 0) + 1);
+    return m;
+  }, [posts]);
+  const topics = TOPICS.filter((t) => counts.get(t));
 
   const q = query.trim().toLowerCase();
+  const filtered = useMemo(
+    () =>
+      sorted.filter((p) => {
+        if (topic && p.topic !== topic) return false;
+        if (!q) return true;
+        return `${p.title} ${p.excerpt} ${p.topic} ${(p.techTags ?? []).join(" ")}`.toLowerCase().includes(q);
+      }),
+    [sorted, topic, q],
+  );
 
-  const filtered = useMemo(() => {
-    const list = posts.filter((p) => {
-      if (topics.size && !topics.has(p.topic)) return false;
-      if (q) {
-        const haystack = `${p.title} ${p.excerpt} ${p.topic} ${(p.techTags ?? []).join(" ")}`.toLowerCase();
-        if (!haystack.includes(q)) return false;
-      }
-      return true;
-    });
-    return [...list].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-  }, [posts, topics, q]);
+  const filtering = Boolean(topic || q);
+  // the newest article leads page 1 when nothing is filtered and the list is by date
+  const lead = !filtering && sort === "latest" ? filtered.find((p) => p.featured) ?? filtered[0] : undefined;
+  const list = lead ? filtered.filter((p) => p !== lead) : filtered;
+  const totalPages = Math.max(1, Math.ceil(list.length / PAGE_SIZE));
+  const current = Math.min(page, totalPages);
+  const items = list.slice((current - 1) * PAGE_SIZE, current * PAGE_SIZE);
 
-  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
-  const clampedPage = Math.min(page, totalPages);
-  const pageItems = filtered.slice((clampedPage - 1) * PAGE_SIZE, clampedPage * PAGE_SIZE);
-  const featuredItem = clampedPage === 1 ? pageItems[0] : undefined;
-  const restItems = clampedPage === 1 ? pageItems.slice(1) : pageItems;
-
-  const hasActiveFilters = topics.size > 0 || q.length > 0;
-
+  const chooseTopic = (t: string | null) => {
+    setTopic(t);
+    setPage(1);
+    const url = new URL(window.location.href);
+    if (t) url.searchParams.set("topic", t);
+    else url.searchParams.delete("topic");
+    window.history.replaceState(window.history.state, "", url);
+  };
   const resetAll = () => {
     setQuery("");
-    setTopics(new Set());
-    setPage(1);
+    chooseTopic(null);
+  };
+  const goTo = (n: number) => {
+    setPage(n);
+    document.getElementById("browse")?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
-  const toggleTopic = (t: string) => {
-    setTopics((s) => {
-      const next = new Set(s);
-      if (next.has(t)) next.delete(t);
-      else next.add(t);
-      return next;
-    });
-    setPage(1);
-  };
+  const n = filtered.length;
+  const status = (
+    <>
+      <span className="font-semibold text-ink">{n}</span> {n === 1 ? "article" : "articles"}
+      {topic && (
+        <>
+          {" "}in <span className="font-semibold text-ink">{topic}</span>
+        </>
+      )}
+      {q && (
+        <>
+          {" "}matching <span className="font-semibold text-ink">&ldquo;{query.trim()}&rdquo;</span>
+        </>
+      )}
+    </>
+  );
 
   return (
-    // No overflow-hidden here — the hex-pattern texture below is already
-    // fully inset (no bleed to clip), and overflow-hidden on any ancestor
-    // of the sidebar's `lg:sticky` <aside> silently breaks position:sticky
-    // even though it never actually scrolls itself. Confirmed the sidebar
-    // was scrolling away 1:1 with the page instead of pinning at top-32
-    // until this was removed.
-    <section id="browse" className="relative bg-light-surface py-14 lg:py-20">
-      <div
-        aria-hidden
-        className="absolute inset-0 opacity-[0.03]"
-        style={{ backgroundImage: "url(/media/hex-pattern-tile.svg)", backgroundSize: "112px 194px" }}
-      />
+    <section id="browse" aria-labelledby="browse-heading" className="theme-light relative scroll-mt-24 overflow-clip bg-light-surface py-16 lg:py-24">
+      <DotField className="[mask-image:linear-gradient(to_bottom,transparent,black_12%,black_88%,transparent)]" />
       <div className="relative mx-auto max-w-7xl px-6 lg:px-10">
-        <SectionEyebrow>Browse</SectionEyebrow>
-        <SectionTitle id="browse-heading">Latest articles</SectionTitle>
-        <SectionDescription className="mt-3 max-w-xl">
-          New posts on product delivery, engineering, and automation.
-        </SectionDescription>
-
-        <div className="mt-8 grid gap-10 lg:grid-cols-[1fr_300px]">
-          <div className="min-w-0">
-            {/* Standout search */}
-            <div className="relative">
-              <Search size={19} strokeWidth={1.75} className="pointer-events-none absolute left-5 top-1/2 -translate-y-1/2 text-ink-faint" />
-              <input
-                value={query}
-                onChange={(e) => {
-                  setQuery(e.target.value);
-                  setPage(1);
-                }}
-                type="text"
-                placeholder='Search articles (e.g., "MVP", "Shopify", "RAG", "CRO")'
-                className="w-full rounded-2xl border border-hairline-light bg-light-raised py-4 pl-14 pr-5 font-urbanist text-[15px] text-ink shadow-[0_1px_2px_rgba(11,15,25,0.04)] outline-none transition-[border-color,box-shadow] placeholder:text-ink-faint focus:border-aurora-violet/60 focus:shadow-[0_8px_24px_rgba(124,108,255,0.12)]"
-              />
-            </div>
-
-            {/* Topic chips — draggable row */}
-            <div
-              ref={chipRowRef}
-              className="no-scrollbar mt-5 flex cursor-grab items-center gap-2.5 overflow-x-auto"
-            >
+        {/* toolbar: title + search */}
+        <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+          <div>
+            <SectionEyebrow>Browse</SectionEyebrow>
+            <SectionTitle id="browse-heading">All articles</SectionTitle>
+          </div>
+          <div className="relative w-full lg:w-[380px]">
+            <label htmlFor="blog-search" className="sr-only">
+              Search articles
+            </label>
+            <Search size={17} strokeWidth={1.9} aria-hidden className="pointer-events-none absolute left-5 top-1/2 -translate-y-1/2 text-ink-faint" />
+            <input
+              id="blog-search"
+              value={query}
+              onChange={(e) => {
+                setQuery(e.target.value);
+                setPage(1);
+              }}
+              type="search"
+              autoComplete="off"
+              placeholder="Search: MVP, Shopify, RAG…"
+              className="h-12 w-full rounded-full border border-hairline-light bg-white pl-12 pr-11 font-urbanist text-[14.5px] text-ink shadow-[0_1px_2px_rgba(11,15,25,0.04)] transition-[border-color,box-shadow] duration-200 placeholder:text-[#6b7183] hover:border-[#0b0f19]/[0.16] focus:border-[#0b0f19]/[0.3] focus:shadow-[0_0_0_4px_rgba(79,70,229,0.1)] focus-visible:outline-none! [&::-webkit-search-cancel-button]:hidden"
+            />
+            {query && (
               <button
                 type="button"
                 onClick={() => {
-                  setTopics(new Set());
+                  setQuery("");
                   setPage(1);
                 }}
-                className={`shrink-0 rounded-full border px-4 py-2 font-urbanist text-[14px] font-semibold transition-colors duration-200 ${
-                  topics.size === 0
-                    ? "border-ink bg-ink text-canvas"
-                    : "border-hairline-light text-ink-dim hover:border-ink-faint hover:text-ink"
-                }`}
+                aria-label="Clear search"
+                className="absolute right-2.5 top-1/2 grid h-7 w-7 -translate-y-1/2 place-items-center rounded-full text-ink-faint transition-colors hover:bg-[#f3f2ef] hover:text-ink"
               >
-                All topics
+                <X size={14} strokeWidth={2} />
               </button>
-              {TOPICS.map((t) => (
-                <button
-                  key={t}
-                  type="button"
-                  onClick={() => toggleTopic(t)}
-                  className={`shrink-0 rounded-full border px-4 py-2 font-urbanist text-[14px] font-semibold transition-colors duration-200 ${
-                    topics.has(t)
-                      ? "border-aurora-violet bg-aurora-violet/10 text-aurora-violet"
-                      : "border-hairline-light text-ink-dim hover:border-ink-faint hover:text-ink"
-                  }`}
-                >
-                  {t}
-                </button>
-              ))}
-            </div>
-
-            <div className="mt-5 flex items-center justify-between border-t border-hairline-light pt-4">
-              <p className="font-urbanist text-[13px] text-ink-faint">
-                {filtered.length} {filtered.length === 1 ? "article" : "articles"}
-              </p>
-              {hasActiveFilters && (
-                <button
-                  type="button"
-                  onClick={resetAll}
-                  className="inline-flex items-center gap-1 font-urbanist text-[13px] font-medium text-ink-faint transition-colors hover:text-ink"
-                >
-                  <X size={13} strokeWidth={1.75} />
-                  Clear
-                </button>
-              )}
-            </div>
-
-            {pageItems.length > 0 ? (
-              <div className="mt-6 space-y-5">
-                {featuredItem && <FeaturedRow post={featuredItem} />}
-                <div className="grid gap-5 sm:grid-cols-2">
-                  {restItems.map((post) => (
-                    <PostCard key={post.slug} post={post} />
-                  ))}
-                </div>
-              </div>
-            ) : (
-              <div className="mt-6 rounded-2xl border border-dashed border-hairline-light py-16 text-center">
-                <p className="font-urbanist text-sm text-ink-dim">No articles match those filters yet.</p>
-                <button type="button" onClick={resetAll} className="mt-3 font-urbanist text-sm font-semibold text-aurora-violet">
-                  Clear filters
-                </button>
-              </div>
-            )}
-
-            {totalPages > 1 && (
-              <div className="mt-10 flex items-center justify-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => setPage((p) => Math.max(1, p - 1))}
-                  disabled={clampedPage === 1}
-                  aria-label="Previous page"
-                  className="flex h-9 w-9 items-center justify-center rounded-full border border-hairline-light text-ink-dim transition-colors hover:border-ink-faint hover:text-ink disabled:opacity-30"
-                >
-                  <ChevronLeft size={16} strokeWidth={1.75} />
-                </button>
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map((n) => (
-                  <button
-                    key={n}
-                    type="button"
-                    onClick={() => setPage(n)}
-                    aria-current={n === clampedPage ? "page" : undefined}
-                    className={`flex h-9 w-9 items-center justify-center rounded-full font-urbanist text-[13px] font-semibold transition-colors ${
-                      n === clampedPage ? "bg-ink text-canvas" : "text-ink-dim hover:bg-light-surface"
-                    }`}
-                  >
-                    {n}
-                  </button>
-                ))}
-                <button
-                  type="button"
-                  onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                  disabled={clampedPage === totalPages}
-                  aria-label="Next page"
-                  className="flex h-9 w-9 items-center justify-center rounded-full border border-hairline-light text-ink-dim transition-colors hover:border-ink-faint hover:text-ink disabled:opacity-30"
-                >
-                  <ChevronRight size={16} strokeWidth={1.75} />
-                </button>
-              </div>
             )}
           </div>
-
-          <aside className="space-y-5 lg:sticky lg:top-32 lg:h-fit">
-            <NewsletterForm />
-            <div className="rounded-2xl border border-hairline-light bg-light-raised p-6">
-              <h3 className="font-urbanist text-[15px] font-bold text-ink">Need help shipping this?</h3>
-              <p className="mt-2 font-urbanist text-[13px] leading-relaxed text-ink-dim">
-                If you&apos;re building a product and need predictable delivery, we&apos;ll recommend the right
-                service and engagement model.
-              </p>
-              <Link
-                href="/contact"
-                className="mt-5 inline-flex w-full items-center justify-center gap-1.5 rounded-full border border-aurora-violet/70 px-5 py-2.5 font-urbanist text-[13px] font-semibold text-ink transition-colors hover:border-aurora-violet"
-              >
-                Book a Call
-                <ArrowRight size={13} strokeWidth={1.75} />
-              </Link>
-              <Link
-                href="/engagement"
-                className="mt-3 block text-center font-urbanist text-[12.5px] font-medium text-ink-faint transition-colors hover:text-ink"
-              >
-                Explore Engagement Models →
-              </Link>
-            </div>
-          </aside>
         </div>
+
+        {/* topics: wrap on desktop, swipe on phones */}
+        <div
+          role="group"
+          aria-label="Filter by topic"
+          className="no-scrollbar -mx-6 mt-8 flex gap-2 overflow-x-auto px-6 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0"
+        >
+          <Chip active={!topic} label="All topics" count={posts.length} onClick={() => chooseTopic(null)} />
+          {topics.map((t) => (
+            <Chip key={t} active={topic === t} label={t} count={counts.get(t) ?? 0} color={topicColor(t)} onClick={() => chooseTopic(topic === t ? null : t)} />
+          ))}
+        </div>
+
+        <div className="mt-6 flex min-h-[37px] items-center justify-between gap-4 border-t border-[#0b0f19]/[0.08] pt-4">
+          <p aria-live="polite" className="font-urbanist text-[13.5px] text-ink-dim">
+            {status}
+          </p>
+          <div className="flex items-center gap-2">
+          {filtering && (
+            <button
+              type="button"
+              onClick={resetAll}
+              className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 font-urbanist text-[13px] font-semibold text-ink-dim transition-colors hover:bg-white hover:text-ink"
+            >
+              <X size={13} strokeWidth={2} aria-hidden />
+              Clear filters
+            </button>
+          )}
+          <div role="radiogroup" aria-label="Sort articles" className="flex rounded-full border border-hairline-light bg-white p-1">
+            {(["latest", "popular"] as const).map((k) => (
+              <button
+                key={k}
+                type="button"
+                role="radio"
+                aria-checked={sort === k}
+                onClick={() => {
+                  setSort(k);
+                  setPage(1);
+                }}
+                className={`rounded-full px-3.5 py-1.5 font-urbanist text-[12.5px] font-semibold transition-colors duration-200 ${
+                  sort === k ? "bg-[#0b0f19] text-white" : "text-ink-dim hover:text-ink"
+                }`}
+              >
+                {k === "latest" ? "Latest" : "Most read"}
+              </button>
+            ))}
+          </div>
+          </div>
+        </div>
+
+        {n === 0 ? (
+          <div className="mt-8 rounded-[24px] border border-dashed border-[#0b0f19]/[0.14] bg-white/60 px-6 py-16 text-center">
+            <p className="font-urbanist text-[15px] font-semibold text-ink">No articles match that yet.</p>
+            <p className="mt-1.5 font-urbanist text-[13.5px] text-ink-dim">Try another word, or browse every topic.</p>
+            <button
+              type="button"
+              onClick={resetAll}
+              className="mt-5 inline-flex items-center gap-2 rounded-full bg-[#0b0f19] px-5 py-2.5 font-urbanist text-[13px] font-semibold text-white transition-colors hover:bg-[#1f2433]"
+            >
+              Show all articles
+            </button>
+          </div>
+        ) : (
+          <>
+            {lead && current === 1 && (
+              <div className="mt-8">
+                <LeadStory post={lead} />
+              </div>
+            )}
+            {items.length > 0 && (
+              <ul className="mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                {items.map((post) => (
+                  <li key={post.slug}>
+                    <PostCard post={post} />
+                  </li>
+                ))}
+              </ul>
+            )}
+          </>
+        )}
+
+        {totalPages > 1 && (
+          <nav aria-label="Article pages" className="mt-12 flex items-center justify-center gap-2">
+            <button
+              type="button"
+              onClick={() => goTo(Math.max(1, current - 1))}
+              disabled={current === 1}
+              aria-label="Previous page"
+              className="grid h-10 w-10 place-items-center rounded-full border border-hairline-light bg-white text-ink-dim transition-colors hover:border-[#0b0f19]/[0.2] hover:text-ink disabled:pointer-events-none disabled:opacity-35"
+            >
+              <ChevronLeft size={16} strokeWidth={1.9} />
+            </button>
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((k) => (
+              <button
+                key={k}
+                type="button"
+                onClick={() => goTo(k)}
+                aria-current={k === current ? "page" : undefined}
+                className={`grid h-10 w-10 place-items-center rounded-full font-urbanist text-[13.5px] font-semibold tabular-nums transition-colors ${
+                  k === current ? "bg-[#0b0f19] text-white" : "text-ink-dim hover:bg-white hover:text-ink"
+                }`}
+              >
+                {k}
+              </button>
+            ))}
+            <button
+              type="button"
+              onClick={() => goTo(Math.min(totalPages, current + 1))}
+              disabled={current === totalPages}
+              aria-label="Next page"
+              className="grid h-10 w-10 place-items-center rounded-full border border-hairline-light bg-white text-ink-dim transition-colors hover:border-[#0b0f19]/[0.2] hover:text-ink disabled:pointer-events-none disabled:opacity-35"
+            >
+              <ChevronRight size={16} strokeWidth={1.9} />
+            </button>
+          </nav>
+        )}
       </div>
     </section>
   );

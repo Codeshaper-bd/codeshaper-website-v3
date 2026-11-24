@@ -6,6 +6,8 @@ import Breadcrumbs from "@/components/system/Breadcrumbs";
 import { SectionEyebrow } from "@/components/system/SectionHeading";
 import ContactForm from "@/components/sections/ContactForm";
 import HeroBackdrop from "@/components/system/HeroBackdrop";
+import ContactChannels from "@/components/contact/ContactChannels";
+import Offices from "@/components/contact/Offices";
 
 export const metadata: Metadata = mainMeta("contact", {
   title: "Contact — Book a Call",
@@ -77,6 +79,9 @@ export default function ContactPage() {
         </div>
       </section>
       </div>
+      {/* owner, 24 Nov 2026: every direct way in, then where we are */}
+      <ContactChannels />
+      <Offices />
     </SiteShell>
   );
 }
