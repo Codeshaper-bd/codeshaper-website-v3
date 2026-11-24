@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { ArrowDown, ArrowRight } from "lucide-react";
+import { BLOG_POSTS } from "@/lib/blog";
 import Reveal from "@/components/system/Reveal";
 import Breadcrumbs from "@/components/system/Breadcrumbs";
 import { SectionEyebrow, SectionTitle, SectionDescription } from "@/components/system/SectionHeading";
@@ -12,6 +13,15 @@ import HeroBackdrop from "@/components/system/HeroBackdrop";
  * it floats on top of the homepage Hero, so the card's own top padding
  * (not the outer frame) is what clears it.
  */
+/** Real numbers only, counted from the posts. */
+function facts() {
+  const latest = [...BLOG_POSTS].sort((a, b) => b.date.localeCompare(a.date))[0];
+  const topics = new Set(BLOG_POSTS.map((p) => p.topic)).size;
+  const out = [`${BLOG_POSTS.length} articles`, `${topics} topics`];
+  if (latest) out.push(`Updated ${new Date(latest.date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}`);
+  return out;
+}
+
 export default function BlogHero() {
   return (
     <div className="bg-gradient-to-b from-white from-30% to-light-surface px-3 pb-3 sm:px-4 sm:pb-4">
@@ -34,19 +44,28 @@ export default function BlogHero() {
           <Reveal delay={100}>
             <div className="mt-8 flex flex-wrap items-center gap-3">
               <Link
-                href="/contact"
+                href="#browse"
                 className="inline-flex items-center gap-2 rounded-full bg-ink px-7 py-3.5 font-urbanist text-sm font-semibold text-canvas transition-transform duration-300 hover:scale-[1.02]"
               >
-                Book a Call
-                <ArrowRight size={15} strokeWidth={1.75} />
+                Browse articles
+                <ArrowDown size={15} strokeWidth={1.75} aria-hidden />
               </Link>
               <Link
-                href="#browse"
-                className="inline-flex items-center gap-2 rounded-full border border-hairline-light px-7 py-3.5 font-urbanist text-sm font-semibold text-ink-dim transition-colors hover:border-ink-faint hover:text-ink"
+                href="/contact"
+                className="inline-flex items-center gap-2 rounded-full border border-hairline-light bg-white/60 px-7 py-3.5 font-urbanist text-sm font-semibold text-ink-dim backdrop-blur-sm transition-colors hover:border-ink-faint hover:text-ink"
               >
-                Browse Articles
+                Book a Call
+                <ArrowRight size={15} strokeWidth={1.75} aria-hidden />
               </Link>
             </div>
+            <ul className="mt-8 flex flex-wrap items-center gap-x-5 gap-y-2 font-urbanist text-[13px] font-medium text-ink-dim">
+              {facts().map((f) => (
+                <li key={f} className="flex items-center gap-2">
+                  <span aria-hidden className="h-1 w-1 rounded-full bg-[#4f46e5]" />
+                  {f}
+                </li>
+              ))}
+            </ul>
           </Reveal>
         </div>
       </section>

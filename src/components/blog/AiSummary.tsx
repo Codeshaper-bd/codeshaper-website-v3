@@ -1,23 +1,23 @@
-import { Sparkles } from "lucide-react";
-
+/**
+ * "Key takeaways": the article in three lines, at the top of the article
+ * (not in the sidebar), so a skimmer gets the point before reading on.
+ * Also the block AI answer engines quote most easily.
+ */
 export default function AiSummary({ points }: { points: string[] }) {
   if (points.length === 0) return null;
   return (
-    <div className="rounded-2xl border border-aurora-violet/20 bg-aurora-violet/[0.04] p-6">
-      <div className="flex items-center gap-2">
-        <span className="flex h-7 w-7 items-center justify-center rounded-full bg-aurora-violet/15 text-aurora-violet">
-          <Sparkles size={14} strokeWidth={1.75} />
-        </span>
-        <p className="font-urbanist text-[13px] font-bold text-ink">AI Summary</p>
-      </div>
-      <ul className="mt-4 space-y-2.5">
-        {points.map((point) => (
-          <li key={point} className="flex items-start gap-2.5 font-urbanist text-[14px] leading-relaxed text-ink-dim">
-            <span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-aurora-violet" />
-            {point}
+    <aside aria-label="Key takeaways" className="rounded-[24px] border border-hairline-light bg-white p-6 sm:p-8">
+      <p className="font-urbanist text-[11px] font-semibold uppercase tracking-[0.16em] text-[#4f46e5]">Key takeaways</p>
+      <ol className="mt-5 space-y-4">
+        {points.map((point, i) => (
+          <li key={point} className="flex gap-4 font-urbanist text-[15.5px] leading-relaxed text-ink-mid">
+            <span className="mt-0.5 grid h-6 w-6 shrink-0 place-items-center rounded-full bg-[#eef0ff] text-[11.5px] font-semibold tabular-nums text-[#4f46e5]">
+              {i + 1}
+            </span>
+            <span>{point}</span>
           </li>
         ))}
-      </ul>
-    </div>
+      </ol>
+    </aside>
   );
 }

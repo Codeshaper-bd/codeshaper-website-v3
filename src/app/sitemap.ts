@@ -4,6 +4,7 @@ import { INDUSTRIES } from "@/lib/navigation";
 import { SERVICE_GROUPS, SERVICES, ENGAGEMENT_MODELS, servicePath } from "@/data/services";
 import { BLOG_POSTS } from "@/lib/blog";
 import blog from "@/content/blog.json";
+import { AUTHORS } from "@/lib/authors";
 import { PRODUCTS } from "@/lib/products";
 import { PAGES } from "@/lib/pages";
 import { mainPage } from "@/lib/mainPages";
@@ -84,6 +85,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ...PRODUCTS.filter((p) => !p.seo?.noindex).map((p) => `/products/${p.slug}`),
     ...PAGES.filter((p) => !p.seo?.noindex).map((p) => p.path),
     ...blog.categories.map((c) => `/blog/category/${c.slug}`),
+    ...AUTHORS.map((a) => `/blog/author/${a.slug}`),
   ].map((p) => ({ url: `${SITE_URL}${p}`, lastModified: now, changeFrequency: "monthly" as const, priority: 0.6 }));
 
   return [...[...staticRoutes, ...more].filter((r) => !hidden.has(r.url)), ...serviceGroupRoutes, ...serviceDetailRoutes, ...industryRoutes, ...engagementRoutes, ...blogRoutes, ...caseStudyRoutes];

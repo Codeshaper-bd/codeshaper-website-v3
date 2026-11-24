@@ -5,6 +5,10 @@ import Footer from "@/components/sections/Footer";
 import Newsletter from "@/components/sections/footer/Newsletter";
 import Reveal from "@/components/system/Reveal";
 import LazyHydrate from "@/components/system/LazyHydrate";
+import BookingProvider from "@/components/booking/BookingProvider";
+import { bothFounders, CALL_MINUTES } from "@/lib/founders";
+import { SITE } from "@/lib/siteSettings";
+import { contactChannels } from "@/lib/publishedContact";
 
 /**
  * Shared page frame — Lenis smooth scroll, Navbar, Newsletter + Footer.
@@ -25,6 +29,8 @@ export default function SiteShell({ children }: { children: ReactNode }) {
           <Footer />
         </Reveal>
       </LazyHydrate>
+      {/* every "Book a call" opens the booking window (CMS › Settings › Contact › Booking calendar) */}
+      <BookingProvider calLink={SITE.contact?.booking} founders={bothFounders()} minutes={CALL_MINUTES} channels={contactChannels()} />
       {/* room for the fixed mobile tab bar (MobileTabBar) below the footer */}
       <div aria-hidden className="h-[calc(61px+env(safe-area-inset-bottom))] bg-light-surface lg:hidden" />
     </SmoothScroll>

@@ -9,7 +9,11 @@ import { useMotionAllowed } from "@/lib/motion";
  * *before* the cursor is over the button), then springs back on exit.
  * Transform-only. Inert on touch / reduced motion.
  * Sitewide budget: hero "Book a Call", header "Book a Call", form CTAs.
+ *
+ * OFF (owner, 24 Nov 2026: "turn off the animation that moves with the mouse"):
+ * the wrapper stays so the layout is unchanged; set ENABLED back to true to restore.
  */
+const ENABLED = false;
 const RADIUS = 24;
 const MAX_PULL = 24;
 
@@ -25,7 +29,7 @@ export default function Magnetic({
   const innerRef = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
-    if (!allowed) return;
+    if (!ENABLED || !allowed) return;
     const wrap = wrapRef.current;
     const inner = innerRef.current;
     if (!wrap || !inner) return;

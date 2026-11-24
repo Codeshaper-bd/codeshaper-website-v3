@@ -216,14 +216,18 @@ export function toSite(raw, warn = () => {}) {
     const sections = simpleSections(p.body);
     const a = authors[p.author];
     const date = p.dated_on ?? p.published_at?.slice(0, 10) ?? new Date().toISOString().slice(0, 10);
-    details.posts[p.slug] = strip({ html: sections ? undefined : p.body, seo: seo(p), cta: cta(p), author: a && strip({ name: a.title, role: a.data?.role, bio: a.data?.bio, photo: a.photo?.url, linkedin: safeHref(a.data?.linkedin), website: safeHref(a.data?.website) }), sources: rows(p.data?.sources, ["title", "url"]).filter((s) => safeHref(s.url)), related: p.links?.post ?? [], hideToc: p.data?.hide_toc || undefined });
+    details.posts[p.slug] = strip({ html: sections ? undefined : p.body, seo: seo(p), cta: cta(p), author: a && strip({ name: a.title, role: a.data?.role, bio: a.data?.bio, photo: a.photo?.url, linkedin: safeHref(a.data?.linkedin), website: safeHref(a.data?.website) }), sources: rows(p.data?.sources, ["title", "url"]).filter((s) => safeHref(s.url)), related: p.links?.post ?? [], hideToc: p.data?.hide_toc || undefined, founderNote: ["founder", "cofounder"].includes(p.data?.note_by) && p.data?.note_quote?.trim() ? { by: p.data.note_by, quote: p.data.note_quote.trim() } : undefined });
     return [{
-      ...strip({ slug: p.slug, title: p.title, excerpt: p.excerpt, topic: cat.title, topicSlug: cat.slug, format: p.format || "Guide", level: p.level || "Beginner", industry: bySlug.industry[p.links?.industry?.[0]]?.title, techTags: (p.links?.tag ?? []).map((t) => tags[t]?.title).filter(Boolean), tagSlugs: p.links?.tag, author: a?.title ?? "The CodeShaper Team", date, lastUpdated: p.reviewed_on ?? date, readingTime: p.data?.reading_shown ?? p.reading_minutes ?? 1, image: p.cover.url, imageAlt: p.cover.alt, featured: p.is_featured || undefined, headings: sections ? undefined : headingsOf(p.body) }),
+      ...strip({ slug: p.slug, title: p.title, excerpt: p.excerpt, topic: cat.title, topicSlug: cat.slug, format: p.format || "Guide", level: p.level || "Beginner", industry: bySlug.industry[p.links?.industry?.[0]]?.title, techTags: (p.links?.tag ?? []).map((t) => tags[t]?.title).filter(Boolean), tagSlugs: p.links?.tag, author: a?.title ?? "The CodeShaper Team", authorSlug: a?.slug, date, lastUpdated: p.reviewed_on ?? date, readingTime: p.data?.reading_shown ?? p.reading_minutes ?? 1, image: p.cover.url, imageAlt: p.cover.alt, featured: p.is_featured || undefined, headings: sections ? undefined : headingsOf(p.body) }),
       summaryPoints: list(p.data?.key_points), sections: sections ?? [], faqs: faqs(p.data?.faqs),
     }];
   }).sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0) || b.date.localeCompare(a.date));
   const taxonomy = (o, key) => Object.values(o).map((t) => strip({ slug: t.slug, title: t.title, parent: t.parent, description: t.data?.description, color: t.data?.color, seo: seo(t), count: posts.filter((p) => key(p, t.slug)).length })).filter((t) => t.count);
-  const blog = { categories: taxonomy(cats, (p, s) => p.topicSlug === s || cats[p.topicSlug]?.parent === s), tags: taxonomy(tags, (p, s) => p.tagSlugs?.includes(s)) };
+  // authors with at least one published post: their page lists their articles (/blog/author/[slug])
+  const authorList = Object.values(authors)
+    .map((a) => strip({ slug: a.slug, title: a.title, role: a.data?.role, bio: a.data?.bio, photo: a.photo?.url, linkedin: safeHref(a.data?.linkedin), website: safeHref(a.data?.website), seo: seo(a), count: posts.filter((p) => p.authorSlug === a.slug).length }))
+    .filter((a) => a.count);
+  const blog = { categories: taxonomy(cats, (p, s) => p.topicSlug === s || cats[p.topicSlug]?.parent === s), tags: taxonomy(tags, (p, s) => p.tagSlugs?.includes(s)), authors: authorList };
 
   // ── long content for detail pages ────────────────────────────────────────
   function cta(x) {
@@ -270,7 +274,7 @@ export function toSite(raw, warn = () => {}) {
   const pages = uniq("pages").filter((p) => !p.system).map((p) => strip({ path: p.path, title: p.title, intro: p.data?.intro, eyebrow: p.data?.eyebrow, layout: p.data?.layout || "hero", html: p.body, image: p.cover?.url, seo: seo(p), menu: p.data?.menu, menuLabel: p.data?.menu_label }));
   const menu = pages.filter((p) => p.menu && p.menu !== "none").map((p) => ({ label: p.menuLabel || p.title, href: p.path, where: p.menu }));
   if (products.length) menu.unshift({ label: "Products", href: "/products", where: "both" });
-  const mainPages = Object.fromEntries((raw.pages ?? []).filter((p) => p.system).map((p) => [p.system, p.system === "home" ? { ...strip({ seo: seo(p), hero: homeWords(p.data?.hero) }), sections: homeSections(p.data?.sections, warn) } : strip({ seo: seo(p) })]));
+  const mainPages = Object.fromEntries((raw.pages ?? []).filter((p) => p.system).map((p) => [p.system, p.system === "home" ? { ...strip({ seo: seo(p), hero: homeWords(p.data?.hero) }), sections: homeSections(p.data?.sections, warn) } : strip({ seo: seo(p), consult: p.system === "blog" && ["founder", "cofounder", "both"].includes(p.data?.consult) ? p.data.consult : undefined })]));
 
   // ── the whole website ────────────────────────────────────────────────────
   const S = raw.site ?? {};
@@ -300,7 +304,7 @@ export function toSite(raw, warn = () => {}) {
   const footerLinks = links(f.links);
   footerLinks.push(...menu.filter((m) => m.where !== "company" && !footerLinks.some((l) => l.href === m.href)).map((m) => ({ label: m.label, href: m.href })));
   const site = {
-    contact: strip({ email: S.contact?.email, phone: S.contact?.phone, whatsapp: S.contact?.whatsapp, address: S.contact?.address, hours: S.contact?.hours, social: strip(Object.fromEntries(Object.entries(S.contact?.social ?? {}).filter(([, u]) => /^https?:\/\//i.test(u ?? "")))) }),
+    contact: strip({ email: S.contact?.email, phone: S.contact?.phone, whatsapp: S.contact?.whatsapp, address: S.contact?.address, hours: S.contact?.hours, booking: /^https:\/\/([\w-]+\.)?cal\.com\/[\w./-]+$/i.test(S.contact?.booking_link ?? "") ? S.contact.booking_link : undefined, social: strip(Object.fromEntries(Object.entries(S.contact?.social ?? {}).filter(([, u]) => /^https?:\/\//i.test(u ?? "")))) }),
     footer: strip({ tagline: f.tagline, button: button(f.button), links: footerLinks, places: list(f.places), badges: rows(f.badges, ["title", "href"]).filter((b) => /^https?:\/\//i.test(b.href)).map((b) => strip({ title: b.title, subtitle: b.subtitle, href: b.href, color: /^#[0-9a-f]{6}$/i.test(b.color ?? "") ? b.color : undefined })), copyright: f.copyright }),
     seo: strip({ title: S.seo?.title, description: S.seo?.description, image: S.seo?.image?.url, google: S.seo?.google, bing: S.seo?.bing }),
   };

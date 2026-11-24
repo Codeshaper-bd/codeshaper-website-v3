@@ -5,6 +5,7 @@ import Reveal from "@/components/system/Reveal";
 import { BLOG_POSTS, type BlogPost } from "@/lib/blog";
 import { homeCopy, type CopyOf } from "@/lib/homeCopy";
 import DotField from "@/components/sections/human-ai-flow/DotField";
+import { TopicLabel } from "@/components/blog/PostCard";
 
 /**
  * Homepage › latest articles. Closes the page with proof of thinking: one
@@ -24,10 +25,7 @@ function pick(): BlogPost[] {
 function Meta({ post }: { post: BlogPost }) {
   return (
     <p className="font-urbanist text-[12px] font-medium text-ink-faint">
-      <span className="font-semibold text-[#4f46e5]">{post.topic}</span>
-      <span aria-hidden className="mx-1.5">
-        ·
-      </span>
+      <TopicLabel topic={post.topic} className="mr-1.5" />
       {post.readingTime} min read
       <span aria-hidden className="mx-1.5">
         ·

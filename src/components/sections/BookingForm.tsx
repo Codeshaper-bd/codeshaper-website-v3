@@ -14,7 +14,7 @@ import { SERVICE_GROUPS } from "@/data/services";
  */
 /** Soft field: off-white at rest, darker edge on hover; on focus it turns white with an indigo edge and halo (no browser outline). */
 const field =
-  "w-full rounded-[14px] border border-[#0b0f19]/[0.09] bg-[#fafaf9] px-4 py-3.5 font-urbanist text-[14.5px] text-ink shadow-[inset_0_1px_2px_rgba(11,15,25,0.03)] outline-none transition-[border-color,box-shadow,background-color] duration-200 placeholder:text-[#6b7183] hover:border-[#0b0f19]/[0.16] focus:border-[#615fff] focus:bg-white focus:shadow-[0_0_0_4px_rgba(97,95,255,0.12)] focus-visible:outline-none!";
+  "w-full rounded-control border border-[#0b0f19]/[0.12] bg-white px-3.5 py-2.5 font-urbanist text-[14.5px] text-ink shadow-[0_1px_1px_rgba(11,15,25,0.04),0_2px_5px_-2px_rgba(11,15,25,0.06)] outline-none transition-[border-color,box-shadow] duration-150 placeholder:text-[#8a8fa0] hover:border-[#0b0f19]/[0.2] focus:border-[#615fff] focus:shadow-[0_0_0_3px_rgba(97,95,255,0.2),0_1px_1px_rgba(11,15,25,0.04)] focus-visible:outline-none!";
 const label = "mb-1.5 block font-urbanist text-[12.5px] font-semibold text-ink";
 
 /**
