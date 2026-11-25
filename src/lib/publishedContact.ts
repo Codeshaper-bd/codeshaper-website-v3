@@ -23,5 +23,5 @@ export const PUBLISHED = {
 /** The direct ways to reach us: CMS values first, the published ones otherwise. */
 export function contactChannels() {
   const c = SITE.contact ?? {};
-  return { email: c.email || PUBLISHED.email, phone: c.phone || PUBLISHED.phone, whatsapp: c.whatsapp || PUBLISHED.whatsapp };
+  return { email: c.email || PUBLISHED.email, support: c.support || PUBLISHED.support, phone: c.phone || PUBLISHED.phone, whatsapp: c.whatsapp || PUBLISHED.whatsapp };
 }

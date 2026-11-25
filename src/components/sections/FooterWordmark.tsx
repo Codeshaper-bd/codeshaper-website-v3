@@ -10,6 +10,14 @@ import { usePrefersReducedMotion } from "@/lib/motion";
 
 const WORD = "CodeShaper";
 const ACCENT = "#4D5CDE"; // sampled from the real logo mark (public/brand/logo.png)
+/**
+ * Owner, 25 Nov 2026: the wordmark stands in the footer landscape as a far
+ * range behind the mountains (FooterLandscape renders it). Letters are filled
+ * like the mountains: a lavender peak fading into the far-mountain haze at the
+ * feet, where the hills cover them. Hover lights the peaks in the logo accent.
+ */
+/** one flat colour, a silhouette range (owner, 25 Nov 2026: gradients and rim looked busy); the landscape scene picks it */
+const DAY_TONE = "#c3bbf6";
 const FIT_PROBE_SIZE = 100; // px — arbitrary known base used to compute the fit ratio
 
 /**
@@ -49,7 +57,9 @@ const FIT_PROBE_SIZE = 100; // px — arbitrary known base used to compute the f
  * theme this section is actually using, not whichever it used when this
  * was last touched.
  */
-export default function FooterWordmark() {
+export default function FooterWordmark({ tone = DAY_TONE }: { tone?: string }) {
+  const toneRef = useRef(tone);
+  toneRef.current = tone;
   const gsapRef = useRef<typeof gsapType | null>(null);
   const reduced = usePrefersReducedMotion();
   const wrapRef = useRef<HTMLDivElement>(null);
@@ -89,11 +99,20 @@ export default function FooterWordmark() {
     if (!letters.length || !container) return;
     let cancelled = false;
     let cleanup = () => {};
-    void loadGsap().then((gsap) => {
-      if (cancelled) return;
-      gsapRef.current = gsap;
-      cleanup = run(gsap);
-    });
+    // GSAP (~70 KB) loads only when the footer comes near the screen, not with every page (owner, 25 Nov 2026: lighter phones)
+    const near = new IntersectionObserver(
+      ([e]) => {
+        if (!e.isIntersecting) return;
+        near.disconnect();
+        void loadGsap().then((gsap) => {
+          if (cancelled) return;
+          gsapRef.current = gsap;
+          cleanup = run(gsap);
+        });
+      },
+      { rootMargin: "800px 0px" },
+    );
+    near.observe(container);
     const run = (gsap: typeof gsapType) => {
 
     // overflow-hidden only exists to mask the entrance slide-up; once
@@ -146,6 +165,7 @@ export default function FooterWordmark() {
     };
     return () => {
       cancelled = true;
+      near.disconnect();
       cleanup();
     };
   }, [reduced]);
@@ -163,7 +183,7 @@ export default function FooterWordmark() {
       gsap.to(el, {
         y: -influence * 18,
         scale: 1 + influence * 0.12,
-        color: influence > 0.15 ? ACCENT : baseColorRef.current,
+        "--wm-top": influence > 0.15 ? ACCENT : toneRef.current,
         duration: 0.4,
         ease: "power3.out",
         overwrite: "auto",
@@ -175,7 +195,7 @@ export default function FooterWordmark() {
     const gsap = gsapRef.current;
     if (reduced || !gsap) return;
     const letters = lettersRef.current.filter((el): el is HTMLSpanElement => Boolean(el));
-    gsap.to(letters, { y: 0, scale: 1, color: baseColorRef.current, duration: 0.5, ease: "power3.out", overwrite: "auto" });
+    gsap.to(letters, { y: 0, scale: 1, "--wm-top": toneRef.current, duration: 0.5, ease: "power3.out", overwrite: "auto" });
   };
 
   return (
@@ -195,7 +215,13 @@ export default function FooterWordmark() {
             ref={(el) => {
               lettersRef.current[i] = el;
             }}
-            className="inline-block"
+            className="inline-block bg-clip-text text-transparent [-webkit-background-clip:text]"
+            style={
+              {
+                "--wm-top": tone,
+                backgroundImage: `linear-gradient(180deg, var(--wm-top) 0%, ${tone} 55%, ${tone} 100%)`,
+              } as React.CSSProperties
+            }
           >
             {ch}
           </span>

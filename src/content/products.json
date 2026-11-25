@@ -89,7 +89,12 @@
     "q": "Do you help with setup and training?",
     "a": "Yes. We can install it, move your existing data in and train your team."
    }
-  ]
+  ],
+  "seo": {
+   "title": "Acculance: POS, Inventory & Accounting Software",
+   "description": "Point-of-sale, inventory and accounting for retailers, wholesalers and distributors. Sell at the counter, track stock across warehouses, keep the books.",
+   "image": "/cms/9fb5fcd94b97-acculance.jpg"
+  }
  },
  {
   "slug": "dashcode",
@@ -182,6 +187,11 @@
   ],
   "links": {
    "site": "https://themeforest.net/item/dashcode-admin-dashboard-template/42600453"
+  },
+  "seo": {
+   "title": "Dashcode: Tailwind CSS Admin Dashboard Template",
+   "description": "Premium Tailwind CSS admin dashboard template for React, Next.js, Vue, Laravel and HTML, with ready dashboards for analytics, eCommerce, CRM and more.",
+   "image": "/cms/3433fe658e8c-dashcode.jpg"
   }
  },
  {
@@ -216,6 +226,11 @@
   ],
   "pricing": {
    "mode": "demo"
+  },
+  "seo": {
+   "title": "Banizo: Retail Platform for Online & In-Store",
+   "description": "Banizo brings orders, products, customers and payments together for growing retailers, so you can sell online and in store without juggling tools.",
+   "image": "/cms/699afbfd7746-banizo.jpg"
   }
  }
 ]

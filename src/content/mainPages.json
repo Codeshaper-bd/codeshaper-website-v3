@@ -1,5 +1,9 @@
 {
  "home": {
+  "seo": {
+   "title": "AI Engineering & Software Development Company",
+   "description": "CodeShaper builds AI agents, SaaS products, MVPs and websites for startups and global brands in 60+ countries. Production-ready, from prototype to scale."
+  },
   "hero": {
    "sub": "An AI-native software partner for startups and global brands, from first prototype to enterprise scale.",
    "line1": "Tell us what you want to build.",
@@ -265,14 +269,72 @@
    }
   ]
  },
- "services": {},
- "industries": {},
- "engagement": {},
- "case-studies": {},
- "blog": {},
- "products": {},
- "about": {},
- "contact": {},
- "privacy": {},
- "terms": {}
+ "services": {
+  "seo": {
+   "title": "AI & Software Development Services",
+   "description": "AI agents and automation, custom software and SaaS, AI integration, UI/UX design and websites: every CodeShaper service and how each one is delivered.",
+   "image": "/cms/fbd926569324-pages-9.png"
+  }
+ },
+ "industries": {
+  "seo": {
+   "title": "Software & AI Solutions by Industry",
+   "description": "How CodeShaper builds AI and software for SaaS, healthcare, fintech, eCommerce, real estate, logistics, travel, EdTech, enterprise and more.",
+   "image": "/cms/b196a39b0261-pages-10.png"
+  }
+ },
+ "engagement": {
+  "seo": {
+   "title": "Engagement Models: MVP, Dedicated Teams & More",
+   "description": "Compare the ways to work with CodeShaper: MVP Sprint, end-to-end delivery, dedicated developers, staff augmentation and an offshore development center.",
+   "image": "/cms/583251fdba44-pages-11.png"
+  }
+ },
+ "case-studies": {
+  "seo": {
+   "title": "Case Studies: AI & Software Projects Delivered",
+   "description": "Real CodeShaper client projects with the problem, the approach and the results, from a luxury travel membership to a nightlife platform and a SaaS POS.",
+   "image": "/cms/ce542dd2fd43-pages-12.png"
+  }
+ },
+ "blog": {
+  "seo": {
+   "title": "Blog: AI, Software & Product Insights",
+   "description": "Practical guides on AI agents, MVPs, SaaS, Webflow, Laravel and outsourcing from the CodeShaper team, written for founders and product leaders.",
+   "image": "/cms/189cab5bb155-pages-13.png"
+  }
+ },
+ "products": {
+  "seo": {
+   "title": "Software Products by CodeShaper",
+   "description": "Software CodeShaper builds and runs: Acculance for POS, inventory and accounting, the Dashcode admin template and the Banizo retail platform.",
+   "image": "/cms/5578497c55b2-pages-14.png"
+  }
+ },
+ "about": {
+  "seo": {
+   "title": "About CodeShaper: AI-Native Engineering Team",
+   "description": "CodeShaper is an AI-native software engineering company with a delivery hub in Dhaka, Bangladesh, building AI and software for clients in 60+ countries.",
+   "image": "/cms/783fc3d4c220-pages-15.png"
+  }
+ },
+ "contact": {
+  "seo": {
+   "title": "Contact CodeShaper: Book a Call or Get a Quote",
+   "description": "Tell CodeShaper about your product, timeline and scope. We recommend the right service and engagement model and reply within one business day.",
+   "image": "/cms/3802cca2df1c-pages-16.png"
+  }
+ },
+ "privacy": {
+  "seo": {
+   "title": "Privacy Policy",
+   "description": "How CodeShaper collects, uses and protects information from website visitors and clients."
+  }
+ },
+ "terms": {
+  "seo": {
+   "title": "Terms of Service",
+   "description": "The terms that govern use of the CodeShaper website and client engagements."
+  }
+ }
 }

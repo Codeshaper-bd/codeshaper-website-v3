@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import data from "@/content/mainPages.json";
 import { withSeo, type Seo } from "@/lib/details";
 import { SITE_NAME } from "@/lib/site";
+import { withShare } from "@/lib/share";
 
 /** The website's own pages (Home, Services, About…): what the CMS says about them (Pages, Main pages). */
 type MainPage = { seo?: Seo; hero?: Record<string, string>; sections?: unknown[] };
@@ -11,7 +12,7 @@ export const mainPage = (key: string): MainPage => PAGES[key] ?? {};
 /** The page's own metadata, with the CMS's search settings on top. */
 export function mainMeta(key: string, base: Metadata): Metadata {
   const seo = mainPage(key).seo;
-  if (!seo) return base;
+  if (!seo) return withShare(base);
   const out = withSeo(base, seo);
   if (seo.title || seo.description || seo.image) {
     const t = out.title && typeof out.title === "object" && "absolute" in out.title ? out.title.absolute : typeof out.title === "string" ? `${out.title} | ${SITE_NAME}` : undefined;
@@ -21,5 +22,5 @@ export function mainMeta(key: string, base: Metadata): Metadata {
     out.openGraph = { type: "website", siteName: SITE_NAME, url, ...base.openGraph, ...share };
     out.twitter = { card: "summary_large_image", ...base.twitter, ...share };
   }
-  return out;
+  return withShare(out);
 }

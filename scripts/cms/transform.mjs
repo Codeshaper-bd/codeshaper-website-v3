@@ -143,7 +143,8 @@ export function toSite(raw, warn = () => {}) {
       return true;
     });
   };
-  const seo = (x) => strip({ title: x.seo?.title, description: x.seo?.description, image: x.seo?.image?.url, canonical: x.seo?.canonical, noindex: x.seo?.noindex || undefined });
+  // share image: the uploaded original (JPEG/PNG), since some apps do not show WebP previews
+  const seo = (x) => strip({ title: x.seo?.title, description: x.seo?.description, image: x.seo?.image?.original || x.seo?.image?.url, canonical: x.seo?.canonical, noindex: x.seo?.noindex || undefined });
 
   // ── services ─────────────────────────────────────────────────────────────
   const all = uniq("services").sort((a, b) => a.sort - b.sort);
@@ -278,6 +279,7 @@ export function toSite(raw, warn = () => {}) {
 
   // ── the whole website ────────────────────────────────────────────────────
   const S = raw.site ?? {};
+  const id = (v, re) => (typeof v === "string" && re.test(v.trim()) ? v.trim() : undefined);
   const links = (v) => rows(v, ["label", "href"]).filter((l) => safeHref(l.href)).map((l) => strip({ label: l.label, href: l.href, icon: l.icon }));
   const button = (b) => (has(b?.label) && safeHref(b?.href) ? { label: b.label, href: b.href } : undefined);
   const once = new Set();
@@ -299,14 +301,49 @@ export function toSite(raw, warn = () => {}) {
   const company = items.find((i) => i.type === "group" && i.label === "Company") ?? items.find((i) => i.type === "group");
   if (company) company.links.push(...extra.filter((e) => !company.links.some((l) => l.href === e.href)));
   else if (extra.length) items.push({ type: "group", label: "Company", links: extra });
-  const header = { items, button: button(S.header?.button) ?? { label: "Book a Call", href: "/contact" } };
+  // the Services panel's platform logos (keys the website has a logo for; unknown ones are dropped there)
+  const platforms = Array.isArray(S.header?.platforms) ? S.header.platforms.filter((k) => typeof k === "string" && /^[a-z0-9-]{2,30}$/.test(k)) : undefined;
+  const header = strip({ items, button: button(S.header?.button) ?? { label: "Book a Call", href: "/contact" }, platforms });
+  // homepage proof (CMS › Settings › Clients and figures)
+  const P = S.proof ?? {};
+  const figure = (v) => (typeof v === "string" && /^[\d.,]+[+kKmM%]*\+?$/.test(v.trim()) ? v.trim() : undefined);
+  const proof = strip({
+    years: figure(P.years), brands: figure(P.brands), reviews: figure(P.reviews),
+    clients: rows(P.clients, ["name"]).map((c) => strip({ name: c.name.trim(), industry: c.industry?.trim(), logo: c.logo?.url, width: Number(c.logo_width) >= 12 && Number(c.logo_width) <= 200 ? Number(c.logo_width) : undefined, wordmark: c.wordmark || undefined, hero: c.hero || undefined })),
+    countries: rows(P.countries, ["country"]).filter((c) => /^[A-Z]{3}$/.test(c.country)).map((c) => strip({ a3: c.country, count: Number.isInteger(Number(c.sales)) && Number(c.sales) > 0 ? Number(c.sales) : undefined })),
+  });
   const f = S.footer ?? {};
   const footerLinks = links(f.links);
   footerLinks.push(...menu.filter((m) => m.where !== "company" && !footerLinks.some((l) => l.href === m.href)).map((m) => ({ label: m.label, href: m.href })));
+  // offices (CMS › Settings › Contact and social › Offices), in the CMS order; an office without an address keeps the website's stand-in
+  const offices = rows(S.contact?.offices, ["label", "country"]).map((o) =>
+    strip({
+      key: o.country.trim().toLowerCase(),
+      title: `${o.label.trim()} · ${(o.city || o.country).trim()}`,
+      city: (o.city || o.country).trim(),
+      country: o.country.trim(),
+      lines: lines(o.address),
+      tel: /^\+?[\d\s()-]{6,25}$/.test(o.phone ?? "") ? o.phone.replace(/[\s()-]/g, "") : undefined,
+      zone: /^[A-Za-z_]+(\/[A-Za-z0-9_+-]+)+$/.test(o.zone ?? "") ? o.zone : undefined,
+    }),
+  );
   const site = {
-    contact: strip({ email: S.contact?.email, phone: S.contact?.phone, whatsapp: S.contact?.whatsapp, address: S.contact?.address, hours: S.contact?.hours, booking: /^https:\/\/([\w-]+\.)?cal\.com\/[\w./-]+$/i.test(S.contact?.booking_link ?? "") ? S.contact.booking_link : undefined, social: strip(Object.fromEntries(Object.entries(S.contact?.social ?? {}).filter(([, u]) => /^https?:\/\//i.test(u ?? "")))) }),
-    footer: strip({ tagline: f.tagline, button: button(f.button), links: footerLinks, places: list(f.places), badges: rows(f.badges, ["title", "href"]).filter((b) => /^https?:\/\//i.test(b.href)).map((b) => strip({ title: b.title, subtitle: b.subtitle, href: b.href, color: /^#[0-9a-f]{6}$/i.test(b.color ?? "") ? b.color : undefined })), copyright: f.copyright }),
-    seo: strip({ title: S.seo?.title, description: S.seo?.description, image: S.seo?.image?.url, google: S.seo?.google, bing: S.seo?.bing }),
+    offices: offices.length ? offices : undefined,
+    proof,
+    contact: strip({ email: S.contact?.email, support: S.contact?.support_email, phone: S.contact?.phone, whatsapp: S.contact?.whatsapp, address: S.contact?.address, hours: S.contact?.hours, booking: /^https:\/\/([\w-]+\.)?cal\.com\/[\w./-]+$/i.test(S.contact?.booking_link ?? "") ? S.contact.booking_link : undefined, social: strip(Object.fromEntries(Object.entries(S.contact?.social ?? {}).filter(([, u]) => /^https?:\/\//i.test(u ?? "")))) }),
+    footer: strip({ tagline: f.tagline, button: button(f.button), links: footerLinks, products: rows(f.products, ["label", "href"]).filter((l) => safeHref(l.href)).map((l) => strip({ label: l.label, href: l.href, note: typeof l.note === "string" ? l.note.trim() : undefined })), places: list(f.places), badges: rows(f.badges, ["title", "href"]).filter((b) => /^https?:\/\//i.test(b.href)).map((b) => strip({ title: b.title, subtitle: b.subtitle, href: b.href, color: /^#[0-9a-f]{6}$/i.test(b.color ?? "") ? b.color : undefined })), copyright: f.copyright }),
+    seo: strip({ title: S.seo?.title, description: S.seo?.description, image: S.seo?.image?.original || S.seo?.image?.url, favicon: S.seo?.icon_image?.original || S.seo?.icon_image?.url, google: S.seo?.google, bing: S.seo?.bing, yandex: S.seo?.yandex, facebook: S.seo?.facebook, xHandle: S.seo?.x_handle, legalName: S.seo?.legal_name, founded: /^(19|20)\d{2}$/.test(S.seo?.founded ?? "") ? Number(S.seo.founded) : undefined }),
+    // IDs only, checked again here: the website writes the tags itself, so nothing from the CMS runs as code
+    tracking: strip({
+      ga4: id(S.tracking?.ga4, /^G-[A-Z0-9]{4,15}$/), gtm: id(S.tracking?.gtm, /^GTM-[A-Z0-9]{4,10}$/), metaPixel: id(S.tracking?.meta_pixel, /^\d{10,20}$/),
+      linkedin: id(S.tracking?.linkedin, /^\d{4,12}$/), clarity: id(S.tracking?.clarity, /^[a-z0-9]{6,20}$/), consent: S.tracking?.consent === false ? false : undefined,
+    }),
+    crawlers: strip({
+      aiSearch: S.crawlers?.ai_search === false ? false : undefined, aiTraining: S.crawlers?.ai_training === false ? false : undefined, indexnow: S.crawlers?.indexnow === false || !/^[0-9a-f]{32}$/.test(S.indexnow ?? "") ? undefined : S.indexnow,
+      robotsExtra: lines(S.crawlers?.robots_extra).filter((l) => /^(#.*|(user-agent|allow|disallow|crawl-delay|sitemap)\s*:\s*\S.*)$/i.test(l)).join("\n") || undefined,
+      llmsSummary: S.crawlers?.llms_summary?.trim() || undefined, llmsFacts: lines(S.crawlers?.llms_facts).length ? lines(S.crawlers.llms_facts) : undefined, llmsExtra: S.crawlers?.llms_extra?.trim() || undefined,
+    }),
+    url: /^https:\/\/[\w.-]+$/.test(S.url ?? "") ? S.url : undefined,
   };
   const a = S.announcement ?? {};
   const announcement = a.mode === "off" ? { mode: "off" } : a.mode === "manual" && has(a.text) && safeHref(a.href) ? { mode: "manual", kind: a.kind || "new", text: a.text, href: a.href } : { mode: "auto" };

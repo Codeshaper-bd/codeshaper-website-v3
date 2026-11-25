@@ -7,17 +7,68 @@ import {
   SERVICE_GROUPS,
   SERVICES_QUICK_ACCESS,
   SERVICES_FEATURED,
-  MEGA_MENU_FOOTER,
   groupDescriptor,
   servicePath,
 } from "@/data/services";
 import { Icon } from "@/lib/icons";
 import EngageCard from "./EngageCard";
+import { RiClaudeFill, RiGeminiFill, RiOpenaiFill } from "react-icons/ri";
+import {
+  SiDocker,
+  SiFlutter,
+  SiGooglecloud,
+  SiHuggingface,
+  SiKubernetes,
+  SiLangchain,
+  SiLaravel,
+  SiMeta,
+  SiNextdotjs,
+  SiNodedotjs,
+  SiPostgresql,
+  SiPython,
+  SiReact,
+  SiShopify,
+  SiSupabase,
+  SiVercel,
+} from "react-icons/si";
+import { FaAws } from "react-icons/fa";
+import { VscAzure } from "react-icons/vsc";
+import type { IconType } from "react-icons";
+import header from "@/content/header.json";
+
+/** the owner's list first, then tools the site's own content already names (services, case studies) */
+const ALL_PLATFORMS: { key: string; name: string; icon: IconType; color: string }[] = [
+  { key: "chatgpt", name: "ChatGPT", icon: RiOpenaiFill, color: "#0b0f19" },
+  { key: "claude", name: "Claude", icon: RiClaudeFill, color: "#d97757" },
+  { key: "gemini", name: "Gemini", icon: RiGeminiFill, color: "#4f7cf7" },
+  { key: "langchain", name: "LangChain", icon: SiLangchain, color: "#1c3c3c" },
+  { key: "aws", name: "AWS", icon: FaAws, color: "#ff9900" },
+  { key: "azure", name: "Azure", icon: VscAzure, color: "#0078d4" },
+  { key: "google-cloud", name: "Google Cloud", icon: SiGooglecloud, color: "#4285f4" },
+  { key: "hugging-face", name: "Hugging Face", icon: SiHuggingface, color: "#ffb000" },
+  { key: "llama", name: "Llama", icon: SiMeta, color: "#0467df" },
+  { key: "python", name: "Python", icon: SiPython, color: "#3776ab" },
+  { key: "nextjs", name: "Next.js", icon: SiNextdotjs, color: "#0b0f19" },
+  { key: "react", name: "React", icon: SiReact, color: "#149eca" },
+  { key: "nodejs", name: "Node.js", icon: SiNodedotjs, color: "#5fa04e" },
+  { key: "laravel", name: "Laravel", icon: SiLaravel, color: "#ff2d20" },
+  { key: "flutter", name: "Flutter", icon: SiFlutter, color: "#02569b" },
+  { key: "postgresql", name: "PostgreSQL", icon: SiPostgresql, color: "#4169e1" },
+  { key: "supabase", name: "Supabase", icon: SiSupabase, color: "#3ecf8e" },
+  { key: "docker", name: "Docker", icon: SiDocker, color: "#2496ed" },
+  { key: "kubernetes", name: "Kubernetes", icon: SiKubernetes, color: "#326ce5" },
+  { key: "vercel", name: "Vercel", icon: SiVercel, color: "#0b0f19" },
+  { key: "shopify", name: "Shopify", icon: SiShopify, color: "#5e8e3e" },
+];
+
+/** What the strip shows, in order: CMS › Settings › Header menu › Platforms strip; all of the above when it is not set. */
+const CHOSEN = (header as { platforms?: string[] }).platforms;
+const STACK = CHOSEN?.length ? CHOSEN.flatMap((k) => ALL_PLATFORMS.filter((p) => p.key === k)) : ALL_PLATFORMS;
 
 /**
  * Services mega panel, the original 3-column structure in glass: How We
  * Engage (boxed, left), the 5 service groups (center), a featured AI card in
- * dark glass + quick-access chips (right), and a footer with two links.
+ * dark glass + quick-access chips (right); the two links sit under the services, and the footer strip shows the platforms we build with.
  * Icons sit in neutral glass tiles and turn brand violet on hover
  * (globals.css "Mega menu").
  */
@@ -57,6 +108,19 @@ export default function MegaPanel() {
               </li>
             ))}
           </ul>
+          {/* owner, 25 Nov 2026: the two links live under the list, where there was empty space */}
+          <div className="mt-3 flex items-center gap-4 px-1">
+            <Nav.Link asChild>
+              <Link href="/services" className="mega-foot-btn rounded-full px-4 py-2 font-urbanist text-[13px] font-semibold text-ink">
+                Explore All Services →
+              </Link>
+            </Nav.Link>
+            <Nav.Link asChild>
+              <Link href="/case-studies" className="font-urbanist text-[13px] text-ink-dim transition-colors hover:text-ink">
+                View Case Studies →
+              </Link>
+            </Nav.Link>
+          </div>
         </div>
 
         {/* Right — Featured + Quick access */}
@@ -89,24 +153,25 @@ export default function MegaPanel() {
         </div>
       </div>
 
-      {/* Footer bar */}
-      <div className="mega-foot mt-5 flex flex-wrap items-center justify-between gap-4 rounded-2xl px-5 py-3.5">
-        <p className="font-urbanist text-[12.5px] text-ink-dim">
-          <span className="font-semibold text-ink">{MEGA_MENU_FOOTER.count}</span>
-          <span className="mx-2 inline-block h-[3px] w-[3px] rounded-full bg-[#272b3d]/25 align-middle" aria-hidden />
-          {MEGA_MENU_FOOTER.tagline}
+      {/* Footer bar: the platforms we build with (owner, 25 Nov 2026, the names are the owner's list) */}
+      {/* owner, 25 Nov 2026: the logos move like a carousel and fade out at both sides; hover pauses it */}
+      <div className="mega-foot mt-5 flex items-center gap-6 rounded-2xl px-5 py-3.5">
+        <p className="shrink-0 font-urbanist text-[12.5px] text-ink-dim">
+          <span className="font-semibold text-ink">Built with</span> the platforms behind modern AI
         </p>
-        <div className="flex items-center gap-4">
-          <Nav.Link asChild>
-            <Link href="/case-studies" className="font-urbanist text-[13px] text-ink-dim transition-colors hover:text-ink">
-              View Case Studies →
-            </Link>
-          </Nav.Link>
-          <Nav.Link asChild>
-            <Link href="/services" className="mega-foot-btn rounded-full px-4 py-2 font-urbanist text-[13px] font-semibold text-ink">
-              Explore All Services →
-            </Link>
-          </Nav.Link>
+        <div className="stack-marquee-mask min-w-0 flex-1 overflow-hidden">
+          <div className="stack-marquee flex w-max">
+            {[0, 1].map((copy) => (
+              <ul key={copy} aria-hidden={copy === 1 || undefined} aria-label={copy === 0 ? "Platforms we build with" : undefined} className="flex shrink-0 items-center gap-x-7 pr-7">
+                {STACK.map(({ name, icon: Glyph, color }) => (
+                  <li key={name} className="inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap font-urbanist text-[13px] font-semibold text-ink-mid">
+                    <Glyph size={16} aria-hidden style={{ color }} />
+                    {name}
+                  </li>
+                ))}
+              </ul>
+            ))}
+          </div>
         </div>
       </div>
     </div>

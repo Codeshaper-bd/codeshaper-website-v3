@@ -7,6 +7,8 @@ const cmsRedirects: { from: string; to: string }[] = existsSync(REDIRECTS) ? JSO
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
+  // YouTube thumbnails for video reviews (the card picture when a review has no photo)
+  images: { remotePatterns: [{ protocol: "https", hostname: "i.ytimg.com", pathname: "/vi/**" }] },
   // A separate output folder (NEXT_DIST_DIR=.next-prod) lets a production
   // build run for audits while the dev server keeps using .next.
   distDir: process.env.NEXT_DIST_DIR || ".next",

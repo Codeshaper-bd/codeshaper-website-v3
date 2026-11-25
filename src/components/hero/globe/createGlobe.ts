@@ -582,6 +582,8 @@ export function createGlobe(o: Options): GlobeHandle {
       geometry.dispose();
       material.dispose();
       renderer.dispose();
+      // give the WebGL context back now: a tab gets about 16, and site navigation creates new ones
+      renderer.forceContextLoss();
       idPixels = null;
       canvas.remove();
     },

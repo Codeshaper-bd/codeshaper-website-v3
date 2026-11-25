@@ -3,7 +3,7 @@ import type { CSSProperties, ReactNode } from "react";
 import Link from "next/link";
 import { ArrowRight, ArrowUpRight, Check, X } from "lucide-react";
 import RichContent from "@/components/cms/RichContent";
-import { industryDetail } from "@/lib/details";
+import { industryDetail, withSeo } from "@/lib/details";
 import SiteShell from "@/components/system/SiteShell";
 import Breadcrumbs from "@/components/system/Breadcrumbs";
 import Reveal from "@/components/system/Reveal";
@@ -30,12 +30,13 @@ import { findBySlug, INDUSTRIES } from "@/lib/navigation";
 import { SITE_URL } from "@/lib/site";
 import HeroBackdrop from "@/components/system/HeroBackdrop";
 
-export const metadata: Metadata = {
+// the SaaS industry's SEO tab in the CMS on top (title, description, share image)
+export const metadata: Metadata = withSeo({
   title: "SaaS Development Services",
   description:
     "Multi-tenant architecture, billing, onboarding, and analytics for SaaS teams — from first MVP through your next growth stage.",
   alternates: { canonical: "/industries/saas" },
-};
+}, industryDetail("saas").seo);
 
 const IND = findBySlug(INDUSTRIES, "saas")!;
 const PROOF = getCaseStudyBySlug("acculance") ?? CASE_STUDIES[0];

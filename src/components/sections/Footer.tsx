@@ -1,16 +1,17 @@
 import { existsSync } from "node:fs";
 import { join } from "node:path";
 import Link from "next/link";
-import Image from "next/image";
 import { ArrowUp, ArrowUpRight, Clock, Download, FileText, Mail, MapPin, MessageCircle, Phone } from "lucide-react";
 import { SiBehance, SiDribbble, SiFacebook, SiGithub, SiPinterest } from "react-icons/si";
 import { SITE } from "@/lib/siteSettings";
 import { PUBLISHED } from "@/lib/publishedContact";
 import { FOOTER_OFFICES } from "@/lib/offices";
 import { SERVICE_GROUPS, servicePath } from "@/data/services";
-import FooterWordmark from "./FooterWordmark";
+import { PRODUCT_LINEUP } from "@/lib/products";
+import MarkSvg from "@/components/brand/MarkSvg";
 import FooterStage from "./footer/FooterStage";
 import Landmark from "./footer/Landmark";
+import CookieSettingsLink from "@/components/analytics/CookieSettingsLink";
 import FooterLandscape from "./footer/FooterLandscape";
 import LocalTime from "./footer/LocalTime";
 import FooterActions from "./footer/AskAI";
@@ -26,7 +27,7 @@ import Reveal from "@/components/system/Reveal";
  *
  * Top to bottom:
  *  1. Left: logo, contact lines, BASIS. Right: four link columns
- *     (Services, Company, Useful links, Tools), and under them one action
+ *     (Services, Company, Products, Tools), and under them one action
  *     row: Follow us, Ask AI about CodeShaper, company profile
  *     (footer/AskAI.tsx). Every icon has a tooltip.
  *  2. Offices, as text (owner + design review, 23 Nov 2026: photo cards
@@ -60,7 +61,7 @@ const CONTACT = {
  */
 // the offices live in lib/offices.ts (shared with the contact page); TEMP stand-in addresses are applied there
 const OFFICES = FOOTER_OFFICES;
-const FOUNDED = 2017;
+const FOUNDED = SITE.seo.founded ?? 2017; // CMS › Search and sharing › Company facts › Year founded
 
 /** Shown only with a real profile link (CMS: Settings, Contact and social). */
 const SOCIAL_ICONS: { key: string; label: string; color: string; d?: string; icon?: typeof SiGithub }[] = [
@@ -79,7 +80,8 @@ const LIVE_SOCIAL_LINKS = SOCIAL_ICONS.flatMap((s) => (CONTACT.social?.[s.key] ?
 const digits = (v: string) => v.replace(/[^+\d]/g, "");
 const CONTACT_LINES = [
   CONTACT.email && { icon: Mail, text: CONTACT.email, href: `mailto:${CONTACT.email}` },
-  !CMS_CONTACT?.email && { icon: Mail, text: PUBLISHED.support, href: `mailto:${PUBLISHED.support}` },
+  // support: CMS › Contact and social › Support email, else the published one
+  { icon: Mail, text: CMS_CONTACT?.support || PUBLISHED.support, href: `mailto:${CMS_CONTACT?.support || PUBLISHED.support}` },
   CONTACT.phone && { icon: Phone, text: CONTACT.phone, href: `tel:${digits(CONTACT.phone)}` },
   CONTACT.whatsapp && { icon: MessageCircle, text: "WhatsApp", href: `https://wa.me/${digits(CONTACT.whatsapp).replace("+", "")}` },
   CONTACT.address && { icon: MapPin, text: CONTACT.address },
@@ -87,20 +89,27 @@ const CONTACT_LINES = [
 ].filter((l): l is { icon: typeof Mail; text: string; href?: string } => Boolean(l));
 
 /** Company: who we are and our work. */
+// owner, 25 Nov 2026: Industries and Sitemap moved here; Products has its own column now
 const COMPANY_LINKS = [
   { label: "About us", href: "/company/about" },
   { label: "Case studies", href: "/case-studies" },
-  { label: "Products", href: "/products" },
+  { label: "Client reviews", href: "/reviews" },
+  { label: "Industries", href: "/industries" },
   { label: "Blog", href: "/blog" },
   { label: "Contact", href: "/contact" },
+  { label: "Sitemap", href: "/site-map" },
 ];
-/** Useful links: ways to work with us, and finding your way around. */
-const USEFUL_LINKS = [
+/** Ways to work with us, under Services (owner, 25 Nov 2026: kept in the footer when "Useful links" became Products). */
+const ENGAGE_LINKS = [
   { label: "Engagement models", href: "/engagement" },
   { label: "Hire dedicated developers", href: "/hire-dedicated-developers" },
   { label: "Staff augmentation", href: "/staff-augmentation" },
-  { label: "Industries", href: "/industries" },
-  { label: "Sitemap", href: "/site-map" },
+];
+/** Products (owner, 25 Nov 2026, in place of "Useful links"): each product from the CMS (Products), then all of them. */
+// CMS › Settings › Footer › Products (each product's own site); the CMS products' pages until that list is filled
+const PRODUCT_LINKS = [
+  ...PRODUCT_LINEUP.map(({ label, href }) => ({ label, href })),
+  { label: "All products →", href: "/products" },
 ];
 /** Tools: free tools CodeShaper will publish; add each here when it is live (the column says "coming soon" until then). */
 const TOOLS: { label: string; href: string }[] = [];
@@ -134,7 +143,11 @@ export default function Footer() {
         <div className="grid gap-12 lg:grid-cols-[minmax(0,300px)_1fr] lg:gap-16">
           <div>
             <Link href="/" className="inline-flex items-center" aria-label="CodeShaper home">
-              <Image src="/brand/logo.png" alt="codeShaper" width={169} height={60} className="h-8 w-auto" />
+              {/* the same logo as the header (owner, 25 Nov 2026): the mark + the wordmark in the brand face */}
+              <span className="flex items-center gap-2">
+                <MarkSvg premium pearls className="h-9 w-9 drop-shadow-[0_4px_10px_rgba(97,95,255,0.35)]" id="footer-mark-mask" />
+                <span className="font-display text-[23px] font-extrabold leading-none tracking-[-0.02em] text-[#0b0f19] night:text-white">CodeShaper</span>
+              </span>
             </Link>
             {CONTACT_LINES.length > 0 && (
               <ul className="mt-6 space-y-2.5">
@@ -158,7 +171,7 @@ export default function Footer() {
               aria-label="Member of BASIS, the Bangladesh Association of Software and Information Services"
             >
               {/* eslint-disable-next-line @next/next/no-img-element -- the association's own mark (white artwork), shown in ink */}
-              <img src="/media/badges/basis.svg" alt="" width={113} height={40} loading="lazy" decoding="async" className="h-9 w-auto brightness-0" />
+              <img src="/media/badges/basis.svg" alt="" width={113} height={40} loading="lazy" decoding="async" className="h-9 w-auto brightness-0 night:invert" />
               <span className="font-urbanist text-[11px] font-semibold uppercase tracking-[0.16em] text-ink-dim">Member</span>
             </a>
           </div>
@@ -169,6 +182,9 @@ export default function Footer() {
               <ul className="space-y-2.5">
                 {SERVICE_GROUPS.map((g) => (
                   <li key={g.slug}><Link href={servicePath(g.slug)} className={colLink}>{g.name}</Link></li>
+                ))}
+                {ENGAGE_LINKS.map((l) => (
+                  <li key={l.href}><Link href={l.href} className={colLink}>{l.label}</Link></li>
                 ))}
                 <li><Link href="/services" className={colLink}>All services →</Link></li>
               </ul>
@@ -182,10 +198,16 @@ export default function Footer() {
               </ul>
             </div>
             <div>
-              <ColHead>Useful links</ColHead>
+              <ColHead>Products</ColHead>
               <ul className="space-y-2.5">
-                {USEFUL_LINKS.map((l) => (
-                  <li key={l.href}><Link href={l.href} className={colLink}>{l.label}</Link></li>
+                {PRODUCT_LINKS.map((l) => (
+                  <li key={l.href}>
+                    {/^https?:\/\//.test(l.href) ? (
+                      <a href={l.href} target="_blank" rel="noopener" className={colLink}>{l.label}</a>
+                    ) : (
+                      <Link href={l.href} className={colLink}>{l.label}</Link>
+                    )}
+                  </li>
                 ))}
               </ul>
             </div>
@@ -200,8 +222,8 @@ export default function Footer() {
               ) : (
                 <p className="max-w-[18ch] font-urbanist text-[13.5px] leading-relaxed text-ink-dim">
                   Free tools for founders and product teams.
-                  <span className="mt-2 flex w-fit items-center gap-1.5 rounded-full border border-white/70 bg-white/60 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.1em] text-[#4f46e5] backdrop-blur-md">
-                    <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-[#4f46e5]" />
+                  <span className="mt-2 flex w-fit items-center gap-1.5 rounded-full border border-white/70 bg-white/60 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.1em] text-[#4f46e5] backdrop-blur-md night:border-white/10 night:bg-white/5 night:text-[#b4b0ff]">
+                    <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-[#4f46e5] night:bg-[#b4b0ff]" />
                     Coming soon
                   </span>
                 </p>
@@ -229,7 +251,7 @@ export default function Footer() {
                 <a
                   href={PROFILE_PDF}
                   download
-                  className="group flex w-fit items-center gap-2 rounded-full bg-[#0b0f19] py-2 pl-4 pr-2 font-urbanist text-[13px] font-semibold text-white transition-colors hover:bg-[#1f2433]"
+                  className="group flex w-fit items-center gap-2 rounded-full bg-[#0b0f19] py-2 pl-4 pr-2 font-urbanist text-[13px] font-semibold text-white transition-colors hover:bg-[#1f2433] night:bg-white night:text-[#0b0f19] night:hover:bg-white/85"
                 >
                   <FileText size={14} strokeWidth={1.8} aria-hidden />
                   Download company profile
@@ -241,7 +263,7 @@ export default function Footer() {
                 FOOTER.button && (
                   <Link
                     href={FOOTER.button.href}
-                    className="group flex w-fit items-center gap-2 rounded-full border border-white/70 bg-white/60 py-2 pl-4 pr-3 font-urbanist text-[13px] font-semibold text-ink backdrop-blur-md transition-colors hover:bg-white"
+                    className="group flex w-fit items-center gap-2 rounded-full border border-white/70 bg-white/60 py-2 pl-4 pr-3 font-urbanist text-[13px] font-semibold text-ink backdrop-blur-md transition-colors hover:bg-white night:border-white/10 night:bg-white/5 night:hover:bg-white/10"
                   >
                     <FileText size={14} strokeWidth={1.8} aria-hidden />
                     {FOOTER.button.label}
@@ -254,27 +276,22 @@ export default function Footer() {
         />
 
 
-        {/* 4 · the wordmark standing on the offices (owner, 24 Nov 2026: concept from a reference, our own way):
-            the builder works on the letters; the six offices sit in a frosted band right under them,
-            each with a small landmark drawing, so brand and places read as one */}
-        <div className="mt-16 overflow-hidden">
-          <FooterWordmark />
-        </div>
+        {/* 4 · the six offices in a frosted band, each with a small landmark drawing.
+            The CODESHAPER wordmark now stands in the landscape below (owner, 25 Nov 2026). */}
         {OFFICE_LIST.length > 0 && (
           <Reveal>
-            <div className="relative z-10 -mt-[0.6vw] rounded-[28px] bg-white/60 px-5 py-7 shadow-[0_30px_60px_-40px_rgba(45,38,120,0.45)] ring-1 ring-white/80 backdrop-blur-xl sm:px-8 sm:py-8">
-              <ul className="grid grid-cols-2 gap-x-6 gap-y-8 sm:grid-cols-3 lg:grid-cols-6 lg:gap-x-0 lg:divide-x lg:divide-[#0b0f19]/[0.07]">
+            <div className="relative z-10 mt-16 rounded-[28px] bg-white/60 px-5 py-7 shadow-[0_30px_60px_-40px_rgba(45,38,120,0.45)] ring-1 ring-white/80 backdrop-blur-xl sm:px-8 sm:py-8 night:bg-white/[0.05] night:shadow-none night:ring-white/10">
+              <ul className="grid grid-cols-2 gap-x-6 gap-y-8 sm:grid-cols-3 lg:grid-cols-6 lg:gap-x-0 lg:divide-x lg:divide-[#0b0f19]/[0.07] night:lg:divide-white/10">
                 {OFFICE_LIST.map((p) => (
                   <li key={p.name} className="group lg:px-5 lg:first:pl-0 lg:last:pr-0">
-                    <Landmark place={p.name} className="text-[#4f46e5] transition-transform duration-300 group-hover:-translate-y-0.5" />
-                    <p className="mt-3 font-urbanist text-[10.5px] font-semibold uppercase tracking-[0.12em] text-[#4f46e5]">{p.office!.title.split(" · ")[0]}</p>
-                    <p className="mt-0.5 font-urbanist text-[16px] font-bold tracking-[-0.01em] text-ink">{p.office!.title.includes(" · ") && /HQ/.test(p.office!.title) ? p.office!.title.split(" · ")[1] : p.name}</p>
+                    <Landmark place={p.name} className="text-[#4f46e5] night:text-[#b4b0ff] transition-transform duration-300 group-hover:-translate-y-0.5" />
+                    <p className="mt-3 font-urbanist text-[16px] font-bold tracking-[-0.01em] text-ink">{p.office!.title.includes(" · ") && /HQ/.test(p.office!.title) ? p.office!.title.split(" · ")[1] : p.name}</p>
                     {p.office!.lines?.length ? (
                       <address className="mt-1.5 font-urbanist text-[12.5px] not-italic leading-relaxed text-ink-dim">{p.office!.lines.join(" ")}</address>
                     ) : null}
                     <p className="mt-2 flex flex-col items-start gap-1 font-urbanist text-[12.5px] text-ink-dim">
                       {p.office!.tel && (
-                        <a href={`tel:${p.office!.tel}`} className="inline-flex items-center gap-1.5 font-semibold text-ink transition-colors hover:text-[#4f46e5]">
+                        <a href={`tel:${p.office!.tel}`} className="inline-flex items-center gap-1.5 font-semibold text-ink transition-colors hover:text-[#4f46e5] night:hover:text-[#b4b0ff]">
                           <Phone size={13} strokeWidth={2} aria-hidden />
                           {p.office!.tel}
                         </a>
@@ -287,7 +304,7 @@ export default function Footer() {
             </div>
           </Reveal>
         )}
-        <div className="mt-6 flex flex-wrap items-center justify-between gap-4 border-t border-[#0b0f19]/[0.08] pt-6">
+        <div className="mt-6 flex flex-wrap items-center justify-between gap-4 border-t border-[#0b0f19]/[0.08] pt-6 night:border-white/10">
           <p className="font-urbanist text-[12.5px] text-ink-dim">
             © {FOUNDED}–{new Date().getFullYear()} {FOOTER.copyright}
           </p>
@@ -295,10 +312,11 @@ export default function Footer() {
             <Link href="/legal/privacy" className="font-urbanist text-[12.5px] text-ink-dim transition-colors hover:text-ink">Privacy policy</Link>
             <Link href="/legal/terms" className="font-urbanist text-[12.5px] text-ink-dim transition-colors hover:text-ink">Terms of service</Link>
             <Link href="/site-map" className="font-urbanist text-[12.5px] text-ink-dim transition-colors hover:text-ink">Sitemap</Link>
+            <CookieSettingsLink className="font-urbanist text-[12.5px] text-ink-dim transition-colors hover:text-ink" />
             <a
               href="#"
               aria-label="Back to top"
-              className="grid h-9 w-9 place-items-center rounded-full border border-white/70 bg-white/60 text-ink backdrop-blur-md transition-[transform,background-color] hover:-translate-y-0.5 hover:bg-white"
+              className="grid h-9 w-9 place-items-center rounded-full border border-white/70 bg-white/60 text-ink backdrop-blur-md transition-[transform,background-color] hover:-translate-y-0.5 hover:bg-white night:border-white/10 night:bg-white/5 night:hover:bg-white/15"
             >
               <ArrowUp size={15} strokeWidth={1.9} />
             </a>

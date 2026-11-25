@@ -3,39 +3,257 @@
   {
    "slug": "ai-agents-automation",
    "title": "AI Agents & Automation",
+   "seo": {
+    "title": "AI Agents & Automation Articles",
+    "description": "Guides on AI agents, copilots and workflow automation from the CodeShaper team: how to plan, build and run them in production."
+   },
    "count": 1
   },
   {
    "slug": "product-strategy",
    "title": "Product Strategy",
+   "seo": {
+    "title": "Product Strategy Articles",
+    "description": "Articles on MVPs, product discovery and launch planning for founders and product teams, from the CodeShaper team."
+   },
    "count": 6
   },
   {
    "slug": "commerce",
    "title": "Commerce",
+   "seo": {
+    "title": "eCommerce Articles",
+    "description": "Articles on Shopify, WooCommerce, headless commerce and online store growth from the CodeShaper team."
+   },
    "count": 3
   },
   {
    "slug": "ux-ui",
    "title": "UX/UI",
+   "seo": {
+    "title": "UX/UI Design Articles",
+    "description": "Articles on UI/UX design, design systems and product usability from the CodeShaper design team."
+   },
    "count": 2
   },
   {
    "slug": "web-engineering",
    "title": "Web Engineering",
+   "seo": {
+    "title": "Web Engineering Articles",
+    "description": "Articles on web development with Next.js, Laravel, Webflow and WordPress: architecture, performance and choosing the right stack."
+   },
    "count": 14
   },
   {
    "slug": "teams-outsourcing",
    "title": "Teams & Outsourcing",
+   "seo": {
+    "title": "Teams & Outsourcing Articles",
+    "description": "Articles on dedicated teams, staff augmentation and offshore software development from the CodeShaper team in Dhaka, Bangladesh."
+   },
    "count": 11
   }
  ],
- "tags": [],
+ "tags": [
+  {
+   "slug": "llm",
+   "title": "LLM",
+   "seo": {
+    "title": "LLM Articles",
+    "description": "Every CodeShaper blog article tagged LLM: practical notes on building products with large language models."
+   },
+   "count": 1
+  },
+  {
+   "slug": "webflow",
+   "title": "Webflow",
+   "seo": {
+    "title": "Webflow Articles",
+    "description": "Every CodeShaper blog article about Webflow, with practical guidance for founders and product teams."
+   },
+   "count": 6
+  },
+  {
+   "slug": "framer",
+   "title": "Framer",
+   "seo": {
+    "title": "Framer Articles",
+    "description": "Every CodeShaper blog article about Framer, with practical guidance for founders and product teams."
+   },
+   "count": 3
+  },
+  {
+   "slug": "wordpress",
+   "title": "WordPress",
+   "seo": {
+    "title": "WordPress Articles",
+    "description": "Every CodeShaper blog article about WordPress, with practical guidance for founders and product teams."
+   },
+   "count": 3
+  },
+  {
+   "slug": "woocommerce",
+   "title": "WooCommerce",
+   "seo": {
+    "title": "WooCommerce Articles",
+    "description": "Every CodeShaper blog article about WooCommerce, with practical guidance for founders and product teams."
+   },
+   "count": 1
+  },
+  {
+   "slug": "laravel",
+   "title": "Laravel",
+   "seo": {
+    "title": "Laravel Articles",
+    "description": "Every CodeShaper blog article about Laravel, with practical guidance for founders and product teams."
+   },
+   "count": 4
+  },
+  {
+   "slug": "php",
+   "title": "PHP",
+   "seo": {
+    "title": "PHP Articles",
+    "description": "Every CodeShaper blog article about PHP, with practical guidance for founders and product teams."
+   },
+   "count": 2
+  },
+  {
+   "slug": "vue",
+   "title": "Vue",
+   "seo": {
+    "title": "Vue Articles",
+    "description": "Every CodeShaper blog article about Vue, with practical guidance for founders and product teams."
+   },
+   "count": 1
+  },
+  {
+   "slug": "mvp",
+   "title": "MVP",
+   "seo": {
+    "title": "MVP Articles",
+    "description": "Every CodeShaper blog article about MVP, with practical guidance for founders and product teams."
+   },
+   "count": 5
+  },
+  {
+   "slug": "ai",
+   "title": "AI",
+   "seo": {
+    "title": "AI Articles",
+    "description": "Every CodeShaper blog article about AI, with practical guidance for founders and product teams."
+   },
+   "count": 6
+  },
+  {
+   "slug": "startups",
+   "title": "Startups",
+   "seo": {
+    "title": "Startups Articles",
+    "description": "Every CodeShaper blog article about Startups, with practical guidance for founders and product teams."
+   },
+   "count": 5
+  },
+  {
+   "slug": "outsourcing",
+   "title": "Outsourcing",
+   "seo": {
+    "title": "Outsourcing Articles",
+    "description": "Every CodeShaper blog article about Outsourcing, with practical guidance for founders and product teams."
+   },
+   "count": 7
+  },
+  {
+   "slug": "team-augmentation",
+   "title": "Team Augmentation",
+   "seo": {
+    "title": "Team Augmentation Articles",
+    "description": "Every CodeShaper blog article about Team Augmentation, with practical guidance for founders and product teams."
+   },
+   "count": 2
+  },
+  {
+   "slug": "bangladesh",
+   "title": "Bangladesh",
+   "seo": {
+    "title": "Bangladesh Articles",
+    "description": "Every CodeShaper blog article about Bangladesh, with practical guidance for founders and product teams."
+   },
+   "count": 6
+  },
+  {
+   "slug": "agile",
+   "title": "Agile",
+   "seo": {
+    "title": "Agile Articles",
+    "description": "Every CodeShaper blog article about Agile, with practical guidance for founders and product teams."
+   },
+   "count": 1
+  },
+  {
+   "slug": "seo",
+   "title": "SEO",
+   "seo": {
+    "title": "SEO Articles",
+    "description": "Every CodeShaper blog article about SEO, with practical guidance for founders and product teams."
+   },
+   "count": 2
+  },
+  {
+   "slug": "web-design",
+   "title": "Web Design",
+   "seo": {
+    "title": "Web Design Articles",
+    "description": "Every CodeShaper blog article about Web Design, with practical guidance for founders and product teams."
+   },
+   "count": 4
+  },
+  {
+   "slug": "admin-templates",
+   "title": "Admin Templates",
+   "seo": {
+    "title": "Admin Templates Articles",
+    "description": "Every CodeShaper blog article about Admin Templates, with practical guidance for founders and product teams."
+   },
+   "count": 1
+  },
+  {
+   "slug": "pos",
+   "title": "POS",
+   "seo": {
+    "title": "POS Articles",
+    "description": "Every CodeShaper blog article about POS, with practical guidance for founders and product teams."
+   },
+   "count": 1
+  },
+  {
+   "slug": "programming-languages",
+   "title": "Programming Languages",
+   "seo": {
+    "title": "Programming Languages Articles",
+    "description": "Every CodeShaper blog article about Programming Languages, with practical guidance for founders and product teams."
+   },
+   "count": 1
+  },
+  {
+   "slug": "digital-marketing",
+   "title": "Digital Marketing",
+   "seo": {
+    "title": "Digital Marketing Articles",
+    "description": "Every CodeShaper blog article about Digital Marketing, with practical guidance for founders and product teams."
+   },
+   "count": 1
+  }
+ ],
  "authors": [
   {
    "slug": "the-codeshaper-team",
    "title": "The CodeShaper Team",
+   "seo": {
+    "title": "The CodeShaper Team",
+    "description": "Articles by the CodeShaper team: engineers, designers and product leads writing about AI, software and product delivery."
+   },
    "count": 37
   }
  ]

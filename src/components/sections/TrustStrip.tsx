@@ -3,7 +3,8 @@ import { SiWebflow, SiFiverr, SiUpwork, SiFramer } from "react-icons/si";
 import type { IconType } from "react-icons";
 import Image from "next/image";
 import Reveal from "@/components/system/Reveal";
-import { SERVED } from "@/components/hero/globe/servedCountries";
+import { COUNTRIES_SERVED } from "@/lib/facts";
+import { SITE } from "@/lib/siteSettings";
 import { homeCopy, type CopyOf } from "@/lib/homeCopy";
 import DotField from "@/components/sections/human-ai-flow/DotField";
 
@@ -44,6 +45,7 @@ function MicrosoftMark() {
   );
 }
 
+/** The clients as they were in code: their logos stay the fallback for the CMS list (by name). */
 const ROWS: Client[][] = [
   [
     { name: "Desh Group", industry: "Conglomerate", img: "/media/clients/desh-mark.png", w: 20 },
@@ -73,6 +75,19 @@ const ROWS: Client[][] = [
     { name: "Regray Stone", industry: "Real estate" }, // CHECK
   ],
 ];
+
+/**
+ * The strip: CMS › Settings › Clients and figures › Clients, in that order (owner, 25 Nov 2026).
+ * A client without its own logo keeps the built-in mark of the same name, else shows the name.
+ */
+const BUILT = new Map(ROWS.flat().map((c) => [c.name.toLowerCase(), c]));
+const CLIENTS: Client[] = SITE.proof?.clients?.length
+  ? SITE.proof.clients.map((c) => {
+      const b = BUILT.get(c.name.toLowerCase());
+      if (c.logo) return { name: c.name, industry: c.industry ?? b?.industry ?? "", img: c.logo, w: c.width ?? 32, wordmark: c.wordmark };
+      return b ? { ...b, name: c.name, industry: c.industry ?? b.industry } : { name: c.name, industry: c.industry ?? "" };
+    })
+  : ROWS.flat();
 
 const TINTS = {
   violet: "bg-[#f1eeff] text-[#4b3fb8] border-[#5b4fd6]/15", // technology, SaaS, design
@@ -126,7 +141,7 @@ function Wordmark({ name, industry, icon: Icon, color, size = 20, nudge = 0, img
 
 export default function TrustStrip({ copy }: { copy?: CopyOf<"trustStrip"> }) {
   const c = homeCopy("trustStrip", copy);
-  const countries = SERVED.length;
+  const countries = COUNTRIES_SERVED;
   return (
     <section
       aria-labelledby="clients-heading"
@@ -147,7 +162,7 @@ export default function TrustStrip({ copy }: { copy?: CopyOf<"trustStrip"> }) {
         <Reveal delay={100}>
           {/* every client at once, static (owner: no moving carousel); rows wrap and stay centred */}
           <ul aria-label="Clients" className="mx-auto mt-8 flex max-w-6xl flex-wrap items-center justify-center gap-x-6 gap-y-3 sm:gap-x-10 sm:gap-y-5 lg:mt-10">
-            {ROWS.flat().map((c) => (
+            {CLIENTS.map((c) => (
               <Wordmark key={c.name} {...c} />
             ))}
           </ul>

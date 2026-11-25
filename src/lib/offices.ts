@@ -1,3 +1,5 @@
+import { SITE } from "@/lib/siteSettings";
+
 /**
  * CodeShaper's offices, shared by the footer and the contact page.
  *
@@ -25,7 +27,8 @@ export type Office = {
 const DHAKA_LINES = ["3rd Floor, Road# 29, House# 395,", "New DOHS, Mohakhali, Dhaka 1206"];
 const DHAKA_TEL = "+8801787662759";
 
-export const OFFICE_LIST: Office[] = [
+/** Built in until the CMS sends its own list (CMS › Settings › Contact and social › Offices). */
+const BUILT_IN: Office[] = [
   { key: "bangladesh", title: "Operations HQ · Dhaka", city: "Dhaka", country: "Bangladesh", lines: DHAKA_LINES, tel: DHAKA_TEL, zone: "Asia/Dhaka" },
   { key: "new zealand", title: "Global HQ · Auckland", city: "Auckland", country: "New Zealand", lines: ["3 Herekino Street, Westgate,", "Auckland 0814"], tel: "+64277758777", zone: "Pacific/Auckland" },
   // TEMP (owner, 23 Nov 2026): address and phone still to come
@@ -34,6 +37,14 @@ export const OFFICE_LIST: Office[] = [
   { key: "uk", title: "Office · UK", city: "UK", country: "United Kingdom", zone: "Europe/London", pending: true },
   { key: "australia", title: "Office · Australia", city: "Australia", country: "Australia", pending: true }, // add the city for local time
 ];
+
+/**
+ * The offices: from the CMS when it has any (owner, 25 Nov 2026: "addresses should be editable from the CMS"),
+ * else the built-in list. An office without an address is pending and keeps the Dhaka stand-in below.
+ */
+export const OFFICE_LIST: Office[] = SITE.offices?.length
+  ? SITE.offices.map((o) => ({ key: o.key, title: o.title, city: o.city, country: o.country, lines: o.lines?.length ? o.lines : undefined, tel: o.tel, zone: o.zone, pending: !o.lines?.length || undefined }))
+  : BUILT_IN;
 
 /** Footer view: pending offices fall back to the Dhaka address and phone (TEMP). */
 export const FOOTER_OFFICES: Record<string, { title: string; lines?: string[]; tel?: string; zone?: string }> = Object.fromEntries(
@@ -52,6 +63,6 @@ export const mapsEmbed = (o: Office) => `https://maps.google.com/maps?q=${encode
  */
 export function withStandIn(o: Office): Office {
   if (!o.pending) return o;
-  const dhaka = OFFICE_LIST[0];
+  const dhaka = OFFICE_LIST.find((x) => x.key === "bangladesh" && !x.pending) ?? BUILT_IN[0];
   return { ...o, lines: dhaka.lines, tel: dhaka.tel, mapCountry: dhaka.country };
 }

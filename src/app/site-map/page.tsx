@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { withShare } from "@/lib/share";
 import SiteShell from "@/components/system/SiteShell";
 import Breadcrumbs from "@/components/system/Breadcrumbs";
 import { SectionEyebrow, SectionTitle } from "@/components/system/SectionHeading";
@@ -14,11 +15,11 @@ import HeroBackdrop from "@/components/system/HeroBackdrop";
  * Human sitemap (/site-map): every real page, grouped, from the same data the
  * menus and /sitemap.xml use, so it can't list a page that doesn't exist.
  */
-export const metadata: Metadata = {
+export const metadata: Metadata = withShare({
   title: "Sitemap",
   description: "Every page on the CodeShaper website, in one place.",
   alternates: { canonical: "/site-map" },
-};
+});
 
 type Item = { label: string; href: string };
 const link = "font-urbanist text-[14px] text-ink-dim transition-colors hover:text-ink";

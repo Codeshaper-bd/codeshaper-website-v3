@@ -9,6 +9,7 @@ import BookingProvider from "@/components/booking/BookingProvider";
 import { bothFounders, CALL_MINUTES } from "@/lib/founders";
 import { SITE } from "@/lib/siteSettings";
 import { contactChannels } from "@/lib/publishedContact";
+import Tracking from "@/components/analytics/Tracking";
 
 /**
  * Shared page frame — Lenis smooth scroll, Navbar, Newsletter + Footer.
@@ -31,6 +32,9 @@ export default function SiteShell({ children }: { children: ReactNode }) {
       </LazyHydrate>
       {/* every "Book a call" opens the booking window (CMS › Settings › Contact › Booking calendar) */}
       <BookingProvider calLink={SITE.contact?.booking} founders={bothFounders()} minutes={CALL_MINUTES} channels={contactChannels()} />
+      {/* analytics and ad tags behind the cookie notice (CMS › Settings › Analytics and tracking). Here, not in the root
+          layout: a client component beside the root layout's children broke hydration in production builds. */}
+      <Tracking />
       {/* room for the fixed mobile tab bar (MobileTabBar) below the footer */}
       <div aria-hidden className="h-[calc(61px+env(safe-area-inset-bottom))] bg-light-surface lg:hidden" />
     </SmoothScroll>

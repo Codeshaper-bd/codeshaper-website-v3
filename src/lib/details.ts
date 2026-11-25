@@ -1,6 +1,7 @@
 import "server-only";
 import details from "@/content/details.json";
 import type { Review } from "@/data/reviews";
+import { withShare } from "@/lib/share";
 
 /** Long content for single pages. Kept out of the shared data so it never reaches the browser bundle. */
 export type Card = { icon: string; title: string; description: string };
@@ -32,16 +33,23 @@ export function videoEmbed(url: string): string | null {
   return v ? `https://player.vimeo.com/video/${v[1]}` : null;
 }
 
-/** Adds what the CMS says about search engines to a page's metadata. */
+/**
+ * Adds what the CMS says about search engines (the record's SEO tab) to a
+ * page's metadata, and completes its share preview (lib/share.ts) so every
+ * page shares with its own title, text, address and picture.
+ */
 export function withSeo<T extends import("next").Metadata>(base: T, seo: Seo = {}): import("next").Metadata {
-  const title = seo.title ? { absolute: /\| CodeShaper$/.test(seo.title) ? seo.title : `${seo.title} | CodeShaper` } : base.title;
-  const image = seo.image ? { images: [seo.image] } : {};
-  return {
+  const branded = seo.title ? (/\| CodeShaper$/.test(seo.title) ? seo.title : `${seo.title} | CodeShaper`) : undefined;
+  const title = branded ? { absolute: branded } : base.title;
+  return withShare({
     ...base,
     title,
     description: seo.description ?? base.description,
     ...(seo.canonical ? { alternates: { canonical: seo.canonical } } : {}),
     ...(seo.noindex ? { robots: { index: false, follow: true } } : {}),
-    ...(seo.image || seo.title ? { openGraph: { ...base.openGraph, ...(seo.title ? { title: seo.title } : {}), ...image } } : {}),
-  };
+    openGraph: { ...base.openGraph, ...(branded ? { title: branded } : {}), ...(seo.description ? { description: seo.description } : {}), ...(seo.image ? { images: [seo.image] } : {}) },
+    ...(seo.image || branded || seo.description
+      ? { twitter: { ...base.twitter, ...(branded ? { title: branded } : {}), ...(seo.description ? { description: seo.description } : {}), ...(seo.image ? { images: [seo.image] } : {}) } }
+      : {}),
+  });
 }
