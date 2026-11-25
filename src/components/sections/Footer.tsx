@@ -7,7 +7,7 @@ import { SITE } from "@/lib/siteSettings";
 import { PUBLISHED } from "@/lib/publishedContact";
 import { FOOTER_OFFICES } from "@/lib/offices";
 import { SERVICE_GROUPS, servicePath } from "@/data/services";
-import { PRODUCTS } from "@/lib/products";
+import { PRODUCT_LINEUP } from "@/lib/products";
 import MarkSvg from "@/components/brand/MarkSvg";
 import FooterStage from "./footer/FooterStage";
 import Landmark from "./footer/Landmark";
@@ -93,6 +93,7 @@ const CONTACT_LINES = [
 const COMPANY_LINKS = [
   { label: "About us", href: "/company/about" },
   { label: "Case studies", href: "/case-studies" },
+  { label: "Client reviews", href: "/reviews" },
   { label: "Industries", href: "/industries" },
   { label: "Blog", href: "/blog" },
   { label: "Contact", href: "/contact" },
@@ -107,7 +108,7 @@ const ENGAGE_LINKS = [
 /** Products (owner, 25 Nov 2026, in place of "Useful links"): each product from the CMS (Products), then all of them. */
 // CMS › Settings › Footer › Products (each product's own site); the CMS products' pages until that list is filled
 const PRODUCT_LINKS = [
-  ...(FOOTER.products?.length ? FOOTER.products : PRODUCTS.map((p) => ({ label: p.title, href: `/products/${p.slug}` }))),
+  ...PRODUCT_LINEUP.map(({ label, href }) => ({ label, href })),
   { label: "All products →", href: "/products" },
 ];
 /** Tools: free tools CodeShaper will publish; add each here when it is live (the column says "coming soon" until then). */

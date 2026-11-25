@@ -18,4 +18,16 @@ export type Review = {
   video?: { src: string; duration: string };
 };
 
-export const REAL_REVIEWS: Review[] = reviews;
+/** A YouTube video review without a photo shows a frame of its own video (its thumbnail). */
+export const REAL_REVIEWS: Review[] = (reviews as Review[]).map((r) => {
+  const id = youtubeId(r.video?.src);
+  return !r.photo && id ? { ...r, photo: `https://i.ytimg.com/vi/${id}/hqdefault.jpg` } : r;
+});
+
+/** The YouTube video id in a review's video link (watch, youtu.be or shorts), else null. */
+export function youtubeId(src?: string): string | null {
+  const m = src?.match(/(?:youtube\.com\/(?:watch\?(?:.*&)?v=|shorts\/|embed\/)|youtu\.be\/)([\w-]{11})/);
+  return m ? m[1] : null;
+}
+/** A Shorts video is upright (9:16). */
+export const isShort = (src?: string) => /youtube\.com\/shorts\//.test(src ?? "");

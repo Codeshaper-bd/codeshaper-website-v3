@@ -7,5 +7,90 @@
   "name": "Joan Roca",
   "market": "Spain",
   "caseSlug": "essentialist"
+ },
+ {
+  "role": "Co-founder",
+  "company": "Commaful",
+  "real": true,
+  "quote": "We worked with Codeshaper a few times now and we have been delighted with the work that they have given us. They are super-fast, super efficient, and care about the project requirements. I highly recommend them.",
+  "name": "Sydney Liu",
+  "video": {
+   "src": "https://youtu.be/a5cG25Ur5Hw",
+   "duration": "0:39"
+  }
+ },
+ {
+  "role": "Business Owner",
+  "company": "",
+  "real": true,
+  "quote": "I have worked closely with the CodeShaper team, they gave me the best support I have asked for, professional and Very helpful, Thanks a lot again. I would like to keep working with them.",
+  "name": "Aiah Shaheen",
+  "video": {
+   "src": "https://www.youtube.com/shorts/rbHjFUCkQzU",
+   "duration": "0:34"
+  }
+ },
+ {
+  "role": "Business Owner",
+  "company": "",
+  "real": true,
+  "quote": "I'm impressed and delighted. Working codeshaper is just a simple pleasure. I like how they really understand our needs and do them as fast and as precise as possible.",
+  "name": "Artem"
+ },
+ {
+  "role": "Brand Consultant",
+  "company": "",
+  "real": true,
+  "quote": "Loved working with codeshaper. Been going back to them a bunch now and they deliver great quality work every time.",
+  "name": "Lavi Hendin"
+ },
+ {
+  "role": "Business Owner",
+  "company": "",
+  "real": true,
+  "quote": "Their work is not 5 star it is 10 stars. Absolutely fantastic both in terms of customer service, execution and quality.",
+  "name": "Petervasas"
+ },
+ {
+  "role": "Brand Consultant",
+  "company": "",
+  "real": true,
+  "quote": "This guy Deserves 100 Starts, Not 5 Start. They've done hard work on my project with a smiling face. Great thanks from my heart. Fabulous Job, Great communication",
+  "name": "Froab"
+ },
+ {
+  "role": "Brand Consultant",
+  "company": "",
+  "real": true,
+  "quote": "The service was perfectly executed. Everything was made on time without any problem at all. It just worked everything.",
+  "name": "Mexico"
+ },
+ {
+  "role": "CEO",
+  "company": "DeAnne Designs LLC",
+  "real": true,
+  "quote": "This experience was GREAT! The job was not finished until I was COMPLETELY satisfied. They even went above and beyond and helped with my installation.",
+  "name": "Whitney Thompson"
+ },
+ {
+  "role": "Writer and Author",
+  "company": "",
+  "real": true,
+  "quote": "This should be the 7th time I have requested the services of Codeshaper and I have never being disappointed. They are also very patient and are quick to interpret design requirements. The end result is a quality product that is beyond what I expected.",
+  "name": "Godwin Temisa"
+ },
+ {
+  "role": "Brand Consultant",
+  "company": "",
+  "real": true,
+  "quote": "This is the second time we've worked with Codeshaper. Absolutely fantastic both in terms of customer service, execution and quality.",
+  "name": "Daan Debie"
+ },
+ {
+  "role": "Brand Consultant",
+  "company": "",
+  "real": true,
+  "quote": "As always, the most talented and reliable team for creating any type of website. Such a great work experience. They have done an amazing job and I'm very pleased with their service.",
+  "name": "Noella Carvalho"
  }
 ]

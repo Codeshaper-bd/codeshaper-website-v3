@@ -8,8 +8,8 @@ export const metadata: Metadata = { title: "Page not found", robots: { index: fa
 export default function NotFound() {
   return (
     <SiteShell>
-      <div className="theme-light bg-light-surface p-3 sm:p-4">
-        <section className="flex min-h-[70svh] flex-col items-center justify-center rounded-[32px] bg-canvas px-6 py-32 text-center">
+      <div className="theme-light bg-gradient-to-b from-white from-30% to-light-surface px-3 pb-3 sm:px-4 sm:pb-4">
+        <section className="flex min-h-[70svh] flex-col items-center justify-center rounded-b-[28px] bg-canvas sm:rounded-b-[32px] px-6 py-32 text-center">
           <p className="font-urbanist text-sm font-semibold text-aurora-violet">404</p>
           <SectionTitle as="h1" size="lg">This page does not exist.</SectionTitle>
           <SectionDescription className="mt-4 max-w-md">It may have moved. These are good places to continue.</SectionDescription>

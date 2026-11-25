@@ -8,7 +8,7 @@ import { BookCallCta, JsonLd, ServicesSection, breadcrumbJsonLd } from "@/compon
 import DetailSections from "@/components/cms/DetailSections";
 import ProductCard from "@/components/products/ProductCard";
 import { Icon } from "@/lib/icons";
-import { STAGE, getProduct, type Product } from "@/lib/products";
+import { STAGE, getProduct, productCard, type Product } from "@/lib/products";
 import { SITE_NAME, SITE_URL } from "@/lib/site";
 
 export default function ProductPage({ product: p }: { product: Product }) {
@@ -22,8 +22,9 @@ export default function ProductPage({ product: p }: { product: Product }) {
       <JsonLd data={breadcrumbJsonLd(crumbs)} />
       <JsonLd data={{ "@context": "https://schema.org", "@type": "SoftwareApplication", name: p.title, description: p.summary, url: `${SITE_URL}/products/${p.slug}`, applicationCategory: p.category ?? "BusinessApplication", operatingSystem: p.platforms?.join(", ") ?? "Web", publisher: { "@type": "Organization", name: SITE_NAME } }} />
       <div className="theme-light">
-        <div className="bg-light-surface p-3 sm:p-4">
-          <section className="relative overflow-hidden rounded-[32px] bg-canvas px-6 pb-14 pt-32 lg:px-10 lg:pb-16 lg:pt-32">
+        {/* like every page hero: white at the top so the frame blends with the header, rounded only at the bottom */}
+        <div className="bg-gradient-to-b from-white from-30% to-light-surface px-3 pb-3 sm:px-4 sm:pb-4">
+          <section className="relative overflow-hidden rounded-b-[28px] bg-canvas sm:rounded-b-[32px] px-6 pb-14 pt-32 lg:px-10 lg:pb-16 lg:pt-32">
             <div aria-hidden className="absolute left-1/2 top-0 h-[460px] w-[760px] -translate-x-1/2 -translate-y-1/3 rounded-full opacity-40 blur-3xl" style={{ background: `radial-gradient(closest-side, ${p.accent ?? "#7c6cff"}33, transparent)` }} />
             <div className="relative mx-auto max-w-3xl text-center">
               <div className="flex justify-center"><Breadcrumbs items={[crumbs[0], crumbs[1], { label: p.title }]} /></div>
@@ -91,7 +92,7 @@ export default function ProductPage({ product: p }: { product: Product }) {
           </ServicesSection>
         )}
         <DetailSections detail={{ faqs: p.faqs }} name={p.title} />
-        {related.length > 0 && <ServicesSection id="more-products" label="Products" title="You may also like."><div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">{related.map((x) => <ProductCard key={x.slug} product={x} />)}</div></ServicesSection>}
+        {related.length > 0 && <ServicesSection id="more-products" label="Products" title="You may also like."><div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">{related.map((x) => <ProductCard key={x.slug} card={productCard(x)} />)}</div></ServicesSection>}
         <BookCallCta title={p.cta?.title ?? `See ${p.title} in action.`} description="Tell us how you work today. We will show you how it would look for you." secondary={{ label: "All products", href: "/products" }} />
       </div>
     </SiteShell>

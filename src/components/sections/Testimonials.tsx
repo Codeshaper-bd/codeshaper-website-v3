@@ -1,6 +1,6 @@
 "use client";
 
-import { REAL_REVIEWS, type Review } from "@/data/reviews";
+import { REAL_REVIEWS, isShort, youtubeId, type Review } from "@/data/reviews";
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -113,14 +113,14 @@ function PhotoCard({ r, onPlay }: { r: Review & { photo: string }; onPlay: (r: R
     <>
       <Image
         src={r.photo}
-        alt={`${r.name}, ${r.role} at ${r.company}`}
+        alt={[r.name, r.role, r.company].filter(Boolean).join(", ")}
         fill
         sizes="320px"
         className="object-cover transition-transform duration-[1200ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover/c:scale-[1.05]"
       />
       <span aria-hidden className="absolute inset-0 bg-[linear-gradient(to_top,rgba(11,15,25,0.9)_0%,rgba(11,15,25,0.55)_32%,rgba(11,15,25,0)_60%)]" />
       <span className="absolute inset-x-4 top-4 flex items-start justify-between gap-2">
-        <Company r={r} dark />
+        {r.company && <Company r={r} dark />}
         <Tag r={r} />
       </span>
 
@@ -131,7 +131,7 @@ function PhotoCard({ r, onPlay }: { r: Review & { photo: string }; onPlay: (r: R
           <span className="min-w-0 leading-tight">
             <span className="block font-urbanist text-[14px] font-semibold text-white">{r.name}</span>
             <span className="mt-0.5 block truncate font-urbanist text-[12.5px] text-white/70">
-              {r.role}, {r.company}
+              {[r.role, r.company].filter(Boolean).join(", ")}
             </span>
           </span>
           {r.video && (
@@ -183,7 +183,7 @@ function QuoteCard({ r }: { r: Review }) {
           <span className="leading-tight">
             <span className="block font-urbanist text-[14px] font-semibold text-ink">{r.name}</span>
             <span className="mt-0.5 block font-urbanist text-[12.5px] text-ink-dim">
-              {r.role}, {r.company}
+              {[r.role, r.company].filter(Boolean).join(", ")}
             </span>
           </span>
         </span>
@@ -319,7 +319,20 @@ export default function Testimonials({ copy }: { copy?: CopyOf<"testimonials"> }
         {open?.video && (
           <div className="flex h-full items-center justify-center p-4 sm:p-8" onClick={(e) => e.target === e.currentTarget && close()}>
             <div className="svc-dialog-panel w-full max-w-5xl overflow-hidden rounded-[24px] bg-[#0b0f19] shadow-[0_40px_100px_-30px_rgba(11,15,25,0.6)]">
-              <video ref={playerRef} src={open.video.src} poster={open.photo} controls playsInline className="aspect-video w-full bg-black" />
+              {youtubeId(open.video.src) ? (
+                // a YouTube review plays in its privacy-friendly player; Shorts stay upright
+                <div className={isShort(open.video.src) ? "mx-auto aspect-[9/16] max-h-[72dvh] bg-black" : "aspect-video w-full bg-black"}>
+                  <iframe
+                    src={`https://www.youtube-nocookie.com/embed/${youtubeId(open.video.src)}?autoplay=1&rel=0&modestbranding=1`}
+                    title={`Video review from ${open.name}`}
+                    allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
+                    allowFullScreen
+                    className="h-full w-full"
+                  />
+                </div>
+              ) : (
+                <video ref={playerRef} src={open.video.src} poster={open.photo} controls playsInline className="aspect-video w-full bg-black" />
+              )}
               <div className="flex items-center justify-between gap-4 p-5">
                 <span className="flex items-center gap-3">
                   {open.photo && (
@@ -333,7 +346,7 @@ export default function Testimonials({ copy }: { copy?: CopyOf<"testimonials"> }
                       <Tag r={open} />
                     </span>
                     <span className="mt-0.5 flex items-center gap-1.5 font-urbanist text-[12.5px] text-white/70">
-                      {open.role}, {open.company}
+                      {[open.role, open.company].filter(Boolean).join(", ")}
                       {open.market && (
                         <>
                           <Flag market={open.market} />
