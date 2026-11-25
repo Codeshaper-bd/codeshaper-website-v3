@@ -34,31 +34,36 @@ import {
 import { FaAws } from "react-icons/fa";
 import { VscAzure } from "react-icons/vsc";
 import type { IconType } from "react-icons";
+import header from "@/content/header.json";
 
 /** the owner's list first, then tools the site's own content already names (services, case studies) */
-const STACK: { name: string; icon: IconType; color: string }[] = [
-  { name: "ChatGPT", icon: RiOpenaiFill, color: "#0b0f19" },
-  { name: "Claude", icon: RiClaudeFill, color: "#d97757" },
-  { name: "Gemini", icon: RiGeminiFill, color: "#4f7cf7" },
-  { name: "LangChain", icon: SiLangchain, color: "#1c3c3c" },
-  { name: "AWS", icon: FaAws, color: "#ff9900" },
-  { name: "Azure", icon: VscAzure, color: "#0078d4" },
-  { name: "Google Cloud", icon: SiGooglecloud, color: "#4285f4" },
-  { name: "Hugging Face", icon: SiHuggingface, color: "#ffb000" },
-  { name: "Llama", icon: SiMeta, color: "#0467df" },
-  { name: "Python", icon: SiPython, color: "#3776ab" },
-  { name: "Next.js", icon: SiNextdotjs, color: "#0b0f19" },
-  { name: "React", icon: SiReact, color: "#149eca" },
-  { name: "Node.js", icon: SiNodedotjs, color: "#5fa04e" },
-  { name: "Laravel", icon: SiLaravel, color: "#ff2d20" },
-  { name: "Flutter", icon: SiFlutter, color: "#02569b" },
-  { name: "PostgreSQL", icon: SiPostgresql, color: "#4169e1" },
-  { name: "Supabase", icon: SiSupabase, color: "#3ecf8e" },
-  { name: "Docker", icon: SiDocker, color: "#2496ed" },
-  { name: "Kubernetes", icon: SiKubernetes, color: "#326ce5" },
-  { name: "Vercel", icon: SiVercel, color: "#0b0f19" },
-  { name: "Shopify", icon: SiShopify, color: "#5e8e3e" },
+const ALL_PLATFORMS: { key: string; name: string; icon: IconType; color: string }[] = [
+  { key: "chatgpt", name: "ChatGPT", icon: RiOpenaiFill, color: "#0b0f19" },
+  { key: "claude", name: "Claude", icon: RiClaudeFill, color: "#d97757" },
+  { key: "gemini", name: "Gemini", icon: RiGeminiFill, color: "#4f7cf7" },
+  { key: "langchain", name: "LangChain", icon: SiLangchain, color: "#1c3c3c" },
+  { key: "aws", name: "AWS", icon: FaAws, color: "#ff9900" },
+  { key: "azure", name: "Azure", icon: VscAzure, color: "#0078d4" },
+  { key: "google-cloud", name: "Google Cloud", icon: SiGooglecloud, color: "#4285f4" },
+  { key: "hugging-face", name: "Hugging Face", icon: SiHuggingface, color: "#ffb000" },
+  { key: "llama", name: "Llama", icon: SiMeta, color: "#0467df" },
+  { key: "python", name: "Python", icon: SiPython, color: "#3776ab" },
+  { key: "nextjs", name: "Next.js", icon: SiNextdotjs, color: "#0b0f19" },
+  { key: "react", name: "React", icon: SiReact, color: "#149eca" },
+  { key: "nodejs", name: "Node.js", icon: SiNodedotjs, color: "#5fa04e" },
+  { key: "laravel", name: "Laravel", icon: SiLaravel, color: "#ff2d20" },
+  { key: "flutter", name: "Flutter", icon: SiFlutter, color: "#02569b" },
+  { key: "postgresql", name: "PostgreSQL", icon: SiPostgresql, color: "#4169e1" },
+  { key: "supabase", name: "Supabase", icon: SiSupabase, color: "#3ecf8e" },
+  { key: "docker", name: "Docker", icon: SiDocker, color: "#2496ed" },
+  { key: "kubernetes", name: "Kubernetes", icon: SiKubernetes, color: "#326ce5" },
+  { key: "vercel", name: "Vercel", icon: SiVercel, color: "#0b0f19" },
+  { key: "shopify", name: "Shopify", icon: SiShopify, color: "#5e8e3e" },
 ];
+
+/** What the strip shows, in order: CMS › Settings › Header menu › Platforms strip; all of the above when it is not set. */
+const CHOSEN = (header as { platforms?: string[] }).platforms;
+const STACK = CHOSEN?.length ? CHOSEN.flatMap((k) => ALL_PLATFORMS.filter((p) => p.key === k)) : ALL_PLATFORMS;
 
 /**
  * Services mega panel, the original 3-column structure in glass: How We

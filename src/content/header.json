@@ -43,5 +43,28 @@
  "button": {
   "label": "Book a Call",
   "href": "/contact"
- }
+ },
+ "platforms": [
+  "chatgpt",
+  "claude",
+  "gemini",
+  "langchain",
+  "aws",
+  "azure",
+  "google-cloud",
+  "hugging-face",
+  "llama",
+  "python",
+  "nextjs",
+  "react",
+  "nodejs",
+  "laravel",
+  "flutter",
+  "postgresql",
+  "supabase",
+  "docker",
+  "kubernetes",
+  "vercel",
+  "shopify"
+ ]
 }

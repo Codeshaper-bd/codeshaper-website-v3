@@ -88,133 +88,155 @@ export default function MeshGradient({ target, className = "", night = false }: 
     const host = target.current;
     const wrap = box.current;
     if (!host || !wrap) return;
-    // a new canvas each run: a context that was released can't be used again
-    const cv = document.createElement("canvas");
-    cv.className = "absolute inset-0 h-full w-full";
-    const gl = cv.getContext("webgl", { antialias: false, premultipliedAlpha: false, preserveDrawingBuffer: false });
-    if (!gl) return; // the CSS gradient underneath stays
-
-    const shader = (type: number, src: string) => {
-      const s = gl.createShader(type)!;
-      gl.shaderSource(s, src);
-      gl.compileShader(s);
-      return gl.getShaderParameter(s, gl.COMPILE_STATUS) ? s : null;
-    };
-    const vs = shader(gl.VERTEX_SHADER, VERT);
-    const fs = shader(gl.FRAGMENT_SHADER, FRAG);
-    const prog = gl.createProgram()!;
-    if (!vs || !fs) return;
-    gl.attachShader(prog, vs);
-    gl.attachShader(prog, fs);
-    gl.linkProgram(prog);
-    if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) return;
-    gl.useProgram(prog);
-    wrap.appendChild(cv);
-
-    const buf = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, buf);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
-    const loc = gl.getAttribLocation(prog, "p");
-    gl.enableVertexAttribArray(loc);
-    gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
-
-    const u = (n: string) => gl.getUniformLocation(prog, n);
-    const uRes = u("uRes"), uTime = u("uTime"), uMouse = u("uMouse"), uHover = u("uHover"), uRipple = u("uRipple");
-    palette.forEach((c, i) => gl.uniform3fv(u(`uC${i}`), rgb(c)));
-    gl.uniform1f(u("uLift"), night ? 0 : 0.12);
-
-    const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const SCALE = 0.5;
-    const resize = () => {
-      const w = Math.max(1, Math.round(cv.clientWidth * SCALE));
-      const h = Math.max(1, Math.round(cv.clientHeight * SCALE));
-      if (cv.width !== w || cv.height !== h) {
-        cv.width = w;
-        cv.height = h;
-        gl.viewport(0, 0, w, h);
-      }
-      gl.uniform2f(uRes, w, h);
-    };
-
-    // pointer: eased toward the target, hover strength fades in and out
-    const mouse = { x: 0.5, y: 0.5, tx: 0.5, ty: 0.5, h: 0, th: 0 };
-    const start = performance.now();
-    const now = () => (performance.now() - start) / 1000 + 40; // start mid-drift, not at the noise origin
-    const ripple = [0.5, 0.5, -10];
-
-    const toUv = (e: PointerEvent) => {
-      const r = cv.getBoundingClientRect();
-      return [(e.clientX - r.left) / r.width, 1 - (e.clientY - r.top) / r.height];
-    };
-    const onMove = (e: PointerEvent) => {
-      const [x, y] = toUv(e);
-      mouse.tx = x;
-      mouse.ty = y;
-      mouse.th = 1;
-      kick();
-    };
-    const onLeave = () => {
-      mouse.th = 0;
-      kick();
-    };
-    const onDown = (e: PointerEvent) => {
-      const [x, y] = toUv(e);
-      ripple[0] = x;
-      ripple[1] = y;
-      ripple[2] = now();
-      kick();
-    };
-
-    let raf = 0;
-    let visible = false;
-    const frame = () => {
-      raf = 0;
-      mouse.x += (mouse.tx - mouse.x) * 0.06;
-      mouse.y += (mouse.ty - mouse.y) * 0.06;
-      mouse.h += (mouse.th - mouse.h) * 0.04;
-      gl.uniform1f(uTime, now());
-      gl.uniform2f(uMouse, mouse.x, mouse.y);
-      gl.uniform1f(uHover, mouse.h);
-      gl.uniform3f(uRipple, ripple[0], ripple[1], ripple[2]);
-      gl.drawArrays(gl.TRIANGLES, 0, 3);
-      if (!reduced && visible && !document.hidden) raf = requestAnimationFrame(frame);
-    };
-    const kick = () => {
-      if (!raf && visible) raf = requestAnimationFrame(frame);
-    };
-
-    resize();
-    frame(); // first paint, also the still frame under reduced motion
-    const ro = new ResizeObserver(() => {
-      resize();
-      if (reduced) frame();
-      else kick();
-    });
-    ro.observe(cv);
-    const io = new IntersectionObserver(([e]) => {
-      visible = e.isIntersecting;
-      if (visible) kick();
-    });
-    io.observe(cv);
-    const onVis = () => !document.hidden && kick();
-    document.addEventListener("visibilitychange", onVis);
-    if (!reduced) {
-      host.addEventListener("pointermove", onMove, { passive: true });
-      host.addEventListener("pointerleave", onLeave);
-      host.addEventListener("pointerdown", onDown, { passive: true });
-    }
-
+    // phones and touch screens: the CSS gradient underneath, same colours, no WebGL (owner, 25 Nov 2026: lighter phones;
+    // the pointer play does not apply to touch anyway). Larger screens start it only when the footer comes near the screen.
+    if (matchMedia("(pointer: coarse), (max-width: 767px)").matches) return;
+    let stop: (() => void) | undefined;
+    let started = false;
+    const near = new IntersectionObserver(
+      ([e]) => {
+        if (!e.isIntersecting || started) return;
+        started = true;
+        near.disconnect();
+        stop = begin(host, wrap);
+      },
+      { rootMargin: "600px 0px" },
+    );
+    near.observe(host);
     return () => {
-      cancelAnimationFrame(raf);
-      ro.disconnect();
-      io.disconnect();
-      document.removeEventListener("visibilitychange", onVis);
-      host.removeEventListener("pointermove", onMove);
-      host.removeEventListener("pointerleave", onLeave);
-      host.removeEventListener("pointerdown", onDown);
-      gl.getExtension("WEBGL_lose_context")?.loseContext();
-      cv.remove();
+      near.disconnect();
+      stop?.();
     };
+
+    function begin(host: HTMLElement, wrap: HTMLDivElement): (() => void) | undefined {
+      // a new canvas each run: a context that was released can't be used again
+      const cv = document.createElement("canvas");
+      cv.className = "absolute inset-0 h-full w-full";
+      const gl = cv.getContext("webgl", { antialias: false, premultipliedAlpha: false, preserveDrawingBuffer: false });
+      if (!gl) return; // the CSS gradient underneath stays
+
+      const shader = (type: number, src: string) => {
+        const s = gl.createShader(type)!;
+        gl.shaderSource(s, src);
+        gl.compileShader(s);
+        return gl.getShaderParameter(s, gl.COMPILE_STATUS) ? s : null;
+      };
+      const vs = shader(gl.VERTEX_SHADER, VERT);
+      const fs = shader(gl.FRAGMENT_SHADER, FRAG);
+      const prog = gl.createProgram()!;
+      if (!vs || !fs) return;
+      gl.attachShader(prog, vs);
+      gl.attachShader(prog, fs);
+      gl.linkProgram(prog);
+      if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) return;
+      gl.useProgram(prog);
+      wrap.appendChild(cv);
+
+      const buf = gl.createBuffer();
+      gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+      const loc = gl.getAttribLocation(prog, "p");
+      gl.enableVertexAttribArray(loc);
+      gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+
+      const u = (n: string) => gl.getUniformLocation(prog, n);
+      const uRes = u("uRes"), uTime = u("uTime"), uMouse = u("uMouse"), uHover = u("uHover"), uRipple = u("uRipple");
+      palette.forEach((c, i) => gl.uniform3fv(u(`uC${i}`), rgb(c)));
+      gl.uniform1f(u("uLift"), night ? 0 : 0.12);
+
+      const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const SCALE = 0.5;
+      const resize = () => {
+        const w = Math.max(1, Math.round(cv.clientWidth * SCALE));
+        const h = Math.max(1, Math.round(cv.clientHeight * SCALE));
+        if (cv.width !== w || cv.height !== h) {
+          cv.width = w;
+          cv.height = h;
+          gl.viewport(0, 0, w, h);
+        }
+        gl.uniform2f(uRes, w, h);
+      };
+
+      // pointer: eased toward the target, hover strength fades in and out
+      const mouse = { x: 0.5, y: 0.5, tx: 0.5, ty: 0.5, h: 0, th: 0 };
+      const start = performance.now();
+      const now = () => (performance.now() - start) / 1000 + 40; // start mid-drift, not at the noise origin
+      const ripple = [0.5, 0.5, -10];
+
+      const toUv = (e: PointerEvent) => {
+        const r = cv.getBoundingClientRect();
+        return [(e.clientX - r.left) / r.width, 1 - (e.clientY - r.top) / r.height];
+      };
+      const onMove = (e: PointerEvent) => {
+        const [x, y] = toUv(e);
+        mouse.tx = x;
+        mouse.ty = y;
+        mouse.th = 1;
+        kick();
+      };
+      const onLeave = () => {
+        mouse.th = 0;
+        kick();
+      };
+      const onDown = (e: PointerEvent) => {
+        const [x, y] = toUv(e);
+        ripple[0] = x;
+        ripple[1] = y;
+        ripple[2] = now();
+        kick();
+      };
+
+      let raf = 0;
+      let visible = false;
+      const frame = () => {
+        raf = 0;
+        mouse.x += (mouse.tx - mouse.x) * 0.06;
+        mouse.y += (mouse.ty - mouse.y) * 0.06;
+        mouse.h += (mouse.th - mouse.h) * 0.04;
+        gl.uniform1f(uTime, now());
+        gl.uniform2f(uMouse, mouse.x, mouse.y);
+        gl.uniform1f(uHover, mouse.h);
+        gl.uniform3f(uRipple, ripple[0], ripple[1], ripple[2]);
+        gl.drawArrays(gl.TRIANGLES, 0, 3);
+        if (!reduced && visible && !document.hidden) raf = requestAnimationFrame(frame);
+      };
+      const kick = () => {
+        if (!raf && visible) raf = requestAnimationFrame(frame);
+      };
+
+      resize();
+      frame(); // first paint, also the still frame under reduced motion
+      const ro = new ResizeObserver(() => {
+        resize();
+        if (reduced) frame();
+        else kick();
+      });
+      ro.observe(cv);
+      const io = new IntersectionObserver(([e]) => {
+        visible = e.isIntersecting;
+        if (visible) kick();
+      });
+      io.observe(cv);
+      const onVis = () => !document.hidden && kick();
+      document.addEventListener("visibilitychange", onVis);
+      if (!reduced) {
+        host.addEventListener("pointermove", onMove, { passive: true });
+        host.addEventListener("pointerleave", onLeave);
+        host.addEventListener("pointerdown", onDown, { passive: true });
+      }
+
+      return () => {
+        cancelAnimationFrame(raf);
+        ro.disconnect();
+        io.disconnect();
+        document.removeEventListener("visibilitychange", onVis);
+        host.removeEventListener("pointermove", onMove);
+        host.removeEventListener("pointerleave", onLeave);
+        host.removeEventListener("pointerdown", onDown);
+        gl.getExtension("WEBGL_lose_context")?.loseContext();
+        cv.remove();
+      };
+    }
   }, [target, night, palette]);
 
   return (

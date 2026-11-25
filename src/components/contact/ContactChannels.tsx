@@ -1,7 +1,7 @@
 import { ArrowUpRight, CalendarClock, LifeBuoy, Mail, Phone } from "lucide-react";
 import type { ComponentType, SVGProps } from "react";
 import CopyButton from "./CopyButton";
-import { PUBLISHED, contactChannels } from "@/lib/publishedContact";
+import { contactChannels } from "@/lib/publishedContact";
 
 /**
  * "Reach us directly" on the contact page (owner, 24 Nov 2026): every direct
@@ -25,7 +25,7 @@ export default function ContactChannels() {
   const c = contactChannels();
   const channels: Channel[] = [
     { icon: Mail, label: "Projects & partnerships", value: c.email, note: "New projects, quotes and collaborations", href: `mailto:${c.email}`, action: "Send an email", tone: "bg-[#4f46e5]/10 text-[#4f46e5]", copy: true },
-    { icon: LifeBuoy, label: "Support", value: PUBLISHED.support, note: "Help with something we built for you", href: `mailto:${PUBLISHED.support}`, action: "Email support", tone: "bg-[#0369a1]/10 text-[#0369a1]", copy: true },
+    { icon: LifeBuoy, label: "Support", value: c.support, note: "Help with something we built for you", href: `mailto:${c.support}`, action: "Email support", tone: "bg-[#0369a1]/10 text-[#0369a1]", copy: true },
     { icon: ({ size, className }) => <WhatsApp width={size} height={size} className={className} />, label: "WhatsApp", value: c.whatsapp, note: "Quick questions and quick replies", href: `https://wa.me/${digits(c.whatsapp).replace("+", "")}`, action: "Start a chat", tone: "bg-[#25d366]/12 text-[#128c4a]", external: true },
     { icon: Phone, label: "Phone", value: c.phone, note: "Our Dhaka office line", href: `tel:${digits(c.phone)}`, action: "Call us", tone: "bg-[#b45309]/10 text-[#b45309]", copy: true },
   ];

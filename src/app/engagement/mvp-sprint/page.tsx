@@ -9,6 +9,7 @@ import { SectionEyebrow, SectionTitle, SectionDescription } from "@/components/s
 import { Icon } from "@/lib/icons";
 import FaqAccordion from "@/components/system/FaqAccordion";
 import { getEngagementModel } from "@/data/services";
+import { modelDetail, withSeo } from "@/lib/details";
 import {
   MVP_BENEFITS,
   MVP_AI_EDGE,
@@ -29,12 +30,13 @@ import {
 import { SITE_URL } from "@/lib/site";
 import HeroBackdrop from "@/components/system/HeroBackdrop";
 
-export const metadata: Metadata = {
+// the MVP Sprint model's SEO tab in the CMS on top (title, description, share image)
+export const metadata: Metadata = withSeo({
   title: "MVP Sprint",
   description:
     "Launch a market-ready MVP fast — with disciplined scope and weekly momentum, from scope to launch, with a clean handover for v2.",
   alternates: { canonical: "/engagement/mvp-sprint" },
-};
+}, modelDetail("mvp-sprint").seo);
 
 const MODEL = getEngagementModel("mvp-sprint")!;
 

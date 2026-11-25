@@ -32,7 +32,8 @@ import digits from "./digits.typeface.json";
  * Plain three.js, loaded only through dynamic import (like the hero globe).
  * Renders only while on screen; one still frame under reduced motion.
  */
-export type GlassTen = { dispose: () => void };
+/** ok: false when WebGL could not start (the caller shows its CSS stand-in) */
+export type GlassTen = { dispose: () => void; ok?: boolean };
 
 type Anchor = { x: number; y: number; height: number };
 type Options = { canvas: HTMLCanvasElement; value: string; anchor: () => Anchor; reducedMotion: boolean; dragTarget?: HTMLElement | null };
@@ -97,7 +98,7 @@ export function createGlassTen({ canvas, value, anchor, reducedMotion, dragTarge
   try {
     renderer = new WebGLRenderer({ canvas, antialias: true, alpha: false, powerPreference: "high-performance" });
   } catch {
-    return { dispose() {} };
+    return { dispose() {}, ok: false };
   }
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.75));
   renderer.outputColorSpace = SRGBColorSpace;
@@ -289,6 +290,8 @@ export function createGlassTen({ canvas, value, anchor, reducedMotion, dragTarge
       env.dispose();
       pmrem.dispose();
       renderer.dispose();
+      // give the WebGL context back now: a tab gets about 16, and site navigation creates new ones
+      renderer.forceContextLoss();
     },
   };
 }

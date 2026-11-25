@@ -13,7 +13,10 @@ import { fileURLToPath } from "node:url";
 import { loadEnv, sync } from "./sync-content.mjs";
 
 loadEnv();
-const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+// Windows: a lower-case drive letter (c:\…) makes webpack load some Next.js modules twice under two spellings,
+// and the production build then crashes in the browser ("invariant expected layout router to be mounted").
+// Always build from the upper-case spelling.
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..").replace(/^[a-z]:/, (d) => d.toUpperCase());
 const id = Number(process.argv[2]);
 const production = process.env.SITE_MODE === "production";
 const base = process.env.CMS_URL.replace(/\/$/, "");
@@ -60,6 +63,33 @@ const run = (cmd, env = {}) =>
     p.on("close", (code) => (code === 0 ? resolve(out) : reject(new Error(out.slice(-2500) || `${cmd} stopped with ${code}`))));
   });
 
+/**
+ * IndexNow (indexnow.org): after a live update, hand the page list from the
+ * live sitemap to Bing, Yandex and Seznam so new and changed pages are crawled
+ * within minutes (Bing also feeds ChatGPT search and Copilot). Turned on in
+ * CMS › Settings › AI and search engines. Never fails the update.
+ */
+async function indexNow() {
+  try {
+    const site = JSON.parse(await readFile(path.join(CONTENT, "site.json"), "utf8"));
+    const key = site.crawlers?.indexnow;
+    const origin = (process.env.NEXT_PUBLIC_SITE_URL || site.url || "").replace(/\/$/, "");
+    if (!key || !/^https:\/\//.test(origin)) return;
+    const xml = await (await fetch(`${origin}/sitemap.xml`, { signal: AbortSignal.timeout(30_000) })).text();
+    const urlList = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1].trim()).filter((u) => u.startsWith(origin)).slice(0, 10_000);
+    if (!urlList.length) return;
+    const res = await fetch("https://api.indexnow.org/indexnow", {
+      method: "POST",
+      headers: { "Content-Type": "application/json; charset=utf-8" },
+      body: JSON.stringify({ host: new URL(origin).host, key, keyLocation: `${origin}/indexnow-key.txt`, urlList }),
+      signal: AbortSignal.timeout(30_000),
+    });
+    console.log(`[publish] IndexNow: ${urlList.length} pages, answer ${res.status}`);
+  } catch (e) {
+    console.warn("[publish] IndexNow skipped:", e.message ?? e);
+  }
+}
+
 if (!(await lock())) {
   await report("failed", "Another update is still running. Try again in a few minutes.");
   process.exit(1);
@@ -92,6 +122,7 @@ try {
     for (let i = 0; i < 2; i++) for (const p of ["", "/blog", "/blog/category", "/blog/tag", "/services", "/case-studies", "/products", "/industries"]) await fetch(`${process.argv[3]}${p}/x-refresh`, { signal: AbortSignal.timeout(60_000) }).catch(() => {});
   }
   await report("live", warnings.join("\n") || undefined);
+  if (production) await indexNow();
 } catch (e) {
   // put the last good content back, file by file, so the next build is not broken
   if (existsSync(BACKUP)) for (const file of await readdir(BACKUP)) await copyFile(path.join(BACKUP, file), path.join(CONTENT, file)).catch(() => {});

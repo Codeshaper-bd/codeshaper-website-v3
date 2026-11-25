@@ -1,6 +1,266 @@
 {
+ "offices": [
+  {
+   "key": "bangladesh",
+   "title": "Operations HQ · Dhaka",
+   "city": "Dhaka",
+   "country": "Bangladesh",
+   "lines": [
+    "3rd Floor, Road# 29, House# 395,",
+    "New DOHS, Mohakhali, Dhaka 1206"
+   ],
+   "tel": "+8801787662759",
+   "zone": "Asia/Dhaka"
+  },
+  {
+   "key": "new zealand",
+   "title": "Global HQ · Auckland",
+   "city": "Auckland",
+   "country": "New Zealand",
+   "lines": [
+    "3 Herekino Street, Westgate,",
+    "Auckland 0814"
+   ],
+   "tel": "+64277758777",
+   "zone": "Pacific/Auckland"
+  },
+  {
+   "key": "japan",
+   "title": "Office · Japan",
+   "city": "Japan",
+   "country": "Japan",
+   "zone": "Asia/Tokyo"
+  },
+  {
+   "key": "usa",
+   "title": "Office · USA",
+   "city": "USA",
+   "country": "USA"
+  },
+  {
+   "key": "uk",
+   "title": "Office · UK",
+   "city": "UK",
+   "country": "UK",
+   "zone": "Europe/London"
+  },
+  {
+   "key": "australia",
+   "title": "Office · Australia",
+   "city": "Australia",
+   "country": "Australia"
+  }
+ ],
+ "proof": {
+  "years": "10+",
+  "brands": "350+",
+  "reviews": "150+",
+  "clients": [
+   {
+    "name": "Desh Group",
+    "industry": "Conglomerate"
+   },
+   {
+    "name": "Microsoft",
+    "industry": "Technology",
+    "hero": true
+   },
+   {
+    "name": "Quality Feeds Limited",
+    "industry": "Agro & food"
+   },
+   {
+    "name": "Q Hotel Dhaka",
+    "industry": "Hospitality"
+   },
+   {
+    "name": "Elite Capital Group",
+    "industry": "FinTech"
+   },
+   {
+    "name": "Essentialist",
+    "industry": "Travel"
+   },
+   {
+    "name": "Webflow",
+    "industry": "SaaS",
+    "hero": true
+   },
+   {
+    "name": "Lexa Shield",
+    "industry": "Security"
+   },
+   {
+    "name": "Shinest Group",
+    "industry": "Apparel"
+   },
+   {
+    "name": "Fiverr",
+    "industry": "Marketplace"
+   },
+   {
+    "name": "Quinta dos Vales",
+    "industry": "Hospitality"
+   },
+   {
+    "name": "Envato",
+    "industry": "Marketplace"
+   },
+   {
+    "name": "DTech Corporation",
+    "industry": "Technology"
+   },
+   {
+    "name": "MYTH LIFESTYLE",
+    "industry": "Fashion"
+   },
+   {
+    "name": "Upwork",
+    "industry": "Marketplace",
+    "hero": true
+   },
+   {
+    "name": "Framer",
+    "industry": "Design tools",
+    "hero": true
+   },
+   {
+    "name": "Fennec",
+    "industry": "eCommerce"
+   },
+   {
+    "name": "Super Oil Refinery",
+    "industry": "Energy"
+   },
+   {
+    "name": "Astrica Trading",
+    "industry": "Trading"
+   },
+   {
+    "name": "GoPosly",
+    "industry": "SaaS"
+   },
+   {
+    "name": "Regray Stone",
+    "industry": "Real estate"
+   }
+  ],
+  "countries": [
+   {
+    "a3": "USA"
+   },
+   {
+    "a3": "CAN",
+    "count": 22
+   },
+   {
+    "a3": "MEX"
+   },
+   {
+    "a3": "BRA"
+   },
+   {
+    "a3": "CHL"
+   },
+   {
+    "a3": "GBR"
+   },
+   {
+    "a3": "IRL"
+   },
+   {
+    "a3": "FRA"
+   },
+   {
+    "a3": "ESP"
+   },
+   {
+    "a3": "PRT"
+   },
+   {
+    "a3": "DEU"
+   },
+   {
+    "a3": "NLD"
+   },
+   {
+    "a3": "BEL"
+   },
+   {
+    "a3": "CHE"
+   },
+   {
+    "a3": "AUT"
+   },
+   {
+    "a3": "ITA"
+   },
+   {
+    "a3": "DNK"
+   },
+   {
+    "a3": "NOR"
+   },
+   {
+    "a3": "SWE"
+   },
+   {
+    "a3": "FIN"
+   },
+   {
+    "a3": "ISR"
+   },
+   {
+    "a3": "ARE"
+   },
+   {
+    "a3": "NGA"
+   },
+   {
+    "a3": "KEN"
+   },
+   {
+    "a3": "PAK"
+   },
+   {
+    "a3": "IND"
+   },
+   {
+    "a3": "CHN"
+   },
+   {
+    "a3": "THA"
+   },
+   {
+    "a3": "KHM"
+   },
+   {
+    "a3": "MYS"
+   },
+   {
+    "a3": "IDN"
+   },
+   {
+    "a3": "AUS"
+   },
+   {
+    "a3": "NZL"
+   }
+  ]
+ },
  "contact": {
-  "booking": "https://cal.com/codeshaper/30min"
+  "email": "info@codeshaper.net",
+  "support": "support@codeshaper.net",
+  "phone": "+880-1754218741",
+  "whatsapp": "+8801787662759",
+  "booking": "https://cal.com/codeshaper/30min",
+  "social": {
+   "x": "https://twitter.com/codeshaperbd",
+   "behance": "https://www.behance.net/codeshaper",
+   "facebook": "https://www.facebook.com/Codeshaperbd/",
+   "linkedin": "https://www.linkedin.com/company/codeshaper",
+   "pinterest": "https://www.pinterest.com/codeshaperbd/"
+  }
  },
  "footer": {
   "tagline": "AI engineering & software development company. Reliable, production-ready AI and software that works with the tools you already use.",
@@ -22,6 +282,36 @@
     "href": "/products"
    }
   ],
+  "products": [
+   {
+    "label": "Banizo",
+    "href": "https://banizo.com"
+   },
+   {
+    "label": "ViteERP",
+    "href": "http://viteerp.com"
+   },
+   {
+    "label": "ClientBees",
+    "href": "https://clientbees.com"
+   },
+   {
+    "label": "Acculance",
+    "href": "https://acculance.codeshaper.net"
+   },
+   {
+    "label": "Dashcode",
+    "href": "https://dashcode.codeshaper.tech"
+   },
+   {
+    "label": "Dashtail",
+    "href": "https://dash-tail.vercel.app/en"
+   },
+   {
+    "label": "CS Size Chart",
+    "href": "https://wordpress.org/plugins/cs-size-chart"
+   }
+  ],
   "places": [
    "Bangladesh",
    "Japan",
@@ -30,7 +320,38 @@
    "Australia",
    "New Zealand"
   ],
+  "badges": [
+   {
+    "title": "dsfsdf",
+    "subtitle": "sdf",
+    "href": "http://localhost:8090/admin/settings/footer",
+    "color": "#eb1a1a"
+   }
+  ],
   "copyright": "CodeShaper. All rights reserved."
  },
- "seo": {}
+ "seo": {
+  "title": "AI Engineering & Software Development Company | CodeShaper",
+  "description": "CodeShaper builds AI agents, SaaS products, MVPs and websites for startups and global brands in 60+ countries. Production-ready, from prototype to scale.",
+  "image": "/cms/27fb46b9702e-og-default.png",
+  "favicon": "/cms/c094b39dbaad-icon-512.png",
+  "xHandle": "codeshaperbd",
+  "founded": 2017
+ },
+ "tracking": {},
+ "crawlers": {
+  "indexnow": "92454afdb3c9586dab27e377942fa30e",
+  "llmsSummary": "CodeShaper is an AI-native software engineering company. From its delivery hub in Dhaka, Bangladesh, it builds AI agents and automation, custom software, SaaS products and MVPs, product design, and websites and commerce for startups and global brands in 60+ countries.",
+  "llmsFacts": [
+   "Operations HQ and delivery hub: Dhaka, Bangladesh",
+   "Global HQ: Auckland, New Zealand",
+   "Offices also in Japan, the USA, the UK and Australia",
+   "Clients in 60+ countries; 350+ brands served",
+   "500+ projects delivered",
+   "Member of BASIS (Bangladesh Association of Software and Information Services)",
+   "Services: AI agents and automation, AI and software development, AI integration and infrastructure, UI/UX and product design, websites and commerce",
+   "Ways to work together: MVP Sprint (6–10 weeks), end-to-end delivery, dedicated developers, staff augmentation, offshore development center",
+   "Contact: info@codeshaper.net, https://codeshaper.net/contact"
+  ]
+ }
 }

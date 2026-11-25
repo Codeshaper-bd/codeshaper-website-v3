@@ -1,15 +1,17 @@
 import { existsSync } from "node:fs";
 import { join } from "node:path";
 import Link from "next/link";
-import Image from "next/image";
 import { ArrowUp, ArrowUpRight, Clock, Download, FileText, Mail, MapPin, MessageCircle, Phone } from "lucide-react";
 import { SiBehance, SiDribbble, SiFacebook, SiGithub, SiPinterest } from "react-icons/si";
 import { SITE } from "@/lib/siteSettings";
 import { PUBLISHED } from "@/lib/publishedContact";
 import { FOOTER_OFFICES } from "@/lib/offices";
 import { SERVICE_GROUPS, servicePath } from "@/data/services";
+import { PRODUCTS } from "@/lib/products";
+import MarkSvg from "@/components/brand/MarkSvg";
 import FooterStage from "./footer/FooterStage";
 import Landmark from "./footer/Landmark";
+import CookieSettingsLink from "@/components/analytics/CookieSettingsLink";
 import FooterLandscape from "./footer/FooterLandscape";
 import LocalTime from "./footer/LocalTime";
 import FooterActions from "./footer/AskAI";
@@ -25,7 +27,7 @@ import Reveal from "@/components/system/Reveal";
  *
  * Top to bottom:
  *  1. Left: logo, contact lines, BASIS. Right: four link columns
- *     (Services, Company, Useful links, Tools), and under them one action
+ *     (Services, Company, Products, Tools), and under them one action
  *     row: Follow us, Ask AI about CodeShaper, company profile
  *     (footer/AskAI.tsx). Every icon has a tooltip.
  *  2. Offices, as text (owner + design review, 23 Nov 2026: photo cards
@@ -59,7 +61,7 @@ const CONTACT = {
  */
 // the offices live in lib/offices.ts (shared with the contact page); TEMP stand-in addresses are applied there
 const OFFICES = FOOTER_OFFICES;
-const FOUNDED = 2017;
+const FOUNDED = SITE.seo.founded ?? 2017; // CMS › Search and sharing › Company facts › Year founded
 
 /** Shown only with a real profile link (CMS: Settings, Contact and social). */
 const SOCIAL_ICONS: { key: string; label: string; color: string; d?: string; icon?: typeof SiGithub }[] = [
@@ -78,7 +80,8 @@ const LIVE_SOCIAL_LINKS = SOCIAL_ICONS.flatMap((s) => (CONTACT.social?.[s.key] ?
 const digits = (v: string) => v.replace(/[^+\d]/g, "");
 const CONTACT_LINES = [
   CONTACT.email && { icon: Mail, text: CONTACT.email, href: `mailto:${CONTACT.email}` },
-  !CMS_CONTACT?.email && { icon: Mail, text: PUBLISHED.support, href: `mailto:${PUBLISHED.support}` },
+  // support: CMS › Contact and social › Support email, else the published one
+  { icon: Mail, text: CMS_CONTACT?.support || PUBLISHED.support, href: `mailto:${CMS_CONTACT?.support || PUBLISHED.support}` },
   CONTACT.phone && { icon: Phone, text: CONTACT.phone, href: `tel:${digits(CONTACT.phone)}` },
   CONTACT.whatsapp && { icon: MessageCircle, text: "WhatsApp", href: `https://wa.me/${digits(CONTACT.whatsapp).replace("+", "")}` },
   CONTACT.address && { icon: MapPin, text: CONTACT.address },
@@ -86,20 +89,26 @@ const CONTACT_LINES = [
 ].filter((l): l is { icon: typeof Mail; text: string; href?: string } => Boolean(l));
 
 /** Company: who we are and our work. */
+// owner, 25 Nov 2026: Industries and Sitemap moved here; Products has its own column now
 const COMPANY_LINKS = [
   { label: "About us", href: "/company/about" },
   { label: "Case studies", href: "/case-studies" },
-  { label: "Products", href: "/products" },
+  { label: "Industries", href: "/industries" },
   { label: "Blog", href: "/blog" },
   { label: "Contact", href: "/contact" },
+  { label: "Sitemap", href: "/site-map" },
 ];
-/** Useful links: ways to work with us, and finding your way around. */
-const USEFUL_LINKS = [
+/** Ways to work with us, under Services (owner, 25 Nov 2026: kept in the footer when "Useful links" became Products). */
+const ENGAGE_LINKS = [
   { label: "Engagement models", href: "/engagement" },
   { label: "Hire dedicated developers", href: "/hire-dedicated-developers" },
   { label: "Staff augmentation", href: "/staff-augmentation" },
-  { label: "Industries", href: "/industries" },
-  { label: "Sitemap", href: "/site-map" },
+];
+/** Products (owner, 25 Nov 2026, in place of "Useful links"): each product from the CMS (Products), then all of them. */
+// CMS › Settings › Footer › Products (each product's own site); the CMS products' pages until that list is filled
+const PRODUCT_LINKS = [
+  ...(FOOTER.products?.length ? FOOTER.products : PRODUCTS.map((p) => ({ label: p.title, href: `/products/${p.slug}` }))),
+  { label: "All products →", href: "/products" },
 ];
 /** Tools: free tools CodeShaper will publish; add each here when it is live (the column says "coming soon" until then). */
 const TOOLS: { label: string; href: string }[] = [];
@@ -133,7 +142,11 @@ export default function Footer() {
         <div className="grid gap-12 lg:grid-cols-[minmax(0,300px)_1fr] lg:gap-16">
           <div>
             <Link href="/" className="inline-flex items-center" aria-label="CodeShaper home">
-              <Image src="/brand/logo.png" alt="codeShaper" width={169} height={60} className="h-8 w-auto night:brightness-0 night:invert" />
+              {/* the same logo as the header (owner, 25 Nov 2026): the mark + the wordmark in the brand face */}
+              <span className="flex items-center gap-2">
+                <MarkSvg premium pearls className="h-9 w-9 drop-shadow-[0_4px_10px_rgba(97,95,255,0.35)]" id="footer-mark-mask" />
+                <span className="font-display text-[23px] font-extrabold leading-none tracking-[-0.02em] text-[#0b0f19] night:text-white">CodeShaper</span>
+              </span>
             </Link>
             {CONTACT_LINES.length > 0 && (
               <ul className="mt-6 space-y-2.5">
@@ -169,6 +182,9 @@ export default function Footer() {
                 {SERVICE_GROUPS.map((g) => (
                   <li key={g.slug}><Link href={servicePath(g.slug)} className={colLink}>{g.name}</Link></li>
                 ))}
+                {ENGAGE_LINKS.map((l) => (
+                  <li key={l.href}><Link href={l.href} className={colLink}>{l.label}</Link></li>
+                ))}
                 <li><Link href="/services" className={colLink}>All services →</Link></li>
               </ul>
             </div>
@@ -181,10 +197,16 @@ export default function Footer() {
               </ul>
             </div>
             <div>
-              <ColHead>Useful links</ColHead>
+              <ColHead>Products</ColHead>
               <ul className="space-y-2.5">
-                {USEFUL_LINKS.map((l) => (
-                  <li key={l.href}><Link href={l.href} className={colLink}>{l.label}</Link></li>
+                {PRODUCT_LINKS.map((l) => (
+                  <li key={l.href}>
+                    {/^https?:\/\//.test(l.href) ? (
+                      <a href={l.href} target="_blank" rel="noopener" className={colLink}>{l.label}</a>
+                    ) : (
+                      <Link href={l.href} className={colLink}>{l.label}</Link>
+                    )}
+                  </li>
                 ))}
               </ul>
             </div>
@@ -289,6 +311,7 @@ export default function Footer() {
             <Link href="/legal/privacy" className="font-urbanist text-[12.5px] text-ink-dim transition-colors hover:text-ink">Privacy policy</Link>
             <Link href="/legal/terms" className="font-urbanist text-[12.5px] text-ink-dim transition-colors hover:text-ink">Terms of service</Link>
             <Link href="/site-map" className="font-urbanist text-[12.5px] text-ink-dim transition-colors hover:text-ink">Sitemap</Link>
+            <CookieSettingsLink className="font-urbanist text-[12.5px] text-ink-dim transition-colors hover:text-ink" />
             <a
               href="#"
               aria-label="Back to top"

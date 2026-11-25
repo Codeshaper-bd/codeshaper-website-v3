@@ -1,11 +1,14 @@
 import { SITE_URL, SITE_NAME } from "@/lib/site";
-import { SERVICE_GROUPS, ENGAGEMENT_MODELS, COMPANY_POSITIONING, groupDescriptor, servicePath } from "@/data/services";
+import { SERVICE_GROUPS, ENGAGEMENT_MODELS, groupDescriptor, servicePath } from "@/data/services";
 import { INDUSTRIES } from "@/lib/navigation";
+import { LLMS_EXTRA, LLMS_FACTS, LLMS_SUMMARY } from "@/lib/llms";
 
 /**
  * /llms.txt (https://llmstxt.org): a short Markdown guide to the site for AI
  * agents and language models: an H1, a one-line summary, and the key links,
  * generated from the same data as the navigation so it never goes stale.
+ * The summary, key facts and any extra Markdown come from CMS › Settings ›
+ * AI and search engines. The long version is /llms-full.txt.
  * Static at build time.
  */
 export const dynamic = "force-static";
@@ -15,8 +18,9 @@ export function GET() {
   const body = [
     `# ${SITE_NAME}`,
     "",
-    `> ${SITE_NAME} (${COMPANY_POSITIONING}) builds AI agents and automation, custom software, SaaS products and MVPs, product design, and websites and commerce for clients in 33 countries from a delivery hub in Dhaka, Bangladesh.`,
+    `> ${LLMS_SUMMARY}`,
     "",
+    ...(LLMS_FACTS.length ? ["## Key facts", "", ...LLMS_FACTS.map((f) => `- ${f}`), ""] : []),
     "## Services",
     "",
     ...SERVICE_GROUPS.map((g) => line(g.name, servicePath(g.slug), groupDescriptor(g))),
@@ -36,8 +40,10 @@ export function GET() {
     line("About", "/company/about"),
     line("Contact", "/contact", "start a project or book a call"),
     "",
+    ...(LLMS_EXTRA ? [LLMS_EXTRA, ""] : []),
     "## Optional",
     "",
+    line("Full guide for AI assistants", "/llms-full.txt", "every service, industry, case study and article in one file"),
     line("Sitemap", "/sitemap.xml"),
     "",
   ].join("\n");

@@ -99,11 +99,20 @@ export default function FooterWordmark({ tone = DAY_TONE }: { tone?: string }) {
     if (!letters.length || !container) return;
     let cancelled = false;
     let cleanup = () => {};
-    void loadGsap().then((gsap) => {
-      if (cancelled) return;
-      gsapRef.current = gsap;
-      cleanup = run(gsap);
-    });
+    // GSAP (~70 KB) loads only when the footer comes near the screen, not with every page (owner, 25 Nov 2026: lighter phones)
+    const near = new IntersectionObserver(
+      ([e]) => {
+        if (!e.isIntersecting) return;
+        near.disconnect();
+        void loadGsap().then((gsap) => {
+          if (cancelled) return;
+          gsapRef.current = gsap;
+          cleanup = run(gsap);
+        });
+      },
+      { rootMargin: "800px 0px" },
+    );
+    near.observe(container);
     const run = (gsap: typeof gsapType) => {
 
     // overflow-hidden only exists to mask the entrance slide-up; once
@@ -156,6 +165,7 @@ export default function FooterWordmark({ tone = DAY_TONE }: { tone?: string }) {
     };
     return () => {
       cancelled = true;
+      near.disconnect();
       cleanup();
     };
   }, [reduced]);

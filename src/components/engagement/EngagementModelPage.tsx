@@ -3,7 +3,7 @@ import SiteShell from "@/components/system/SiteShell";
 import DetailPage from "@/components/system/DetailPage";
 import { ENGAGEMENT_MODELS, getEngagementModel, type EngagementModel } from "@/data/services";
 import DetailSections from "@/components/cms/DetailSections";
-import { modelDetail, type Detail } from "@/lib/details";
+import { modelDetail, withSeo, type Detail } from "@/lib/details";
 import { pageMetadata } from "@/lib/pageMetadata";
 import { SITE_NAME } from "@/lib/site";
 
@@ -17,7 +17,8 @@ import { SITE_NAME } from "@/lib/site";
 export function engagementModelMetadata(slug: string): Metadata {
   const m = getEngagementModel(slug);
   if (!m) return {};
-  return pageMetadata({ title: `${m.title} | ${SITE_NAME}`, description: m.metaDescription, path: m.href });
+  // the model's SEO tab in the CMS on top (title, description, share image, hide)
+  return withSeo(pageMetadata({ title: `${m.title} | ${SITE_NAME}`, description: m.metaDescription, path: m.href }), modelDetail(slug).seo);
 }
 
 export function requireEngagementModel(slug: string): EngagementModel {

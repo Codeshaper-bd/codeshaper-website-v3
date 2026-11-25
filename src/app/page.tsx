@@ -30,7 +30,7 @@ import HomeView, { type HomeData } from "@/components/home/HomeView";
  * (Pages, Home) and drawn by components/home/HomeView. The hero is
  * always first.
  */
-export const metadata: Metadata = mainMeta("home", {});
+export const metadata: Metadata = mainMeta("home", { alternates: { canonical: "/" } });
 
 export default function Home() {
   return <HomeView data={mainPage("home") as HomeData} />;

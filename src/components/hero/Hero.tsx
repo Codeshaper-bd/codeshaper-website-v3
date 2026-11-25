@@ -4,11 +4,12 @@ import HeroGlobe from "./HeroGlobe";
 import HeroAsk from "./HeroAsk";
 import HeroIntro from "./intro/HeroIntro";
 import HeroGlyphs from "./intro/HeroGlyphs";
-import { SERVED } from "./globe/servedCountries";
+import { COUNTRIES_SERVED } from "@/lib/facts";
 import Link from "next/link";
 import { getAnnouncement, KIND_STYLE } from "@/data/announcement";
 import { homeCopy, type CopyOf } from "@/lib/homeCopy";
-import { SiFramer, SiUpwork, SiWebflow } from "react-icons/si";
+import { SiFiverr, SiFramer, SiUpwork, SiWebflow } from "react-icons/si";
+import { SITE } from "@/lib/siteSettings";
 
 /** Four of the clients in the logo strip below, as a small stack beside the proof line. */
 /** Microsoft's four-colour mark (the icon sets only carry it in one colour). */
@@ -24,14 +25,29 @@ function MicrosoftMark({ size = 12 }: { size?: number }) {
 }
 
 /** Each in its brand colour: the mark on its own colour, Microsoft on white. */
-const PROOF_MARKS = [
+type Mark = { icon: React.ComponentType<{ size?: number }>; name: string; bg: string; fg: string };
+const BUILT_MARKS: Mark[] = [
   { icon: MicrosoftMark, name: "Microsoft", bg: "#ffffff", fg: "" },
   { icon: SiWebflow, name: "Webflow", bg: "#146EF5", fg: "#ffffff" },
   { icon: SiUpwork, name: "Upwork", bg: "#14A800", fg: "#ffffff" },
   { icon: SiFramer, name: "Framer", bg: "#0b0f19", fg: "#ffffff" },
+  { icon: SiFiverr, name: "Fiverr", bg: "#1DBF73", fg: "#ffffff" },
 ];
 
-/** "Trusted by 350+ brands in 33 countries", with the figures set in dark ink. */
+/**
+ * The marks next to the hero line: clients marked "In the hero" in CMS › Settings › Clients and figures
+ * (up to four), each with its built-in brand mark or its uploaded logo; the four originals otherwise.
+ */
+const HERO_CLIENTS = (SITE.proof?.clients ?? []).filter((c) => c.hero).slice(0, 4);
+type HeroMark = { name: string; mark?: Mark; logo?: string };
+const PROOF_MARKS: HeroMark[] = HERO_CLIENTS.length
+  ? HERO_CLIENTS.flatMap((c): HeroMark[] => {
+      const mark = BUILT_MARKS.find((m) => m.name.toLowerCase() === c.name.toLowerCase());
+      return mark ? [{ name: c.name, mark }] : c.logo ? [{ name: c.name, logo: c.logo }] : [];
+    })
+  : BUILT_MARKS.slice(0, 4).map((m) => ({ name: m.name, mark: m }));
+
+/** "Trusted by 350+ brands in 60+ countries", with the figures set in dark ink. */
 function ProofText({ text }: { text: string }) {
   return (
     <>
@@ -72,13 +88,16 @@ const ANNOUNCEMENT = getAnnouncement();
 /**
  * Intro footer figures. Years, brands and reviews: owner-supplied
  * (18 Nov 2026, "10+ years, 350+ brands, 150+ reviews"); CHECK before
- * launch. Countries follow the globe's list so the two never disagree.
+ * launch. Countries: the one company figure (lib/facts.ts, the homepage
+ * "Countries served" stat), owner 25 Nov 2026: "overall 60+".
  */
+const P = SITE.proof ?? {};
+// years, brands and reviews: CMS › Settings › Clients and figures (owner, 25 Nov 2026)
 const INTRO_STATS = [
-  { value: "10+", label: "years" },
-  { value: "350+", label: "brands" },
-  { value: `${SERVED.length}`, label: "countries" },
-  { value: "150+", label: "reviews" },
+  { value: P.years ?? "10+", label: "years" },
+  { value: P.brands ?? "350+", label: "brands" },
+  { value: COUNTRIES_SERVED, label: "countries" },
+  { value: P.reviews ?? "150+", label: "reviews" },
 ];
 
 /**
@@ -326,14 +345,19 @@ export default function Hero({ copy }: { copy?: CopyOf<"hero"> }) {
           <div className="mt-7 flex flex-wrap items-center justify-center gap-x-5 gap-y-3 text-[13px] leading-none text-[#4b5263] sm:text-[13.5px]" data-reveal>
             <span className="flex w-full flex-col items-center gap-2.5 sm:inline-flex sm:w-auto sm:flex-row">
               <span aria-hidden className="flex -space-x-1.5">
-                {PROOF_MARKS.map(({ icon: Icon, name, bg, fg }) => (
-                  <span key={name} title={name} className="grid h-7 w-7 place-items-center rounded-full shadow-[0_1px_3px_rgba(11,15,25,0.14)] ring-2 ring-white" style={{ backgroundColor: bg, color: fg || undefined }}>
-                    <Icon size={12} />
+                {PROOF_MARKS.map(({ name, mark, logo }) => (
+                  <span key={name} title={name} className="grid h-7 w-7 place-items-center overflow-hidden rounded-full bg-white shadow-[0_1px_3px_rgba(11,15,25,0.14)] ring-2 ring-white" style={mark ? { backgroundColor: mark.bg, color: mark.fg || undefined } : undefined}>
+                    {mark ? (
+                      <mark.icon size={12} />
+                    ) : (
+                      // eslint-disable-next-line @next/next/no-img-element -- a 28px client logo from the CMS
+                      <img src={logo} alt="" width={20} height={20} className="h-5 w-5 object-contain" />
+                    )}
                   </span>
                 ))}
               </span>
               <span>
-                <ProofText text={c.proof.replace("{countries}", String(SERVED.length))} />
+                <ProofText text={c.proof.replace("{countries}", COUNTRIES_SERVED)} />
               </span>
             </span>
             {c.ratingScore && (
