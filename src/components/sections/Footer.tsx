@@ -262,8 +262,7 @@ export default function Footer() {
                 {OFFICE_LIST.map((p) => (
                   <li key={p.name} className="group lg:px-5 lg:first:pl-0 lg:last:pr-0">
                     <Landmark place={p.name} className="text-[#4f46e5] transition-transform duration-300 group-hover:-translate-y-0.5" />
-                    <p className="mt-3 font-urbanist text-[10.5px] font-semibold uppercase tracking-[0.12em] text-[#4f46e5]">{p.office!.title.split(" · ")[0]}</p>
-                    <p className="mt-0.5 font-urbanist text-[16px] font-bold tracking-[-0.01em] text-ink">{p.office!.title.includes(" · ") && /HQ/.test(p.office!.title) ? p.office!.title.split(" · ")[1] : p.name}</p>
+                    <p className="mt-3 font-urbanist text-[16px] font-bold tracking-[-0.01em] text-ink">{p.office!.title.includes(" · ") && /HQ/.test(p.office!.title) ? p.office!.title.split(" · ")[1] : p.name}</p>
                     {p.office!.lines?.length ? (
                       <address className="mt-1.5 font-urbanist text-[12.5px] not-italic leading-relaxed text-ink-dim">{p.office!.lines.join(" ")}</address>
                     ) : null}

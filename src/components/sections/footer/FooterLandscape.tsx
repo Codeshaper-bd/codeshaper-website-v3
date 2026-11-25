@@ -380,14 +380,13 @@ function FarMountains() {
   return (
     <path
       d="M0 196 70 132 128 164 214 84 300 150 360 118 440 170 520 98 610 156 690 112 760 160 850 74 940 150 1010 120 1090 168 1150 128 1200 150V260H0Z"
-      fill="#d9d4fb"
-      fillOpacity=".75"
+      fill="#dcd7fb"
     />
   );
 }
 
 function Hills() {
-  return <path d="M0 190C120 150 230 146 360 168S600 128 760 156 1040 150 1200 176V260H0Z" fill="#c9c2f6" fillOpacity=".8" />;
+  return <path d="M0 190C120 150 230 146 360 168S600 128 760 156 1040 150 1200 176V260H0Z" fill="#cbc4f6" />;
 }
 
 const HOUSES = [
