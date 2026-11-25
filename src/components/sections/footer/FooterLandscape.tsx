@@ -101,6 +101,7 @@ export default function FooterLandscape() {
     Object.assign(s.current, { mode: "play", y: 0, vy: 0, speed: 320, nextBug: 1.1, score: 0, x: Math.max(40, w * 0.14), dir: 1, hammer: 0 });
     setScore(0);
     setMode("play");
+    bot.current?.blur(); // no focus ring left on the builder after a click
     setHint(true);
     window.clearTimeout(hintTimer.current);
     hintTimer.current = window.setTimeout(() => setHint(false), HINT_MS);
@@ -244,7 +245,7 @@ export default function FooterLandscape() {
     // owner, 25 Nov 2026: the CODESHAPER wordmark lives in the landscape, a far range behind the mountains and hills
     <div className="relative flex w-full flex-col justify-end" style={{ minHeight: SHOWN }}>
       {/* phones: the letters are small, so they stand higher, above the village roofs */}
-      <div className="mx-auto w-full max-w-7xl px-4 pb-[var(--wb-sm)] sm:px-6 sm:pb-[var(--wb)] lg:px-10" style={{ "--wb": `${SHOWN - WORD_BASE}px`, "--wb-sm": `${SHOWN - WORD_BASE_SM}px` } as React.CSSProperties}>
+      <div className="relative z-[1] mx-auto w-full max-w-7xl px-4 pb-[var(--wb-sm)] sm:px-6 sm:pb-[var(--wb)] lg:px-10" style={{ "--wb": `${SHOWN - WORD_BASE}px`, "--wb-sm": `${SHOWN - WORD_BASE_SM}px` } as React.CSSProperties}>
         <FooterWordmark />
       </div>
     <div
@@ -257,7 +258,7 @@ export default function FooterLandscape() {
       aria-label="A little builder putting up a CodeShaper house. Press the builder to play a small game."
       role="group"
     >
-      {/* clouds */}
+      {/* clouds: behind the wordmark (z-auto), everything else in front of it (z 2+) */}
       <div aria-hidden className={`landscape-clouds absolute inset-x-0 top-0 h-24 ${reduced ? "[animation:none]" : ""}`}>
         <Cloud className="left-[6%] top-6 w-28" />
         <Cloud className="left-[38%] top-12 w-20 opacity-80" />
@@ -266,7 +267,7 @@ export default function FooterLandscape() {
 
       {/* scenery layers, back to front */}
       {[FarMountains, Hills, Village, Path].map((Layer, i) => (
-        <div key={i} aria-hidden ref={(el) => void (layers.current[i] = el)} className="absolute left-0 top-0 flex will-change-transform" style={{ width: TILE * 4 }}>
+        <div key={i} aria-hidden ref={(el) => void (layers.current[i] = el)} className="absolute left-0 top-0 z-[2] flex will-change-transform" style={{ width: TILE * 4 }}>
           {[0, 1, 2, 3].map((k) => (
             <svg key={k} viewBox={`0 0 ${TILE} ${H}`} width={TILE} height={H} className="shrink-0" preserveAspectRatio="none">
               <Layer />
@@ -276,13 +277,13 @@ export default function FooterLandscape() {
       ))}
 
       {/* the CodeShaper house the builder is putting up */}
-      <div ref={site} aria-hidden className="absolute left-0 top-0 h-full w-full will-change-transform">
+      <div ref={site} aria-hidden className="absolute left-0 top-0 z-[2] h-full w-full will-change-transform">
         <div className="absolute" style={{ left: "64%", top: GROUND - 92 }}>
           <BuildSite />
         </div>
       </div>
 
-      <div ref={fx} aria-hidden className="pointer-events-none absolute inset-0" />
+      <div ref={fx} aria-hidden className="pointer-events-none absolute inset-0 z-[3]" />
 
       {/* the builder */}
       <button
@@ -293,7 +294,7 @@ export default function FooterLandscape() {
         aria-hidden={mode !== "idle"}
         aria-label="Play a small game: dodge the bugs"
         className={`builder-bot group absolute left-0 top-0 z-10 rounded-full after:absolute after:-inset-3 after:content-[''] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#4f46e5] ${mode === "idle" ? "pointer-events-auto cursor-pointer" : "pointer-events-none"}`}
-        style={{ width: BOT_W, height: BOT_H }}
+        style={{ width: BOT_W, height: BOT_H, transform: `translate(120px, ${GROUND - BOT_H}px)` /* on the ground before the first frame */ }}
       >
         <div ref={body} className="h-full w-full">
           <BotSvg />

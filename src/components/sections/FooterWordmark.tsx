@@ -16,9 +16,9 @@ const ACCENT = "#4D5CDE"; // sampled from the real logo mark (public/brand/logo.
  * like the mountains: a lavender peak fading into the far-mountain haze at the
  * feet, where the hills cover them. Hover lights the peaks in the logo accent.
  */
-const PEAK = "#8f8cff";
-const MID = "#b3acf7";
-const BASE = "#d9d4fb";
+const PEAK = "#c3bbf6"; // one flat colour, a silhouette range (owner, 25 Nov 2026: gradients and rim looked busy)
+const MID = PEAK;
+const BASE = PEAK;
 const FIT_PROBE_SIZE = 100; // px — arbitrary known base used to compute the fit ratio
 
 /**
