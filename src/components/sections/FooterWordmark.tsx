@@ -10,6 +10,15 @@ import { usePrefersReducedMotion } from "@/lib/motion";
 
 const WORD = "CodeShaper";
 const ACCENT = "#4D5CDE"; // sampled from the real logo mark (public/brand/logo.png)
+/**
+ * Owner, 25 Nov 2026: the wordmark stands in the footer landscape as a far
+ * range behind the mountains (FooterLandscape renders it). Letters are filled
+ * like the mountains: a lavender peak fading into the far-mountain haze at the
+ * feet, where the hills cover them. Hover lights the peaks in the logo accent.
+ */
+const PEAK = "#8f8cff";
+const MID = "#b3acf7";
+const BASE = "#d9d4fb";
 const FIT_PROBE_SIZE = 100; // px — arbitrary known base used to compute the fit ratio
 
 /**
@@ -163,7 +172,7 @@ export default function FooterWordmark() {
       gsap.to(el, {
         y: -influence * 18,
         scale: 1 + influence * 0.12,
-        color: influence > 0.15 ? ACCENT : baseColorRef.current,
+        "--wm-top": influence > 0.15 ? ACCENT : PEAK,
         duration: 0.4,
         ease: "power3.out",
         overwrite: "auto",
@@ -175,7 +184,7 @@ export default function FooterWordmark() {
     const gsap = gsapRef.current;
     if (reduced || !gsap) return;
     const letters = lettersRef.current.filter((el): el is HTMLSpanElement => Boolean(el));
-    gsap.to(letters, { y: 0, scale: 1, color: baseColorRef.current, duration: 0.5, ease: "power3.out", overwrite: "auto" });
+    gsap.to(letters, { y: 0, scale: 1, "--wm-top": PEAK, duration: 0.5, ease: "power3.out", overwrite: "auto" });
   };
 
   return (
@@ -195,7 +204,13 @@ export default function FooterWordmark() {
             ref={(el) => {
               lettersRef.current[i] = el;
             }}
-            className="inline-block"
+            className="inline-block bg-clip-text text-transparent [-webkit-background-clip:text]"
+            style={
+              {
+                "--wm-top": PEAK,
+                backgroundImage: `linear-gradient(180deg, var(--wm-top) 0%, ${MID} 55%, ${BASE} 100%)`,
+              } as React.CSSProperties
+            }
           >
             {ch}
           </span>

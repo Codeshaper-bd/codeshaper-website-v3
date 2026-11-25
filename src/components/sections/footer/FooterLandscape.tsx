@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import FooterWordmark from "../FooterWordmark";
 import { Bug as BugIcon, Play, RotateCcw, Trophy, X } from "lucide-react";
 
 /**
@@ -25,6 +26,9 @@ const BOT_W = 34;
 const BOT_H = 40;
 const GRAVITY = 2600;
 const JUMP = 760; // about 110 px high
+/** the wordmark's letters end here (px from the strip top): behind the hills, so the land covers their feet */
+const WORD_BASE = 170;
+const WORD_BASE_SM = 128;
 const HINT_MS = 2600; // the controls hint shows when a game starts, then fades
 type Bug = { x: number; el: HTMLSpanElement; passed: boolean };
 
@@ -237,9 +241,15 @@ export default function FooterLandscape() {
   }, [reduced]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
+    // owner, 25 Nov 2026: the CODESHAPER wordmark lives in the landscape, a far range behind the mountains and hills
+    <div className="relative flex w-full flex-col justify-end" style={{ minHeight: SHOWN }}>
+      {/* phones: the letters are small, so they stand higher, above the village roofs */}
+      <div className="mx-auto w-full max-w-7xl px-4 pb-[var(--wb-sm)] sm:px-6 sm:pb-[var(--wb)] lg:px-10" style={{ "--wb": `${SHOWN - WORD_BASE}px`, "--wb-sm": `${SHOWN - WORD_BASE_SM}px` } as React.CSSProperties}>
+        <FooterWordmark />
+      </div>
     <div
       ref={stage}
-      className={`landscape relative w-full select-none overflow-clip${mode !== "idle" ? "cursor-pointer" : ""}`}
+      className={`landscape absolute inset-x-0 bottom-0 select-none overflow-clip ${mode !== "idle" ? "cursor-pointer" : "pointer-events-none"}`}
       style={{ height: SHOWN }}
       onPointerDown={(e) => {
         if (s.current.mode !== "idle" && !(e.target as HTMLElement).closest("button")) jump();
@@ -282,7 +292,7 @@ export default function FooterLandscape() {
         tabIndex={mode === "idle" ? 0 : -1}
         aria-hidden={mode !== "idle"}
         aria-label="Play a small game: dodge the bugs"
-        className={`builder-bot group absolute left-0 top-0 z-10 rounded-full after:absolute after:-inset-3 after:content-[''] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#4f46e5] ${mode === "idle" ? "cursor-pointer" : "pointer-events-none"}`}
+        className={`builder-bot group absolute left-0 top-0 z-10 rounded-full after:absolute after:-inset-3 after:content-[''] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#4f46e5] ${mode === "idle" ? "pointer-events-auto cursor-pointer" : "pointer-events-none"}`}
         style={{ width: BOT_W, height: BOT_H }}
       >
         <div ref={body} className="h-full w-full">
@@ -334,6 +344,7 @@ export default function FooterLandscape() {
       <p aria-live="polite" className="sr-only">
         {mode === "over" ? `A bug got you. ${score} dodged${best > 0 ? `, best ${best}` : ""}.` : ""}
       </p>
+    </div>
     </div>
   );
 }

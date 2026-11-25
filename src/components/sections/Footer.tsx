@@ -8,7 +8,6 @@ import { SITE } from "@/lib/siteSettings";
 import { PUBLISHED } from "@/lib/publishedContact";
 import { FOOTER_OFFICES } from "@/lib/offices";
 import { SERVICE_GROUPS, servicePath } from "@/data/services";
-import FooterWordmark from "./FooterWordmark";
 import FooterStage from "./footer/FooterStage";
 import Landmark from "./footer/Landmark";
 import FooterLandscape from "./footer/FooterLandscape";
@@ -254,15 +253,11 @@ export default function Footer() {
         />
 
 
-        {/* 4 · the wordmark standing on the offices (owner, 24 Nov 2026: concept from a reference, our own way):
-            the builder works on the letters; the six offices sit in a frosted band right under them,
-            each with a small landmark drawing, so brand and places read as one */}
-        <div className="mt-16 overflow-hidden">
-          <FooterWordmark />
-        </div>
+        {/* 4 · the six offices in a frosted band, each with a small landmark drawing.
+            The CODESHAPER wordmark now stands in the landscape below (owner, 25 Nov 2026). */}
         {OFFICE_LIST.length > 0 && (
           <Reveal>
-            <div className="relative z-10 -mt-[0.6vw] rounded-[28px] bg-white/60 px-5 py-7 shadow-[0_30px_60px_-40px_rgba(45,38,120,0.45)] ring-1 ring-white/80 backdrop-blur-xl sm:px-8 sm:py-8">
+            <div className="relative z-10 mt-16 rounded-[28px] bg-white/60 px-5 py-7 shadow-[0_30px_60px_-40px_rgba(45,38,120,0.45)] ring-1 ring-white/80 backdrop-blur-xl sm:px-8 sm:py-8">
               <ul className="grid grid-cols-2 gap-x-6 gap-y-8 sm:grid-cols-3 lg:grid-cols-6 lg:gap-x-0 lg:divide-x lg:divide-[#0b0f19]/[0.07]">
                 {OFFICE_LIST.map((p) => (
                   <li key={p.name} className="group lg:px-5 lg:first:pl-0 lg:last:pr-0">
