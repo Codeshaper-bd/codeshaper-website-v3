@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Play, RotateCcw, X } from "lucide-react";
+import { Bug as BugIcon, Play, RotateCcw, Trophy, X } from "lucide-react";
 
 /**
  * The footer's last strip (owner, 24 Nov 2026: "hills, a village, and a
@@ -17,27 +17,31 @@ import { Play, RotateCcw, X } from "lucide-react";
  * runs if the visitor starts it.
  */
 const H = 260; // scenery height
-/** the strip ends just below the path (owner: no empty ground under it) */
-const SHOWN = 192;
+/** the strip ends right at the path line (owner, 25 Nov 2026: no empty ground under it) */
+const SHOWN = 178;
 const GROUND = 176; // the path's top, px from the strip top
 const TILE = 1200; // scenery tile width
 const BOT_W = 34;
 const BOT_H = 40;
 const GRAVITY = 2600;
 const JUMP = 760; // about 110 px high
+const HINT_MS = 2600; // the controls hint shows when a game starts, then fades
 type Bug = { x: number; el: HTMLSpanElement; passed: boolean };
 
 export default function FooterLandscape() {
   const stage = useRef<HTMLDivElement>(null);
   const layers = useRef<(HTMLDivElement | null)[]>([]);
   const site = useRef<HTMLDivElement>(null);
-  const bot = useRef<HTMLDivElement>(null);
+  const bot = useRef<HTMLButtonElement>(null);
   const body = useRef<HTMLDivElement>(null);
   const fx = useRef<HTMLDivElement>(null);
   const [mode, setMode] = useState<"idle" | "play" | "over">("idle");
   const [score, setScore] = useState(0);
   const [best, setBest] = useState(0);
   const [reduced, setReduced] = useState(false);
+  const [touch, setTouch] = useState(false);
+  const [hint, setHint] = useState(false);
+  const hintTimer = useRef(0);
 
   const s = useRef({
     mode: "idle" as "idle" | "play" | "over",
@@ -57,6 +61,7 @@ export default function FooterLandscape() {
 
   useEffect(() => {
     setReduced(window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+    setTouch(window.matchMedia("(pointer: coarse)").matches);
     try {
       setBest(Number(localStorage.getItem("cs-bugdodge-best") ?? 0) || 0);
     } catch {
@@ -92,12 +97,17 @@ export default function FooterLandscape() {
     Object.assign(s.current, { mode: "play", y: 0, vy: 0, speed: 320, nextBug: 1.1, score: 0, x: Math.max(40, w * 0.14), dir: 1, hammer: 0 });
     setScore(0);
     setMode("play");
+    setHint(true);
+    window.clearTimeout(hintTimer.current);
+    hintTimer.current = window.setTimeout(() => setHint(false), HINT_MS);
   }, []);
 
   const stop = useCallback(() => {
     clearBugs();
     Object.assign(s.current, { mode: "idle", y: 0, vy: 0, goal: -1, wait: 1.5 });
     setMode("idle");
+    setHint(false);
+    window.clearTimeout(hintTimer.current);
   }, []);
 
   const jump = useCallback(() => {
@@ -182,6 +192,7 @@ export default function FooterLandscape() {
           if (b.x < st.x + BOT_W - 9 && b.x + 20 > st.x + 9 && st.y < 15) {
             st.mode = "over";
             setMode("over");
+            setHint(false);
             setBest((prev) => {
               const nb = Math.max(prev, st.score);
               try {
@@ -221,18 +232,19 @@ export default function FooterLandscape() {
     return () => {
       cancelAnimationFrame(raf);
       io.disconnect();
+      window.clearTimeout(hintTimer.current);
     };
   }, [reduced]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div
       ref={stage}
-      className={`landscape relative w-full select-none overflow-hidden ${mode !== "idle" ? "cursor-pointer" : ""}`}
+      className={`landscape relative w-full select-none overflow-clip${mode !== "idle" ? "cursor-pointer" : ""}`}
       style={{ height: SHOWN }}
       onPointerDown={(e) => {
         if (s.current.mode !== "idle" && !(e.target as HTMLElement).closest("button")) jump();
       }}
-      aria-label="A little builder putting up a CodeShaper house. Press Play for a small game."
+      aria-label="A little builder putting up a CodeShaper house. Press the builder to play a small game."
       role="group"
     >
       {/* clouds */}
@@ -263,43 +275,84 @@ export default function FooterLandscape() {
       <div ref={fx} aria-hidden className="pointer-events-none absolute inset-0" />
 
       {/* the builder */}
-      <div ref={bot} aria-hidden className="builder-bot absolute left-0 top-0" style={{ width: BOT_W, height: BOT_H }}>
+      <button
+        ref={bot}
+        type="button"
+        onClick={() => mode === "idle" && start()}
+        tabIndex={mode === "idle" ? 0 : -1}
+        aria-hidden={mode !== "idle"}
+        aria-label="Play a small game: dodge the bugs"
+        className={`builder-bot group absolute left-0 top-0 z-10 rounded-full after:absolute after:-inset-3 after:content-[''] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#4f46e5] ${mode === "idle" ? "cursor-pointer" : "pointer-events-none"}`}
+        style={{ width: BOT_W, height: BOT_H }}
+      >
         <div ref={body} className="h-full w-full">
           <BotSvg />
         </div>
-      </div>
-
-      {/* game controls */}
-      <div className="absolute right-4 top-4 z-10 flex items-center gap-2 font-urbanist text-[12.5px] sm:right-8">
-        {mode === "idle" ? (
-          <button type="button" onClick={start} className="inline-flex items-center gap-1.5 rounded-full border border-white/70 bg-white/75 px-3.5 py-2 font-semibold text-ink shadow-[0_4px_14px_-6px_rgba(11,15,25,0.3)] backdrop-blur-md transition-colors hover:bg-white">
-            <Play size={13} aria-hidden className="fill-current" />
-            Play: dodge the bugs
-          </button>
-        ) : (
-          <>
-            <span aria-live="polite" className="rounded-full bg-white/80 px-3 py-2 font-semibold tabular-nums text-ink backdrop-blur-md">
-              {mode === "over" ? `Bug got you · ${score}` : `Bugs dodged · ${score}`}
-              {best > 0 && <span className="ml-2 font-medium text-ink-dim">Best {best}</span>}
-            </span>
-            {mode === "over" && (
-              <button type="button" onClick={start} className="inline-flex items-center gap-1.5 rounded-full bg-[#0b0f19] px-3.5 py-2 font-semibold text-white">
-                <RotateCcw size={13} aria-hidden /> Again
-              </button>
-            )}
-            <button type="button" onClick={stop} aria-label="Stop the game" className="grid h-8 w-8 place-items-center rounded-full bg-white/80 text-ink backdrop-blur-md">
-              <X size={14} aria-hidden />
-            </button>
-          </>
+        {mode === "idle" && (
+          <Tip className="opacity-70 group-hover:opacity-100 group-focus-visible:opacity-100">
+            <Play size={9} aria-hidden className="fill-current" /> Play
+          </Tip>
         )}
-      </div>
-      {mode === "play" && score === 0 && (
-        <p className="pointer-events-none absolute left-1/2 top-4 z-10 -translate-x-1/2 whitespace-nowrap rounded-full bg-white/80 px-3 py-2 font-urbanist text-[12.5px] font-medium text-ink-mid backdrop-blur-md">
-          Space, ↑ or tap to jump · Esc to stop
-        </p>
+        {mode === "play" && (
+          <Tip className={hint ? "opacity-100" : "opacity-0"}>
+            {touch ? (
+              "Tap to jump"
+            ) : (
+              <>
+                <Kbd>↑</Kbd> jump <span className="text-ink-dim">·</span> <Kbd>Esc</Kbd> stop
+              </>
+            )}
+          </Tip>
+        )}
+      </button>
+
+      {/* game HUD: icons, not sentences (owner, 25 Nov 2026) */}
+      {mode !== "idle" && (
+        <div className="absolute right-4 top-4 z-10 flex items-center gap-1.5 font-urbanist text-[12px] sm:right-8">
+          <span className="inline-flex h-7 items-center gap-2.5 rounded-full bg-white/75 px-2.5 font-semibold tabular-nums text-ink backdrop-blur-md">
+            <span className="inline-flex items-center gap-1" title="Bugs dodged">
+              <BugIcon size={13} aria-hidden className={mode === "over" ? "text-[#e5484d]" : "text-ink-dim"} />
+              {score}
+            </span>
+            {best > 0 && (
+              <span className="inline-flex items-center gap-1 font-medium text-ink-dim" title="Best">
+                <Trophy size={12} aria-hidden />
+                {best}
+              </span>
+            )}
+          </span>
+          {mode === "over" && (
+            <button type="button" onClick={start} aria-label="Play again" title="Play again" className="grid h-7 w-7 place-items-center rounded-full bg-[#0b0f19] text-white">
+              <RotateCcw size={13} aria-hidden />
+            </button>
+          )}
+          <button type="button" onClick={stop} aria-label="Stop the game" title="Stop" className="grid h-7 w-7 place-items-center rounded-full bg-white/75 text-ink backdrop-blur-md">
+            <X size={13} aria-hidden />
+          </button>
+        </div>
       )}
+      <p aria-live="polite" className="sr-only">
+        {mode === "over" ? `A bug got you. ${score} dodged${best > 0 ? `, best ${best}` : ""}.` : ""}
+      </p>
     </div>
   );
+}
+
+/** a small, light tooltip above the builder's head */
+function Tip({ className = "", children }: { className?: string; children: React.ReactNode }) {
+  return (
+    <span
+      aria-hidden
+      className={`pointer-events-none absolute bottom-full left-1/2 mb-2 inline-flex -translate-x-1/2 items-center gap-1 whitespace-nowrap rounded-full bg-white/80 px-2 py-0.5 font-urbanist text-[11px] font-medium text-ink-mid shadow-[0_2px_8px_-4px_rgba(11,15,25,0.25)] backdrop-blur-md transition-opacity duration-500 ${className}`}
+    >
+      {children}
+      <span className="absolute left-1/2 top-full -translate-x-1/2 border-x-4 border-t-4 border-x-transparent border-t-white/80" />
+    </span>
+  );
+}
+
+function Kbd({ children }: { children: React.ReactNode }) {
+  return <kbd className="rounded border border-ink/15 bg-white px-1 font-sans text-[10px] leading-[14px] text-ink">{children}</kbd>;
 }
 
 /* ------------------------------------------------------------------ scenery */
