@@ -32,7 +32,7 @@ const AIS: { key: string; label: string; href: string; icon: IconType; color?: s
 ];
 
 const ICON_BTN =
-  "group/tip relative grid h-10 w-10 place-items-center rounded-full border border-white/70 bg-white/60 text-ink shadow-[0_1px_2px_rgba(11,15,25,0.05)] backdrop-blur-md transition-[transform,background-color] duration-300 hover:-translate-y-0.5 hover:bg-white focus-visible:-translate-y-0.5 focus-visible:bg-white";
+  "group/tip relative grid h-10 w-10 place-items-center rounded-full border border-white/70 bg-white/60 text-ink shadow-[0_1px_2px_rgba(11,15,25,0.05)] backdrop-blur-md transition-[transform,background-color] duration-300 hover:-translate-y-0.5 hover:bg-white focus-visible:-translate-y-0.5 focus-visible:bg-white night:border-white/10 night:bg-white/5 night:shadow-none night:hover:text-[#0b0f19] night:focus-visible:text-[#0b0f19]";
 
 /** A small dark label above an icon, on hover and on keyboard focus. */
 export function Tip({ children }: { children: ReactNode }) {
@@ -59,7 +59,7 @@ function Group({ label, children }: { label: string; children: ReactNode }) {
 
 export default function FooterActions({ social, profile }: { social: SocialLink[]; profile?: ReactNode }) {
   return (
-    <div className="mt-12 flex flex-col gap-8 border-t border-[#0b0f19]/[0.08] pt-8 lg:flex-row lg:items-end lg:justify-between lg:gap-10">
+    <div className="mt-12 flex flex-col gap-8 border-t border-[#0b0f19]/[0.08] pt-8 night:border-white/10 lg:flex-row lg:items-end lg:justify-between lg:gap-10">
       <>
         {social.length > 0 && (
           <Group label="Follow us">

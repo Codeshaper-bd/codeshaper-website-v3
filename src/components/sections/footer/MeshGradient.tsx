@@ -17,6 +17,8 @@ import { useEffect, useRef } from "react";
  * links too; the canvas itself never takes the pointer.
  */
 const COLORS = ["#f6f4f1", "#cfc8ff", "#ffcfb2", "#c3e1ff", "#ae9fff"];
+/** night scene (owner, 25 Nov 2026): deep indigo, violet and a little plum, same motion */
+const NIGHT = ["#14122e", "#2a2468", "#35264f", "#1b2a5c", "#3b3392"];
 
 const VERT = `attribute vec2 p;void main(){gl_Position=vec4(p,0.,1.);}`;
 const FRAG = `
@@ -27,6 +29,7 @@ uniform vec2 uMouse;
 uniform float uHover;
 uniform vec3 uRipple;
 uniform vec3 uC0;uniform vec3 uC1;uniform vec3 uC2;uniform vec3 uC3;uniform vec3 uC4;
+uniform float uLift;
 
 float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
 float noise(vec2 p){
@@ -66,7 +69,7 @@ void main(){
   col=mix(col,uC2,smoothstep(0.35,0.95,r.y)*0.9);
   col=mix(col,uC3,smoothstep(0.4,0.95,f)*0.85);
   col=mix(col,uC4,smoothstep(0.6,1.0,r.x*q.y*1.8)*0.7);
-  col=mix(col,vec3(1.),0.12);
+  col=mix(col,vec3(1.),uLift);
   // a whisper of grain so the gradient never bands
   col+=(hash(gl_FragCoord.xy+fract(uTime))-0.5)*0.018;
   gl_FragColor=vec4(col,1.);
@@ -74,9 +77,11 @@ void main(){
 
 const rgb = (hex: string) => [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255) as [number, number, number];
 
-const FALLBACK = `radial-gradient(50% 60% at 15% 35%, ${COLORS[1]}, transparent 70%), radial-gradient(45% 55% at 85% 30%, ${COLORS[3]}, transparent 70%), radial-gradient(55% 60% at 60% 95%, ${COLORS[2]}, transparent 70%), radial-gradient(40% 50% at 40% 70%, ${COLORS[4]}88, transparent 70%), ${COLORS[0]}`;
+const fallback = (C: string[]) =>
+  `radial-gradient(50% 60% at 15% 35%, ${C[1]}, transparent 70%), radial-gradient(45% 55% at 85% 30%, ${C[3]}, transparent 70%), radial-gradient(55% 60% at 60% 95%, ${C[2]}, transparent 70%), radial-gradient(40% 50% at 40% 70%, ${C[4]}88, transparent 70%), ${C[0]}`;
 
-export default function MeshGradient({ target, className = "" }: { target: React.RefObject<HTMLElement | null>; className?: string }) {
+export default function MeshGradient({ target, className = "", night = false }: { target: React.RefObject<HTMLElement | null>; className?: string; night?: boolean }) {
+  const palette = night ? NIGHT : COLORS;
   const box = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -115,7 +120,8 @@ export default function MeshGradient({ target, className = "" }: { target: React
 
     const u = (n: string) => gl.getUniformLocation(prog, n);
     const uRes = u("uRes"), uTime = u("uTime"), uMouse = u("uMouse"), uHover = u("uHover"), uRipple = u("uRipple");
-    COLORS.forEach((c, i) => gl.uniform3fv(u(`uC${i}`), rgb(c)));
+    palette.forEach((c, i) => gl.uniform3fv(u(`uC${i}`), rgb(c)));
+    gl.uniform1f(u("uLift"), night ? 0 : 0.12);
 
     const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
     const SCALE = 0.5;
@@ -209,9 +215,9 @@ export default function MeshGradient({ target, className = "" }: { target: React
       gl.getExtension("WEBGL_lose_context")?.loseContext();
       cv.remove();
     };
-  }, [target]);
+  }, [target, night, palette]);
 
   return (
-    <div ref={box} aria-hidden className={`pointer-events-none absolute inset-0 ${className}`} style={{ background: FALLBACK }} />
+    <div ref={box} aria-hidden className={`pointer-events-none absolute inset-0 ${className}`} style={{ background: fallback(palette) }} />
   );
 }

@@ -2,6 +2,7 @@
 
 /* Hero scroll intro running ([data-hero][data-intro], set by the inline script in Hero.tsx) */
 @custom-variant intro (&:where([data-intro] *));
+@custom-variant night (&:where([data-scene="night"] *));
 
 @theme {
   /* ── Color system (exact hex per spec §2) ─────────────── */
@@ -1567,6 +1568,29 @@ a.svc-card:hover .mega-icon-tile {
 @keyframes builder-crawl { from { transform: translateY(0) rotate(-3deg); } to { transform: translateY(-1.5px) rotate(3deg); } }
 @media (prefers-reduced-motion: reduce) {
   .builder-bot[data-walk="1"] .builder-leg-a, .builder-bot[data-walk="1"] .builder-leg-b, .builder-bot[data-walk="1"] > div, .builder-bug svg { animation: none; }
+}
+/* services menu: the platforms strip scrolls on its own and fades out at both sides (MegaPanel.tsx) */
+.stack-marquee-mask { -webkit-mask-image: linear-gradient(to right, transparent 0, #000 14%, #000 86%, transparent 100%); mask-image: linear-gradient(to right, transparent 0, #000 14%, #000 86%, transparent 100%); }
+.stack-marquee { animation: stack-marquee 45s linear infinite; }
+.stack-marquee-mask:hover .stack-marquee { animation-play-state: paused; }
+@keyframes stack-marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+@media (prefers-reduced-motion: reduce) { .stack-marquee { animation: none; } }
+/* footer night scene (FooterStage.tsx): the footer keeps .theme-light but its text turns light */
+.theme-light[data-scene="night"] {
+  --color-ink: #f5f4f2;
+  --color-ink-dim: #b9b6d6;
+  --color-ink-mid: #d4d1ea;
+  --color-ink-faint: #a29fc4;
+}
+/* footer landscape scenes (FooterLandscape.tsx): colours ease between day / night / snowfall */
+.landscape svg :is(path, rect, circle, ellipse) { transition: fill 0.7s ease, stroke 0.7s ease; }
+.scene-star { opacity: 0.9; animation: scene-twinkle 2.8s ease-in-out infinite alternate; }
+@keyframes scene-twinkle { from { opacity: 0.25; } to { opacity: 0.95; } }
+.scene-flake { opacity: 0.9; animation: scene-fall linear infinite; will-change: transform; }
+@keyframes scene-fall { from { transform: translate(0, -12px); } to { transform: translate(var(--drift, 0px), 200px); } }
+@media (prefers-reduced-motion: reduce) {
+  .scene-star { animation: none; }
+  .scene-flake { animation: none; transform: translateY(calc(var(--drift, 0px) * 6 + 90px)); }
 }
 /* footer landscape: clouds drift slowly across (FooterLandscape.tsx) */
 .landscape-clouds { animation: landscape-drift 90s linear infinite alternate; }

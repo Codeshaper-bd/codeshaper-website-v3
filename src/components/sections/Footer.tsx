@@ -133,7 +133,7 @@ export default function Footer() {
         <div className="grid gap-12 lg:grid-cols-[minmax(0,300px)_1fr] lg:gap-16">
           <div>
             <Link href="/" className="inline-flex items-center" aria-label="CodeShaper home">
-              <Image src="/brand/logo.png" alt="codeShaper" width={169} height={60} className="h-8 w-auto" />
+              <Image src="/brand/logo.png" alt="codeShaper" width={169} height={60} className="h-8 w-auto night:brightness-0 night:invert" />
             </Link>
             {CONTACT_LINES.length > 0 && (
               <ul className="mt-6 space-y-2.5">
@@ -157,7 +157,7 @@ export default function Footer() {
               aria-label="Member of BASIS, the Bangladesh Association of Software and Information Services"
             >
               {/* eslint-disable-next-line @next/next/no-img-element -- the association's own mark (white artwork), shown in ink */}
-              <img src="/media/badges/basis.svg" alt="" width={113} height={40} loading="lazy" decoding="async" className="h-9 w-auto brightness-0" />
+              <img src="/media/badges/basis.svg" alt="" width={113} height={40} loading="lazy" decoding="async" className="h-9 w-auto brightness-0 night:invert" />
               <span className="font-urbanist text-[11px] font-semibold uppercase tracking-[0.16em] text-ink-dim">Member</span>
             </a>
           </div>
@@ -199,8 +199,8 @@ export default function Footer() {
               ) : (
                 <p className="max-w-[18ch] font-urbanist text-[13.5px] leading-relaxed text-ink-dim">
                   Free tools for founders and product teams.
-                  <span className="mt-2 flex w-fit items-center gap-1.5 rounded-full border border-white/70 bg-white/60 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.1em] text-[#4f46e5] backdrop-blur-md">
-                    <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-[#4f46e5]" />
+                  <span className="mt-2 flex w-fit items-center gap-1.5 rounded-full border border-white/70 bg-white/60 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.1em] text-[#4f46e5] backdrop-blur-md night:border-white/10 night:bg-white/5 night:text-[#b4b0ff]">
+                    <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-[#4f46e5] night:bg-[#b4b0ff]" />
                     Coming soon
                   </span>
                 </p>
@@ -228,7 +228,7 @@ export default function Footer() {
                 <a
                   href={PROFILE_PDF}
                   download
-                  className="group flex w-fit items-center gap-2 rounded-full bg-[#0b0f19] py-2 pl-4 pr-2 font-urbanist text-[13px] font-semibold text-white transition-colors hover:bg-[#1f2433]"
+                  className="group flex w-fit items-center gap-2 rounded-full bg-[#0b0f19] py-2 pl-4 pr-2 font-urbanist text-[13px] font-semibold text-white transition-colors hover:bg-[#1f2433] night:bg-white night:text-[#0b0f19] night:hover:bg-white/85"
                 >
                   <FileText size={14} strokeWidth={1.8} aria-hidden />
                   Download company profile
@@ -240,7 +240,7 @@ export default function Footer() {
                 FOOTER.button && (
                   <Link
                     href={FOOTER.button.href}
-                    className="group flex w-fit items-center gap-2 rounded-full border border-white/70 bg-white/60 py-2 pl-4 pr-3 font-urbanist text-[13px] font-semibold text-ink backdrop-blur-md transition-colors hover:bg-white"
+                    className="group flex w-fit items-center gap-2 rounded-full border border-white/70 bg-white/60 py-2 pl-4 pr-3 font-urbanist text-[13px] font-semibold text-ink backdrop-blur-md transition-colors hover:bg-white night:border-white/10 night:bg-white/5 night:hover:bg-white/10"
                   >
                     <FileText size={14} strokeWidth={1.8} aria-hidden />
                     {FOOTER.button.label}
@@ -257,18 +257,18 @@ export default function Footer() {
             The CODESHAPER wordmark now stands in the landscape below (owner, 25 Nov 2026). */}
         {OFFICE_LIST.length > 0 && (
           <Reveal>
-            <div className="relative z-10 mt-16 rounded-[28px] bg-white/60 px-5 py-7 shadow-[0_30px_60px_-40px_rgba(45,38,120,0.45)] ring-1 ring-white/80 backdrop-blur-xl sm:px-8 sm:py-8">
-              <ul className="grid grid-cols-2 gap-x-6 gap-y-8 sm:grid-cols-3 lg:grid-cols-6 lg:gap-x-0 lg:divide-x lg:divide-[#0b0f19]/[0.07]">
+            <div className="relative z-10 mt-16 rounded-[28px] bg-white/60 px-5 py-7 shadow-[0_30px_60px_-40px_rgba(45,38,120,0.45)] ring-1 ring-white/80 backdrop-blur-xl sm:px-8 sm:py-8 night:bg-white/[0.05] night:shadow-none night:ring-white/10">
+              <ul className="grid grid-cols-2 gap-x-6 gap-y-8 sm:grid-cols-3 lg:grid-cols-6 lg:gap-x-0 lg:divide-x lg:divide-[#0b0f19]/[0.07] night:lg:divide-white/10">
                 {OFFICE_LIST.map((p) => (
                   <li key={p.name} className="group lg:px-5 lg:first:pl-0 lg:last:pr-0">
-                    <Landmark place={p.name} className="text-[#4f46e5] transition-transform duration-300 group-hover:-translate-y-0.5" />
+                    <Landmark place={p.name} className="text-[#4f46e5] night:text-[#b4b0ff] transition-transform duration-300 group-hover:-translate-y-0.5" />
                     <p className="mt-3 font-urbanist text-[16px] font-bold tracking-[-0.01em] text-ink">{p.office!.title.includes(" · ") && /HQ/.test(p.office!.title) ? p.office!.title.split(" · ")[1] : p.name}</p>
                     {p.office!.lines?.length ? (
                       <address className="mt-1.5 font-urbanist text-[12.5px] not-italic leading-relaxed text-ink-dim">{p.office!.lines.join(" ")}</address>
                     ) : null}
                     <p className="mt-2 flex flex-col items-start gap-1 font-urbanist text-[12.5px] text-ink-dim">
                       {p.office!.tel && (
-                        <a href={`tel:${p.office!.tel}`} className="inline-flex items-center gap-1.5 font-semibold text-ink transition-colors hover:text-[#4f46e5]">
+                        <a href={`tel:${p.office!.tel}`} className="inline-flex items-center gap-1.5 font-semibold text-ink transition-colors hover:text-[#4f46e5] night:hover:text-[#b4b0ff]">
                           <Phone size={13} strokeWidth={2} aria-hidden />
                           {p.office!.tel}
                         </a>
@@ -281,7 +281,7 @@ export default function Footer() {
             </div>
           </Reveal>
         )}
-        <div className="mt-6 flex flex-wrap items-center justify-between gap-4 border-t border-[#0b0f19]/[0.08] pt-6">
+        <div className="mt-6 flex flex-wrap items-center justify-between gap-4 border-t border-[#0b0f19]/[0.08] pt-6 night:border-white/10">
           <p className="font-urbanist text-[12.5px] text-ink-dim">
             © {FOUNDED}–{new Date().getFullYear()} {FOOTER.copyright}
           </p>
@@ -292,7 +292,7 @@ export default function Footer() {
             <a
               href="#"
               aria-label="Back to top"
-              className="grid h-9 w-9 place-items-center rounded-full border border-white/70 bg-white/60 text-ink backdrop-blur-md transition-[transform,background-color] hover:-translate-y-0.5 hover:bg-white"
+              className="grid h-9 w-9 place-items-center rounded-full border border-white/70 bg-white/60 text-ink backdrop-blur-md transition-[transform,background-color] hover:-translate-y-0.5 hover:bg-white night:border-white/10 night:bg-white/5 night:hover:bg-white/15"
             >
               <ArrowUp size={15} strokeWidth={1.9} />
             </a>

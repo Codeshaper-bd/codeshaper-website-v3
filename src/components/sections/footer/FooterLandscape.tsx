@@ -2,7 +2,8 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import FooterWordmark from "../FooterWordmark";
-import { Bug as BugIcon, Play, RotateCcw, Trophy, X } from "lucide-react";
+import { useFooterScene, type Scene } from "./scene";
+import { Bug as BugIcon, Moon, Play, RotateCcw, Snowflake, Sun, Trophy, X } from "lucide-react";
 
 /**
  * The footer's last strip (owner, 24 Nov 2026: "hills, a village, and a
@@ -29,8 +30,65 @@ const JUMP = 760; // about 110 px high
 /** the wordmark's letters end here (px from the strip top): behind the hills, so the land covers their feet */
 const WORD_BASE = 170;
 const WORD_BASE_SM = 128;
-const HINT_MS = 2600; // the controls hint shows when a game starts, then fades
+const HINT_MS = 2600;
+/** the strip controls sit on white pills, so they keep dark text in every scene (night turns the footer text light) */
+const LIGHT_UI = "[--color-ink:#0b0f19] [--color-ink-dim:#626873] [--color-ink-mid:#374151]"; // the controls hint shows when a game starts, then fades
 type Bug = { x: number; el: HTMLSpanElement; passed: boolean };
+
+/**
+ * Scenes (owner, 25 Nov 2026): the day scene stays the default; a visitor can
+ * switch to a night or a snowfall scene with the small icons at the top right.
+ * Only colours change, so the game and layout are identical in every scene.
+ * The choice stays in this browser.
+ */
+type Palette = {
+  far: string;
+  hills: string;
+  land: string;
+  trunk: string;
+  treeA: string;
+  treeB: string;
+  wall: string;
+  roofs: [string, string, string];
+  win: string;
+  door: string;
+  path: string;
+  line: string;
+  grass: string;
+  cloud: string;
+  cloudOp: number;
+  word: string;
+  /** a sky behind everything (night / snow), fading in from the footer above */
+  sky?: string;
+  snowRoofs?: boolean;
+  /** dims the white house on the build site at night */
+  site?: string;
+};
+const SCENES: Record<Scene, Palette> = {
+  day: {
+    far: "#dcd7fb", hills: "#cbc4f6", land: "#e5e0fd", trunk: "#8a84b8", treeA: "#a5cfb6", treeB: "#b9dcc6",
+    wall: "#ffffff", roofs: ["#f3b69c", "#8f8cff", "#c9a0f0"], win: "#c9c2f6", door: "#8f8cff",
+    path: "#f7f5ff", line: "#0b0f19", grass: "#8fc2a3", cloud: "#ffffff", cloudOp: 0.7, word: "#c3bbf6",
+  },
+  night: {
+    far: "#3a3482", hills: "#2e2969", land: "#26225a", trunk: "#1c1940", treeA: "#35675b", treeB: "#407566",
+    wall: "#4a4490", roofs: ["#9a5f55", "#5b56c4", "#7b5aa6"], win: "#ffd76a", door: "#2a2560",
+    path: "#1f1b4d", line: "#ffffff", grass: "#3f7a63", cloud: "#8a83d6", cloudOp: 0.22, word: "#463f9a",
+    sky: "linear-gradient(to bottom, rgba(20,18,46,0) 0%, rgba(20,18,46,0.55) 100%)", // the whole footer is dark; this only deepens the horizon
+    site: "brightness(0.72) saturate(0.9)",
+  },
+  snow: {
+    far: "#e2e5f8", hills: "#eef0fb", land: "#f8f9ff", trunk: "#8a84b8", treeA: "#b4cfc6", treeB: "#c7ddd5",
+    wall: "#ffffff", roofs: ["#f1bfa9", "#a6a3ff", "#d3b3f3"], win: "#c9cef5", door: "#9aa3e8",
+    path: "#ffffff", line: "#0b0f19", grass: "#dfe6f5", cloud: "#ffffff", cloudOp: 0.85, word: "#bcc3f0",
+    sky: "linear-gradient(to bottom, rgba(226,231,255,0) 0%, rgba(226,231,255,0.55) 45%, rgba(232,236,255,0.9) 100%)",
+    snowRoofs: true,
+  },
+};
+const SCENE_ICONS = { day: Sun, night: Moon, snow: Snowflake } as const;
+const SCENE_NAMES = { day: "Day", night: "Night", snow: "Snowfall" } as const;
+// fixed positions, so server and client render the same snow
+const FLAKES = Array.from({ length: 46 }, (_, i) => ({ x: (i * 41.7) % 100, s: 2 + (i % 3), dur: 7 + (i % 5) * 1.6, d: -((i * 1.37) % 9), drift: ((i % 5) - 2) * 9 }));
 
 export default function FooterLandscape() {
   const stage = useRef<HTMLDivElement>(null);
@@ -45,6 +103,8 @@ export default function FooterLandscape() {
   const [reduced, setReduced] = useState(false);
   const [touch, setTouch] = useState(false);
   const [hint, setHint] = useState(false);
+  const { scene, setScene: pickScene } = useFooterScene();
+  const pal = SCENES[scene];
   const hintTimer = useRef(0);
 
   const s = useRef({
@@ -244,9 +304,17 @@ export default function FooterLandscape() {
   return (
     // owner, 25 Nov 2026: the CODESHAPER wordmark lives in the landscape, a far range behind the mountains and hills
     <div className="relative flex w-full flex-col justify-end" style={{ minHeight: SHOWN }}>
+      {/* the scene's sky: behind the wordmark, fading in from the footer above */}
+      <div aria-hidden className="pointer-events-none absolute inset-x-0 -top-12 bottom-0 transition-opacity duration-700" style={{ background: pal.sky ?? "none", opacity: pal.sky ? 1 : 0 }}>
+        {scene === "night" && (
+          <>
+            <span className="absolute left-[5%] top-[14%] h-7 w-7 rounded-full bg-[#fff4d0] shadow-[0_0_24px_6px_rgba(255,244,208,0.35)] sm:left-[3%] sm:h-9 sm:w-9" />
+          </>
+        )}
+      </div>
       {/* phones: the letters are small, so they stand higher, above the village roofs */}
       <div className="relative z-[1] mx-auto w-full max-w-7xl px-4 pb-[var(--wb-sm)] sm:px-6 sm:pb-[var(--wb)] lg:px-10" style={{ "--wb": `${SHOWN - WORD_BASE}px`, "--wb-sm": `${SHOWN - WORD_BASE_SM}px` } as React.CSSProperties}>
-        <FooterWordmark />
+        <FooterWordmark tone={pal.word} />
       </div>
     <div
       ref={stage}
@@ -260,9 +328,9 @@ export default function FooterLandscape() {
     >
       {/* clouds: behind the wordmark (z-auto), everything else in front of it (z 2+) */}
       <div aria-hidden className={`landscape-clouds absolute inset-x-0 top-0 h-24 ${reduced ? "[animation:none]" : ""}`}>
-        <Cloud className="left-[6%] top-6 w-28" />
-        <Cloud className="left-[38%] top-12 w-20 opacity-80" />
-        <Cloud className="left-[71%] top-4 w-32" />
+        <Cloud p={pal} className="left-[6%] top-6 w-28" />
+        <Cloud p={pal} className="left-[38%] top-12 w-20 opacity-80" />
+        <Cloud p={pal} className="left-[71%] top-4 w-32" />
       </div>
 
       {/* scenery layers, back to front */}
@@ -270,20 +338,27 @@ export default function FooterLandscape() {
         <div key={i} aria-hidden ref={(el) => void (layers.current[i] = el)} className="absolute left-0 top-0 z-[2] flex will-change-transform" style={{ width: TILE * 4 }}>
           {[0, 1, 2, 3].map((k) => (
             <svg key={k} viewBox={`0 0 ${TILE} ${H}`} width={TILE} height={H} className="shrink-0" preserveAspectRatio="none">
-              <Layer />
+              <Layer p={pal} />
             </svg>
           ))}
         </div>
       ))}
 
       {/* the CodeShaper house the builder is putting up */}
-      <div ref={site} aria-hidden className="absolute left-0 top-0 z-[2] h-full w-full will-change-transform">
+      <div ref={site} aria-hidden className="absolute left-0 top-0 z-[2] h-full w-full will-change-transform transition-[filter] duration-700" style={{ filter: pal.site ?? "none" }}>
         <div className="absolute" style={{ left: "64%", top: GROUND - 92 }}>
           <BuildSite />
         </div>
       </div>
 
       <div ref={fx} aria-hidden className="pointer-events-none absolute inset-0 z-[3]" />
+      {scene === "snow" && (
+        <div aria-hidden className="pointer-events-none absolute inset-0 z-[4]">
+          {FLAKES.map((f, i) => (
+            <span key={i} className="scene-flake absolute top-0 rounded-full bg-white" style={{ left: `${f.x}%`, width: f.s, height: f.s, animationDuration: `${f.dur}s`, animationDelay: `${f.d}s`, ["--drift" as string]: `${f.drift}px` }} />
+          ))}
+        </div>
+      )}
 
       {/* the builder */}
       <button
@@ -293,7 +368,7 @@ export default function FooterLandscape() {
         tabIndex={mode === "idle" ? 0 : -1}
         aria-hidden={mode !== "idle"}
         aria-label="Play a small game: dodge the bugs"
-        className={`builder-bot group absolute left-0 top-0 z-10 rounded-full after:absolute after:-inset-3 after:content-[''] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#4f46e5] ${mode === "idle" ? "pointer-events-auto cursor-pointer" : "pointer-events-none"}`}
+        className={`builder-bot group ${LIGHT_UI} absolute left-0 top-0 z-10 rounded-full after:absolute after:-inset-3 after:content-[''] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#4f46e5] ${mode === "idle" ? "pointer-events-auto cursor-pointer" : "pointer-events-none"}`}
         style={{ width: BOT_W, height: BOT_H, transform: `translate(120px, ${GROUND - BOT_H}px)` /* on the ground before the first frame */ }}
       >
         <div ref={body} className="h-full w-full">
@@ -317,9 +392,30 @@ export default function FooterLandscape() {
         )}
       </button>
 
+      {mode === "idle" && (
+        <div role="group" aria-label="Scene" className={`${LIGHT_UI} pointer-events-auto absolute right-4 top-4 z-10 flex items-center gap-0.5 rounded-full bg-white/70 p-0.5 shadow-[0_2px_8px_-4px_rgba(11,15,25,0.25)] backdrop-blur-md sm:right-8`}>
+          {(Object.keys(SCENES) as Scene[]).map((v) => {
+            const Icon = SCENE_ICONS[v];
+            return (
+              <button
+                key={v}
+                type="button"
+                onClick={() => pickScene(v)}
+                aria-pressed={scene === v}
+                aria-label={`${SCENE_NAMES[v]} scene`}
+                title={SCENE_NAMES[v]}
+                className={`grid h-7 w-7 place-items-center rounded-full transition-colors ${scene === v ? "bg-[#0b0f19] text-white" : "text-ink-dim hover:bg-white hover:text-ink"}`}
+              >
+                <Icon size={13} aria-hidden />
+              </button>
+            );
+          })}
+        </div>
+      )}
+
       {/* game HUD: icons, not sentences (owner, 25 Nov 2026) */}
       {mode !== "idle" && (
-        <div className="absolute right-4 top-4 z-10 flex items-center gap-1.5 font-urbanist text-[12px] sm:right-8">
+        <div className={`${LIGHT_UI} absolute right-4 top-4 z-10 flex items-center gap-1.5 font-urbanist text-[12px] sm:right-8`}>
           <span className="inline-flex h-7 items-center gap-2.5 rounded-full bg-white/75 px-2.5 font-semibold tabular-nums text-ink backdrop-blur-md">
             <span className="inline-flex items-center gap-1" title="Bugs dodged">
               <BugIcon size={13} aria-hidden className={mode === "over" ? "text-[#e5484d]" : "text-ink-dim"} />
@@ -369,72 +465,74 @@ function Kbd({ children }: { children: React.ReactNode }) {
 
 /* ------------------------------------------------------------------ scenery */
 
-function Cloud({ className = "" }: { className?: string }) {
+function Cloud({ p, className = "" }: { p: Palette; className?: string }) {
   return (
     <svg viewBox="0 0 120 44" className={`absolute ${className}`} aria-hidden>
-      <path d="M18 40h86a14 14 0 0 0 0-28 22 22 0 0 0-41-6 17 17 0 0 0-30 9A13 13 0 0 0 18 40Z" fill="#ffffff" fillOpacity=".7" />
+      <path d="M18 40h86a14 14 0 0 0 0-28 22 22 0 0 0-41-6 17 17 0 0 0-30 9A13 13 0 0 0 18 40Z" fill={p.cloud} fillOpacity={p.cloudOp} />
     </svg>
   );
 }
 
-function FarMountains() {
+function FarMountains({ p }: { p: Palette }) {
   return (
     <path
       d="M0 196 70 132 128 164 214 84 300 150 360 118 440 170 520 98 610 156 690 112 760 160 850 74 940 150 1010 120 1090 168 1150 128 1200 150V260H0Z"
-      fill="#dcd7fb"
+      fill={p.far}
     />
   );
 }
 
-function Hills() {
-  return <path d="M0 190C120 150 230 146 360 168S600 128 760 156 1040 150 1200 176V260H0Z" fill="#cbc4f6" />;
+function Hills({ p }: { p: Palette }) {
+  return <path d="M0 190C120 150 230 146 360 168S600 128 760 156 1040 150 1200 176V260H0Z" fill={p.hills} />;
 }
 
 const HOUSES = [
-  { x: 80, w: 46, h: 30, roof: "#f3b69c" },
-  { x: 150, w: 34, h: 24, roof: "#8f8cff" },
-  { x: 420, w: 52, h: 32, roof: "#8f8cff" },
-  { x: 880, w: 44, h: 28, roof: "#f3b69c" },
-  { x: 940, w: 30, h: 22, roof: "#c9a0f0" },
+  { x: 80, w: 46, h: 30, roof: 0 },
+  { x: 150, w: 34, h: 24, roof: 1 },
+  { x: 420, w: 52, h: 32, roof: 1 },
+  { x: 880, w: 44, h: 28, roof: 0 },
+  { x: 940, w: 30, h: 22, roof: 2 },
 ];
 const TREES = [40, 210, 250, 380, 520, 600, 820, 1010, 1060, 1140];
 
-function Village() {
+function Village({ p }: { p: Palette }) {
   return (
     <>
-      <path d="M0 186C200 170 360 176 560 182S960 168 1200 184V260H0Z" fill="#e5e0fd" />
+      <path d="M0 186C200 170 360 176 560 182S960 168 1200 184V260H0Z" fill={p.land} />
       {TREES.map((x, i) => (
         <g key={x}>
-          <rect x={x - 1.5} y={164} width={3} height={14} fill="#8a84b8" />
-          <circle cx={x} cy={160 - (i % 3) * 3} r={9 + (i % 3) * 2} fill={i % 2 ? "#b9dcc6" : "#a5cfb6"} />
+          <rect x={x - 1.5} y={164} width={3} height={14} fill={p.trunk} />
+          <circle cx={x} cy={160 - (i % 3) * 3} r={9 + (i % 3) * 2} fill={i % 2 ? p.treeB : p.treeA} />
+          {p.snowRoofs && <path d={`M${x - 7 - (i % 3)} ${156 - (i % 3) * 4}a${8 + (i % 3)} 6 0 0 1 ${14 + (i % 3) * 2} 0`} fill="#ffffff" />}
         </g>
       ))}
       {HOUSES.map((h) => (
         <g key={h.x}>
-          <rect x={h.x} y={178 - h.h} width={h.w} height={h.h} rx={2} fill="#ffffff" />
-          <path d={`M${h.x - 4} ${178 - h.h + 2}L${h.x + h.w / 2} ${178 - h.h - h.w * 0.42}L${h.x + h.w + 4} ${178 - h.h + 2}Z`} fill={h.roof} />
-          <rect x={h.x + h.w * 0.2} y={178 - h.h * 0.62} width={h.w * 0.2} height={h.h * 0.3} rx={1} fill="#c9c2f6" />
-          <rect x={h.x + h.w * 0.58} y={178 - h.h * 0.55} width={h.w * 0.22} height={h.h * 0.55} rx={1} fill="#8f8cff" fillOpacity=".55" />
+          <rect x={h.x} y={178 - h.h} width={h.w} height={h.h} rx={2} fill={p.wall} />
+          <path d={`M${h.x - 4} ${178 - h.h + 2}L${h.x + h.w / 2} ${178 - h.h - h.w * 0.42}L${h.x + h.w + 4} ${178 - h.h + 2}Z`} fill={p.roofs[h.roof]} />
+          {p.snowRoofs && <path d={`M${h.x - 4} ${178 - h.h + 2}L${h.x + h.w / 2} ${178 - h.h - h.w * 0.42}L${h.x + h.w + 4} ${178 - h.h + 2}`} stroke="#ffffff" strokeWidth="3.5" strokeLinejoin="round" fill="none" />}
+          <rect x={h.x + h.w * 0.2} y={178 - h.h * 0.62} width={h.w * 0.2} height={h.h * 0.3} rx={1} fill={p.win} />
+          <rect x={h.x + h.w * 0.58} y={178 - h.h * 0.55} width={h.w * 0.22} height={h.h * 0.55} rx={1} fill={p.door} fillOpacity=".55" />
         </g>
       ))}
     </>
   );
 }
 
-function Path() {
+function Path({ p }: { p: Palette }) {
   return (
     <>
-      <rect x="0" y={GROUND} width={TILE} height={H - GROUND} fill="#f7f5ff" />
-      <path d={`M0 ${GROUND}H${TILE}`} stroke="#0b0f19" strokeOpacity=".12" strokeWidth="1.5" />
+      <rect x="0" y={GROUND} width={TILE} height={H - GROUND} fill={p.path} />
+      <path d={`M0 ${GROUND}H${TILE}`} stroke={p.line} strokeOpacity=".12" strokeWidth="1.5" />
       {/* stones and grass, so the ground visibly moves in a game */}
       {[60, 190, 330, 470, 560, 700, 820, 960, 1080].map((x, i) => (
         <g key={x}>
           {i % 2 ? (
-            <ellipse cx={x} cy={GROUND + 14 + (i % 3) * 9} rx={5} ry={2.5} fill="#0b0f19" fillOpacity=".08" />
+            <ellipse cx={x} cy={GROUND + 14 + (i % 3) * 9} rx={5} ry={2.5} fill={p.line} fillOpacity=".08" />
           ) : (
-            <path d={`M${x} ${GROUND}l3-7 2 7 3-5 2 5`} stroke="#8fc2a3" strokeWidth="1.5" fill="none" strokeLinecap="round" />
+            <path d={`M${x} ${GROUND}l3-7 2 7 3-5 2 5`} stroke={p.grass} strokeWidth="1.5" fill="none" strokeLinecap="round" />
           )}
-          <path d={`M${x + 30} ${GROUND + 30 + (i % 4) * 6}h${14 + (i % 3) * 8}`} stroke="#0b0f19" strokeOpacity=".06" strokeWidth="2" strokeLinecap="round" />
+          <path d={`M${x + 30} ${GROUND + 30 + (i % 4) * 6}h${14 + (i % 3) * 8}`} stroke={p.line} strokeOpacity=".06" strokeWidth="2" strokeLinecap="round" />
         </g>
       ))}
     </>
