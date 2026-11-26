@@ -2,6 +2,16 @@
 
 Standing decisions from the owner. They override general best practice. Add new ones at the top with a date; never delete. Mark replaced ones as superseded.
 
+## AI consultation experience (owner's Phase 01B and UX01 briefs)
+
+| Date | Decision |
+|---|---|
+| 2026-11-26 | **AI consultation layout:** conversation first, interface on demand: one centred column in a near-full-screen, dismissible window opened from the hero box. **Rejected:** a permanent right-hand project brief column, a permanent chat history column, an unsolicited floating chatbot. Cards only when relevant; the brief is reviewed on demand. Hero, heading, globe, navigation and background stay as they are; human contact stays one step away. |
+| 2026-11-26 | **Hero actions in the AI prototype:** no "Contact form" link inside the hero box; the line under the proof ("Rather talk? Book a call") becomes "Prefer to write? Contact form". Booking stays in the navigation. With the prototype off, the hero is unchanged. |
+| 2026-11-26 | **Voice:** a separate voice screen sharing the same conversation, an abstract orb (no avatar or talking head). A simulated waveform must never look like real recording; the real one must react to real audio. |
+| 2026-11-26 | **UX01 is a prototype only:** development flag, scripted replies, no backend, AI provider, microphone, lead creation or visitor analytics; with the flag off the contact journey is unchanged; production visitors cannot reach it. |
+| 2026-11-26 | **Phase 01B (AI core, in the CMS):** AI off by default, fake provider only, $10 a month and $0.75 a day, never above $25, 80% warning, stop at 100%. No public AI, live provider, push or deploy. Each later phase needs its own approval. |
+
 ## AI Studio (owner's Phase 00 brief)
 
 | Date | Decision |
