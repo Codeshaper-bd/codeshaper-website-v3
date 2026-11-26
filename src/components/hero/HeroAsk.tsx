@@ -2,9 +2,11 @@
 
 import { useEffect, useLayoutEffect, useRef, useState, type FormEvent, type KeyboardEvent, type MouseEvent } from "react";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import { BRIEF_MAX, saveBrief } from "@/lib/briefHandoff";
-import { ArrowUp, Bot, Rocket, RefreshCw, CornerDownLeft, type LucideIcon } from "lucide-react";
+import { ArrowUp, Bot, Mic, Rocket, RefreshCw, CornerDownLeft, type LucideIcon } from "lucide-react";
+import type { Handoff } from "@/components/ai-prototype/Workspace";
 
 /**
  * Hero project prompt, in the compact "AI input" pattern: one white input
@@ -23,6 +25,10 @@ import { ArrowUp, Bot, Rocket, RefreshCw, CornerDownLeft, type LucideIcon } from
  *    <label> and the native placeholder stay for assistive tech
  *  · tray ideas are real links to /contact; with JS they fill the box
  *  · the button reads as inactive (grey) until there's text
+ *
+ * UX01 prototype (development only, NEXT_PUBLIC_AI_PROTOTYPE=1): submitting opens a scripted AI
+ * consultation window instead, with a voice entry; the contact form is the link under the proof line. A production
+ * build contains none of it, whatever the variable says.
  */
 const IDEAS: { label: string; icon: LucideIcon; brief: string }[] = [
   { label: "AI agent", icon: Bot, brief: "We'd like an AI agent that automates part of our workflow: " },
@@ -39,6 +45,12 @@ const EXAMPLES = [
 
 const MAX_LINES = 5;
 
+// written out here so a production build can drop the window and its code altogether
+const Workspace =
+  process.env.NODE_ENV !== "production" && process.env.NEXT_PUBLIC_AI_PROTOTYPE === "1"
+    ? dynamic(() => import("@/components/ai-prototype/Workspace"), { ssr: false })
+    : null;
+
 export default function HeroAsk() {
   const [value, setValue] = useState("");
   const [focused, setFocused] = useState(false);
@@ -47,9 +59,19 @@ export default function HeroAsk() {
   const areaRef = useRef<HTMLTextAreaElement>(null);
   const hasText = value.trim().length > 0;
   const router = useRouter();
+  const [consultation, setConsultation] = useState<{ open: boolean; handoff: Handoff | null }>({ open: false, handoff: null });
+  const opened = useRef(0);
+
+  const openConsultation = (mode: Handoff["mode"]) =>
+    setConsultation({ open: true, handoff: { id: ++opened.current, mode, text: value.trim(), origin: formRef.current?.getBoundingClientRect() } });
 
   // keep the words in this tab and open the form; if storage is blocked, the form's own POST goes ahead
   const onSubmit = (e: FormEvent<HTMLFormElement>) => {
+    if (Workspace) {
+      e.preventDefault();
+      if (hasText) openConsultation("text");
+      return;
+    }
     if (!saveBrief(areaRef.current?.value ?? "")) return;
     e.preventDefault();
     router.push("/contact");
@@ -157,18 +179,43 @@ export default function HeroAsk() {
         </div>
 
         <div className="flex items-center justify-between gap-3 px-3 pb-3 pt-2 sm:px-3.5">
+          {Workspace && consultation.handoff && !consultation.open ? (
+            // closing the window keeps the conversation; this is the way back to it
+            <button
+              type="button"
+              onClick={() => setConsultation((c) => ({ ...c, open: true }))}
+              className="mr-auto min-h-10 rounded-full px-2.5 text-[12.5px] font-semibold text-[#4f46e5] underline decoration-[#4f46e5]/30 underline-offset-4 hover:decoration-[#4f46e5]"
+            >
+              Resume<span className="hidden sm:inline"> your consultation</span>
+            </button>
+          ) : (
           <span className="hidden items-center gap-1.5 pl-1 text-[12px] text-[#6b7180] sm:flex">
             <kbd className="inline-flex h-5 items-center rounded-md border border-[#0b0f19]/10 bg-[#f6f7f9] px-1.5 font-sans text-[11px] text-[#4b5263]">
               <CornerDownLeft size={11} strokeWidth={2} aria-hidden />
             </kbd>
-            to continue · nothing is sent yet
+            {Workspace ? "to start · prototype, nothing is sent" : "to continue · nothing is sent yet"}
           </span>
+          )}
+          {Workspace && (
+            <span className="mr-auto flex items-center gap-1 sm:ml-auto sm:mr-0">
+              <button
+                type="button"
+                onClick={() => openConsultation("voice")}
+                aria-label="Start a voice consultation (simulated)"
+                title="Talk instead (simulated)"
+                className="inline-flex h-10 items-center gap-1.5 rounded-full px-3 text-[12.5px] font-semibold text-[#0b0f19] hover:bg-[#f3f2f7]"
+              >
+                <Mic size={15} strokeWidth={2} aria-hidden />
+                Talk
+              </button>
+            </span>
+          )}
           <button
             type="submit"
             onClick={onSendClick}
-            aria-label="Continue to the contact form"
-            title="Continue to the contact form"
-            className={`ml-auto grid h-9 w-9 shrink-0 place-items-center rounded-full transition-[background-color,color,transform] duration-200 active:scale-[0.94] ${
+            aria-label={Workspace ? "Start the AI consultation (prototype)" : "Continue to the contact form"}
+            title={Workspace ? "Start the AI consultation (prototype)" : "Continue to the contact form"}
+            className={`${Workspace ? "" : "ml-auto "}grid h-9 w-9 shrink-0 place-items-center rounded-full transition-[background-color,color,transform] duration-200 active:scale-[0.94] ${
               hasText ? "bg-[#0b0f19] text-white hover:bg-[#262b3a]" : "bg-[#eceef2] text-[#8a90a0]"
             }`}
           >
@@ -176,6 +223,16 @@ export default function HeroAsk() {
           </button>
         </div>
       </form>
+
+      {/* mounted from the first opening on, so closing it keeps the conversation */}
+      {Workspace && consultation.handoff && (
+        <Workspace
+          open={consultation.open}
+          handoff={consultation.handoff}
+          onClose={() => setConsultation((c) => ({ ...c, open: false }))}
+          onTaken={() => setValue("")}
+        />
+      )}
 
       {/* idea tray, tucked under the card */}
       <div className="hero-ask-tray mx-3 -mt-3 rounded-b-[18px] px-2 pb-1.5 pt-[18px] sm:mx-4">
