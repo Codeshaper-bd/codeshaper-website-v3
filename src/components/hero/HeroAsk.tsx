@@ -232,7 +232,11 @@ export default function HeroAsk({ founders = [] }: { founders?: Founder[] }) {
           founders={founders}
           open={consultation.open}
           handoff={consultation.handoff}
-          onClose={() => setConsultation((c) => ({ ...c, open: false }))}
+          onClose={(draft) => {
+            // unsent words come back to the box they started in
+            if (draft) setValue(draft);
+            setConsultation((c) => ({ ...c, open: false }));
+          }}
           onTaken={() => setValue("")}
         />
       )}

@@ -1,5 +1,4 @@
-/** How an answer and a brief are laid out. Pure: no imports but types, so the tests can run it. */
-import type { BriefFields, BriefKey } from "./contract";
+/** How an answer is laid out. Pure: no imports, so the tests can run it. */
 
 /** A reply's closing question, taken out so the screen can keep it below any cards, where it is found. */
 export function splitQuestion(text: string): { lead: string; question: string | null } {
@@ -13,24 +12,17 @@ export function splitQuestion(text: string): { lead: string; question: string | 
   return { lead: whole.slice(0, cut).trim(), question: whole.slice(cut) };
 }
 
-const FACTS: [BriefKey, string][] = [
-  ["users", "Who it is for"],
-  ["platforms", "Platforms"],
-  ["integrations", "Integrations"],
-  ["timeline", "Timeline"],
-  ["budget", "Budget"],
-  ["constraints", "Constraints"],
-];
+const OPENS_A_QUESTION = /^(who|what|which|where|when|why|how|can|could|do|does|is|are|would|will|should|shall)\b/i;
 
-/** The compact card: the goal, a few requirements, two facts, and how much is still open. */
-export function briefSummary(b: BriefFields) {
-  const filled = (k: BriefKey) => (k === "features" ? b.features.length > 0 : !!b[k]);
-  const all: BriefKey[] = ["goal", "users", "features", "platforms", "integrations", "timeline", "budget", "constraints"];
-  return {
-    goal: b.goal,
-    features: b.features.slice(0, 3),
-    moreFeatures: Math.max(0, b.features.length - 3),
-    facts: FACTS.filter(([k]) => filled(k)).slice(0, 2).map(([k, label]) => [label, b[k] as string] as [string, string]),
-    open: all.filter((k) => !filled(k)).length,
-  };
+/**
+ * What to show of a reply still arriving. A closing question is placed below the cards once the reply
+ * is whole, so an unfinished or final sentence that reads like one is not shown above them first.
+ */
+export function visibleWhileStreaming(text: string): string {
+  const whole = text.trim();
+  const ends = [...whole.slice(0, -1).matchAll(/[.!?।]\s+/g)];
+  const cut = ends.length ? ends[ends.length - 1].index + ends[ends.length - 1][0].length : 0;
+  const tail = whole.slice(cut);
+  const finishedOtherwise = /[.!।]$/.test(tail);
+  return !finishedOtherwise && OPENS_A_QUESTION.test(tail) ? whole.slice(0, cut).trim() : whole;
 }

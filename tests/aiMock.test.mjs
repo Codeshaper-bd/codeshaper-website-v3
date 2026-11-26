@@ -59,10 +59,6 @@ test("'not sure' leaves the answer unknown and moves on", () => {
   assert.deepEqual(session.brief.features, ["Booking"]);
 });
 
-test("asking for a person offers the human routes at once", () => {
-  for (const m of ["Can I talk to a human?", "I'd rather speak with someone", "Book a call"]) assert.deepEqual(kinds(run([m]).last), ["consultation"], m);
-});
-
 test("the same words give the same answers", () => {
   assert.deepEqual(run(FOUNDER).turns, run(FOUNDER).turns);
 });
@@ -91,7 +87,7 @@ test("the sample voice transcript follows the conversation", () => {
 });
 
 test("the prototype never records, calls out or stores", () => {
-  const files = ["src/lib/ai/contract.ts", "src/lib/ai/mockConsultant.ts", "src/lib/ai/voiceMachine.ts", "src/lib/ai/present.ts", ...["Workspace.tsx", "Conversation.tsx", "Composer.tsx", "Cards.tsx", "BriefPanel.tsx", "VoiceView.tsx", "VoiceVisual.tsx", "useConsultation.ts", "useDialog.ts", "catalog.ts"].map((f) => `src/components/ai-prototype/${f}`)];
+  const files = ["src/lib/ai/contract.ts", "src/lib/ai/mockConsultant.ts", "src/lib/ai/voiceMachine.ts", "src/lib/ai/present.ts", "src/lib/ai/actions.ts", "src/lib/ai/proposals.ts", ...["Workspace.tsx", "Conversation.tsx", "Composer.tsx", "Cards.tsx", "ActionCards.tsx", "ui.ts", "useActions.ts", "VoiceView.tsx", "VoiceVisual.tsx", "useConsultation.ts", "useDialog.ts", "catalog.ts"].map((f) => `src/components/ai-prototype/${f}`)];
   for (const f of files) assert.doesNotMatch(readFileSync(f, "utf8"), /getUserMedia|MediaRecorder|SpeechRecognition|speechSynthesis|AudioContext|fetch\(|XMLHttpRequest|WebSocket|EventSource|sendBeacon|localStorage|sessionStorage|document\.cookie|dangerouslySetInnerHTML|gtag|dataLayer|\/api\//, f);
 });
 
@@ -105,4 +101,22 @@ test("a greeting in the middle of a conversation is not an answer", () => {
   const { session } = run([FOUNDER[0], "Hello", "Small clinics"]);
   assert.equal(session.brief.users, "Small clinics");
   assert.equal(run([...FOUNDER, "hi!"]).session.brief.constraints, null);
+});
+
+test("a change said in plain words updates the draft and shows what changed", () => {
+  const { last, session } = run([...FOUNDER, "Actually, we also need a mobile application"]);
+  assert.match(last.response.text, /updated the draft to include a mobile application/i);
+  assert.equal(session.brief.platforms, "Web first, mobile application");
+  assert.deepEqual(last.proposals.find((p) => p.type === "brief_changes").changes, [{ field: "platforms", before: "Web first", after: "Web first, mobile application" }]);
+  assert.ok(kinds(last).includes("project_brief"));
+  assert.equal(run([...FOUNDER, "Also add payment reminders"]).session.brief.features.at(-1), "payment reminders");
+  assert.equal(run([...FOUNDER, "We need it within 3 months"]).session.brief.timeline, "within 3 months");
+  assert.deepEqual(run([...FOUNDER, "Remove reminders"]).session.brief.features, ["Online booking"]);
+});
+
+test("asking for the team or a meeting brings the matching inline step, never a redirect", () => {
+  const types = (m) => run([m]).last.proposals?.map((p) => p.type) ?? [];
+  for (const m of ["Can the team contact me?", "Can I talk to a human?", "Please email me"]) assert.deepEqual(types(m), ["contact_capture"], m);
+  for (const m of ["I'd like to book a call", "Can we schedule a meeting?"]) assert.deepEqual(types(m), ["booking_calendar"], m);
+  assert.deepEqual(types("I want an online booking app for clinics"), [], "a product that books things is not a request to meet");
 });

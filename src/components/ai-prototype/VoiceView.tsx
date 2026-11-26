@@ -1,11 +1,10 @@
 "use client";
 
 import { useEffect, useRef, useState, type Dispatch } from "react";
-import Link from "next/link";
 import { Keyboard, Mic, RotateCcw, ScrollText, Square, Volume2, VolumeX, X } from "lucide-react";
 import { voiceSample } from "@/lib/ai/mockConsultant";
 import type { VoiceEvent, VoiceModel, VoiceState } from "@/lib/ai/voiceMachine";
-import { OUTLINE, PRIMARY, QUIET } from "./Cards";
+import { AREA, FIELD_LABEL, GHOST, LINK, PRIMARY, SECONDARY } from "./ui";
 import type { Consultation, Reply } from "./useConsultation";
 import VoiceVisual, { type VoiceStyle } from "./VoiceVisual";
 
@@ -32,8 +31,9 @@ const ERRORS = {
   transcription: { title: "We could not make out the words", hint: "Try again, or type your message instead." },
   reply: { title: "The reply did not arrive", hint: "Switch to text to see what happened and try again." },
 };
-const MAIN = "inline-flex min-h-14 items-center justify-center gap-2.5 rounded-full bg-content px-8 font-urbanist text-[15.5px] font-semibold text-surface shadow-[0_18px_34px_-20px_rgba(45,38,120,0.8)] disabled:opacity-40";
-const SIDE = "inline-flex min-h-11 items-center gap-1.5 rounded-full px-3.5 font-urbanist text-[13.5px] font-semibold text-content-muted transition-colors hover:bg-surface-soft hover:text-content";
+/** The voice screen's one main action: a size up, as it is often reached for without looking. */
+const MAIN = `${PRIMARY} !h-11 px-5`;
+const SIDE = `${GHOST} text-content-muted`;
 
 type Props = {
   voice: VoiceModel;
@@ -44,10 +44,13 @@ type Props = {
   denyMicrophone: boolean;
   /** the first-use note, until it is accepted: nothing can be recorded before */
   notice?: React.ReactNode;
+  /** the cards of the latest answer, completed here by touch or keyboard rather than by voice */
+  step?: React.ReactNode;
+  onBook: () => void;
   onText: (draft?: string) => void;
 };
 
-export default function VoiceView({ voice, dispatch, chat, look, failTranscription, denyMicrophone, notice, onText }: Props) {
+export default function VoiceView({ voice, dispatch, chat, look, failTranscription, denyMicrophone, notice, step, onBook, onText }: Props) {
   const { state } = voice;
   const [seconds, setSeconds] = useState(0);
   const [transcriptOpen, setTranscriptOpen] = useState(false);
@@ -96,15 +99,14 @@ export default function VoiceView({ voice, dispatch, chat, look, failTranscripti
     return () => clearTimeout(t);
   }, [spoken, reply?.state, reply?.text, dispatch]);
 
-  // only for a reply to something said on this screen, not an older typed one
-  const [before] = useState(() => reply?.id ?? 0);
-  const cards = reply?.state === "done" && reply.id > before ? (reply.response?.components.length ?? 0) : 0;
   const said = chat.messages.filter((m) => m.from === "visitor" || m.text);
-  const size = state === "review" || transcriptOpen ? "compact" : spoken ? "medium" : "full";
+  // cards appear once the visitor is no longer speaking or checking words
+  const showStep = !!step && (spoken || state === "ready");
+  const size = state === "review" || transcriptOpen || showStep ? "compact" : spoken ? "medium" : "full";
 
   return (
     <div ref={main} data-voice={state} data-lenis-prevent className="flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain">
-      <div className="mx-auto flex w-full max-w-[720px] flex-1 flex-col items-center justify-center px-5 py-5 text-center [@media(max-height:540px)]:justify-start">
+      <div data-stacked={showStep} className="mx-auto flex w-full max-w-[720px] flex-1 flex-col items-center justify-center px-5 py-5 text-center [@media(max-height:540px)]:justify-start data-[stacked=true]:justify-start">
         {!notice && <VoiceVisual look={look} state={state} size={size} />}
         <p className="mt-3 inline-flex items-center gap-2 text-[12.5px] font-medium text-content-muted">
           <span aria-hidden className="h-1.5 w-1.5 rounded-full border border-content-muted" />
@@ -114,8 +116,8 @@ export default function VoiceView({ voice, dispatch, chat, look, failTranscripti
         {notice ?? (
           <>
             <div role="status" className="mt-4">
-              <h2 className="font-urbanist text-[26px] font-bold leading-tight tracking-[-0.02em] text-content sm:text-[32px]">{copy.title}</h2>
-              {copy.hint && <p className="mx-auto mt-1.5 max-w-sm text-[15px] leading-relaxed text-content-muted">{copy.hint}</p>}
+              <h2 className="font-urbanist text-[20px] font-bold leading-tight tracking-[-0.01em] text-content sm:text-[22px]">{copy.title}</h2>
+              {copy.hint && <p className="mx-auto mt-1 max-w-sm text-[14px] leading-relaxed text-content-muted">{copy.hint}</p>}
             </div>
             {state === "listening" && (
               <p className="mt-2 font-mono text-[13px] tabular-nums text-content-muted" aria-hidden>
@@ -124,26 +126,20 @@ export default function VoiceView({ voice, dispatch, chat, look, failTranscripti
             )}
 
             {state === "review" && (
-              <label className="mt-4 block w-full max-w-[560px] text-left text-[13px] font-semibold text-content-muted">
+              <label className={`mt-3 w-full max-w-[520px] text-left ${FIELD_LABEL}`}>
                 Sample transcript (simulated). Edit anything that is wrong.
-                <textarea rows={3} maxLength={1500} value={voice.transcript} onChange={(e) => dispatch({ type: "EDIT", text: e.target.value })} className="mt-1.5 w-full rounded-panel border border-border-strong bg-surface px-4 py-3 text-[17px] font-normal leading-relaxed text-content" />
+                <textarea rows={3} maxLength={1500} value={voice.transcript} onChange={(e) => dispatch({ type: "EDIT", text: e.target.value })} className={`${AREA} !text-[16px]`} />
               </label>
             )}
             {spoken && reply?.text && (
-              <p data-caption className="mt-4 max-h-44 w-full max-w-[560px] overflow-y-auto text-balance text-[18px] leading-relaxed text-content" tabIndex={0}>
+              <p data-caption className="mt-4 max-h-44 w-full max-w-[560px] overflow-y-auto text-balance text-[15.5px] leading-[1.65] text-content" tabIndex={0}>
                 {reply.text}
               </p>
             )}
-            {cards > 0 && (spoken || state === "ready") && (
-              <button type="button" onClick={() => onText()} className={`${QUIET} mt-2`}>
-                See what was added to the conversation
-              </button>
-            )}
-
             <div className="mt-6 flex w-full flex-col items-center justify-center gap-2 sm:flex-row">
               {state === "ready" && (
                 <button type="button" data-primary className={MAIN} onClick={() => dispatch({ type: "START" })}>
-                  <Mic size={18} aria-hidden /> Start recording
+                  <Mic size={16} aria-hidden /> Start recording
                 </button>
               )}
               {state === "permission" && (
@@ -151,7 +147,7 @@ export default function VoiceView({ voice, dispatch, chat, look, failTranscripti
                   <button type="button" data-primary className={MAIN} onClick={() => dispatch({ type: denyMicrophone ? "DENY" : "ALLOW" })}>
                     Simulate allowing it
                   </button>
-                  <button type="button" className={QUIET} onClick={() => dispatch({ type: "DENY" })}>
+                  <button type="button" className={LINK} onClick={() => dispatch({ type: "DENY" })}>
                     Simulate blocking it
                   </button>
                 </>
@@ -162,7 +158,7 @@ export default function VoiceView({ voice, dispatch, chat, look, failTranscripti
                 </button>
               )}
               {(state === "stopped" || state === "transcribing") && (
-                <button type="button" data-primary className={OUTLINE} onClick={() => dispatch({ type: "CANCEL" })}>
+                <button type="button" data-primary className={SECONDARY} onClick={() => dispatch({ type: "CANCEL" })}>
                   Cancel
                 </button>
               )}
@@ -179,7 +175,7 @@ export default function VoiceView({ voice, dispatch, chat, look, failTranscripti
                   >
                     Send these words
                   </button>
-                  <button type="button" className={QUIET} onClick={() => dispatch({ type: "DISCARD" })}>
+                  <button type="button" className={LINK} onClick={() => dispatch({ type: "DISCARD" })}>
                     Record again
                   </button>
                 </>
@@ -188,7 +184,7 @@ export default function VoiceView({ voice, dispatch, chat, look, failTranscripti
                 <button
                   type="button"
                   data-primary
-                  className={OUTLINE}
+                  className={SECONDARY}
                   onClick={() => {
                     chat.stop();
                     dispatch({ type: "CANCEL" });
@@ -202,7 +198,7 @@ export default function VoiceView({ voice, dispatch, chat, look, failTranscripti
                   <button type="button" data-primary className={MAIN} onClick={() => dispatch({ type: "STOP_PLAYBACK" })}>
                     <Square size={13} fill="currentColor" aria-hidden /> Stop playback
                   </button>
-                  <button type="button" className={OUTLINE} aria-pressed={state === "muted"} onClick={() => dispatch({ type: state === "muted" ? "UNMUTE" : "MUTE" })}>
+                  <button type="button" className={SECONDARY} aria-pressed={state === "muted"} onClick={() => dispatch({ type: state === "muted" ? "UNMUTE" : "MUTE" })}>
                     {state === "muted" ? <Volume2 size={15} aria-hidden /> : <VolumeX size={15} aria-hidden />}
                     {state === "muted" ? "Sound on" : "Mute"}
                   </button>
@@ -213,12 +209,12 @@ export default function VoiceView({ voice, dispatch, chat, look, failTranscripti
                   <button type="button" data-primary className={PRIMARY} onClick={() => onText()}>
                     <Keyboard size={15} aria-hidden /> Type instead
                   </button>
-                  <button type="button" className={OUTLINE} onClick={() => dispatch({ type: "RETRY" })}>
+                  <button type="button" className={SECONDARY} onClick={() => dispatch({ type: "RETRY" })}>
                     <RotateCcw size={14} aria-hidden /> Try again
                   </button>
-                  <Link href="/contact" data-booking className={QUIET}>
+                  <button type="button" className={LINK} onClick={onBook}>
                     Book a call
-                  </Link>
+                  </button>
                 </>
               )}
               {state === "ended" && (
@@ -226,7 +222,7 @@ export default function VoiceView({ voice, dispatch, chat, look, failTranscripti
                   <button type="button" data-primary className={MAIN} onClick={() => onText()}>
                     Return to the conversation
                   </button>
-                  <button type="button" className={QUIET} onClick={() => dispatch({ type: "RESTART" })}>
+                  <button type="button" className={LINK} onClick={() => dispatch({ type: "RESTART" })}>
                     Start voice again
                   </button>
                 </>
@@ -234,6 +230,7 @@ export default function VoiceView({ voice, dispatch, chat, look, failTranscripti
             </div>
           </>
         )}
+        {showStep && <div className="mt-5 w-full max-w-[640px] text-left">{step}</div>}
         {transcriptOpen && (
           <ol aria-label="Transcript" tabIndex={0} className="mt-5 max-h-56 w-full max-w-[560px] space-y-2 overflow-y-auto border-y border-border py-3 text-left text-[14.5px] leading-relaxed">
             {said.length === 0 && <li className="text-content-muted">Nothing has been said yet.</li>}

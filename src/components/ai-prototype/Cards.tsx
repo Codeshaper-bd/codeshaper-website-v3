@@ -2,26 +2,20 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import Link from "next/link";
-import { ArrowRight, ArrowUpRight, CalendarClock, Check, ChevronDown } from "lucide-react";
-import { briefToText, hasBrief, type BriefFields, type Component } from "@/lib/ai/contract";
-import { briefSummary } from "@/lib/ai/present";
+import { ArrowUpRight, ChevronDown } from "lucide-react";
+import { BRIEF_LABELS, BRIEF_LIMITS, briefValue, hasBrief, type BriefFields, type BriefKey, type Component } from "@/lib/ai/contract";
+import { Icon } from "@/lib/icons";
 // types only: founders.ts reads server-only content, so the people come in as data
 import type { Founder } from "@/lib/founders";
-import { Icon } from "@/lib/icons";
 import { modelItem, serviceItem, studyItem, type CatalogItem } from "./catalog";
+import { AREA, FIELD_LABEL, GHOST, LINK, META, PRIMARY, SECONDARY, SURFACE, TITLE } from "./ui";
 
 /**
- * The closed set of things an answer may show, drawn as quiet editorial lists rather than tiles.
- * Each is drawn from checked data and the website's own content; text from the assistant is only
- * ever placed as text. Few at first, more on request, so the next question stays in view.
+ * The closed set of things an answer may show. Information reads as part of the reply: plain rows on
+ * the background. Each is drawn from checked data and the website's own content; text from the
+ * assistant is only ever placed as text. Few at first, more on request.
  */
-export const PRIMARY = "inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-content px-5 font-urbanist text-[14px] font-semibold text-surface transition-colors hover:bg-[#262b3a] disabled:cursor-not-allowed disabled:opacity-40";
-export const OUTLINE = "inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-border-strong bg-surface px-5 font-urbanist text-[14px] font-semibold text-content transition-colors hover:bg-surface-soft disabled:cursor-not-allowed disabled:opacity-40";
-export const QUIET = "inline-flex min-h-11 items-center justify-center gap-1.5 rounded-full px-3 font-urbanist text-[14px] font-semibold text-content underline decoration-border-strong underline-offset-4 hover:decoration-content";
-const LABEL = "font-urbanist text-[12px] font-bold uppercase tracking-[0.12em] text-content-muted";
-
-export type CardActions = { founders: Founder[]; brief: BriefFields; confirmed: boolean; onReviewBrief: () => void; onConfirmBrief: () => void; onContinue: () => void; onContact: () => void };
+export type CardActions = { founders: Founder[]; brief: BriefFields; confirmed: boolean; onSaveBrief: (b: BriefFields) => void; onConfirmBrief: () => void; onContact: () => void; onBook: () => void };
 
 function useNarrow() {
   const [narrow, setNarrow] = useState(false);
@@ -45,23 +39,26 @@ function Page({ href, className, children }: { href: string; className: string; 
   );
 }
 
-const ROW = "group flex min-h-14 w-full items-center gap-3.5 py-3 transition-colors";
-const Arrow = () => <ArrowUpRight size={16} aria-hidden className="ml-auto shrink-0 text-content-muted transition-[color,transform] group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-brand" />;
-const Words = ({ title, text }: { title: string; text: string }) => (
+const ROW = "group -mx-2 flex min-h-11 w-[calc(100%+1rem)] items-start gap-3 rounded-[10px] px-2 py-2 transition-colors hover:bg-content/[0.035]";
+const Out = () => <ArrowUpRight size={14} aria-hidden className="ml-auto mt-1 shrink-0 text-content-muted opacity-60 group-hover:text-brand group-hover:opacity-100" />;
+const Words = ({ title, text, aside }: { title: string; text: string; aside?: string }) => (
   <span className="min-w-0">
-    <span className="block font-urbanist text-[16px] font-bold leading-snug text-content">{title}</span>
-    <span className="mt-0.5 line-clamp-2 text-[14px] leading-relaxed text-content-muted sm:line-clamp-1">{text}</span>
+    <span className={`block ${TITLE}`}>
+      {title}
+      {aside && <span className="ml-2 font-sans text-[12.5px] font-normal text-content-muted">{aside}</span>}
+    </span>
+    <span className="line-clamp-2 text-[13px] leading-relaxed text-content-muted sm:line-clamp-1">{text}</span>
   </span>
 );
 
 function Service({ item }: { item: CatalogItem }) {
   return (
     <Page href={item.href} className={ROW}>
-      <span className="grid h-10 w-10 shrink-0 place-items-center rounded-control bg-brand-soft text-[#4f46e5]">
-        <Icon name={item.icon ?? "sparkles"} size={18} />
+      <span className="mt-0.5 shrink-0 text-[#4f46e5]">
+        <Icon name={item.icon ?? "sparkles"} size={16} />
       </span>
       <Words title={item.title} text={item.text} />
-      <Arrow />
+      <Out />
     </Page>
   );
 }
@@ -69,40 +66,25 @@ function Service({ item }: { item: CatalogItem }) {
 function Model({ item }: { item: CatalogItem }) {
   return (
     <Page href={item.href} className={ROW}>
-      <Words title={item.title} text={item.text} />
-      <span className="ml-auto shrink-0 text-right max-sm:hidden">
-        <span className="block text-[12px] text-content-muted">Commitment</span>
-        <span className="block font-urbanist text-[14px] font-semibold text-content">{item.meta}</span>
-      </span>
-      <ArrowUpRight size={16} aria-hidden className="shrink-0 text-content-muted max-sm:ml-auto group-hover:text-brand" />
+      <Words title={item.title} text={item.text} aside={item.meta} />
+      <Out />
     </Page>
   );
 }
 
-/** A story with its own picture is shown large; one without gets its colour from the content, never a made-up image. */
+/** A story with its own picture shows it small; one without gets its colour, never a made-up image. */
 function Study({ item }: { item: CatalogItem }) {
-  if (!item.image) {
-    return (
-      <Page href={item.href} className={ROW}>
-        <span aria-hidden className="h-10 w-1 shrink-0 rounded-full" style={{ backgroundColor: item.accent }} />
-        <Words title={item.title} text={item.text} />
-        <Arrow />
-      </Page>
-    );
-  }
   return (
-    <Page href={item.href} className="group grid w-full gap-4 py-4 sm:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] sm:items-center">
-      <span className="relative block aspect-[16/10] overflow-hidden rounded-control bg-surface-soft">
-        <Image src={item.image} alt={item.imageAlt ?? ""} fill sizes="(min-width: 640px) 340px, 100vw" className="object-cover transition-transform duration-500 group-hover:scale-[1.03]" />
-      </span>
-      <span className="min-w-0">
-        <span className="block text-[12.5px] text-content-muted">{item.meta}</span>
-        <span className="mt-0.5 flex items-center gap-1.5 font-urbanist text-[20px] font-bold text-content">
-          {item.title}
-          <ArrowUpRight size={17} aria-hidden className="text-content-muted group-hover:text-brand" />
+    <Page href={item.href} className={`${ROW} gap-3.5`}>
+      {item.image ? (
+        <span className="relative mt-0.5 block aspect-[4/3] w-[88px] shrink-0 overflow-hidden rounded-[8px] bg-surface-soft sm:w-[116px]">
+          <Image src={item.image} alt={item.imageAlt ?? ""} fill sizes="240px" className="object-cover" />
         </span>
-        <span className="mt-1 line-clamp-3 text-[14px] leading-relaxed text-content-muted">{item.text}</span>
-      </span>
+      ) : (
+        <span aria-hidden className="mt-1 h-8 w-[3px] shrink-0 rounded-full" style={{ backgroundColor: item.accent }} />
+      )}
+      <Words title={item.title} text={item.text} aside={item.meta} />
+      <Out />
     </Page>
   );
 }
@@ -115,9 +97,9 @@ function List({ title, slugs, find, Row }: { title: string; slugs: string[]; fin
   const first = narrow ? 1 : 2;
   const hidden = Math.max(0, items.length - first);
   return (
-    <section aria-label={title}>
-      <h3 className={LABEL}>{title}</h3>
-      <ul className="mt-1 divide-y divide-border border-b border-border">
+    <section aria-label={title} className="max-w-[600px]">
+      <h3 className={`font-medium ${META}`}>{title}</h3>
+      <ul className="mt-1">
         {items.slice(0, all ? items.length : first).map((i) => (
           <li key={i.slug} className="flex">
             <Row item={i} />
@@ -125,73 +107,123 @@ function List({ title, slugs, find, Row }: { title: string; slugs: string[]; fin
         ))}
       </ul>
       {hidden > 0 && (
-        <button type="button" aria-expanded={all} onClick={() => setAll(!all)} className="inline-flex min-h-11 items-center gap-1.5 font-urbanist text-[13.5px] font-semibold text-content-muted hover:text-content">
+        <button type="button" aria-expanded={all} onClick={() => setAll(!all)} className={`${GHOST} -ml-2.5 text-content-muted`}>
           {all ? "Show fewer" : `Show ${hidden} more`}
-          <ChevronDown size={15} aria-hidden className={all ? "rotate-180" : ""} />
+          <ChevronDown size={14} aria-hidden className={all ? "rotate-180" : ""} />
         </button>
       )}
     </section>
   );
 }
 
-/** The brief in a few lines. The full list is one tap away; nothing is sent from here. */
-function BriefCard({ brief, confirmed, onReviewBrief, onConfirmBrief, onContinue }: CardActions) {
-  const s = briefSummary(brief);
+const SHOWN: BriefKey[] = ["goal", "users", "features", "platforms", "integrations", "timeline", "budget", "constraints"];
+
+/**
+ * The draft brief as a short document: only what is known. Corrections are usually said in a
+ * message; the same fields can also be edited here. Nothing is confirmed until the visitor says so.
+ */
+function BriefCard({ brief, confirmed, onSaveBrief, onConfirmBrief, onContact }: CardActions) {
+  const [edit, setEdit] = useState<Record<string, string> | null>(null);
+  const known = SHOWN.filter((k) => briefValue(brief, k));
+  const start = () => setEdit(Object.fromEntries(known.map((k) => [k, k === "features" ? brief.features.join("\n") : briefValue(brief, k)])));
+  const save = () => {
+    if (!edit) return;
+    const next: BriefFields = { ...brief };
+    for (const [key, value] of Object.entries(edit)) {
+      const k = key as BriefKey;
+      if (k === "features") next.features = value.split("\n").map((f) => f.trim().slice(0, BRIEF_LIMITS.features)).filter(Boolean).slice(0, 12);
+      else next[k] = value.trim().slice(0, BRIEF_LIMITS[k]) || null;
+    }
+    onSaveBrief(next);
+    setEdit(null);
+  };
+
   return (
-    <section aria-label="Project brief" data-card="brief" className="rounded-panel bg-surface-soft p-5 sm:p-6">
-      <div className="flex items-center justify-between gap-3">
-        <h3 className={LABEL}>Your project brief</h3>
-        <span className="inline-flex items-center gap-1.5 text-[12.5px] text-content-muted">
+    <section aria-label="Project brief" data-card="brief" className={SURFACE}>
+      <div className="flex flex-wrap items-baseline justify-between gap-x-3">
+        <h3 className={`font-medium ${META}`}>Project brief</h3>
+        <span role="status" className={`inline-flex items-center gap-1.5 ${META}`}>
           <span aria-hidden className={`h-1.5 w-1.5 rounded-full ${confirmed ? "bg-success" : "bg-warning"}`} />
-          {confirmed ? "Confirmed by you" : "Draft"}
+          {confirmed ? "Confirmed by you" : "Draft prepared by the assistant"}
         </span>
       </div>
-      <p className="mt-2 break-words font-urbanist text-[19px] font-bold leading-snug text-content sm:text-[21px]">{s.goal ?? "No goal written yet"}</p>
-      {s.features.length > 0 && (
-        <ul aria-label="Key requirements" className="mt-3 flex flex-wrap gap-2">
-          {s.features.map((f, i) => (
-            <li key={i} className="max-w-full break-words rounded-full bg-surface px-3 py-1.5 text-[13.5px] text-content">
-              {f}
-            </li>
-          ))}
-          {s.moreFeatures > 0 && <li className="px-1 py-1.5 text-[13.5px] text-content-muted">+{s.moreFeatures} more</li>}
-        </ul>
+      {edit ? (
+        <form
+          action="/contact/continue"
+          method="post"
+          onSubmit={(e) => {
+            e.preventDefault();
+            save();
+          }}
+        >
+          <div className="mt-3 space-y-2.5">
+            {Object.keys(edit).map((k) => (
+              <label key={k} className={FIELD_LABEL}>
+                {BRIEF_LABELS[k as BriefKey]}
+                {k === "features" && <span className="font-normal text-content-muted"> (one per line)</span>}
+                <textarea rows={k === "features" ? 3 : 1} value={edit[k]} onChange={(e) => setEdit({ ...edit, [k]: e.target.value })} className={`${AREA} !min-h-10 max-sm:!min-h-11`} />
+              </label>
+            ))}
+          </div>
+          <div className="mt-3 flex flex-wrap gap-1.5">
+            <button type="submit" className={PRIMARY}>
+              Save changes
+            </button>
+            <button type="button" className={GHOST} onClick={() => setEdit(null)}>
+              Cancel
+            </button>
+          </div>
+        </form>
+      ) : (
+        <>
+          <p className={`mt-1.5 break-words ${TITLE}`}>{brief.goal ?? "No goal written yet"}</p>
+          <dl className="mt-2 space-y-1 text-[14px] leading-relaxed">
+            {known
+              .filter((k) => k !== "goal")
+              .map((k) => (
+                <div key={k} className="grid gap-x-3 sm:grid-cols-[104px_minmax(0,1fr)]">
+                  <dt className="pt-px text-[12.5px] text-content-muted">{BRIEF_LABELS[k]}</dt>
+                  <dd className="break-words text-content">
+                    {k === "features" ? (
+                      <ul aria-label="Key requirements">
+                        {brief.features.map((f, i) => (
+                          <li key={i}>{f}</li>
+                        ))}
+                      </ul>
+                    ) : (
+                      briefValue(brief, k)
+                    )}
+                  </dd>
+                </div>
+              ))}
+          </dl>
+          <div className="mt-3 flex flex-wrap items-center gap-1.5">
+            {confirmed ? (
+              <button type="button" className={PRIMARY} onClick={onContact}>
+                Send to the team
+              </button>
+            ) : (
+              <button type="button" className={PRIMARY} onClick={onConfirmBrief}>
+                Looks right
+              </button>
+            )}
+            <button type="button" className={GHOST} onClick={start}>
+              Edit
+            </button>
+            <span className={`ml-auto ${META}`}>Or just say what to change.</span>
+          </div>
+        </>
       )}
-      {s.facts.length > 0 && (
-        <dl className="mt-3 grid gap-x-6 gap-y-2 sm:grid-cols-2">
-          {s.facts.map(([label, value]) => (
-            <div key={label}>
-              <dt className="text-[12.5px] text-content-muted">{label}</dt>
-              <dd className="break-words text-[14.5px] text-content">{value}</dd>
-            </div>
-          ))}
-        </dl>
-      )}
-      {s.open > 0 && <p className="mt-3 text-[13px] text-content-muted">{s.open} details not discussed yet. They can stay that way.</p>}
-      <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:items-center">
-        {confirmed ? (
-          <button type="button" className={PRIMARY} onClick={onContinue}>
-            Continue to contact form <ArrowRight size={15} aria-hidden />
-          </button>
-        ) : (
-          <button type="button" className={PRIMARY} onClick={onConfirmBrief}>
-            <Check size={15} aria-hidden /> Looks right
-          </button>
-        )}
-        <button type="button" className={QUIET} onClick={onReviewBrief}>
-          Review brief
-        </button>
-      </div>
     </section>
   );
 }
 
 function Founders({ people }: { people: Founder[] }) {
   return (
-    <span className="flex shrink-0 -space-x-3">
+    <span className="flex shrink-0 -space-x-2">
       {people.map((p) => (
-        <span key={p.photo} className="relative block h-12 w-12 overflow-hidden rounded-full bg-surface-soft ring-[3px] ring-surface">
-          <Image src={p.photo} alt={`${p.name}, ${p.title}`} fill sizes="96px" className="origin-[50%_30%] scale-[1.45] object-cover object-[52%_25%]" />
+        <span key={p.photo} className="relative block h-8 w-8 overflow-hidden rounded-full bg-surface-soft ring-2 ring-surface">
+          <Image src={p.photo} alt={`${p.name}, ${p.title}`} fill sizes="64px" className="origin-[50%_30%] scale-[1.45] object-cover object-[52%_25%]" />
         </span>
       ))}
     </span>
@@ -208,20 +240,20 @@ export default function Card({ component, actions }: { component: Component; act
       return <List title="Ways of working" slugs={component.slugs} find={modelItem} Row={Model} />;
     case "technologies":
       return (
-        <section aria-label="Possible building blocks">
-          <h3 className={LABEL}>Possible building blocks</h3>
-          <ol className="mt-1 divide-y divide-border border-y border-border">
+        <section aria-label="Possible building blocks" className="max-w-[600px]">
+          <h3 className={`font-medium ${META}`}>Possible building blocks</h3>
+          <ol className="mt-1.5 space-y-2">
             {component.items.map((i, n) => (
-              <li key={i.name} className="flex gap-3.5 py-3">
-                <span aria-hidden className="w-6 shrink-0 font-urbanist text-[14px] font-bold text-[#4f46e5]">{n + 1}</span>
+              <li key={i.name} className="flex gap-3">
+                <span aria-hidden className="w-4 shrink-0 pt-px text-[12.5px] tabular-nums text-content-muted">{n + 1}</span>
                 <span>
-                  <span className="block font-urbanist text-[15px] font-bold text-content">{i.name}</span>
-                  <span className="block text-[14px] leading-relaxed text-content-muted">{i.reason}</span>
+                  <span className={`block ${TITLE}`}>{i.name}</span>
+                  <span className="block text-[13px] leading-relaxed text-content-muted">{i.reason}</span>
                 </span>
               </li>
             ))}
           </ol>
-          <p className="mt-2 text-[12.5px] text-content-muted">A suggestion to discuss, not a specification.</p>
+          <p className={`mt-2 ${META}`}>A suggestion to discuss, not a specification.</p>
         </section>
       );
     case "project_brief":
@@ -229,33 +261,28 @@ export default function Card({ component, actions }: { component: Component; act
       return hasBrief(actions.brief) ? <BriefCard {...actions} /> : null;
     case "consultation":
       return (
-        <section aria-label="Talk to a person" data-card="consultation" className="rounded-panel bg-surface-soft p-5 sm:p-6">
-          <div className="flex items-center gap-4">
+        <section aria-label="Talk to a person" data-card="consultation">
+          <div className="flex items-center gap-3">
             <Founders people={actions.founders} />
-            <div>
-              <h3 className="font-urbanist text-[18px] font-bold leading-snug text-content">Talk it through with our founders</h3>
-              <p className="text-[13.5px] text-content-muted">A person reads and replies.</p>
-            </div>
+            <p className="text-[14px] text-content">
+              <strong className="font-urbanist">Talk it through with our founders.</strong> A person reads and replies.
+            </p>
           </div>
-          <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:items-center">
-            <Link href="/contact" data-booking className={PRIMARY}>
-              <CalendarClock size={15} aria-hidden /> Book a call
-            </Link>
-            <button type="button" className={QUIET} onClick={actions.onContact}>
+          <div className="mt-2.5 flex flex-wrap gap-1.5">
+            <button type="button" className={PRIMARY} onClick={actions.onBook}>
+              Book a call
+            </button>
+            <button type="button" className={SECONDARY} onClick={actions.onContact}>
               Write to the team
             </button>
           </div>
-          <p className="mt-2 text-[12.5px] text-content-muted">Both are real: the booking calendar and our contact form.</p>
         </section>
       );
     case "contact_preview":
       return (
-        <section aria-label="What would go to the contact form" className="border-y border-border py-4">
-          <p className="whitespace-pre-wrap break-words text-[14px] text-content">{briefToText(actions.brief) || "Nothing to add yet."}</p>
-          <button type="button" className={`${QUIET} -ml-3 mt-1`} onClick={actions.onContinue}>
-            Check it before the contact form
-          </button>
-        </section>
+        <button type="button" className={`${LINK} -ml-1.5`} onClick={actions.onContact}>
+          Send this to the team
+        </button>
       );
   }
 }

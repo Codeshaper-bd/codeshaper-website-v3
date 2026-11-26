@@ -1,5 +1,17 @@
 /* AI consultation prototype: its few animations. Transform and opacity only, no WebGL. */
 
+/* the hero's background, still: colour keeps its slow change, the clouds rest */
+.calm :global(.fog-blob),
+.calm :global(.hg-flow),
+.calm :global(.hg-sheen) { animation: none; }
+/* A small screen with the keyboard up, filling a field in a card: the field gets the room. The
+   message box returns as soon as the field is left. */
+@media (max-height: 540px) {
+  .canvas:has([data-card] :is(input:not([type="checkbox"]), textarea):focus) :is(.writer, .jump) { display: none; }
+}
+
+.spin { animation: turn 0.9s linear infinite; }
+
 .rise { animation: rise 360ms var(--ease-out-expo) both; }
 .panel { animation: rise 260ms var(--ease-out-expo) both; }
 @keyframes rise {
@@ -196,6 +208,8 @@
   .panel,
   .working,
   .caret,
+  .spin,
+  .calm :global(.hg-layer),
   .dots i,
   .orb *,
   .wave * {

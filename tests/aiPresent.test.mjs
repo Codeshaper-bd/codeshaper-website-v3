@@ -1,7 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { briefSummary, splitQuestion } from "../src/lib/ai/present.ts";
-import { emptyBrief } from "../src/lib/ai/contract.ts";
+import { splitQuestion, visibleWhileStreaming } from "../src/lib/ai/present.ts";
 
 test("the closing question is taken out so it can sit after the cards", () => {
   assert.deepEqual(splitQuestion("Good scope. These usually apply. Which two things must it do?"), { lead: "Good scope. These usually apply.", question: "Which two things must it do?" });
@@ -16,8 +15,13 @@ test("splitting never loses or invents words", () => {
   }
 });
 
-test("a brief is summarised from what was said, and the rest is counted, not filled", () => {
-  const brief = { ...emptyBrief(), goal: "A booking app", users: "Clinics", features: ["a", "b", "c", "d", "e"], timeline: "Spring", platforms: "Web" };
-  assert.deepEqual(briefSummary(brief), { goal: "A booking app", features: ["a", "b", "c"], moreFeatures: 2, facts: [["Who it is for", "Clinics"], ["Platforms", "Web"]], open: 3 });
-  assert.deepEqual(briefSummary(emptyBrief()), { goal: null, features: [], moreFeatures: 0, facts: [], open: 8 });
+
+test("while arriving, a closing question is held back so it never jumps below the cards", () => {
+  assert.equal(visibleWhileStreaming("These usually apply. Which two things"), "These usually apply.");
+  assert.equal(visibleWhileStreaming("These usually apply. Which two things must it do?"), "These usually apply.");
+  assert.equal(visibleWhileStreaming("Who is it"), "");
+  // ordinary sentences keep arriving word by word
+  assert.equal(visibleWhileStreaming("These usually apply. A short list"), "These usually apply. A short list");
+  assert.equal(visibleWhileStreaming("What we do. Here are"), "What we do. Here are");
+  assert.equal(visibleWhileStreaming(""), "");
 });
