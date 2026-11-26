@@ -1,7 +1,8 @@
-import { createHmac, timingSafeEqual } from "node:crypto";
+import { createHmac } from "node:crypto";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { withFilm } from "@/lib/caseStudies";
+import { safeEqual, signingKeys, tokenFor } from "@/lib/credentials.mjs";
 import { toSite } from "../../../../../scripts/cms/transform.mjs";
 import BlogArticle from "@/components/blog/BlogArticle";
 import CaseStudyArticle from "@/components/case-studies/CaseStudyArticle";
@@ -20,11 +21,9 @@ export const metadata: Metadata = { title: "Preview", robots: { index: false, fo
 type Props = { params: Promise<{ type: string; id: string }>; searchParams: Promise<{ until?: string; sign?: string; draft?: string }> };
 
 function valid(type: string, id: string, until: string, sign: string) {
-  const token = process.env.CMS_INTAKE_TOKEN;
-  if (!token || !/^\d+$/.test(id) || !/^\d+$/.test(until) || Number(until) * 1000 < Date.now()) return false;
-  const want = Buffer.from(createHmac("sha256", token).update(`preview|${type}|${id}|${until}`).digest("hex"));
-  const got = Buffer.from(sign);
-  return want.length === got.length && timingSafeEqual(want, got);
+  if (!/^\d+$/.test(id) || !/^\d+$/.test(until) || Number(until) * 1000 < Date.now()) return false;
+  // the signing key only, never a request token; during a key change either key is accepted
+  return signingKeys().some((key) => safeEqual(createHmac("sha256", key).update(`preview|${type}|${id}|${until}`).digest("hex"), sign));
 }
 
 /** One draft from the CMS in the real design. The link comes from the CMS and works for one hour. */
@@ -33,7 +32,7 @@ export default async function PreviewPage({ params, searchParams }: Props) {
   const { until = "", sign = "", draft = "" } = await searchParams;
   if (!valid(type, id, until, sign)) notFound();
 
-  const r = await fetch(`${process.env.CMS_URL}/api/intake/content?preview=${type}:${id}${/^[A-Za-z0-9]{40}$/.test(draft) ? `&draft=${draft}` : ""}`, { headers: { Authorization: `Bearer ${process.env.CMS_INTAKE_TOKEN}`, Accept: "application/json" }, cache: "no-store" });
+  const r = await fetch(`${process.env.CMS_URL}/api/intake/content?preview=${type}:${id}${/^[A-Za-z0-9]{40}$/.test(draft) ? `&draft=${draft}` : ""}`, { headers: { Authorization: `Bearer ${tokenFor("preview")}`, Accept: "application/json" }, cache: "no-store" });
   if (!r.ok) notFound();
   const raw = await r.json();
   const missing: string[] = [];

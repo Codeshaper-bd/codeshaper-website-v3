@@ -11,6 +11,7 @@ import { copyFile, cp, mkdir, open, readdir, rename, rm, stat, unlink, writeFile
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { loadEnv, sync } from "./sync-content.mjs";
+import { redact, tokenFor } from "../src/lib/credentials.mjs";
 
 loadEnv();
 // Windows: a lower-case drive letter (c:\…) makes webpack load some Next.js modules twice under two spellings,
@@ -45,7 +46,7 @@ async function lock() {
 async function report(status, message) {
   for (let i = 0; i < 5; i++) {
     try {
-      const r = await fetch(`${base}/api/intake/publishes/${id}`, { method: "POST", headers: { Authorization: `Bearer ${process.env.CMS_INTAKE_TOKEN}`, "Content-Type": "application/json", Accept: "application/json" }, body: JSON.stringify({ status, message }), signal: AbortSignal.timeout(10_000) });
+      const r = await fetch(`${base}/api/intake/publishes/${id}`, { method: "POST", headers: { Authorization: `Bearer ${tokenFor("publish_status")}`, "Content-Type": "application/json", Accept: "application/json" }, body: JSON.stringify({ status, message: message && redact(message) }), signal: AbortSignal.timeout(10_000) });
       if (r.ok) return;
     } catch {
       /* try again */
@@ -126,7 +127,7 @@ try {
 } catch (e) {
   // put the last good content back, file by file, so the next build is not broken
   if (existsSync(BACKUP)) for (const file of await readdir(BACKUP)) await copyFile(path.join(BACKUP, file), path.join(CONTENT, file)).catch(() => {});
-  console.error("[publish]", e);
+  console.error("[publish]", redact(String(e.stack ?? e)));
   await report("failed", String(e.message ?? e).slice(-3000));
   process.exitCode = 1;
 } finally {

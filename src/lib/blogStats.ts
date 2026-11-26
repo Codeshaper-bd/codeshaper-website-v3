@@ -1,4 +1,5 @@
 import "server-only";
+import { tokenFor } from "./credentials.mjs";
 import { REACTIONS, type BlogEvent, type PublicStats, type ReactionId } from "./blogReactions";
 
 /**
@@ -26,7 +27,7 @@ const emptyReactions = () => Object.fromEntries(REACTIONS.map((r) => [r.id, 0]))
 
 function cms(): { base: string; token: string } | null {
   const base = process.env.CMS_URL;
-  const token = process.env.CMS_INTAKE_TOKEN;
+  const token = tokenFor("blog");
   return base && token ? { base: base.replace(/\/$/, ""), token } : null;
 }
 

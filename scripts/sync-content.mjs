@@ -11,6 +11,7 @@ import { mkdir, readdir, rename, unlink, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { checkSite, toSite } from "./cms/transform.mjs";
+import { tokenFor } from "../src/lib/credentials.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const OUT = path.join(ROOT, "src", "content");
@@ -69,8 +70,8 @@ async function localImages(json, base) {
 
 export async function sync({ log = console.log } = {}) {
   const base = process.env.CMS_URL?.replace(/\/$/, "");
-  const token = process.env.CMS_INTAKE_TOKEN;
-  if (!base || !token) throw new Error("CMS_URL and CMS_INTAKE_TOKEN are not set");
+  const token = tokenFor("content");
+  if (!base || !token) throw new Error("CMS_URL and CMS_TOKEN_CONTENT are not set");
   const raw = await (await get(`${base}/api/intake/content`, { headers: { Authorization: `Bearer ${token}`, Accept: "application/json" } })).json();
   const warnings = [];
   const site = toSite(raw, (m) => warnings.push(m));

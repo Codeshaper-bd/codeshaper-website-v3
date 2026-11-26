@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { getTotals, record } from "@/lib/blogStats";
 import { REACTIONS, type BlogEvent } from "@/lib/blogReactions";
 import { getPostBySlug } from "@/lib/blog";
+import { tooMany } from "@/lib/intake";
+import { fromAnotherSite } from "@/lib/requestGuard";
 
 export const runtime = "nodejs";
 
@@ -17,6 +19,10 @@ export async function GET() {
 /** One reader event: view | read | time | react. Accepts sendBeacon (text/plain) too. */
 export async function POST(request: Request) {
   if (BOT.test(request.headers.get("user-agent") ?? "")) return NextResponse.json({ ok: true });
+  // beacons are text/plain, so only the browser's own word keeps other sites from counting reads
+  if (fromAnotherSite(request.headers)) return NextResponse.json({ error: "Not accepted." }, { status: 403 });
+  // an allowance of its own: nothing here can slow the forms down
+  if (tooMany(request, "blog")) return NextResponse.json({ error: "Too many requests." }, { status: 429 });
 
   let body: Record<string, unknown>;
   try {

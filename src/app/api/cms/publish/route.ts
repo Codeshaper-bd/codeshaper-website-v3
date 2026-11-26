@@ -1,20 +1,17 @@
 import { spawn } from "node:child_process";
-import { timingSafeEqual } from "node:crypto";
 import path from "node:path";
 import { NextResponse } from "next/server";
+import { acceptsPublish } from "@/lib/credentials.mjs";
+import { tooMany } from "@/lib/intake";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-/** Only the CMS may ask for an update. */
-function allowed(request: Request) {
-  const want = Buffer.from(`Bearer ${process.env.CMS_INTAKE_TOKEN ?? ""}`);
-  const got = Buffer.from(request.headers.get("authorization") ?? "");
-  return Boolean(process.env.CMS_INTAKE_TOKEN) && want.length === got.length && timingSafeEqual(want, got);
-}
-
 export async function POST(request: Request) {
-  if (!allowed(request)) return NextResponse.json({ ok: false }, { status: 401 });
+  // only the CMS may ask for an update, with the publish secret and no other
+  if (!acceptsPublish(request.headers.get("authorization"))) return NextResponse.json({ ok: false }, { status: 401 });
+  // counted after the check, so a stranger cannot use up the CMS's allowance
+  if (tooMany(request, "publish")) return NextResponse.json({ ok: false }, { status: 429 });
   const body = await request.json().catch(() => null);
   const id = Number(body?.id);
   if (!Number.isInteger(id) || id < 1) return NextResponse.json({ ok: false }, { status: 422 });
