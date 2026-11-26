@@ -8,6 +8,7 @@ import { Icon } from "@/lib/icons";
 import { servicePath, type Service } from "@/data/services";
 import { SITE_URL } from "@/lib/site";
 import HeroBackdrop from "@/components/system/HeroBackdrop";
+import JsonLd from "@/components/system/JsonLd";
 
 /**
  * Building blocks shared by every page under /services/* — the AI Agents
@@ -21,9 +22,7 @@ export function SectionLabel({ children }: { children: ReactNode }) {
   return <p className="mb-5 font-urbanist text-[11px] font-semibold uppercase tracking-[0.2em] text-ink-faint">{children}</p>;
 }
 
-export function JsonLd({ data }: { data: object }) {
-  return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }} />;
-}
+export { JsonLd };
 
 /** BreadcrumbList JSON-LD from the same crumbs the visible breadcrumb renders. */
 export function breadcrumbJsonLd(crumbs: { label: string; href: string }[]) {

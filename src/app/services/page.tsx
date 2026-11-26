@@ -20,6 +20,7 @@ import { SHOW_UNCONFIRMED_QUOTES } from "@/components/system/QuoteGrid";
 import { TRUST_STATS, TRUST_QUOTE, STARTER_PATHS, PILLAR_OUTCOMES, SERVICES_FAQS } from "@/lib/servicesContent";
 import { SITE_URL } from "@/lib/site";
 import HeroBackdrop from "@/components/system/HeroBackdrop";
+import JsonLd from "@/components/system/JsonLd";
 
 export const metadata: Metadata = mainMeta("services", pageMetadata({
   title: "AI Engineering & Software Development Services | CodeShaper",
@@ -56,8 +57,8 @@ const PRIMARY_INDUSTRIES = INDUSTRIES.filter((i) => PRIMARY_INDUSTRY_SLUGS.inclu
 export default function ServicesIndexPage() {
   return (
     <SiteShell>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(BREADCRUMB_JSON_LD) }} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(FAQ_JSON_LD) }} />
+      <JsonLd data={BREADCRUMB_JSON_LD} />
+      <JsonLd data={FAQ_JSON_LD} />
 
       <div className="theme-light">
         {/* 1. Hero */}

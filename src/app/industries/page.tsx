@@ -27,6 +27,7 @@ import {
 } from "@/lib/industriesContent";
 import { SITE_URL } from "@/lib/site";
 import HeroBackdrop from "@/components/system/HeroBackdrop";
+import JsonLd from "@/components/system/JsonLd";
 
 export const metadata: Metadata = mainMeta("industries", {
   title: "Industries",
@@ -52,8 +53,8 @@ function SectionLabel({ children }: { children: ReactNode }) {
 export default function IndustriesIndexPage() {
   return (
     <SiteShell>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(BREADCRUMB_JSON_LD) }} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(HUB_FAQ_JSON_LD) }} />
+      <JsonLd data={BREADCRUMB_JSON_LD} />
+      <JsonLd data={HUB_FAQ_JSON_LD} />
 
       <div className="theme-light">
         {/* 1. Hero */}

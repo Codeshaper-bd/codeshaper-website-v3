@@ -38,6 +38,7 @@ import { storyDetail, videoEmbed, type StoryDetail } from "@/lib/details";
 import { textSafeAccent } from "@/lib/color";
 import { SITE_URL } from "@/lib/site";
 import HeroBackdrop from "@/components/system/HeroBackdrop";
+import JsonLd from "@/components/system/JsonLd";
 
 const SNAPSHOT_ICON: Record<string, typeof Target> = {
   Industry: Target,
@@ -122,8 +123,8 @@ export default function CaseStudyArticle({ story, detail = storyDetail(story.slu
   return (
     <SiteShell>
       <div className="theme-light">
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(ARTICLE_JSON_LD) }} />
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(BREADCRUMB_JSON_LD) }} />
+        <JsonLd data={ARTICLE_JSON_LD} />
+        <JsonLd data={BREADCRUMB_JSON_LD} />
 
         {/* Impact hero */}
         <div className="bg-gradient-to-b from-white from-30% to-light-surface px-3 pb-3 sm:px-4 sm:pb-4">

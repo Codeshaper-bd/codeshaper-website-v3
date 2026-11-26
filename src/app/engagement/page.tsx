@@ -25,6 +25,7 @@ import {
 } from "@/lib/engagementContent";
 import { SITE_URL } from "@/lib/site";
 import HeroBackdrop from "@/components/system/HeroBackdrop";
+import JsonLd from "@/components/system/JsonLd";
 
 export const metadata: Metadata = mainMeta("engagement", {
   title: "How We Work — Engagement Models",
@@ -61,8 +62,8 @@ const PROOF_STRIP = [
 export default function EngagementIndexPage() {
   return (
     <SiteShell>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(BREADCRUMB_JSON_LD) }} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(FAQ_JSON_LD) }} />
+      <JsonLd data={BREADCRUMB_JSON_LD} />
+      <JsonLd data={FAQ_JSON_LD} />
 
       <div className="theme-light">
         {/* 1. Hero */}

@@ -29,6 +29,7 @@ import {
 import { findBySlug, INDUSTRIES } from "@/lib/navigation";
 import { SITE_URL } from "@/lib/site";
 import HeroBackdrop from "@/components/system/HeroBackdrop";
+import JsonLd from "@/components/system/JsonLd";
 
 // the SaaS industry's SEO tab in the CMS on top (title, description, share image)
 export const metadata: Metadata = withSeo({
@@ -59,8 +60,8 @@ function SectionLabel({ children }: { children: ReactNode }) {
 export default function SaasIndustryPage() {
   return (
     <SiteShell>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(BREADCRUMB_JSON_LD) }} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(SAAS_FAQ_JSON_LD) }} />
+      <JsonLd data={BREADCRUMB_JSON_LD} />
+      <JsonLd data={SAAS_FAQ_JSON_LD} />
 
       <div className="theme-light">
         {/* 1. Hero */}

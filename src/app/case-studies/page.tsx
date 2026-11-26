@@ -10,6 +10,7 @@ import CaseStudiesFinalCta from "@/components/case-studies/CaseStudiesFinalCta";
 import { CASE_STUDIES } from "@/lib/caseStudies";
 import { CASE_STUDIES_FAQ_JSON_LD } from "@/lib/caseStudiesFaq";
 import { SITE_URL } from "@/lib/site";
+import JsonLd from "@/components/system/JsonLd";
 
 export const metadata: Metadata = mainMeta("case-studies", {
   title: "Case Studies — Real Delivery, Measurable Outcomes",
@@ -31,8 +32,8 @@ export default function CaseStudiesPage() {
   return (
     <SiteShell>
       <div className="theme-light">
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(BREADCRUMB_JSON_LD) }} />
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(CASE_STUDIES_FAQ_JSON_LD) }} />
+        <JsonLd data={BREADCRUMB_JSON_LD} />
+        <JsonLd data={CASE_STUDIES_FAQ_JSON_LD} />
 
         <CaseStudyHero />
         <CaseStudyBrowser stories={CASE_STUDIES} />
