@@ -26,7 +26,7 @@ for (const f of files) {
 }
 symlinkSync(path.join(ROOT, "node_modules"), path.join(work, "node_modules"), "dir");
 
-const names = [...Object.values(CMS_SCOPES), "SITE_TOKEN_PUBLISH", "PREVIEW_SIGNING_KEY", "CMS_INTAKE_TOKEN"];
+const names = [...Object.values(CMS_SCOPES), "CMS_TOKEN_AI_GATEWAY", "SITE_TOKEN_PUBLISH", "PREVIEW_SIGNING_KEY", "CMS_INTAKE_TOKEN"];
 const canaries = Object.fromEntries(names.map((n) => [n, `canary-${n.toLowerCase()}-5f2c9a`]));
 const env = { ...process.env, ...canaries, NEXT_TELEMETRY_DISABLED: "1", NODE_ENV: "production" };
 delete env.CMS_URL;

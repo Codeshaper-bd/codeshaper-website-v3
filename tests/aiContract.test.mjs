@@ -2,7 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { BRIEF_ORDER, briefToText, emptyBrief, hasBrief, parseResponse } from "../src/lib/ai/contract.ts";
 
-const base = { contract: "codeshaper.ai.response", version: 1, request_id: "r1", message_id: "m1", status: "completed", text: "Hello", sources: [], actions: [], components: [], error: null };
+const base = { contract: "codeshaper.ai.response", version: 1, request_id: "r1", message_id: "m1", status: "completed", replayed: false, text: "Hello", sources: [], actions: [], components: [], error: null, session: null };
 
 test("a well formed answer passes", () => {
   assert.deepEqual(parseResponse(base), base);
@@ -49,7 +49,7 @@ test("every allowed component passes, at most three", () => {
 });
 
 test("an error answer carries a known code only", () => {
-  const error = { code: "budget_exhausted", retryable: false };
+  const error = { code: "budget_exhausted", retryable: false, retry: "none" };
   assert.deepEqual(parseResponse({ ...base, status: "error", message_id: null, text: "", error }).error, error);
   assert.equal(parseResponse({ ...base, status: "error", text: "", error: { code: "stack trace", retryable: true } }), null);
   assert.equal(parseResponse({ ...base, status: "error", text: "", error: null }), null);

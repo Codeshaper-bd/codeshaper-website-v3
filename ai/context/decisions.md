@@ -2,6 +2,12 @@
 
 Standing decisions from the owner. They override general best practice. Add new ones at the top with a date; never delete. Mark replaced ones as superseded.
 
+## AI gateway (owner's Phase 01C brief)
+
+| Date | Decision |
+|---|---|
+| 2026-11-26 | **Phase 01C (local only):** same-origin Next.js gateway; the CMS keeps AI logic, money and sessions; server-issued sessions; signed gateway requests; a repeated delivery never charges twice; fake provider only. One response contract, owned by the CMS. Development defaults for session life (24 h) and short-lived reply storage are **proposals pending privacy approval**; public conversation retention is not approved. No live provider, real visitor data, push or deploy. |
+
 ## AI consultation experience (owner's Phase 01B and UX01 briefs)
 
 | Date | Decision |

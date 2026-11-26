@@ -151,10 +151,10 @@ const SKIP = /^\s*(not sure( yet)?|i (do not|don'?t) know|skip|no idea)[\s.!]*$/
 const SAAS = /\b(saas|mvp|startup|start-up|founder|new product)\b/i;
 const AUTOMATE = /\b(automat\w*|workflow|manual|agent|support tickets|spreadsheets?)\b/i;
 
-const FAILURES: Record<string, { code: ErrorCode; retryable: boolean; retry_after?: number }> = {
-  unavailable: { code: "unavailable", retryable: true },
-  budget_exhausted: { code: "budget_exhausted", retryable: false },
-  rate_limited: { code: "rate_limited", retryable: true, retry_after: 30 },
+const FAILURES: Record<string, { code: ErrorCode; retryable: boolean; retry: "same_id" | "new_attempt" | "none"; retry_after?: number }> = {
+  unavailable: { code: "unavailable", retryable: true, retry: "new_attempt" },
+  budget_exhausted: { code: "budget_exhausted", retryable: false, retry: "none" },
+  rate_limited: { code: "rate_limited", retryable: true, retry: "same_id", retry_after: 30 },
 };
 
 const response = (turn: number, reply: Reply, error: (typeof FAILURES)[string] | null = null) => ({
@@ -163,11 +163,13 @@ const response = (turn: number, reply: Reply, error: (typeof FAILURES)[string] |
   request_id: `mock-${turn}`,
   message_id: error ? null : `mock-${turn}:a`,
   status: error ? "error" : "completed",
+  replayed: false,
   text: error ? "" : reply.text,
   sources: reply.sources ?? [],
   actions: reply.actions ?? [],
   components: reply.components ?? [],
   error,
+  session: null,
 });
 
 const record = (brief: BriefFields, key: BriefKey, text: string): BriefFields => {

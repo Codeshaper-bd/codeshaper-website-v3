@@ -17,7 +17,10 @@ export const CMS_SCOPES = Object.freeze({
   publish_status: "CMS_TOKEN_PUBLISH_STATUS",
 });
 
-const SECRET_NAMES = [...Object.values(CMS_SCOPES), "SITE_TOKEN_PUBLISH", "SITE_TOKEN_PUBLISH_PREVIOUS", "PREVIEW_SIGNING_KEY", "PREVIEW_SIGNING_KEY_PREVIOUS", "CMS_INTAKE_TOKEN"];
+/** Signs requests to the CMS's AI routes (lib/ai/gateway). It is never sent, and the old shared token never stands in for it. */
+export const AI_GATEWAY_KEY = "CMS_TOKEN_AI_GATEWAY";
+
+const SECRET_NAMES = [...Object.values(CMS_SCOPES), AI_GATEWAY_KEY, "SITE_TOKEN_PUBLISH", "SITE_TOKEN_PUBLISH_PREVIOUS", "PREVIEW_SIGNING_KEY", "PREVIEW_SIGNING_KEY_PREVIOUS", "CMS_INTAKE_TOKEN"];
 
 /** @param {string} scope @param {Record<string, string | undefined>} [env] */
 export function tokenFor(scope, env = process.env) {

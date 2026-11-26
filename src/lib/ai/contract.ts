@@ -1,7 +1,7 @@
 /**
- * The shape the assistant may answer with: version 1, a mirror of the backend proposal
- * (codeshaper-cms docs/ai/ui-response.v1.schema.json). Everything is checked here before it is
- * drawn. Text is plain text; components come from a closed list and name content by slug only.
+ * The shape the assistant may answer with: version 1. The CMS owns it
+ * (codeshaper-cms docs/ai/ui-response.v1.schema.json, copied to ./schema); both sides check the
+ * same cases (tests/fixtures/ai). Everything is checked here before it is drawn. Text is plain text; components come from a closed list and name content by slug only.
  *
  * No imports, so the tests can run it as it is.
  */
@@ -26,9 +26,15 @@ export type Component =
   | { type: "project_brief"; fields: Partial<BriefFields> }
   | { type: "consultation" }
   | { type: "contact_preview" };
-export const ERROR_CODES = ["ai_disabled", "invalid_request", "too_large", "conflict", "duplicate", "in_progress", "rate_limited", "session_limit", "busy", "budget_exhausted", "cancelled", "unavailable", "invalid_response"] as const;
+export const ERROR_CODES = ["ai_disabled", "invalid_request", "too_large", "conflict", "duplicate", "in_progress", "rate_limited", "session_limit", "session_expired", "forbidden", "not_found", "busy", "budget_exhausted", "cancelled", "unavailable", "invalid_response"] as const;
 export type ErrorCode = (typeof ERROR_CODES)[number];
-export type ResponseError = { code: ErrorCode; retryable: boolean; retry_after?: number };
+/**
+ * same_id: nothing was charged; the same request may be sent again. new_attempt: only when the visitor
+ * asks, with a new identifier and retry_of; it may be charged again. none: it will not work.
+ */
+export const RETRIES = ["same_id", "new_attempt", "none"] as const;
+export type ResponseError = { code: ErrorCode; retryable: boolean; retry: (typeof RETRIES)[number]; retry_after?: number };
+export type SessionInfo = { expires_at: string; turns_left: number };
 
 export type AssistantResponse = {
   contract: "codeshaper.ai.response";
@@ -36,14 +42,17 @@ export type AssistantResponse = {
   request_id: string;
   message_id: string | null;
   status: "completed" | "truncated" | "refused" | "error";
+  /** a saved answer sent again: nothing was processed or charged this time */
+  replayed: boolean;
   text: string;
   sources: Source[];
   actions: Action[];
   components: Component[];
   error: ResponseError | null;
+  session: SessionInfo | null;
 };
 
-/** Problems the browser meets itself, outside the answer. `session_expired` needs a backend code later. */
+/** Problems the browser can meet by itself, outside an answer. */
 export type ClientIssue = "network" | "session_expired";
 
 export const BRIEF_ORDER: BriefKey[] = ["goal", "users", "features", "platforms", "integrations", "timeline", "budget", "constraints"];
@@ -76,10 +85,12 @@ export function briefToText(b: BriefFields, max = 1000): string {
 type Rec = Record<string, unknown>;
 const isRec = (v: unknown): v is Rec => typeof v === "object" && v !== null && !Array.isArray(v);
 const only = (v: Rec, keys: string[]) => Object.keys(v).every((k) => keys.includes(k));
-const str = (v: unknown, max: number, min = 0): v is string => typeof v === "string" && v.length >= min && v.length <= max;
+// lengths count characters, as the schema and the CMS do, not UTF-16 units
+const str = (v: unknown, max: number, min = 0): v is string => typeof v === "string" && v.length >= min && (v.length <= max || (v.length <= max * 2 && [...v].length <= max));
 const list = (v: unknown, max: number, min = 0): v is unknown[] => Array.isArray(v) && v.length >= min && v.length <= max;
 
 const PATH = /^\/(?!\/)[A-Za-z0-9/_-]*$/;
+const int = (v: unknown): v is number => Number.isInteger(v) && (v as number) >= 0;
 const SLUG = /^[a-z0-9-]{1,120}$/;
 
 const source = (v: unknown): v is Source => isRec(v) && only(v, ["title", "path"]) && str(v.title, 120) && typeof v.path === "string" && PATH.test(v.path);
@@ -114,29 +125,37 @@ function component(v: unknown): v is Component {
   }
 }
 
+function problemOf(v: unknown): ResponseError | null {
+  if (!isRec(v) || !only(v, ["code", "retryable", "retry", "retry_after"])) return null;
+  if (!(ERROR_CODES as readonly unknown[]).includes(v.code) || typeof v.retryable !== "boolean" || !(RETRIES as readonly unknown[]).includes(v.retry)) return null;
+  if (v.retry_after !== undefined && !int(v.retry_after)) return null;
+  return { code: v.code as ErrorCode, retryable: v.retryable, retry: v.retry as ResponseError["retry"], ...(v.retry_after === undefined ? {} : { retry_after: v.retry_after as number }) };
+}
+
+const sessionInfo = (v: unknown): v is SessionInfo => isRec(v) && only(v, ["expires_at", "turns_left"]) && str(v.expires_at, 25) && int(v.turns_left);
+
 /** Null when the answer is not this contract. A single bad source, action or component is dropped. */
 export function parseResponse(input: unknown): AssistantResponse | null {
   if (!isRec(input) || input.contract !== "codeshaper.ai.response" || input.version !== 1) return null;
-  const { request_id, message_id, status, text, sources, actions, components, error } = input;
+  const { request_id, message_id, status, replayed, text, sources, actions, components, error, session } = input;
   if (!str(request_id, 36, 1) || !(message_id === null || str(message_id, 40))) return null;
   if (status !== "completed" && status !== "truncated" && status !== "refused" && status !== "error") return null;
-  if (!str(text, 16000) || !Array.isArray(sources) || !Array.isArray(actions) || !Array.isArray(components)) return null;
-  let problem: ResponseError | null = null;
-  if (status === "error") {
-    if (!isRec(error) || !(ERROR_CODES as readonly unknown[]).includes(error.code) || typeof error.retryable !== "boolean") return null;
-    const wait = error.retry_after;
-    problem = { code: error.code as ErrorCode, retryable: error.retryable, ...(Number.isInteger(wait) && (wait as number) >= 0 ? { retry_after: wait as number } : {}) };
-  }
+  if (typeof replayed !== "boolean" || !str(text, 16000) || !Array.isArray(sources) || !Array.isArray(actions) || !Array.isArray(components)) return null;
+  if (!(session === null || sessionInfo(session))) return null;
+  const problem = status === "error" ? problemOf(error) : null;
+  if (status === "error" ? !problem : error !== null) return null;
   return {
     contract: "codeshaper.ai.response",
     version: 1,
     request_id,
     message_id,
     status,
+    replayed,
     text,
     sources: sources.filter(source).slice(0, 5),
     actions: actions.filter(action).slice(0, 4),
     components: components.filter(component).slice(0, 3),
     error: problem,
+    session: session === null ? null : { expires_at: session.expires_at, turns_left: session.turns_left },
   };
 }

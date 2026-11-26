@@ -17,8 +17,9 @@ export const POLICIES = {
   blog: { perVisitor: 300, overall: 6000, windowMs: TEN_MINUTES },
   // counted only after the publish secret has been checked
   publish: { perVisitor: 20, overall: 20, windowMs: TEN_MINUTES },
-  // for the future AI routes; none exist yet
-  ai: { perVisitor: 20, overall: 300, windowMs: TEN_MINUTES },
+  // the AI gateway (lib/ai/gateway): messages and reads, and the starting of sessions
+  ai: { perVisitor: 120, overall: 1200, windowMs: TEN_MINUTES },
+  aiSession: { perVisitor: 10, overall: 200, windowMs: TEN_MINUTES },
 } satisfies Record<string, Policy>;
 
 export type Bucket = keyof typeof POLICIES;

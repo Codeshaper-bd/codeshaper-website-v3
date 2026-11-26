@@ -1,0 +1,910 @@
+{
+ "valid": {
+  "plain answer": {
+   "contract": "codeshaper.ai.response",
+   "version": 1,
+   "request_id": "7f1c9d0e-2b53-4c55-8f6a-0b7f6f3f2a10",
+   "message_id": "01JD00000000000000000000AA",
+   "status": "completed",
+   "replayed": false,
+   "text": "Hello",
+   "sources": [],
+   "actions": [],
+   "components": [],
+   "error": null,
+   "session": {
+    "expires_at": "2026-11-27T10:00:00Z",
+    "turns_left": 19
+   }
+  },
+  "no session": {
+   "contract": "codeshaper.ai.response",
+   "version": 1,
+   "request_id": "7f1c9d0e-2b53-4c55-8f6a-0b7f6f3f2a10",
+   "message_id": "01JD00000000000000000000AA",
+   "status": "completed",
+   "replayed": false,
+   "text": "Hello",
+   "sources": [],
+   "actions": [],
+   "components": [],
+   "error": null,
+   "session": null
+  },
+  "replayed": {
+   "contract": "codeshaper.ai.response",
+   "version": 1,
+   "request_id": "7f1c9d0e-2b53-4c55-8f6a-0b7f6f3f2a10",
+   "message_id": "01JD00000000000000000000AA",
+   "status": "completed",
+   "replayed": true,
+   "text": "Hello",
+   "sources": [],
+   "actions": [],
+   "components": [],
+   "error": null,
+   "session": {
+    "expires_at": "2026-11-27T10:00:00Z",
+    "turns_left": 19
+   }
+  },
+  "sources and actions": {
+   "contract": "codeshaper.ai.response",
+   "version": 1,
+   "request_id": "7f1c9d0e-2b53-4c55-8f6a-0b7f6f3f2a10",
+   "message_id": "01JD00000000000000000000AA",
+   "status": "completed",
+   "replayed": false,
+   "text": "Hello",
+   "sources": [
+    {
+     "title": "Services",
+     "path": "/services"
+    }
+   ],
+   "actions": [
+    {
+     "type": "suggest_reply",
+     "label": "Web only"
+    },
+    {
+     "type": "review_brief",
+     "label": "Review"
+    }
+   ],
+   "components": [],
+   "error": null,
+   "session": {
+    "expires_at": "2026-11-27T10:00:00Z",
+    "turns_left": 19
+   }
+  },
+  "every component": {
+   "contract": "codeshaper.ai.response",
+   "version": 1,
+   "request_id": "7f1c9d0e-2b53-4c55-8f6a-0b7f6f3f2a10",
+   "message_id": "01JD00000000000000000000AA",
+   "status": "completed",
+   "replayed": false,
+   "text": "Hello",
+   "sources": [],
+   "actions": [],
+   "components": [
+    {
+     "type": "services",
+     "slugs": [
+      "saas-development"
+     ]
+    },
+    {
+     "type": "technologies",
+     "items": [
+      {
+       "name": "Laravel",
+       "reason": "Already in use"
+      }
+     ]
+    },
+    {
+     "type": "project_brief",
+     "fields": {
+      "goal": "g",
+      "users": null,
+      "features": [
+       "a"
+      ]
+     }
+    }
+   ],
+   "error": null,
+   "session": {
+    "expires_at": "2026-11-27T10:00:00Z",
+    "turns_left": 19
+   }
+  },
+  "handoffs": {
+   "contract": "codeshaper.ai.response",
+   "version": 1,
+   "request_id": "7f1c9d0e-2b53-4c55-8f6a-0b7f6f3f2a10",
+   "message_id": "01JD00000000000000000000AA",
+   "status": "completed",
+   "replayed": false,
+   "text": "Hello",
+   "sources": [],
+   "actions": [],
+   "components": [
+    {
+     "type": "consultation"
+    },
+    {
+     "type": "contact_preview"
+    },
+    {
+     "type": "case_studies",
+     "slugs": [
+      "essentialist"
+     ]
+    }
+   ],
+   "error": null,
+   "session": {
+    "expires_at": "2026-11-27T10:00:00Z",
+    "turns_left": 19
+   }
+  },
+  "error with wait": {
+   "contract": "codeshaper.ai.response",
+   "version": 1,
+   "request_id": "7f1c9d0e-2b53-4c55-8f6a-0b7f6f3f2a10",
+   "message_id": null,
+   "status": "error",
+   "replayed": false,
+   "text": "",
+   "sources": [],
+   "actions": [],
+   "components": [],
+   "error": {
+    "code": "rate_limited",
+    "retryable": true,
+    "retry": "same_id",
+    "retry_after": 30
+   },
+   "session": {
+    "expires_at": "2026-11-27T10:00:00Z",
+    "turns_left": 19
+   }
+  },
+  "in progress": {
+   "contract": "codeshaper.ai.response",
+   "version": 1,
+   "request_id": "7f1c9d0e-2b53-4c55-8f6a-0b7f6f3f2a10",
+   "message_id": null,
+   "status": "error",
+   "replayed": false,
+   "text": "",
+   "sources": [],
+   "actions": [],
+   "components": [],
+   "error": {
+    "code": "in_progress",
+    "retryable": true,
+    "retry": "same_id"
+   },
+   "session": {
+    "expires_at": "2026-11-27T10:00:00Z",
+    "turns_left": 19
+   }
+  },
+  "session expired": {
+   "contract": "codeshaper.ai.response",
+   "version": 1,
+   "request_id": "7f1c9d0e-2b53-4c55-8f6a-0b7f6f3f2a10",
+   "message_id": null,
+   "status": "error",
+   "replayed": false,
+   "text": "",
+   "sources": [],
+   "actions": [],
+   "components": [],
+   "error": {
+    "code": "session_expired",
+    "retryable": false,
+    "retry": "none"
+   },
+   "session": null
+  },
+  "emoji counted as one character": {
+   "contract": "codeshaper.ai.response",
+   "version": 1,
+   "request_id": "7f1c9d0e-2b53-4c55-8f6a-0b7f6f3f2a10",
+   "message_id": "01JD00000000000000000000AA",
+   "status": "completed",
+   "replayed": false,
+   "text": "Hello",
+   "sources": [],
+   "actions": [
+    {
+     "type": "suggest_reply",
+     "label": "😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀"
+    }
+   ],
+   "components": [],
+   "error": null,
+   "session": {
+    "expires_at": "2026-11-27T10:00:00Z",
+    "turns_left": 19
+   }
+  }
+ },
+ "invalid": {
+  "wrong contract": {
+   "contract": "other",
+   "version": 1,
+   "request_id": "7f1c9d0e-2b53-4c55-8f6a-0b7f6f3f2a10",
+   "message_id": "01JD00000000000000000000AA",
+   "status": "completed",
+   "replayed": false,
+   "text": "Hello",
+   "sources": [],
+   "actions": [],
+   "components": [],
+   "error": null,
+   "session": {
+    "expires_at": "2026-11-27T10:00:00Z",
+    "turns_left": 19
+   }
+  },
+  "wrong version": {
+   "contract": "codeshaper.ai.response",
+   "version": 2,
+   "request_id": "7f1c9d0e-2b53-4c55-8f6a-0b7f6f3f2a10",
+   "message_id": "01JD00000000000000000000AA",
+   "status": "completed",
+   "replayed": false,
+   "text": "Hello",
+   "sources": [],
+   "actions": [],
+   "components": [],
+   "error": null,
+   "session": {
+    "expires_at": "2026-11-27T10:00:00Z",
+    "turns_left": 19
+   }
+  },
+  "missing text": {
+   "contract": "codeshaper.ai.response",
+   "version": 1,
+   "request_id": "7f1c9d0e-2b53-4c55-8f6a-0b7f6f3f2a10",
+   "message_id": "01JD00000000000000000000AA",
+   "status": "completed",
+   "replayed": false,
+   "sources": [],
+   "actions": [],
+   "components": [],
+   "error": null,
+   "session": {
+    "expires_at": "2026-11-27T10:00:00Z",
+    "turns_left": 19
+   }
+  },
+  "missing session": {
+   "contract": "codeshaper.ai.response",
+   "version": 1,
+   "request_id": "7f1c9d0e-2b53-4c55-8f6a-0b7f6f3f2a10",
+   "message_id": "01JD00000000000000000000AA",
+   "status": "completed",
+   "replayed": false,
+   "text": "Hello",
+   "sources": [],
+   "actions": [],
+   "components": [],
+   "error": null
+  },
+  "missing replayed": {
+   "contract": "codeshaper.ai.response",
+   "version": 1,
+   "request_id": "7f1c9d0e-2b53-4c55-8f6a-0b7f6f3f2a10",
+   "message_id": "01JD00000000000000000000AA",
+   "status": "completed",
+   "text": "Hello",
+   "sources": [],
+   "actions": [],
+   "components": [],
+   "error": null,
+   "session": {
+    "expires_at": "2026-11-27T10:00:00Z",
+    "turns_left": 19
+   }
+  },
+  "extra field": {
+   "contract": "codeshaper.ai.response",
+   "version": 1,
+   "request_id": "7f1c9d0e-2b53-4c55-8f6a-0b7f6f3f2a10",
+   "message_id": "01JD00000000000000000000AA",
+   "status": "completed",
+   "replayed": false,
+   "text": "Hello",
+   "sources": [],
+   "actions": [],
+   "components": [],
+   "error": null,
+   "session": {
+    "expires_at": "2026-11-27T10:00:00Z",
+    "turns_left": 19
+   },
+   "html": "<b>x</b>"
+  },
+  "empty request id": {
+   "contract": "codeshaper.ai.response",
+   "version": 1,
+   "request_id": "",
+   "message_id": "01JD00000000000000000000AA",
+   "status": "completed",
+   "replayed": false,
+   "text": "Hello",
+   "sources": [],
+   "actions": [],
+   "components": [],
+   "error": null,
+   "session": {
+    "expires_at": "2026-11-27T10:00:00Z",
+    "turns_left": 19
+   }
+  },
+  "unknown status": {
+   "contract": "codeshaper.ai.response",
+   "version": 1,
+   "request_id": "7f1c9d0e-2b53-4c55-8f6a-0b7f6f3f2a10",
+   "message_id": "01JD00000000000000000000AA",
+   "status": "done",
+   "replayed": false,
+   "text": "Hello",
+   "sources": [],
+   "actions": [],
+   "components": [],
+   "error": null,
+   "session": {
+    "expires_at": "2026-11-27T10:00:00Z",
+    "turns_left": 19
+   }
+  },
+  "text not a string": {
+   "contract": "codeshaper.ai.response",
+   "version": 1,
+   "request_id": "7f1c9d0e-2b53-4c55-8f6a-0b7f6f3f2a10",
+   "message_id": "01JD00000000000000000000AA",
+   "status": "completed",
+   "replayed": false,
+   "text": 4,
+   "sources": [],
+   "actions": [],
+   "components": [],
+   "error": null,
+   "session": {
+    "expires_at": "2026-11-27T10:00:00Z",
+    "turns_left": 19
+   }
+  },
+  "source off site": {
+   "contract": "codeshaper.ai.response",
+   "version": 1,
+   "request_id": "7f1c9d0e-2b53-4c55-8f6a-0b7f6f3f2a10",
+   "message_id": "01JD00000000000000000000AA",
+   "status": "completed",
+   "replayed": false,
+   "text": "Hello",
+   "sources": [
+    {
+     "title": "x",
+     "path": "//evil.test"
+    }
+   ],
+   "actions": [],
+   "components": [],
+   "error": null,
+   "session": {
+    "expires_at": "2026-11-27T10:00:00Z",
+    "turns_left": 19
+   }
+  },
+  "source with scheme": {
+   "contract": "codeshaper.ai.response",
+   "version": 1,
+   "request_id": "7f1c9d0e-2b53-4c55-8f6a-0b7f6f3f2a10",
+   "message_id": "01JD00000000000000000000AA",
+   "status": "completed",
+   "replayed": false,
+   "text": "Hello",
+   "sources": [
+    {
+     "title": "x",
+     "path": "javascript:alert(1)"
+    }
+   ],
+   "actions": [],
+   "components": [],
+   "error": null,
+   "session": {
+    "expires_at": "2026-11-27T10:00:00Z",
+    "turns_left": 19
+   }
+  },
+  "source with query": {
+   "contract": "codeshaper.ai.response",
+   "version": 1,
+   "request_id": "7f1c9d0e-2b53-4c55-8f6a-0b7f6f3f2a10",
+   "message_id": "01JD00000000000000000000AA",
+   "status": "completed",
+   "replayed": false,
+   "text": "Hello",
+   "sources": [
+    {
+     "title": "x",
+     "path": "/contact?a=b"
+    }
+   ],
+   "actions": [],
+   "components": [],
+   "error": null,
+   "session": {
+    "expires_at": "2026-11-27T10:00:00Z",
+    "turns_left": 19
+   }
+  },
+  "source with newline": {
+   "contract": "codeshaper.ai.response",
+   "version": 1,
+   "request_id": "7f1c9d0e-2b53-4c55-8f6a-0b7f6f3f2a10",
+   "message_id": "01JD00000000000000000000AA",
+   "status": "completed",
+   "replayed": false,
+   "text": "Hello",
+   "sources": [
+    {
+     "title": "x",
+     "path": "/contact\n"
+    }
+   ],
+   "actions": [],
+   "components": [],
+   "error": null,
+   "session": {
+    "expires_at": "2026-11-27T10:00:00Z",
+    "turns_left": 19
+   }
+  },
+  "unknown action": {
+   "contract": "codeshaper.ai.response",
+   "version": 1,
+   "request_id": "7f1c9d0e-2b53-4c55-8f6a-0b7f6f3f2a10",
+   "message_id": "01JD00000000000000000000AA",
+   "status": "completed",
+   "replayed": false,
+   "text": "Hello",
+   "sources": [],
+   "actions": [
+    {
+     "type": "run",
+     "label": "x"
+    }
+   ],
+   "components": [],
+   "error": null,
+   "session": {
+    "expires_at": "2026-11-27T10:00:00Z",
+    "turns_left": 19
+   }
+  },
+  "action with url": {
+   "contract": "codeshaper.ai.response",
+   "version": 1,
+   "request_id": "7f1c9d0e-2b53-4c55-8f6a-0b7f6f3f2a10",
+   "message_id": "01JD00000000000000000000AA",
+   "status": "completed",
+   "replayed": false,
+   "text": "Hello",
+   "sources": [],
+   "actions": [
+    {
+     "type": "suggest_reply",
+     "label": "x",
+     "url": "/"
+    }
+   ],
+   "components": [],
+   "error": null,
+   "session": {
+    "expires_at": "2026-11-27T10:00:00Z",
+    "turns_left": 19
+   }
+  },
+  "label too long": {
+   "contract": "codeshaper.ai.response",
+   "version": 1,
+   "request_id": "7f1c9d0e-2b53-4c55-8f6a-0b7f6f3f2a10",
+   "message_id": "01JD00000000000000000000AA",
+   "status": "completed",
+   "replayed": false,
+   "text": "Hello",
+   "sources": [],
+   "actions": [
+    {
+     "type": "suggest_reply",
+     "label": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+    }
+   ],
+   "components": [],
+   "error": null,
+   "session": {
+    "expires_at": "2026-11-27T10:00:00Z",
+    "turns_left": 19
+   }
+  },
+  "html component": {
+   "contract": "codeshaper.ai.response",
+   "version": 1,
+   "request_id": "7f1c9d0e-2b53-4c55-8f6a-0b7f6f3f2a10",
+   "message_id": "01JD00000000000000000000AA",
+   "status": "completed",
+   "replayed": false,
+   "text": "Hello",
+   "sources": [],
+   "actions": [],
+   "components": [
+    {
+     "type": "html",
+     "html": "<img>"
+    }
+   ],
+   "error": null,
+   "session": {
+    "expires_at": "2026-11-27T10:00:00Z",
+    "turns_left": 19
+   }
+  },
+  "slug with path": {
+   "contract": "codeshaper.ai.response",
+   "version": 1,
+   "request_id": "7f1c9d0e-2b53-4c55-8f6a-0b7f6f3f2a10",
+   "message_id": "01JD00000000000000000000AA",
+   "status": "completed",
+   "replayed": false,
+   "text": "Hello",
+   "sources": [],
+   "actions": [],
+   "components": [
+    {
+     "type": "services",
+     "slugs": [
+      "../admin"
+     ]
+    }
+   ],
+   "error": null,
+   "session": {
+    "expires_at": "2026-11-27T10:00:00Z",
+    "turns_left": 19
+   }
+  },
+  "slug with newline": {
+   "contract": "codeshaper.ai.response",
+   "version": 1,
+   "request_id": "7f1c9d0e-2b53-4c55-8f6a-0b7f6f3f2a10",
+   "message_id": "01JD00000000000000000000AA",
+   "status": "completed",
+   "replayed": false,
+   "text": "Hello",
+   "sources": [],
+   "actions": [],
+   "components": [
+    {
+     "type": "services",
+     "slugs": [
+      "ai\n"
+     ]
+    }
+   ],
+   "error": null,
+   "session": {
+    "expires_at": "2026-11-27T10:00:00Z",
+    "turns_left": 19
+   }
+  },
+  "no slugs": {
+   "contract": "codeshaper.ai.response",
+   "version": 1,
+   "request_id": "7f1c9d0e-2b53-4c55-8f6a-0b7f6f3f2a10",
+   "message_id": "01JD00000000000000000000AA",
+   "status": "completed",
+   "replayed": false,
+   "text": "Hello",
+   "sources": [],
+   "actions": [],
+   "components": [
+    {
+     "type": "services",
+     "slugs": []
+    }
+   ],
+   "error": null,
+   "session": {
+    "expires_at": "2026-11-27T10:00:00Z",
+    "turns_left": 19
+   }
+  },
+  "four slugs": {
+   "contract": "codeshaper.ai.response",
+   "version": 1,
+   "request_id": "7f1c9d0e-2b53-4c55-8f6a-0b7f6f3f2a10",
+   "message_id": "01JD00000000000000000000AA",
+   "status": "completed",
+   "replayed": false,
+   "text": "Hello",
+   "sources": [],
+   "actions": [],
+   "components": [
+    {
+     "type": "services",
+     "slugs": [
+      "a",
+      "b",
+      "c",
+      "d"
+     ]
+    }
+   ],
+   "error": null,
+   "session": {
+    "expires_at": "2026-11-27T10:00:00Z",
+    "turns_left": 19
+   }
+  },
+  "component extra field": {
+   "contract": "codeshaper.ai.response",
+   "version": 1,
+   "request_id": "7f1c9d0e-2b53-4c55-8f6a-0b7f6f3f2a10",
+   "message_id": "01JD00000000000000000000AA",
+   "status": "completed",
+   "replayed": false,
+   "text": "Hello",
+   "sources": [],
+   "actions": [],
+   "components": [
+    {
+     "type": "consultation",
+     "onClick": "x"
+    }
+   ],
+   "error": null,
+   "session": {
+    "expires_at": "2026-11-27T10:00:00Z",
+    "turns_left": 19
+   }
+  },
+  "brief with price": {
+   "contract": "codeshaper.ai.response",
+   "version": 1,
+   "request_id": "7f1c9d0e-2b53-4c55-8f6a-0b7f6f3f2a10",
+   "message_id": "01JD00000000000000000000AA",
+   "status": "completed",
+   "replayed": false,
+   "text": "Hello",
+   "sources": [],
+   "actions": [],
+   "components": [
+    {
+     "type": "project_brief",
+     "fields": {
+      "price": "1"
+     }
+    }
+   ],
+   "error": null,
+   "session": {
+    "expires_at": "2026-11-27T10:00:00Z",
+    "turns_left": 19
+   }
+  },
+  "features not a list": {
+   "contract": "codeshaper.ai.response",
+   "version": 1,
+   "request_id": "7f1c9d0e-2b53-4c55-8f6a-0b7f6f3f2a10",
+   "message_id": "01JD00000000000000000000AA",
+   "status": "completed",
+   "replayed": false,
+   "text": "Hello",
+   "sources": [],
+   "actions": [],
+   "components": [
+    {
+     "type": "project_brief",
+     "fields": {
+      "features": "x"
+     }
+    }
+   ],
+   "error": null,
+   "session": {
+    "expires_at": "2026-11-27T10:00:00Z",
+    "turns_left": 19
+   }
+  },
+  "technology with link": {
+   "contract": "codeshaper.ai.response",
+   "version": 1,
+   "request_id": "7f1c9d0e-2b53-4c55-8f6a-0b7f6f3f2a10",
+   "message_id": "01JD00000000000000000000AA",
+   "status": "completed",
+   "replayed": false,
+   "text": "Hello",
+   "sources": [],
+   "actions": [],
+   "components": [
+    {
+     "type": "technologies",
+     "items": [
+      {
+       "name": "x",
+       "reason": "y",
+       "href": "z"
+      }
+     ]
+    }
+   ],
+   "error": null,
+   "session": {
+    "expires_at": "2026-11-27T10:00:00Z",
+    "turns_left": 19
+   }
+  },
+  "four components": {
+   "contract": "codeshaper.ai.response",
+   "version": 1,
+   "request_id": "7f1c9d0e-2b53-4c55-8f6a-0b7f6f3f2a10",
+   "message_id": "01JD00000000000000000000AA",
+   "status": "completed",
+   "replayed": false,
+   "text": "Hello",
+   "sources": [],
+   "actions": [],
+   "components": [
+    {
+     "type": "consultation"
+    },
+    {
+     "type": "consultation"
+    },
+    {
+     "type": "consultation"
+    },
+    {
+     "type": "consultation"
+    }
+   ],
+   "error": null,
+   "session": {
+    "expires_at": "2026-11-27T10:00:00Z",
+    "turns_left": 19
+   }
+  },
+  "error code unknown": {
+   "contract": "codeshaper.ai.response",
+   "version": 1,
+   "request_id": "7f1c9d0e-2b53-4c55-8f6a-0b7f6f3f2a10",
+   "message_id": null,
+   "status": "error",
+   "replayed": false,
+   "text": "",
+   "sources": [],
+   "actions": [],
+   "components": [],
+   "error": {
+    "code": "stack trace",
+    "retryable": true,
+    "retry": "same_id"
+   },
+   "session": {
+    "expires_at": "2026-11-27T10:00:00Z",
+    "turns_left": 19
+   }
+  },
+  "error without retry": {
+   "contract": "codeshaper.ai.response",
+   "version": 1,
+   "request_id": "7f1c9d0e-2b53-4c55-8f6a-0b7f6f3f2a10",
+   "message_id": null,
+   "status": "error",
+   "replayed": false,
+   "text": "",
+   "sources": [],
+   "actions": [],
+   "components": [],
+   "error": {
+    "code": "unavailable",
+    "retryable": true
+   },
+   "session": {
+    "expires_at": "2026-11-27T10:00:00Z",
+    "turns_left": 19
+   }
+  },
+  "negative wait": {
+   "contract": "codeshaper.ai.response",
+   "version": 1,
+   "request_id": "7f1c9d0e-2b53-4c55-8f6a-0b7f6f3f2a10",
+   "message_id": null,
+   "status": "error",
+   "replayed": false,
+   "text": "",
+   "sources": [],
+   "actions": [],
+   "components": [],
+   "error": {
+    "code": "busy",
+    "retryable": true,
+    "retry": "same_id",
+    "retry_after": -1
+   },
+   "session": {
+    "expires_at": "2026-11-27T10:00:00Z",
+    "turns_left": 19
+   }
+  },
+  "error status without error": {
+   "contract": "codeshaper.ai.response",
+   "version": 1,
+   "request_id": "7f1c9d0e-2b53-4c55-8f6a-0b7f6f3f2a10",
+   "message_id": "01JD00000000000000000000AA",
+   "status": "error",
+   "replayed": false,
+   "text": "",
+   "sources": [],
+   "actions": [],
+   "components": [],
+   "error": null,
+   "session": {
+    "expires_at": "2026-11-27T10:00:00Z",
+    "turns_left": 19
+   }
+  },
+  "answer with error": {
+   "contract": "codeshaper.ai.response",
+   "version": 1,
+   "request_id": "7f1c9d0e-2b53-4c55-8f6a-0b7f6f3f2a10",
+   "message_id": "01JD00000000000000000000AA",
+   "status": "completed",
+   "replayed": false,
+   "text": "Hello",
+   "sources": [],
+   "actions": [],
+   "components": [],
+   "error": {
+    "code": "busy",
+    "retryable": true,
+    "retry": "same_id"
+   },
+   "session": {
+    "expires_at": "2026-11-27T10:00:00Z",
+    "turns_left": 19
+   }
+  },
+  "session extra": {
+   "contract": "codeshaper.ai.response",
+   "version": 1,
+   "request_id": "7f1c9d0e-2b53-4c55-8f6a-0b7f6f3f2a10",
+   "message_id": "01JD00000000000000000000AA",
+   "status": "completed",
+   "replayed": false,
+   "text": "Hello",
+   "sources": [],
+   "actions": [],
+   "components": [],
+   "error": null,
+   "session": {
+    "expires_at": "x",
+    "turns_left": 1,
+    "token": "secret"
+   }
+  }
+ }
+}
