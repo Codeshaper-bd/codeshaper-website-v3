@@ -7,6 +7,7 @@
  * Only type imports, so the tests can run it as it is.
  */
 import type { Action, BriefFields, BriefKey, ClientIssue, Component, ErrorCode, Source } from "./contract";
+import { demoDays } from "./actions.ts";
 
 export type Scenario = "normal" | "unavailable" | "budget_exhausted" | "rate_limited" | "session_expired" | "network";
 
@@ -20,9 +21,10 @@ export const newSession = (): Session => ({
   brief: { goal: null, users: null, features: [], platforms: null, integrations: null, timeline: null, budget: null, constraints: null },
 });
 
-export type Outcome = { session: Session; response?: unknown; issue?: ClientIssue };
+/** `proposals` are the screen steps not yet in the contract (proposals.ts). */
+export type Outcome = { session: Session; response?: unknown; proposals?: unknown[]; issue?: ClientIssue };
 
-type Reply = { text: string; components?: Component[]; sources?: Source[]; actions?: Action[] };
+type Reply = { text: string; components?: Component[]; sources?: Source[]; actions?: Action[]; proposals?: unknown[] };
 type Step = Reply & { ask: BriefKey | null };
 
 const suggest = (...labels: string[]): Action[] => labels.map((label) => ({ type: "suggest_reply", label }));
@@ -96,10 +98,18 @@ const FLOWS: Record<Flow, Step[]> = {
 };
 
 /** Questions that are answered at once and never written into the brief. */
-const INTENTS: { match: RegExp; reply: (s: Session) => Reply }[] = [
+const INTENTS: { match: RegExp; reply: (s: Session, now: number) => Reply }[] = [
   {
-    match: /\b(talk (to|with)|speak (to|with)|human|real person|a person|book (a )?call|call me|contact (you|the team|a person))\b/i,
-    reply: () => ({ text: "Of course. You can book a call with the founders or write to the team. Nothing from this conversation is sent unless you choose to send it.", components: [{ type: "consultation" }] }),
+    match: /\b((book|schedule|arrange|set up)\b[^.?!]{0,24}\b(call|meeting|consultation)|meeting times?)\b/i,
+    reply: (_, now) => ({ text: "Here are some times. They are demonstration data: pick one and you can check everything before confirming.", proposals: [{ type: "booking_calendar", demo: true, duration_minutes: 30, days: demoDays(now) }] }),
+  },
+  {
+    match: /\b(talk (to|with)|speak (to|with)|human|real person|a person|call me|email me|contact (me|you|the team|a person)|team (can )?contact)\b/i,
+    reply: () => ({
+      text: "Of course. Add your details below and check them before anything is sent. They stay out of this AI conversation.",
+      proposals: [{ type: "contact_capture", include_brief: true }],
+      actions: suggest("Show meeting times"),
+    }),
   },
   {
     match: /\b(brief|summary|summari[sz]e)\b/i,
@@ -145,8 +155,8 @@ const INTENTS: { match: RegExp; reply: (s: Session) => Reply }[] = [
   { match: /^\s*(hi|hello|hey)\b[\s!.]*$/i, reply: () => ({ text: "Hello. What would you like to build, or what would you like to know about us?", actions: suggest("I want to build a SaaS product", "Automate a business process", "What services do you offer?") }) },
 ];
 
-/** Never an answer to a question: a person asked for, or a bare greeting. */
-const ALWAYS = new Set([INTENTS[0], INTENTS[INTENTS.length - 1]]);
+/** Never an answer to a question: a meeting or a person asked for, or a bare greeting. */
+const ALWAYS = new Set([INTENTS[0], INTENTS[1], INTENTS[INTENTS.length - 1]]);
 const SKIP = /^\s*(not sure( yet)?|i (do not|don'?t) know|skip|no idea)[\s.!]*$/i;
 const SAAS = /\b(saas|mvp|startup|start-up|founder|new product)\b/i;
 const AUTOMATE = /\b(automat\w*|workflow|manual|agent|support tickets|spreadsheets?)\b/i;
@@ -172,6 +182,37 @@ const response = (turn: number, reply: Reply, error: (typeof FAILURES)[string] |
   session: null,
 });
 
+const CHANGE = /^(actually|also|and also|please add|add |remove |drop |change )|\b(also (need|want|add)|no longer need)\b/i;
+const WHEN = /\b(within|in|by|before) (\d+ (days|weeks|months)|(january|february|march|april|may|june|july|august|september|october|november|december)( \d{4})?|next (week|month|quarter|year))\b/i;
+
+/** A correction said in plain words. Pattern matching only: the real version reads the sentence. */
+function revise(brief: BriefFields, said: string): { brief: BriefFields; field: BriefKey; said: string } | null {
+  const gone = said.match(/\b(?:remove|drop|no longer need) (?:the )?(.+?)[.!]?$/i)?.[1];
+  if (gone) {
+    const features = brief.features.filter((f) => !f.toLowerCase().includes(gone.toLowerCase()));
+    return features.length === brief.features.length ? null : { brief: { ...brief, features }, field: "features", said: `remove ${gone}` };
+  }
+  const when = said.match(WHEN)?.[0];
+  if (when) return { brief: { ...brief, timeline: when.toLowerCase() }, field: "timeline", said: `a timeline of ${when.toLowerCase()}` };
+  if (!CHANGE.test(said)) return null;
+  if (/\b(mobile( app(lication)?)?|ios|android)\b/i.test(said)) {
+    const platforms = brief.platforms?.toLowerCase().includes("mobile") ? brief.platforms : [brief.platforms, "mobile application"].filter(Boolean).join(", ");
+    return { brief: { ...brief, platforms: platforms.slice(0, LIMITS.platforms) }, field: "platforms", said: "a mobile application" };
+  }
+  const budget = said.match(/\bbudget (?:is|of|around) (.+?)[.!]?$/i)?.[1];
+  if (budget) return { brief: { ...brief, budget: budget.slice(0, LIMITS.budget) }, field: "budget", said: "your budget" };
+  const added = said
+    .replace(/^(actually|also|and also|please add|add|change)\b[,:]?\s*/i, "")
+    .replace(/^(we|i) (also )?(need|want)( to add)?\s*/i, "")
+    .replace(/^(also )?(add|need|want)\s*/i, "")
+    .replace(/^(a|an|the) /i, "")
+    .replace(/[.!]$/, "")
+    .slice(0, LIMITS.features);
+  return added ? { brief: record(brief, "features", added), field: "features", said: added } : null;
+}
+
+const shownValue = (b: BriefFields, k: BriefKey) => (k === "features" ? b.features.join(", ") : (b[k] ?? "")).slice(0, 600);
+
 const record = (brief: BriefFields, key: BriefKey, text: string): BriefFields => {
   if (key === "features") {
     const added = text.split(/[,;\n]+/).map((f) => f.trim().slice(0, LIMITS.features)).filter(Boolean);
@@ -181,7 +222,7 @@ const record = (brief: BriefFields, key: BriefKey, text: string): BriefFields =>
   return { ...brief, [key]: value.slice(0, LIMITS[key]) };
 };
 
-export function respond(session: Session, text: string, scenario: Scenario = "normal"): Outcome {
+export function respond(session: Session, text: string, scenario: Scenario = "normal", now = Date.now()): Outcome {
   if (scenario === "network" || scenario === "session_expired") return { session, issue: scenario };
   const turn = session.turn + 1;
   if (scenario !== "normal") return { session, response: response(turn, { text: "" }, FAILURES[scenario]) };
@@ -190,12 +231,28 @@ export function respond(session: Session, text: string, scenario: Scenario = "no
   const finish = (next: Session, reply: Reply): Outcome => ({
     session: next,
     response: response(turn, { ...reply, components: reply.components?.map((c) => (c.type === "project_brief" ? { type: c.type, fields: next.brief } : c)) }),
+    proposals: reply.proposals,
   });
 
   // an answer to the open question wins over a word that merely looks like a request ("offices", "services")
   const request = INTENTS.find((i) => i.match.test(said));
   const isQuestion = /\?\s*$|^\s*(show|tell|what|who|where|how|can|could|do|i'?d rather|book|talk|speak)\b/i.test(said);
-  if (request && (!session.flow || ALWAYS.has(request) || isQuestion)) return finish({ ...session, turn }, request.reply(session));
+  if (request && ALWAYS.has(request)) return finish({ ...session, turn }, request.reply(session, now));
+
+  if (session.flow && !isQuestion) {
+    const change = revise(session.brief, said);
+    if (change) {
+      return finish(
+        { ...session, turn, brief: change.brief },
+        {
+          text: change.said.startsWith("remove ") ? `Understood. I have updated the draft to ${change.said}. Please check it.` : `Understood. I have updated the draft to include ${change.said}. Please check it.`,
+          components: [{ type: "project_brief", fields: change.brief }],
+          proposals: [{ type: "brief_changes", changes: [{ field: change.field, before: shownValue(session.brief, change.field), after: shownValue(change.brief, change.field) }] }],
+        },
+      );
+    }
+  }
+  if (request && (!session.flow || isQuestion)) return finish({ ...session, turn }, request.reply(session, now));
 
   if (!session.flow) {
     const flow: Flow = SAAS.test(said) ? "saas" : AUTOMATE.test(said) ? "automation" : "project";

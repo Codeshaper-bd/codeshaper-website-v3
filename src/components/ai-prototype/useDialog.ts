@@ -29,17 +29,11 @@ export function useDialog(ref: RefObject<HTMLElement | null>, active: boolean, o
       if (e.key !== "Tab") return;
       const items = [...ref.current.querySelectorAll<HTMLElement>(FOCUSABLE)].filter((el) => el.offsetParent !== null && !el.closest("[inert]"));
       if (!items.length) return;
-      const first = items[0];
-      const last = items[items.length - 1];
-      const here = document.activeElement;
-      const outside = !ref.current.contains(here);
-      if (e.shiftKey && (here === first || here === ref.current || outside)) {
-        e.preventDefault();
-        last.focus();
-      } else if (!e.shiftKey && (here === last || outside)) {
-        e.preventDefault();
-        first.focus();
-      }
+      // every step is taken here: left to itself, Safari skips buttons and can walk out of the dialog
+      e.preventDefault();
+      const at = items.indexOf(document.activeElement as HTMLElement);
+      const next = at === -1 ? (e.shiftKey ? items.length - 1 : 0) : (at + (e.shiftKey ? -1 : 1) + items.length) % items.length;
+      items[next].focus();
     };
     window.addEventListener("keydown", onKey);
     return () => {

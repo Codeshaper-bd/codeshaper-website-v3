@@ -5,6 +5,7 @@ import HeroAsk from "./HeroAsk";
 import HeroIntro from "./intro/HeroIntro";
 import HeroGlyphs from "./intro/HeroGlyphs";
 import { COUNTRIES_SERVED } from "@/lib/facts";
+import { bothFounders } from "@/lib/founders";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { getAnnouncement, KIND_STYLE } from "@/data/announcement";
@@ -343,7 +344,7 @@ export default function Hero({ copy }: { copy?: CopyOf<"hero"> }) {
 
           {/* project prompt: the one main action of the hero */}
           <div className="mt-8 flex w-full justify-center sm:mt-9" data-reveal>
-            <HeroAsk />
+            <HeroAsk founders={ContactLink ? bothFounders() : undefined} />
           </div>
 
           {/* proof at the point of decision, and a quiet way out for people

@@ -91,7 +91,7 @@ const files = (dir) => readdirSync(dir, { withFileTypes: true }).flatMap((e) => 
 const forms = files("src").flatMap((f) => (readFileSync(f, "utf8").match(/<form\b(?:[^>{}"]|"[^"]*"|\{(?:[^{}]|\{[^{}]*\})*\})*>/g) ?? []).map((tag) => ({ f, tag })));
 
 test("the scan finds every form (update the number when one is added, and give it a safe action)", () => {
-  assert.equal(forms.length, 7, forms.map((x) => x.f).join(", "));
+  assert.equal(forms.length, 9, forms.map((x) => x.f).join(", "));
 });
 
 test("every form posts to a plain-form address, so nothing typed can reach a web address", () => {

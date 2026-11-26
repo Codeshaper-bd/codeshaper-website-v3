@@ -3,6 +3,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { parseResponse, type AssistantResponse, type BriefFields, type ClientIssue, type ErrorCode } from "@/lib/ai/contract";
 import { newSession, respond, type Scenario, type Session } from "@/lib/ai/mockConsultant";
+import { demoDays, separateContact, type Contact } from "@/lib/ai/actions";
+import { parseProposals, type Proposal } from "@/lib/ai/proposals";
 
 /**
  * The conversation, shared by text and voice. Held in memory only: closing the window keeps it,
@@ -20,16 +22,19 @@ export type Reply = {
   response?: AssistantResponse;
   problem?: Problem;
   retryAfter?: number;
-  feedback?: "up" | "down";
+  /** steps the answer asks the screen to show (proposals.ts) */
+  proposals?: Proposal[];
+  /** opened by a button, not answered by the assistant */
+  local?: boolean;
 };
-export type Said = { id: number; from: "visitor"; text: string };
+export type Said = { id: number; from: "visitor"; text: string; kept?: boolean };
 export type Message = Reply | Said;
 
 const THINK_MS = 700;
 const WORD_MS = 28;
 const reducedMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-export function useConsultation(announce: (text: string) => void) {
+export function useConsultation(announce: (text: string) => void, onContact: (details: Partial<Contact>) => void) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [brief, setBrief] = useState<BriefFields>(() => newSession().brief);
   const [confirmed, setConfirmed] = useState(false);
@@ -76,7 +81,7 @@ export function useConsultation(announce: (text: string) => void) {
         setBrief(outcome.session.brief);
         setConfirmed(false);
         settle();
-        patch(id, { state: "done", text: response.text, response });
+        patch(id, { state: "done", text: response.text, response, proposals: parseProposals(outcome.proposals) });
         announce(`CodeShaper AI: ${response.text}`);
       };
       if (reducedMotion()) return finish();
@@ -94,13 +99,26 @@ export function useConsultation(announce: (text: string) => void) {
 
   /** False when a reply is still on its way: nothing is added twice. */
   const send = (text: string) => {
-    const said = text.trim();
-    if (!said || pending.current !== null) return false;
+    if (!text.trim() || pending.current !== null) return false;
+    // contact details are taken out here, before anything goes to the assistant
+    const { forAssistant, shown, contact } = separateContact(text.trim());
+    const kept = Object.keys(contact).length > 0;
+    if (kept) onContact(contact);
     const visitor = nextId.current++;
     const id = nextId.current++;
-    setMessages((all) => [...all, { id: visitor, from: "visitor", text: said }, { id, from: "assistant", state: "thinking", asked: said, text: "" }]);
-    answer(id, said);
+    setMessages((all) => [...all, { id: visitor, from: "visitor", text: shown, kept }, { id, from: "assistant", state: "thinking", asked: forAssistant, text: "" }]);
+    answer(id, forAssistant);
     return true;
+  };
+
+  /** A button's own step, with no assistant involved: it works before the note is accepted and when AI is down. */
+  const open = (kind: "contact" | "booking") => {
+    const id = nextId.current++;
+    const proposal: Proposal =
+      kind === "contact" ? { type: "contact_capture", include_brief: true } : { type: "booking_calendar", demo: true, duration_minutes: 30, days: demoDays(Date.now()) };
+    const text = kind === "contact" ? "Here is a message to the team. This part does not use AI." : "Here are some demonstration times. This part does not use AI.";
+    setMessages((all) => [...all, { id, from: "assistant", state: "done", asked: "", text, proposals: [proposal], local: true }]);
+    announce(text);
   };
 
   /** Answers the same message again, in place. */
@@ -131,9 +149,14 @@ export function useConsultation(announce: (text: string) => void) {
     setConfirmed(false);
   };
 
-  const saveBriefEdits = (next: BriefFields) => {
+  /** An edit is a new draft; only "Looks right" confirms it. */
+  const editBrief = (next: BriefFields) => {
     session.current = { ...session.current, brief: next };
     setBrief(next);
+    setConfirmed(false);
+    announce("Brief updated. Please confirm it.");
+  };
+  const confirmBrief = () => {
     setConfirmed(true);
     announce("Project brief confirmed");
   };
@@ -149,8 +172,9 @@ export function useConsultation(announce: (text: string) => void) {
     retry,
     stop,
     reset,
-    saveBriefEdits,
-    rate: (id: number, feedback: "up" | "down") => patch(id, { feedback }),
+    editBrief,
+    confirmBrief,
+    open,
     session: () => session.current,
   };
 }

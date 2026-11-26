@@ -2,6 +2,31 @@
 
 Standing decisions from the owner. They override general best practice. Add new ones at the top with a date; never delete. Mark replaced ones as superseded.
 
+## Integration checkpoint (owner's brief)
+
+| Date | Decision |
+|---|---|
+| 2026-11-26 | **Component refinement accepted for local integration**, subject to the owner's visual confirmation: commit, merge with the gateway, connect the conversation to the fake backend; contact, booking, brief extraction and voice stay simulated; add an accessible idle-expiry warning. Remote push (private only) and worktree removal need separate approval. No deployment, Phase 01D or change to main. |
+
+## Component style and integration checkpoint (owner's briefs after the revision)
+
+| Date | Decision |
+|---|---|
+| 2026-11-26 | **Canvas components: compact, flat, editorial.** Information on the background without borders or shadows; a white surface only where something is filled in, checked or confirmed; shadow only on the composer and floating elements; one main action per component; 44px touch targets on phones. Hero, background, header, one column, transitions, voice structure and workflows stay as they are. |
+| 2026-11-26 | **Phase 01C and the UX02 conversational design are accepted for local development.** Integration of the two starts only after the owner approves the component refinement; reuse existing worktrees; worktree removal needs approval. |
+| 2026-11-26 | **Voice look A (spatial orb)** preferred, subject to final visual review. Avatar call stays deferred as optional browser-based research. |
+| 2026-11-26 | **For synthetic development only:** sessions last at most 24 hours and end after 30 idle minutes. The compact first-use note stays; production wording and retention need legal approval. A Cal.com feasibility check is approved for later, without real bookings. |
+
+## Conversational website (owner's UX02 brief and revision)
+
+| Date | Decision |
+|---|---|
+| 2026-11-26 | **Start anywhere. Complete everything within the chosen experience.** Once a visitor starts an AI conversation, brief review, contact, inquiry confirmation, booking and results happen inside it, with no redirect to a contact page, booking window, drawer or external form by default. The website's own Contact and Book a Call stay as they are for everyone else. |
+| 2026-11-26 | **Supersedes the modal window and the project-brief drawer:** a full-viewport canvas on the homepage hero's background, no visible container, one centred column; the hero box travels into the conversation and back. It keeps dialog accessibility behaviour. |
+| 2026-11-26 | Brief: compact inline card of what is known, corrected in plain words, never confirmed automatically. Contact details are reviewed and confirmed, kept out of AI processing, and submitted through the existing Leads system; bookings through the existing booking integration. No success is shown without a confirmed backend result. |
+| 2026-11-26 | Voice stays a dedicated mode on the same conversation and background; two looks (spatial orb, editorial waveform) are shown for the owner to choose. A future avatar call is allowed for in the design, not built. |
+| 2026-11-26 | Hero: no contact link inside the box; "Voice" (not "Talk"); one send button. First-use note is inline in the conversation; its wording is provisional until privacy and legal review. Prototype only: all actions simulated; no push or deploy. |
+
 ## AI gateway (owner's Phase 01C brief)
 
 | Date | Decision |
