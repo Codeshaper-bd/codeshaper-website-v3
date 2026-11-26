@@ -1,10 +1,9 @@
 "use client";
 
-import Link from "next/link";
 import { useRef, useState } from "react";
-import { CalendarClock, Check, Send, X } from "lucide-react";
+import { ArrowRight, Check, X } from "lucide-react";
 import { BRIEF_LABELS, BRIEF_LIMITS, BRIEF_ORDER, briefToText, hasBrief, MAX_FEATURES, type BriefFields, type BriefKey } from "@/lib/ai/contract";
-import { OUTLINE, PRIMARY } from "./Cards";
+import { PRIMARY, QUIET } from "./Cards";
 import { useDialog } from "./useDialog";
 import styles from "./ai.module.css";
 
@@ -45,7 +44,7 @@ export default function BriefPanel({ view, brief, fallback, onView, onSave, onCo
       constraints: value("constraints"),
     };
   };
-  const title = view === "edit" ? "Review your brief" : view === "share" ? "Share with the team" : "Write to the team";
+  const title = view === "edit" ? "Review your brief" : view === "share" ? "Continue to contact form" : "Write to the team";
 
   return (
     <div className="absolute inset-0 z-20 flex items-end justify-center bg-content/25 sm:items-stretch sm:justify-end" onMouseDown={(e) => e.target === e.currentTarget && onClose()}>
@@ -62,7 +61,7 @@ export default function BriefPanel({ view, brief, fallback, onView, onSave, onCo
           <h2 id="ai-panel-title" className="font-urbanist text-[18px] font-bold text-content">
             {title}
           </h2>
-          <button type="button" onClick={onClose} aria-label="Close panel" className="grid h-10 w-10 place-items-center rounded-full text-content hover:bg-surface-soft">
+          <button type="button" onClick={onClose} aria-label="Close panel" className="grid h-11 w-11 place-items-center rounded-full text-content hover:bg-surface-soft">
             <X size={18} aria-hidden />
           </button>
         </header>
@@ -92,13 +91,13 @@ export default function BriefPanel({ view, brief, fallback, onView, onSave, onCo
                 </label>
               ))}
             </div>
-            <footer className="grid shrink-0 grid-cols-2 gap-2 border-t border-border px-5 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:flex sm:flex-wrap [&>button:first-child]:col-span-2">
+            <footer className="flex shrink-0 flex-col gap-1 border-t border-border px-5 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:flex-row sm:items-center">
               <button type="submit" className={PRIMARY}>
                 <Check size={15} aria-hidden /> Save and confirm
               </button>
               <button
                 type="button"
-                className={OUTLINE}
+                className={QUIET}
                 disabled={!hasBrief(edited())}
                 onClick={() => {
                   onSave(edited());
@@ -106,21 +105,15 @@ export default function BriefPanel({ view, brief, fallback, onView, onSave, onCo
                   onView("share");
                 }}
               >
-                <Send size={15} aria-hidden />
-                <span>
-                  Share<span className="max-sm:sr-only"> with the team</span>
-                </span>
+                Continue to contact form <ArrowRight size={15} aria-hidden />
               </button>
-              <Link href="/contact" data-booking className={OUTLINE}>
-                <CalendarClock size={15} aria-hidden /> Book a call
-              </Link>
             </footer>
           </form>
         ) : (
           <div className="flex min-h-0 flex-1 flex-col">
             <div data-lenis-prevent className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 py-4">
               <p className="rounded-control bg-surface-soft p-3 text-[13px] leading-relaxed text-content">
-                <strong>Nothing is sent from here.</strong> The next step opens our contact form with this text filled in. You add your details and press send there.
+                <strong>Nothing is sent from here.</strong> This opens our real contact form with the text filled in. It is sent only if you add your details and press send there.
               </p>
               <label className="mt-4 block text-[13px] font-semibold text-content">
                 Message for the team
@@ -133,13 +126,10 @@ export default function BriefPanel({ view, brief, fallback, onView, onSave, onCo
                 </p>
               )}
             </div>
-            <footer className="flex shrink-0 flex-wrap gap-2 border-t border-border px-5 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+            <footer className="flex shrink-0 flex-col border-t border-border px-5 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:flex-row">
               <button type="button" className={PRIMARY} onClick={() => !onContinue(message) && setBlocked(true)}>
-                Continue to the contact form
+                Open the contact form <ArrowRight size={15} aria-hidden />
               </button>
-              <Link href="/contact" data-booking className={OUTLINE}>
-                <CalendarClock size={15} aria-hidden /> Book a consultation
-              </Link>
             </footer>
           </div>
         )}

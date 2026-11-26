@@ -1,20 +1,13 @@
-/* AI consultation prototype: its few animations. Transform and opacity only. */
+/* AI consultation prototype: its few animations. Transform and opacity only, no WebGL. */
 
-.rise {
-  animation: rise 320ms var(--ease-out-expo) both;
-}
-.panel {
-  animation: rise 260ms var(--ease-out-expo) both;
-}
+.rise { animation: rise 360ms var(--ease-out-expo) both; }
+.panel { animation: rise 260ms var(--ease-out-expo) both; }
 @keyframes rise {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: none; }
 }
 
-.dots {
-  display: inline-flex;
-  gap: 3px;
-}
+.dots { display: inline-flex; gap: 3px; }
 .dots i {
   width: 5px;
   height: 5px;
@@ -28,72 +21,185 @@
   0%, 100% { opacity: 0.25; }
   50% { opacity: 1; }
 }
+.working { animation: working 1.4s ease-in-out infinite; }
+@keyframes working {
+  50% { transform: scale(0.9); opacity: 0.65; }
+}
+.caret {
+  display: inline-block;
+  width: 7px;
+  height: 1.05em;
+  margin-left: 3px;
+  vertical-align: text-bottom;
+  border-radius: 2px;
+  background: var(--color-brand);
+  animation: dot 0.9s steps(2, jump-none) infinite;
+}
 
-/* Voice: a white disc in thin brand rings. The state is also always written out in words. */
+/* ── Voice A: a soft sphere with depth. Colour is the brand violet; motion comes from the state. ── */
 .orb {
   position: relative;
   display: grid;
   place-items: center;
-  width: clamp(150px, 26vh, 220px);
+  width: clamp(170px, min(40vh, 64vw), 300px);
   aspect-ratio: 1;
   flex-shrink: 0;
+  transition: width 300ms var(--ease-out-expo), opacity 300ms;
 }
-.ring {
+.shadow {
   position: absolute;
-  inset: 14%;
+  bottom: -2%;
+  width: 62%;
+  height: 9%;
   border-radius: 999px;
-  border: 1px solid color-mix(in srgb, var(--color-brand) 34%, transparent);
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--color-brand) 34%, transparent), transparent);
 }
-.ring:nth-child(2) { inset: 7%; opacity: 0.6; }
-.ring:nth-child(3) { inset: 0; opacity: 0.3; }
-.core {
+.halo {
+  position: absolute;
+  inset: 4%;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--color-brand) 22%, transparent);
+}
+.sphere {
   position: relative;
-  display: grid;
-  place-items: center;
-  width: 56%;
+  width: 76%;
   aspect-ratio: 1;
+  overflow: hidden;
   border-radius: 999px;
-  background: var(--color-surface);
-  border: 1px solid color-mix(in srgb, var(--color-brand) 28%, transparent);
-  box-shadow: 0 18px 40px -22px color-mix(in srgb, var(--color-brand) 55%, transparent), inset 0 0 0 10px var(--color-brand-soft);
-  color: var(--color-content);
+  isolation: isolate;
+  background: radial-gradient(circle at 34% 28%, #ffffff 0%, #e6e3ff 26%, #b4adff 55%, #7a72ff 80%, #5a52e8 100%);
+  box-shadow: inset -14px -18px 36px rgb(52 40 160 / 0.28), inset 10px 12px 28px rgb(255 255 255 / 0.75), 0 26px 50px -28px rgb(70 56 200 / 0.65);
 }
-
-.orb[data-state="listening"] .ring { animation: spread 2.4s ease-out infinite; }
-.orb[data-state="listening"] .ring:nth-child(2) { animation-delay: 0.8s; }
-.orb[data-state="listening"] .ring:nth-child(3) { animation-delay: 1.6s; }
-.orb[data-state="speaking"] .core { animation: breathe 1.5s ease-in-out infinite; }
-.orb[data-state="speaking"] .ring { animation: breathe 1.5s ease-in-out infinite reverse; }
-.orb[data-state="thinking"] .ring:first-child,
-.orb[data-state="transcribing"] .ring:first-child,
-.orb[data-state="stopped"] .ring:first-child {
+.cloud {
+  position: absolute;
+  width: 78%;
+  height: 62%;
+  border-radius: 46% 54% 60% 40% / 52% 44% 56% 48%;
+  filter: blur(18px);
+  animation: drift 14s linear infinite;
+  will-change: transform;
+}
+.cloud:nth-child(1) { left: -12%; top: 40%; background: rgb(97 95 255 / 0.75); }
+.cloud:nth-child(2) { right: -16%; top: 6%; background: rgb(214 168 255 / 0.8); animation-duration: 19s; animation-direction: reverse; }
+.cloud:nth-child(3) { left: 24%; bottom: -14%; background: rgb(158 205 255 / 0.8); animation-duration: 23s; }
+.shine {
+  position: absolute;
+  left: 18%;
+  top: 11%;
+  width: 34%;
+  height: 22%;
+  border-radius: 999px;
+  background: radial-gradient(closest-side, rgb(255 255 255 / 0.9), transparent);
+}
+@keyframes drift {
+  0% { transform: rotate(0turn) translate(6%, 0) scale(1); }
+  50% { transform: rotate(0.5turn) translate(10%, 4%) scale(1.14); }
+  100% { transform: rotate(1turn) translate(6%, 0) scale(1); }
+}
+.orb[data-state="listening"] .sphere { animation: breathe 2.2s ease-in-out infinite; }
+.orb[data-state="listening"] .halo { animation: spread 2.2s ease-out infinite; }
+.orb[data-state="listening"] .cloud { animation-duration: 6s; }
+.orb[data-state="speaking"] .sphere { animation: speak 1.1s ease-in-out infinite; }
+.orb[data-state="speaking"] .cloud { animation-duration: 4.5s; }
+.orb[data-state="thinking"] .cloud,
+.orb[data-state="transcribing"] .cloud,
+.orb[data-state="stopped"] .cloud { animation-duration: 2.8s; }
+.orb[data-state="thinking"] .halo,
+.orb[data-state="transcribing"] .halo,
+.orb[data-state="stopped"] .halo {
   border-width: 2px;
   border-color: var(--color-brand) transparent transparent;
-  animation: turn 1.1s linear infinite;
+  animation: turn 1.2s linear infinite;
 }
-.orb[data-state="muted"] .ring,
-.orb[data-state="ended"] .ring { border-color: var(--color-border-strong); }
-.orb[data-state="error"] .ring { border-color: color-mix(in srgb, var(--color-warning) 60%, transparent); }
-.orb[data-state="ended"] .core { box-shadow: none; }
+.orb[data-state="muted"] .sphere,
+.orb[data-state="ended"] .sphere { filter: grayscale(0.85) brightness(1.06); }
+.orb[data-state="muted"] .cloud,
+.orb[data-state="ended"] .cloud { animation-play-state: paused; }
+.orb[data-state="error"] .sphere { filter: hue-rotate(135deg) saturate(0.75); }
+.orb[data-state="error"] .halo { border-color: color-mix(in srgb, var(--color-warning) 55%, transparent); }
+.orb.medium { width: clamp(130px, 24vh, 190px); }
+.orb.compact { width: clamp(88px, 14vh, 120px); }
 
+@keyframes breathe { 50% { transform: scale(1.07); } }
+@keyframes speak {
+  0%, 100% { transform: scale(1); }
+  30% { transform: scale(1.06, 0.98); }
+  65% { transform: scale(0.98, 1.05); }
+}
 @keyframes spread {
-  from { transform: scale(0.82); opacity: 0.9; }
+  from { transform: scale(0.9); opacity: 1; }
   to { transform: scale(1.12); opacity: 0; }
 }
-@keyframes breathe {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.05); }
+@keyframes turn { to { transform: rotate(1turn); } }
+
+/* ── Voice B: three thin violet lines. Their height says the state; they slide on a seamless loop. ── */
+.wave {
+  width: min(640px, 100%);
+  height: clamp(150px, 34vh, 270px);
+  flex-shrink: 0;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 14%, #000 86%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 14%, #000 86%, transparent);
+  transition: height 300ms var(--ease-out-expo);
 }
-@keyframes turn {
-  to { transform: rotate(1turn); }
+.wave svg { width: 100%; height: 100%; }
+.wave path { stroke: var(--color-brand); }
+.level {
+  transform-origin: 0 100px;
+  transform: scaleY(0.14);
+  transition: transform 500ms var(--ease-out-expo);
+}
+.wave[data-state="listening"] .level { transform: scaleY(0.85); }
+.wave[data-state="speaking"] .level { transform: scaleY(1.15); animation: swell 1.3s ease-in-out infinite; }
+.wave[data-state="thinking"] .level,
+.wave[data-state="transcribing"] .level,
+.wave[data-state="stopped"] .level { transform: scaleY(0.3); }
+.wave[data-state="review"] .level { transform: scaleY(0.4); }
+.wave[data-state="muted"] .level,
+.wave[data-state="ended"] .level,
+.wave[data-state="error"] .level { transform: scaleY(0.04); }
+.wave[data-state="muted"] path,
+.wave[data-state="ended"] path { stroke: var(--color-content-muted); }
+.wave[data-state="error"] path { stroke: var(--color-warning); }
+.slide1 { animation: slide 7s linear infinite; }
+.slide2 { animation: slide 11s linear infinite reverse; }
+.slide3 { animation: slide 16s linear infinite; }
+.wave[data-state="listening"] .slide1,
+.wave[data-state="speaking"] .slide1 { animation-duration: 3s; }
+.wave[data-state="listening"] .slide2,
+.wave[data-state="speaking"] .slide2 { animation-duration: 4.5s; }
+.wave[data-state="listening"] .slide3,
+.wave[data-state="speaking"] .slide3 { animation-duration: 6.5s; }
+.wave[data-state="thinking"] path,
+.wave[data-state="transcribing"] path,
+.wave[data-state="stopped"] path { stroke-dasharray: 90 40; }
+.wave[data-state="muted"] path,
+.wave[data-state="ended"] path,
+.wave[data-state="error"] path,
+.wave[data-state="ready"] path { animation-duration: 18s; }
+.wave.medium { height: clamp(100px, 20vh, 160px); }
+.wave.compact { height: clamp(64px, 10vh, 90px); }
+@keyframes slide { to { transform: translateX(-640px); } }
+@keyframes swell { 50% { transform: scaleY(0.6); } }
+
+@media (max-height: 540px) {
+  .orb,
+  .orb.medium,
+  .orb.compact { width: 96px; }
+  .wave,
+  .wave.medium,
+  .wave.compact { height: 72px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .rise,
   .panel,
+  .working,
+  .caret,
   .dots i,
-  .orb .ring,
-  .orb .core {
+  .orb *,
+  .wave * {
     animation: none !important;
+    transition: none !important;
   }
 }

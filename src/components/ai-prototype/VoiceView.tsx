@@ -1,49 +1,53 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect, useRef, useState, type Dispatch } from "react";
-import { Keyboard, Mic, MicOff, RotateCcw, ScrollText, Square, Volume2, VolumeX, X } from "lucide-react";
+import Link from "next/link";
+import { Keyboard, Mic, RotateCcw, ScrollText, Square, Volume2, VolumeX, X } from "lucide-react";
 import { voiceSample } from "@/lib/ai/mockConsultant";
 import type { VoiceEvent, VoiceModel, VoiceState } from "@/lib/ai/voiceMachine";
-import { OUTLINE, PRIMARY } from "./Cards";
+import { OUTLINE, PRIMARY, QUIET } from "./Cards";
 import type { Consultation, Reply } from "./useConsultation";
-import styles from "./ai.module.css";
+import VoiceVisual, { type VoiceStyle } from "./VoiceVisual";
 
 /**
  * The voice screen, SIMULATED: no microphone is opened, no sound is played or sent. Each state is
  * stepped through on timers and buttons. A real version keeps this screen and the states, and drives
- * the rings from the real input and output level instead of a loop.
+ * the visual from the real input and output level instead of a loop.
  */
 const COPY: Record<VoiceState, { title: string; hint: string }> = {
-  ready: { title: "Ready when you are", hint: "Press the button, then say what you want to build." },
-  permission: { title: "Microphone permission", hint: "The real version asks your browser for the microphone here. This prototype does not." },
-  listening: { title: "Listening (simulated)", hint: "Press stop when you have finished." },
+  ready: { title: "Ready when you are", hint: "Tap the button and say what you want to build." },
+  permission: { title: "Microphone permission", hint: "The real version asks your browser here. This prototype does not." },
+  listening: { title: "Listening (simulated)", hint: "Stop when you have finished." },
   stopped: { title: "Recording stopped", hint: "Preparing your words." },
   transcribing: { title: "Writing down what you said", hint: "Simulated transcription." },
-  review: { title: "Check your words", hint: "Nothing is used until you send it. Edit anything that is wrong." },
-  thinking: { title: "Preparing a reply", hint: "" },
-  speaking: { title: "Replying (no sound in this prototype)", hint: "" },
+  review: { title: "Check your words", hint: "Nothing is used until you send it." },
+  thinking: { title: "Thinking", hint: "" },
+  speaking: { title: "Replying", hint: "Shown as text: this prototype plays no sound." },
   muted: { title: "Sound off", hint: "The reply continues as text." },
   error: { title: "", hint: "" },
-  ended: { title: "Voice consultation ended", hint: "The conversation is still there in text." },
+  ended: { title: "Voice consultation ended", hint: "Everything said is still in the conversation." },
 };
 const ERRORS = {
   mic_denied: { title: "The microphone is blocked", hint: "Allow it in your browser settings, or continue by typing." },
   transcription: { title: "We could not make out the words", hint: "Try again, or type your message instead." },
   reply: { title: "The reply did not arrive", hint: "Switch to text to see what happened and try again." },
 };
-const CONTROL = "inline-flex min-h-11 items-center justify-center gap-2 rounded-full px-5 font-urbanist text-[14px] font-semibold";
+const MAIN = "inline-flex min-h-14 items-center justify-center gap-2.5 rounded-full bg-content px-8 font-urbanist text-[15.5px] font-semibold text-surface shadow-[0_18px_34px_-20px_rgba(45,38,120,0.8)] disabled:opacity-40";
+const SIDE = "inline-flex min-h-11 items-center gap-1.5 rounded-full px-3.5 font-urbanist text-[13.5px] font-semibold text-content-muted transition-colors hover:bg-surface-soft hover:text-content";
 
 type Props = {
   voice: VoiceModel;
   dispatch: Dispatch<VoiceEvent>;
   chat: Consultation;
+  look: VoiceStyle;
   failTranscription: boolean;
   denyMicrophone: boolean;
+  /** the first-use note, until it is accepted: nothing can be recorded before */
+  notice?: React.ReactNode;
   onText: (draft?: string) => void;
 };
 
-export default function VoiceView({ voice, dispatch, chat, failTranscription, denyMicrophone, onText }: Props) {
+export default function VoiceView({ voice, dispatch, chat, look, failTranscription, denyMicrophone, notice, onText }: Props) {
   const { state } = voice;
   const [seconds, setSeconds] = useState(0);
   const [transcriptOpen, setTranscriptOpen] = useState(false);
@@ -96,158 +100,142 @@ export default function VoiceView({ voice, dispatch, chat, failTranscription, de
   const [before] = useState(() => reply?.id ?? 0);
   const cards = reply?.state === "done" && reply.id > before ? (reply.response?.components.length ?? 0) : 0;
   const said = chat.messages.filter((m) => m.from === "visitor" || m.text);
+  const size = state === "review" || transcriptOpen ? "compact" : spoken ? "medium" : "full";
 
   return (
-    <div ref={main} data-voice={state} data-lenis-prevent className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
-      <div className="mx-auto flex min-h-full w-full max-w-[640px] flex-col items-center justify-center px-5 py-6 text-center">
-        <div aria-hidden className={styles.orb} data-state={state}>
-          <span className={styles.ring} />
-          <span className={styles.ring} />
-          <span className={styles.ring} />
-          <span className={styles.core}>{state === "muted" ? <VolumeX size={30} /> : state === "error" ? <MicOff size={30} /> : state === "speaking" ? <Volume2 size={30} /> : <Mic size={30} />}</span>
-        </div>
-        <p className="mt-2 inline-flex items-center gap-1.5 rounded-full border border-border-strong px-3 py-1 text-[12px] font-medium text-content-muted">
+    <div ref={main} data-voice={state} data-lenis-prevent className="flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain">
+      <div className="mx-auto flex w-full max-w-[720px] flex-1 flex-col items-center justify-center px-5 py-5 text-center [@media(max-height:540px)]:justify-start">
+        {!notice && <VoiceVisual look={look} state={state} size={size} />}
+        <p className="mt-3 inline-flex items-center gap-2 text-[12.5px] font-medium text-content-muted">
+          <span aria-hidden className="h-1.5 w-1.5 rounded-full border border-content-muted" />
           Simulated voice: your microphone is not used
         </p>
 
-        <div role="status" className="mt-5">
-          <h2 className="font-urbanist text-[24px] font-bold leading-tight tracking-[-0.015em] text-content">{copy.title}</h2>
-          {copy.hint && <p className="mx-auto mt-2 max-w-sm text-[14px] leading-relaxed text-content-muted">{copy.hint}</p>}
-        </div>
-        {state === "listening" && (
-          <p className="mt-2 font-mono text-[13px] tabular-nums text-content-muted" aria-hidden>
-            {String(Math.floor(seconds / 60)).padStart(2, "0")}:{String(seconds % 60).padStart(2, "0")} simulated
-          </p>
-        )}
+        {notice ?? (
+          <>
+            <div role="status" className="mt-4">
+              <h2 className="font-urbanist text-[26px] font-bold leading-tight tracking-[-0.02em] text-content sm:text-[32px]">{copy.title}</h2>
+              {copy.hint && <p className="mx-auto mt-1.5 max-w-sm text-[15px] leading-relaxed text-content-muted">{copy.hint}</p>}
+            </div>
+            {state === "listening" && (
+              <p className="mt-2 font-mono text-[13px] tabular-nums text-content-muted" aria-hidden>
+                {String(Math.floor(seconds / 60)).padStart(2, "0")}:{String(seconds % 60).padStart(2, "0")} simulated
+              </p>
+            )}
 
-        {state === "review" && (
-          <label className="mt-4 block w-full text-left text-[13px] font-semibold text-content">
-            Sample transcript (simulated)
-            <textarea rows={3} maxLength={1500} value={voice.transcript} onChange={(e) => dispatch({ type: "EDIT", text: e.target.value })} className="mt-1 w-full rounded-control border border-border-strong bg-surface px-3 py-2.5 text-[16px] font-normal leading-relaxed text-content sm:text-[15px]" />
-          </label>
-        )}
-        {spoken && reply?.text && (
-          <p data-caption className="mt-4 max-h-40 w-full overflow-y-auto rounded-panel bg-surface-soft p-4 text-left text-[15px] leading-relaxed text-content" tabIndex={0}>
-            {reply.text}
-          </p>
-        )}
-        {cards > 0 && (state === "speaking" || state === "muted" || state === "ready") && (
-          <button type="button" onClick={() => onText()} className="mt-3 min-h-10 text-[13.5px] font-semibold text-content underline decoration-border-strong underline-offset-4">
-            This reply added details to the conversation. View them
-          </button>
-        )}
+            {state === "review" && (
+              <label className="mt-4 block w-full max-w-[560px] text-left text-[13px] font-semibold text-content-muted">
+                Sample transcript (simulated). Edit anything that is wrong.
+                <textarea rows={3} maxLength={1500} value={voice.transcript} onChange={(e) => dispatch({ type: "EDIT", text: e.target.value })} className="mt-1.5 w-full rounded-panel border border-border-strong bg-surface px-4 py-3 text-[17px] font-normal leading-relaxed text-content" />
+              </label>
+            )}
+            {spoken && reply?.text && (
+              <p data-caption className="mt-4 max-h-44 w-full max-w-[560px] overflow-y-auto text-balance text-[18px] leading-relaxed text-content" tabIndex={0}>
+                {reply.text}
+              </p>
+            )}
+            {cards > 0 && (spoken || state === "ready") && (
+              <button type="button" onClick={() => onText()} className={`${QUIET} mt-2`}>
+                See what was added to the conversation
+              </button>
+            )}
 
-        <div className="mt-6 flex flex-wrap items-center justify-center gap-2.5">
-          {state === "ready" && (
-            <button type="button" data-primary className={`${CONTROL} bg-content text-surface`} onClick={() => dispatch({ type: "START" })}>
-              <Mic size={16} aria-hidden /> Start recording
-            </button>
-          )}
-          {state === "permission" && (
-            <>
-              <button type="button" data-primary className={PRIMARY} onClick={() => dispatch({ type: denyMicrophone ? "DENY" : "ALLOW" })}>
-                Simulate allowing it
-              </button>
-              <button type="button" className={OUTLINE} onClick={() => dispatch({ type: "DENY" })}>
-                Simulate blocking it
-              </button>
-            </>
-          )}
-          {state === "listening" && (
-            <button type="button" data-primary className={`${CONTROL} bg-content text-surface`} onClick={() => dispatch({ type: "STOP" })}>
-              <Square size={13} fill="currentColor" aria-hidden /> Stop recording
-            </button>
-          )}
-          {(state === "stopped" || state === "transcribing") && (
-            <button type="button" data-primary className={OUTLINE} onClick={() => dispatch({ type: "CANCEL" })}>
-              Cancel
-            </button>
-          )}
-          {state === "review" && (
-            <>
-              <button
-                type="button"
-                data-primary
-                className={PRIMARY}
-                disabled={!voice.transcript.trim() || chat.busy}
-                onClick={() => {
-                  if (chat.send(voice.transcript)) dispatch({ type: "CONFIRM" });
-                }}
-              >
-                Send these words
-              </button>
-              <button type="button" className={OUTLINE} onClick={() => dispatch({ type: "DISCARD" })}>
-                Record again
-              </button>
-              <button type="button" className={OUTLINE} onClick={() => onText(voice.transcript)}>
-                Edit as text
-              </button>
-            </>
-          )}
-          {state === "thinking" && (
-            <button
-              type="button"
-              data-primary
-              className={OUTLINE}
-              onClick={() => {
-                chat.stop();
-                dispatch({ type: "CANCEL" });
-              }}
-            >
-              Cancel
-            </button>
-          )}
-          {spoken && (
-            <>
-              <button type="button" data-primary className={PRIMARY} onClick={() => dispatch({ type: "STOP_PLAYBACK" })}>
-                <Square size={12} fill="currentColor" aria-hidden /> Stop playback
-              </button>
-              <button type="button" className={OUTLINE} aria-pressed={state === "muted"} onClick={() => dispatch({ type: state === "muted" ? "UNMUTE" : "MUTE" })}>
-                {state === "muted" ? <Volume2 size={15} aria-hidden /> : <VolumeX size={15} aria-hidden />}
-                {state === "muted" ? "Sound on" : "Mute"}
-              </button>
-            </>
-          )}
-          {state === "error" && (
-            <>
-              <button type="button" data-primary className={PRIMARY} onClick={() => onText()}>
-                <Keyboard size={15} aria-hidden /> Type instead
-              </button>
-              <button type="button" className={OUTLINE} onClick={() => dispatch({ type: "RETRY" })}>
-                <RotateCcw size={14} aria-hidden /> Try again
-              </button>
-              <Link href="/contact" data-booking className={OUTLINE}>
-                Book a consultation
-              </Link>
-            </>
-          )}
-          {state === "ended" && (
-            <>
-              <button type="button" data-primary className={PRIMARY} onClick={() => onText()}>
-                Return to the conversation
-              </button>
-              <button type="button" className={OUTLINE} onClick={() => dispatch({ type: "RESTART" })}>
-                Start voice again
-              </button>
-            </>
-          )}
-        </div>
-
-        {state !== "ended" && (
-          <div className="mt-6 flex flex-wrap items-center justify-center gap-1 text-content-muted">
-            <button type="button" className="inline-flex min-h-10 items-center gap-1.5 rounded-full px-3 text-[13px] font-medium hover:bg-surface-soft hover:text-content" onClick={() => onText(state === "review" ? voice.transcript : undefined)}>
-              <Keyboard size={15} aria-hidden /> Switch to text
-            </button>
-            <button type="button" aria-expanded={transcriptOpen} className="inline-flex min-h-10 items-center gap-1.5 rounded-full px-3 text-[13px] font-medium hover:bg-surface-soft hover:text-content" onClick={() => setTranscriptOpen((o) => !o)}>
-              <ScrollText size={15} aria-hidden /> {transcriptOpen ? "Hide transcript" : "View transcript"}
-            </button>
-            <button type="button" className="inline-flex min-h-10 items-center gap-1.5 rounded-full px-3 text-[13px] font-medium hover:bg-surface-soft hover:text-content" onClick={() => dispatch({ type: "END" })}>
-              <X size={15} aria-hidden /> End voice
-            </button>
-          </div>
+            <div className="mt-6 flex w-full flex-col items-center justify-center gap-2 sm:flex-row">
+              {state === "ready" && (
+                <button type="button" data-primary className={MAIN} onClick={() => dispatch({ type: "START" })}>
+                  <Mic size={18} aria-hidden /> Start recording
+                </button>
+              )}
+              {state === "permission" && (
+                <>
+                  <button type="button" data-primary className={MAIN} onClick={() => dispatch({ type: denyMicrophone ? "DENY" : "ALLOW" })}>
+                    Simulate allowing it
+                  </button>
+                  <button type="button" className={QUIET} onClick={() => dispatch({ type: "DENY" })}>
+                    Simulate blocking it
+                  </button>
+                </>
+              )}
+              {state === "listening" && (
+                <button type="button" data-primary className={MAIN} onClick={() => dispatch({ type: "STOP" })}>
+                  <Square size={14} fill="currentColor" aria-hidden /> Stop recording
+                </button>
+              )}
+              {(state === "stopped" || state === "transcribing") && (
+                <button type="button" data-primary className={OUTLINE} onClick={() => dispatch({ type: "CANCEL" })}>
+                  Cancel
+                </button>
+              )}
+              {state === "review" && (
+                <>
+                  <button
+                    type="button"
+                    data-primary
+                    className={MAIN}
+                    disabled={!voice.transcript.trim() || chat.busy}
+                    onClick={() => {
+                      if (chat.send(voice.transcript)) dispatch({ type: "CONFIRM" });
+                    }}
+                  >
+                    Send these words
+                  </button>
+                  <button type="button" className={QUIET} onClick={() => dispatch({ type: "DISCARD" })}>
+                    Record again
+                  </button>
+                </>
+              )}
+              {state === "thinking" && (
+                <button
+                  type="button"
+                  data-primary
+                  className={OUTLINE}
+                  onClick={() => {
+                    chat.stop();
+                    dispatch({ type: "CANCEL" });
+                  }}
+                >
+                  Cancel
+                </button>
+              )}
+              {spoken && (
+                <>
+                  <button type="button" data-primary className={MAIN} onClick={() => dispatch({ type: "STOP_PLAYBACK" })}>
+                    <Square size={13} fill="currentColor" aria-hidden /> Stop playback
+                  </button>
+                  <button type="button" className={OUTLINE} aria-pressed={state === "muted"} onClick={() => dispatch({ type: state === "muted" ? "UNMUTE" : "MUTE" })}>
+                    {state === "muted" ? <Volume2 size={15} aria-hidden /> : <VolumeX size={15} aria-hidden />}
+                    {state === "muted" ? "Sound on" : "Mute"}
+                  </button>
+                </>
+              )}
+              {state === "error" && (
+                <>
+                  <button type="button" data-primary className={PRIMARY} onClick={() => onText()}>
+                    <Keyboard size={15} aria-hidden /> Type instead
+                  </button>
+                  <button type="button" className={OUTLINE} onClick={() => dispatch({ type: "RETRY" })}>
+                    <RotateCcw size={14} aria-hidden /> Try again
+                  </button>
+                  <Link href="/contact" data-booking className={QUIET}>
+                    Book a call
+                  </Link>
+                </>
+              )}
+              {state === "ended" && (
+                <>
+                  <button type="button" data-primary className={MAIN} onClick={() => onText()}>
+                    Return to the conversation
+                  </button>
+                  <button type="button" className={QUIET} onClick={() => dispatch({ type: "RESTART" })}>
+                    Start voice again
+                  </button>
+                </>
+              )}
+            </div>
+          </>
         )}
         {transcriptOpen && (
-          <ol aria-label="Transcript" tabIndex={0} className="mt-3 max-h-56 w-full space-y-2 overflow-y-auto rounded-panel border border-border p-4 text-left text-[13.5px] leading-relaxed">
+          <ol aria-label="Transcript" tabIndex={0} className="mt-5 max-h-56 w-full max-w-[560px] space-y-2 overflow-y-auto border-y border-border py-3 text-left text-[14.5px] leading-relaxed">
             {said.length === 0 && <li className="text-content-muted">Nothing has been said yet.</li>}
             {said.map((m) => (
               <li key={m.id}>
@@ -257,6 +245,23 @@ export default function VoiceView({ voice, dispatch, chat, failTranscription, de
           </ol>
         )}
       </div>
+      {state !== "ended" && (
+        <div className="flex shrink-0 flex-wrap items-center justify-center gap-1 px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-1">
+          <button type="button" className={SIDE} onClick={() => onText(state === "review" ? voice.transcript : undefined)}>
+            <Keyboard size={15} aria-hidden /> Switch to text
+          </button>
+          {!notice && (
+            <>
+              <button type="button" aria-expanded={transcriptOpen} className={SIDE} onClick={() => setTranscriptOpen((o) => !o)}>
+                <ScrollText size={15} aria-hidden /> {transcriptOpen ? "Hide transcript" : "Transcript"}
+              </button>
+              <button type="button" className={SIDE} onClick={() => dispatch({ type: "END" })}>
+                <X size={15} aria-hidden /> End voice
+              </button>
+            </>
+          )}
+        </div>
+      )}
     </div>
   );
 }

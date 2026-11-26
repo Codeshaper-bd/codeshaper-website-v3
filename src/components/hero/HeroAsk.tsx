@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { BRIEF_MAX, saveBrief } from "@/lib/briefHandoff";
 import { ArrowUp, Bot, Mic, Rocket, RefreshCw, CornerDownLeft, type LucideIcon } from "lucide-react";
 import type { Handoff } from "@/components/ai-prototype/Workspace";
+import type { Founder } from "@/lib/founders";
 
 /**
  * Hero project prompt, in the compact "AI input" pattern: one white input
@@ -51,7 +52,8 @@ const Workspace =
     ? dynamic(() => import("@/components/ai-prototype/Workspace"), { ssr: false })
     : null;
 
-export default function HeroAsk() {
+/** `founders` is given only to the prototype: the people its human handoff shows. */
+export default function HeroAsk({ founders = [] }: { founders?: Founder[] }) {
   const [value, setValue] = useState("");
   const [focused, setFocused] = useState(false);
   const [example, setExample] = useState(0);
@@ -193,7 +195,7 @@ export default function HeroAsk() {
             <kbd className="inline-flex h-5 items-center rounded-md border border-[#0b0f19]/10 bg-[#f6f7f9] px-1.5 font-sans text-[11px] text-[#4b5263]">
               <CornerDownLeft size={11} strokeWidth={2} aria-hidden />
             </kbd>
-            {Workspace ? "to start · prototype, nothing is sent" : "to continue · nothing is sent yet"}
+            {Workspace ? "Prototype · nothing is sent" : "to continue · nothing is sent yet"}
           </span>
           )}
           {Workspace && (
@@ -201,12 +203,12 @@ export default function HeroAsk() {
               <button
                 type="button"
                 onClick={() => openConsultation("voice")}
-                aria-label="Start a voice consultation (simulated)"
-                title="Talk instead (simulated)"
+                aria-label="Voice mode (simulated)"
+                title="Voice mode (simulated)"
                 className="inline-flex h-10 items-center gap-1.5 rounded-full px-3 text-[12.5px] font-semibold text-[#0b0f19] hover:bg-[#f3f2f7]"
               >
                 <Mic size={15} strokeWidth={2} aria-hidden />
-                Talk
+                Voice
               </button>
             </span>
           )}
@@ -227,6 +229,7 @@ export default function HeroAsk() {
       {/* mounted from the first opening on, so closing it keeps the conversation */}
       {Workspace && consultation.handoff && (
         <Workspace
+          founders={founders}
           open={consultation.open}
           handoff={consultation.handoff}
           onClose={() => setConsultation((c) => ({ ...c, open: false }))}

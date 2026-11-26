@@ -91,7 +91,7 @@ test("the sample voice transcript follows the conversation", () => {
 });
 
 test("the prototype never records, calls out or stores", () => {
-  const files = ["src/lib/ai/contract.ts", "src/lib/ai/mockConsultant.ts", "src/lib/ai/voiceMachine.ts", ...["Workspace.tsx", "Conversation.tsx", "Composer.tsx", "Cards.tsx", "BriefPanel.tsx", "VoiceView.tsx", "useConsultation.ts", "useDialog.ts", "catalog.ts"].map((f) => `src/components/ai-prototype/${f}`)];
+  const files = ["src/lib/ai/contract.ts", "src/lib/ai/mockConsultant.ts", "src/lib/ai/voiceMachine.ts", "src/lib/ai/present.ts", ...["Workspace.tsx", "Conversation.tsx", "Composer.tsx", "Cards.tsx", "BriefPanel.tsx", "VoiceView.tsx", "VoiceVisual.tsx", "useConsultation.ts", "useDialog.ts", "catalog.ts"].map((f) => `src/components/ai-prototype/${f}`)];
   for (const f of files) assert.doesNotMatch(readFileSync(f, "utf8"), /getUserMedia|MediaRecorder|SpeechRecognition|speechSynthesis|AudioContext|fetch\(|XMLHttpRequest|WebSocket|EventSource|sendBeacon|localStorage|sessionStorage|document\.cookie|dangerouslySetInnerHTML|gtag|dataLayer|\/api\//, f);
 });
 

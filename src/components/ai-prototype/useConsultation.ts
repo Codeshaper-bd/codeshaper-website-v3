@@ -20,7 +20,6 @@ export type Reply = {
   response?: AssistantResponse;
   problem?: Problem;
   retryAfter?: number;
-  feedback?: "up" | "down";
 };
 export type Said = { id: number; from: "visitor"; text: string };
 export type Message = Reply | Said;
@@ -150,7 +149,6 @@ export function useConsultation(announce: (text: string) => void) {
     stop,
     reset,
     saveBriefEdits,
-    rate: (id: number, feedback: "up" | "down") => patch(id, { feedback }),
     session: () => session.current,
   };
 }
