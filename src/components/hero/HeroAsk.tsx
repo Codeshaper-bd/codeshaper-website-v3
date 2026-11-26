@@ -1,25 +1,28 @@
 "use client";
 
-import { useEffect, useLayoutEffect, useRef, useState, type KeyboardEvent, type MouseEvent } from "react";
+import { useEffect, useLayoutEffect, useRef, useState, type FormEvent, type KeyboardEvent, type MouseEvent } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { BRIEF_MAX, saveBrief } from "@/lib/briefHandoff";
 import { ArrowUp, Bot, Rocket, RefreshCw, CornerDownLeft, type LucideIcon } from "lucide-react";
 
 /**
  * Hero project prompt, in the compact "AI input" pattern: one white input
  * card, a round send button, and an idea tray tucked underneath.
  *
- * Honest by design: there is no chatbot. Sending takes the visitor to
- * /contact with their text prefilled in the contact form's brief field
- * (ContactForm reads ?brief=). It's a plain GET form, so it also works
- * before hydration and without JavaScript.
+ * Honest by design: there is no chatbot, and nothing is sent from here. The
+ * button opens /contact with the visitor's text already in the contact form
+ * (lib/briefHandoff: kept in this tab, never in the address). Before the page's
+ * script is ready, or without it, the plain POST form still works.
  *
- *  · Enter sends, Shift+Enter adds a line (chat convention); an empty box
- *    doesn't send, the click just focuses the input
+ *  · Enter continues, Shift+Enter adds a line (chat convention); an empty box
+ *    doesn't continue, the click just focuses the input
  *  · the input starts at one line and grows to 5 lines, then scrolls
  *  · while empty and unfocused the hint cycles through example ideas
  *    (static under reduced motion, paused offscreen); a visually hidden
  *    <label> and the native placeholder stay for assistive tech
- *  · tray ideas are real links to /contact?brief=…; with JS they fill the box
- *  · the send button reads as inactive (grey) until there's text
+ *  · tray ideas are real links to /contact; with JS they fill the box
+ *  · the button reads as inactive (grey) until there's text
  */
 const IDEAS: { label: string; icon: LucideIcon; brief: string }[] = [
   { label: "AI agent", icon: Bot, brief: "We'd like an AI agent that automates part of our workflow: " },
@@ -34,7 +37,6 @@ const EXAMPLES = [
   "a mobile app for our field team…",
 ];
 
-const MAX = 1000;
 const MAX_LINES = 5;
 
 export default function HeroAsk() {
@@ -44,6 +46,14 @@ export default function HeroAsk() {
   const formRef = useRef<HTMLFormElement>(null);
   const areaRef = useRef<HTMLTextAreaElement>(null);
   const hasText = value.trim().length > 0;
+  const router = useRouter();
+
+  // keep the words in this tab and open the form; if storage is blocked, the form's own POST goes ahead
+  const onSubmit = (e: FormEvent<HTMLFormElement>) => {
+    if (!saveBrief(areaRef.current?.value ?? "")) return;
+    e.preventDefault();
+    router.push("/contact");
+  };
 
   // grow with content: one line → MAX_LINES, then scroll
   useLayoutEffect(() => {
@@ -103,8 +113,9 @@ export default function HeroAsk() {
     <div className="w-full max-w-[600px]">
       <form
         ref={formRef}
-        action="/contact"
-        method="get"
+        action="/contact/continue"
+        method="post"
+        onSubmit={onSubmit}
         className="relative z-10 rounded-[20px] border border-[#0b0f19]/[0.08] bg-white text-left shadow-[0_1px_2px_rgba(11,15,25,0.04),0_12px_32px_-12px_rgba(11,15,25,0.18)] transition-[border-color,box-shadow] duration-200 focus-within:border-[#7c5cff]/45 focus-within:shadow-[0_0_0_4px_rgba(124,92,255,0.12),0_12px_32px_-12px_rgba(11,15,25,0.18)]"
       >
         <label htmlFor="hero-brief" className="sr-only">
@@ -116,13 +127,13 @@ export default function HeroAsk() {
             ref={areaRef}
             name="brief"
             rows={1}
-            maxLength={MAX}
+            maxLength={BRIEF_MAX}
             value={value}
             onChange={(e) => setValue(e.target.value)}
             onFocus={() => setFocused(true)}
             onBlur={() => setFocused(false)}
             onKeyDown={onKeyDown}
-            enterKeyHint="send"
+            enterKeyHint="go"
             placeholder={`What would you like to build? ${EXAMPLES[0]}`}
             // the global unlayered :focus-visible outline would draw a box
             // inside the card; the card's focus-within ring marks focus instead
@@ -150,13 +161,13 @@ export default function HeroAsk() {
             <kbd className="inline-flex h-5 items-center rounded-md border border-[#0b0f19]/10 bg-[#f6f7f9] px-1.5 font-sans text-[11px] text-[#4b5263]">
               <CornerDownLeft size={11} strokeWidth={2} aria-hidden />
             </kbd>
-            to send · goes straight to our team
+            to continue · nothing is sent yet
           </span>
           <button
             type="submit"
             onClick={onSendClick}
-            aria-label="Send to our team"
-            title="Send to our team"
+            aria-label="Continue to the contact form"
+            title="Continue to the contact form"
             className={`ml-auto grid h-9 w-9 shrink-0 place-items-center rounded-full transition-[background-color,color,transform] duration-200 active:scale-[0.94] ${
               hasText ? "bg-[#0b0f19] text-white hover:bg-[#262b3a]" : "bg-[#eceef2] text-[#8a90a0]"
             }`}
@@ -171,15 +182,15 @@ export default function HeroAsk() {
         <div className="no-scrollbar flex items-center gap-1 overflow-x-auto [mask-image:linear-gradient(to_right,black_82%,transparent)] sm:justify-center sm:[mask-image:none]">
           <span className="shrink-0 px-2 text-[12px] font-medium text-[#4b5263]">Try</span>
           {IDEAS.map((idea) => (
-            <a
+            <Link
               key={idea.label}
-              href={`/contact?brief=${encodeURIComponent(idea.brief)}`}
+              href="/contact"
               onClick={(e) => applyIdea(e, idea.brief)}
               className="inline-flex h-8 shrink-0 items-center gap-1.5 rounded-full px-2.5 text-[12.5px] font-medium text-[#1f2433] transition-colors duration-200 hover:bg-white/80"
             >
               <idea.icon size={13} strokeWidth={2} aria-hidden className="text-[#5b4fd6]" />
               {idea.label}
-            </a>
+            </Link>
           ))}
         </div>
       </div>

@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { saveBrief } from "@/lib/briefHandoff";
 import { ArrowRight, ArrowUpRight, Check, Code2, ExternalLink, Target, Users, X } from "lucide-react";
 import Flag from "@/components/system/Flag";
 import CaseStudyVideo from "@/components/case-studies/CaseStudyVideo";
@@ -59,7 +60,11 @@ export default function CaseStudyDialogBody({ cs, accent, onClose }: Props) {
   ].filter((s) => s.value);
   // only screens we host: stock placeholders (picsum etc.) never pass as the client's product
   const gallery = (cs.gallery ?? []).filter((g) => g.src.startsWith("/"));
-  const brief = `/contact?brief=${encodeURIComponent(`I'd like something like ${cs.project}: `)}`;
+  // the words wait in this tab (lib/briefHandoff), never in the address
+  const startProject = () => {
+    saveBrief(`I'd like something like ${cs.project}: `);
+    onClose();
+  };
 
   return (
     <div className="svc-glass relative mx-auto min-h-full w-full max-w-[1760px] rounded-[24px] p-5 pt-16 font-urbanist sm:p-8 sm:pt-10 lg:p-10 xl:p-12">
@@ -96,7 +101,7 @@ export default function CaseStudyDialogBody({ cs, accent, onClose }: Props) {
         </h2>
         <p className="mt-4 max-w-[62ch] text-[15.5px] leading-relaxed text-ink-dim">{cs.summary}</p>
         <div className="mt-7 flex flex-wrap gap-3">
-          <Link href={brief} onClick={onClose} className="cta-glossy inline-flex h-11 items-center gap-1.5 rounded-full px-5 text-[14px] font-semibold text-white">
+          <Link href="/contact" onClick={startProject} className="cta-glossy inline-flex h-11 items-center gap-1.5 rounded-full px-5 text-[14px] font-semibold text-white">
             Start a similar project
             <ArrowRight size={15} strokeWidth={2} aria-hidden />
           </Link>
@@ -280,7 +285,7 @@ export default function CaseStudyDialogBody({ cs, accent, onClose }: Props) {
         <h3 className="text-[24px] font-semibold tracking-[-0.015em] text-[#272b3d] sm:text-[28px]">Have a project like {cs.project}?</h3>
         <p className="-mt-2 max-w-[46ch] text-[15px] text-ink-dim">Tell us what you want to build, and we will plan the first steps with you.</p>
         <div className="flex flex-wrap justify-center gap-3">
-          <Link href={brief} onClick={onClose} className="cta-glossy inline-flex h-11 items-center gap-1.5 rounded-full px-6 text-[14px] font-semibold text-white">
+          <Link href="/contact" onClick={startProject} className="cta-glossy inline-flex h-11 items-center gap-1.5 rounded-full px-6 text-[14px] font-semibold text-white">
             Start a project
             <ArrowRight size={15} strokeWidth={2} aria-hidden />
           </Link>

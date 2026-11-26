@@ -2,6 +2,7 @@
 
 import type { ComponentType } from "react";
 import Link from "next/link";
+import { saveBrief } from "@/lib/briefHandoff";
 import { ArrowRight, X } from "lucide-react";
 import type { IconType } from "react-icons";
 import { servicePath, type Service, type ServiceGroup } from "@/data/services";
@@ -37,7 +38,11 @@ export default function ServiceDialogBody({ group, headline, services, tools, do
   const names = new Set(services.flatMap((s) => [s.title, s.menuLabel]));
   const projects = CASE_STUDIES.filter((c) => c.services.some((s) => names.has(s)));
   const review = REAL_REVIEWS.find((r) => r.caseSlug && projects.some((p) => p.slug === r.caseSlug));
-  const brief = `/contact?brief=${encodeURIComponent(`I'm interested in ${group.name}: `)}`;
+  // the words wait in this tab (lib/briefHandoff), never in the address
+  const startProject = () => {
+    saveBrief(`I'm interested in ${group.name}: `);
+    onClose();
+  };
 
   return (
     <div className="svc-glass relative mx-auto max-w-[1120px] rounded-[24px] p-5 pt-16 font-urbanist sm:p-9 sm:pt-10 lg:p-12">
@@ -63,7 +68,7 @@ export default function ServiceDialogBody({ group, headline, services, tools, do
           </h2>
           <p className="mt-4 max-w-[52ch] text-[16px] leading-relaxed text-ink-dim">{group.focus}</p>
           <div className="mt-7 flex flex-wrap gap-3">
-            <Link href={brief} onClick={onClose} className="cta-glossy inline-flex h-11 items-center gap-1.5 rounded-full px-5 text-[14px] font-semibold text-white">
+            <Link href="/contact" onClick={startProject} className="cta-glossy inline-flex h-11 items-center gap-1.5 rounded-full px-5 text-[14px] font-semibold text-white">
               Start a project
               <ArrowRight size={15} strokeWidth={2} aria-hidden />
             </Link>
@@ -177,7 +182,7 @@ export default function ServiceDialogBody({ group, headline, services, tools, do
         <h3 className="text-[24px] font-semibold tracking-[-0.015em] text-[#272b3d] sm:text-[28px]">Get started with {group.name}</h3>
         <p className="-mt-2 max-w-[46ch] text-[15px] text-ink-dim">Tell us what you want to build, and we will plan the first steps with you.</p>
         <div className="flex flex-wrap justify-center gap-3">
-          <Link href={brief} onClick={onClose} className="cta-glossy inline-flex h-11 items-center gap-1.5 rounded-full px-6 text-[14px] font-semibold text-white">
+          <Link href="/contact" onClick={startProject} className="cta-glossy inline-flex h-11 items-center gap-1.5 rounded-full px-6 text-[14px] font-semibold text-white">
             Start a project
             <ArrowRight size={15} strokeWidth={2} aria-hidden />
           </Link>
