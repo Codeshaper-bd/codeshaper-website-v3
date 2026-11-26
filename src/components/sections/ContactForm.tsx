@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, type FormEvent } from "react";
 import { SERVICE_GROUPS } from "@/data/services";
 import { Code2, Globe, HelpCircle, LifeBuoy, MessageCircleQuestion, Network, Package, PenTool, Rocket, Sparkles, type LucideIcon } from "lucide-react";
 import Magnetic from "@/components/system/Magnetic";
+import { takeBrief } from "@/lib/briefHandoff";
 import ListSelect, { type ListOption } from "@/components/system/ListSelect";
 import { BUDGETS, CONTACT_REASONS, NEW_PROJECT, type ContactReason } from "@/lib/contactOptions";
 
@@ -48,10 +49,18 @@ export default function ContactForm({ bare = false, formId = "contact-form" }: {
   // one id per enquiry: sending twice never saves it twice
   const submissionId = useRef("");
 
-  // Prefill the brief from the homepage hero prompt (/contact?brief=...).
+  // Prefill the message from the hero box or a "Start a project" button (lib/briefHandoff).
   useEffect(() => {
-    const brief = new URLSearchParams(window.location.search).get("brief");
-    if (brief && briefRef.current && !briefRef.current.value) briefRef.current.value = brief.slice(0, 1000);
+    // an old bookmark may still carry words in its address: take them out of the address bar, unused
+    const url = new URL(window.location.href);
+    if (url.searchParams.has("brief")) {
+      url.searchParams.delete("brief");
+      window.history.replaceState(window.history.state, "", url);
+    }
+    if (briefRef.current && !briefRef.current.value) {
+      const brief = takeBrief();
+      if (brief) briefRef.current.value = brief;
+    }
   }, []);
 
   const FALLBACK_ERROR = "Something went wrong sending that — please try again.";
@@ -100,7 +109,7 @@ export default function ContactForm({ bare = false, formId = "contact-form" }: {
           </p>
         </div>
       ) : (
-        <form id={formId} onSubmit={onSubmit} onInvalid={onInvalid} data-show-errors={showErrors} className="scroll-mt-28 space-y-4" aria-label="Project inquiry">
+        <form id={formId} action="/contact/continue" method="post" onSubmit={onSubmit} onInvalid={onInvalid} data-show-errors={showErrors} className="scroll-mt-28 space-y-4" aria-label="Project inquiry">
           <input name="company_website" type="text" tabIndex={-1} autoComplete="off" aria-hidden="true" className="absolute -left-[9999px] h-px w-px opacity-0" />
           <label className="block">
             <span className={labelCls}>Name</span>

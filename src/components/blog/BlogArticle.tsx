@@ -27,6 +27,7 @@ import { BLOG_POSTS, getPostBySlug, getRelatedPosts, slugifyHeading, type BlogPo
 import { postDetail, type PostDetail } from "@/lib/details";
 import { SITE_URL } from "@/lib/site";
 import blog from "@/content/blog.json";
+import JsonLd from "@/components/system/JsonLd";
 
 /**
  * Blog article (owner, 24 Nov 2026: more organized, easier to read).
@@ -148,10 +149,10 @@ export default function BlogArticle({ post, detail = postDetail(post.slug) }: { 
   return (
     <SiteShell>
       <div className="theme-light">
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(ARTICLE_JSON_LD) }} />
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(BREADCRUMB_JSON_LD) }} />
-        {FAQ_JSON_LD && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(FAQ_JSON_LD) }} />}
-        {ITEM_LIST_JSON_LD && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(ITEM_LIST_JSON_LD) }} />}
+        <JsonLd data={ARTICLE_JSON_LD} />
+        <JsonLd data={BREADCRUMB_JSON_LD} />
+        {FAQ_JSON_LD && <JsonLd data={FAQ_JSON_LD} />}
+        {ITEM_LIST_JSON_LD && <JsonLd data={ITEM_LIST_JSON_LD} />}
 
         {/* hero: the shared page hero */}
         <div className="bg-gradient-to-b from-white from-30% to-light-surface px-3 pb-3 sm:px-4 sm:pb-4">

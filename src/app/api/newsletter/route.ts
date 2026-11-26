@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { isEmail, submit, text, tooMany } from "@/lib/intake";
+import { refuseJsonPost } from "@/lib/requestGuard";
 
 export const runtime = "nodejs";
 
@@ -7,6 +8,9 @@ const fail = (error: string, status = 400) => NextResponse.json({ ok: false, err
 
 /** Newsletter signup. Saved in the CMS (see lib/intake). */
 export async function POST(request: Request) {
+  // first, so a refused request uses up nobody's allowance
+  const refused = refuseJsonPost(request);
+  if (refused) return refused;
   if (tooMany(request, "newsletter")) return fail("Too many tries in a short time. Please try again in ten minutes.", 429);
 
   let body: Record<string, unknown>;

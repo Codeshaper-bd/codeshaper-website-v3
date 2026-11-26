@@ -242,7 +242,7 @@ export default function BookingForm({ title, text, button, person }: { title: st
           {person && <PersonStrip p={person} />}
           <h3 className="font-urbanist text-[22px] font-bold tracking-tight text-ink">{title}</h3>
           <p className="mt-1.5 font-urbanist text-[14px] leading-relaxed text-ink-dim">{text}</p>
-          <form onSubmit={submit} className="mt-6 space-y-4" aria-label={title}>
+          <form action="/contact/continue" method="post" onSubmit={submit} className="mt-6 space-y-4" aria-label={title}>
             <input name="company_website" type="text" tabIndex={-1} autoComplete="off" aria-hidden="true" className="absolute -left-[9999px] h-px w-px opacity-0" />
             <div className="grid gap-4 sm:grid-cols-2">
               <label className="block">

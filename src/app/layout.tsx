@@ -8,6 +8,7 @@ import { SITE } from "@/lib/siteSettings";
 import { DEFAULT_SHARE_IMAGE } from "@/lib/share";
 import { contactChannels, PUBLISHED } from "@/lib/publishedContact";
 import { OFFICE_LIST } from "@/lib/offices";
+import JsonLd from "@/components/system/JsonLd";
 
 /**
  * Typography — Urbanist, self-hosted through next/font/local so Next emits
@@ -149,8 +150,8 @@ export default function RootLayout({
       */}
       <body suppressHydrationWarning>
         {children}
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(ORG_JSON_LD).replace(/</g, "\\u003c") }} />
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(WEBSITE_JSON_LD) }} />
+        <JsonLd data={ORG_JSON_LD} />
+        <JsonLd data={WEBSITE_JSON_LD} />
       </body>
     </html>
   );

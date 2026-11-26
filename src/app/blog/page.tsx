@@ -7,6 +7,7 @@ import BlogBrowser from "@/components/blog/BlogBrowser";
 import BlogFinalCta from "@/components/blog/BlogFinalCta";
 import { BLOG_POSTS } from "@/lib/blog";
 import { SITE_URL } from "@/lib/site";
+import JsonLd from "@/components/system/JsonLd";
 
 export const metadata: Metadata = mainMeta("blog", {
   title: "Blog — Product, Engineering & AI Insights",
@@ -35,8 +36,8 @@ export default function BlogIndexPage() {
   return (
     <SiteShell>
       <div className="theme-light">
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(BLOG_JSON_LD) }} />
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(BREADCRUMB_JSON_LD) }} />
+        <JsonLd data={BLOG_JSON_LD} />
+        <JsonLd data={BREADCRUMB_JSON_LD} />
 
         <BlogHero />
         <Suspense>

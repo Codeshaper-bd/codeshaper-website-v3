@@ -12,6 +12,7 @@ import AuthorReads from "@/components/blog/AuthorReads";
 import { TEAM_NAME, type Author } from "@/lib/authors";
 import type { BlogPost } from "@/lib/blog";
 import { SITE_URL } from "@/lib/site";
+import JsonLd from "@/components/system/JsonLd";
 
 const LINKEDIN_PATH =
   "M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5ZM3 9h4v12H3V9Zm7 0h3.8v1.7h.05c.53-1 1.83-2.05 3.77-2.05 4.03 0 4.78 2.65 4.78 6.1V21h-4v-5.6c0-1.34-.02-3.06-1.87-3.06-1.87 0-2.16 1.46-2.16 2.96V21h-4V9Z";
@@ -47,7 +48,7 @@ export default function AuthorPage({ author, posts }: { author: Author; posts: B
   return (
     <SiteShell>
       <div className="theme-light">
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(PROFILE_JSON_LD) }} />
+        <JsonLd data={PROFILE_JSON_LD} />
 
         <div className="bg-gradient-to-b from-white from-30% to-light-surface px-3 pb-3 sm:px-4 sm:pb-4">
           <section className="page-hero theme-light relative isolate overflow-hidden rounded-b-[28px] bg-canvas px-6 pb-14 pt-32 sm:rounded-b-[32px] lg:px-10 lg:pb-16 lg:pt-36">

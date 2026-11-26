@@ -29,6 +29,7 @@ Everything is written once in `ai/` (map and how to extend: [`ai/README.md`](ai/
 |---|---|
 | Dev server | `pnpm dev` (port 3000 is the owner's: never kill it; use 3100+ for your own) |
 | Type check | `npx tsc --noEmit -p .` |
+| All website checks | `pnpm check` (types, lint, tests, an isolated production build that leaves `.next` and `src/content` alone) |
 | Pull CMS content | `pnpm content:sync` |
 | Screenshots (design checks) | `node scripts/ai/screenshot.mjs --url "/?intro=off" --selector "#products-heading"` |
 | CMS (in `../codeshaper-cms`) | `./dc php artisan test` · `./dc vendor/bin/pint -q` · back up before migrations: `./dc php artisan backup:run --only-db` |

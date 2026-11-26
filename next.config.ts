@@ -1,5 +1,6 @@
 import type { NextConfig } from "next";
 import { existsSync, readFileSync } from "node:fs";
+import { securityHeaderRules } from "./src/lib/securityHeaders.mjs";
 
 // read, not imported: importing it would restart the dev server on every change
 const REDIRECTS = "src/content/redirects.json";
@@ -12,6 +13,10 @@ const nextConfig: NextConfig = {
   // A separate output folder (NEXT_DIST_DIR=.next-prod) lets a production
   // build run for audits while the dev server keeps using .next.
   distDir: process.env.NEXT_DIST_DIR || ".next",
+  poweredByHeader: false,
+  async headers() {
+    return securityHeaderRules();
+  },
   /**
    * 301s (statusCode, not `permanent: true`, which sends 308) for:
    *  - URLs from the previous live site, mapped onto the new service structure

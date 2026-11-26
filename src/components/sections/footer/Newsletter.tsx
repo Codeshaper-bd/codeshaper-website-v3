@@ -65,7 +65,7 @@ export default function Newsletter() {
               {COPY.done}
             </p>
           ) : (
-            <form onSubmit={submit} className="mt-5" aria-label="Subscribe to the newsletter">
+            <form action="/newsletter/subscribe" method="post" onSubmit={submit} className="mt-5" aria-label="Subscribe to the newsletter">
               <input name="company_website" type="text" tabIndex={-1} autoComplete="off" aria-hidden="true" className="absolute -left-[9999px] h-px w-px opacity-0" />
               <div className="group/nl flex items-center gap-2 rounded-full border border-[#0b0f19]/[0.09] bg-white p-1.5 pl-5 shadow-[0_1px_2px_rgba(11,15,25,0.04),0_18px_40px_-28px_rgba(11,15,25,0.35)] transition-[border-color,box-shadow] duration-200 hover:border-[#0b0f19]/[0.16] focus-within:border-[#615fff] focus-within:shadow-[0_0_0_4px_rgba(97,95,255,0.12),0_18px_40px_-28px_rgba(11,15,25,0.35)]">
                 <label htmlFor="newsletter-email" className="sr-only">

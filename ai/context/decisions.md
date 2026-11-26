@@ -2,6 +2,75 @@
 
 Standing decisions from the owner. They override general best practice. Add new ones at the top with a date; never delete. Mark replaced ones as superseded.
 
+## Integration checkpoint (owner's brief)
+
+| Date | Decision |
+|---|---|
+| 2026-11-26 | **Component refinement accepted for local integration**, subject to the owner's visual confirmation: commit, merge with the gateway, connect the conversation to the fake backend; contact, booking, brief extraction and voice stay simulated; add an accessible idle-expiry warning. Remote push (private only) and worktree removal need separate approval. No deployment, Phase 01D or change to main. |
+
+## Component style and integration checkpoint (owner's briefs after the revision)
+
+| Date | Decision |
+|---|---|
+| 2026-11-26 | **Canvas components: compact, flat, editorial.** Information on the background without borders or shadows; a white surface only where something is filled in, checked or confirmed; shadow only on the composer and floating elements; one main action per component; 44px touch targets on phones. Hero, background, header, one column, transitions, voice structure and workflows stay as they are. |
+| 2026-11-26 | **Phase 01C and the UX02 conversational design are accepted for local development.** Integration of the two starts only after the owner approves the component refinement; reuse existing worktrees; worktree removal needs approval. |
+| 2026-11-26 | **Voice look A (spatial orb)** preferred, subject to final visual review. Avatar call stays deferred as optional browser-based research. |
+| 2026-11-26 | **For synthetic development only:** sessions last at most 24 hours and end after 30 idle minutes. The compact first-use note stays; production wording and retention need legal approval. A Cal.com feasibility check is approved for later, without real bookings. |
+
+## Conversational website (owner's UX02 brief and revision)
+
+| Date | Decision |
+|---|---|
+| 2026-11-26 | **Start anywhere. Complete everything within the chosen experience.** Once a visitor starts an AI conversation, brief review, contact, inquiry confirmation, booking and results happen inside it, with no redirect to a contact page, booking window, drawer or external form by default. The website's own Contact and Book a Call stay as they are for everyone else. |
+| 2026-11-26 | **Supersedes the modal window and the project-brief drawer:** a full-viewport canvas on the homepage hero's background, no visible container, one centred column; the hero box travels into the conversation and back. It keeps dialog accessibility behaviour. |
+| 2026-11-26 | Brief: compact inline card of what is known, corrected in plain words, never confirmed automatically. Contact details are reviewed and confirmed, kept out of AI processing, and submitted through the existing Leads system; bookings through the existing booking integration. No success is shown without a confirmed backend result. |
+| 2026-11-26 | Voice stays a dedicated mode on the same conversation and background; two looks (spatial orb, editorial waveform) are shown for the owner to choose. A future avatar call is allowed for in the design, not built. |
+| 2026-11-26 | Hero: no contact link inside the box; "Voice" (not "Talk"); one send button. First-use note is inline in the conversation; its wording is provisional until privacy and legal review. Prototype only: all actions simulated; no push or deploy. |
+
+## AI gateway (owner's Phase 01C brief)
+
+| Date | Decision |
+|---|---|
+| 2026-11-26 | **Phase 01C (local only):** same-origin Next.js gateway; the CMS keeps AI logic, money and sessions; server-issued sessions; signed gateway requests; a repeated delivery never charges twice; fake provider only. One response contract, owned by the CMS. Development defaults for session life (24 h) and short-lived reply storage are **proposals pending privacy approval**; public conversation retention is not approved. No live provider, real visitor data, push or deploy. |
+
+## AI consultation experience (owner's Phase 01B and UX01 briefs)
+
+| Date | Decision |
+|---|---|
+| 2026-11-26 | **AI consultation layout:** conversation first, interface on demand: one centred column in a near-full-screen, dismissible window opened from the hero box. **Rejected:** a permanent right-hand project brief column, a permanent chat history column, an unsolicited floating chatbot. Cards only when relevant; the brief is reviewed on demand. Hero, heading, globe, navigation and background stay as they are; human contact stays one step away. |
+| 2026-11-26 | **Hero actions in the AI prototype:** no "Contact form" link inside the hero box; the line under the proof ("Rather talk? Book a call") becomes "Prefer to write? Contact form". Booking stays in the navigation. With the prototype off, the hero is unchanged. |
+| 2026-11-26 | **Voice:** a separate voice screen sharing the same conversation, an abstract orb (no avatar or talking head). A simulated waveform must never look like real recording; the real one must react to real audio. |
+| 2026-11-26 | **UX01 is a prototype only:** development flag, scripted replies, no backend, AI provider, microphone, lead creation or visitor analytics; with the flag off the contact journey is unchanged; production visitors cannot reach it. |
+| 2026-11-26 | **Phase 01B (AI core, in the CMS):** AI off by default, fake provider only, $10 a month and $0.75 a day, never above $25, 80% warning, stop at 100%. No public AI, live provider, push or deploy. Each later phase needs its own approval. |
+
+## AI Studio (owner's Phase 00 brief)
+
+| Date | Decision |
+|---|---|
+| 2026-11-26 | **AI Studio constraints:** CMS stays the source of truth; reuse the existing Leads module (no separate AI CRM or duplicate leads); anonymous chats create no lead and identifiable submission needs explicit consent; AI Insights live inside lead details, aggregate dashboard deferred; AI API budget $10/month, configurable up to $25; one economical provider first behind a provider-independent interface; public AI never gets unrestricted database, shell, email, network or CMS write access. Phase 00 = audit and plan only; its recommendations are proposals until approved. |
+
+## Architecture, privacy and admin address (owner's Phase 01A.1 brief)
+
+| Date | Decision |
+|---|---|
+| 2026-11-26 | **Admin address: `admin.codeshaper.net`** for the signed-in CMS; `codeshaper.net` is the public website. **Supersedes** the same-domain `codeshaper.net/admin` target (and the 26 Nov "plan only" row below). Prepared and rehearsed locally only; live DNS, nginx and servers need a separate approval. |
+| 2026-11-26 | **"We got your message" email:** a fixed generic greeting; nothing the visitor typed, **including the name**, appears in its subject or body. Design unchanged. |
+| 2026-11-26 | **AI architecture:** continue with a modular Laravel subsystem and a thin Next.js gateway; keep the CMS and Leads. All AI stays **off by default**. |
+| 2026-11-26 | **External AI processing:** prepare for it, but **no real visitor data** may be processed until the privacy policy, notice, retention, provider review and legal approval are done. Development and tests use synthetic data. The 22 Nov lead-privacy rule stays in force until replaced. |
+| 2026-11-26 | **AI budget:** $10 a month, configurable up to $25. No provider is permanently chosen; no paid account, billing or paid API call yet. |
+| 2026-11-26 | **Next phases:** 01B AI core with a fake provider, flags, kill switch and budget ledger; 01C sessions, gateway and streaming; 01D live provider check and minimal admin controls. Each needs its own approval. |
+| 2026-11-26 | **Commits:** local commits are allowed for verified work; **no push, no deploy**; security-sensitive planning documents stay out of public commits. |
+
+## Stabilisation and security (owner's Phase 01A brief)
+
+| Date | Decision |
+|---|---|
+| 2026-11-26 | **"We got your message" email:** it must not repeat what the visitor typed (the quoted message is removed; the design stays). The team's alert and the CMS lead keep the whole enquiry. This changes the 24 Nov entry only in what the visitor's email shows. |
+| 2026-11-26 | **Hero box:** the visitor's words never go into the web address; the action is labelled as continuing to the contact form, not as sending. Hero design and prefill stay. |
+| 2026-11-26 | **Website ↔ CMS:** separate, least-privilege secrets for each operation, with a backward-compatible move and rotation. |
+| 2026-11-26 | **Admin on a separate origin (`admin.codeshaper.net`):** plan it only. The agreed same-domain arrangement stays until the owner explicitly approves the move. |
+| 2026-11-26 | **Phase 01A** is stabilisation only: no chatbot, voice, knowledge engine or live AI provider; no commit, push or deploy without permission. Countries served stays **60+**; supporting evidence is still unverified. |
+
 ## Design
 
 | Date | Decision |

@@ -36,6 +36,10 @@ export default function ListSelect({
   onChange?: (v: string) => void;
 }) {
   const [own, setOwn] = useState("");
+  // required only once this script runs: before that nobody can choose, and the browser would silently
+  // refuse to submit the whole form (it must still POST to the plain page that says nothing was sent)
+  const [ready, setReady] = useState(false);
+  useEffect(() => setReady(true), []);
   const value = controlled ?? own;
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(0);
@@ -102,7 +106,7 @@ export default function ListSelect({
       <input
         name={name}
         value={value}
-        required={required}
+        required={required && ready}
         onChange={() => {}}
         tabIndex={-1}
         aria-hidden

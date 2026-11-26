@@ -7,6 +7,7 @@ import Reveal from "@/components/system/Reveal";
 import { SectionEyebrow, SectionTitle } from "@/components/system/SectionHeading";
 import { SERVICE_GROUPS } from "@/data/services";
 import { homeCopy, type CopyOf } from "@/lib/homeCopy";
+import JsonLd from "@/components/system/JsonLd";
 
 /** "A, B, C, D, and E" — the five group names, in locked order. */
 function listGroups(): string {
@@ -143,12 +144,7 @@ export default function FAQ({ copy }: { copy?: CopyOf<"faq"> }) {
         </div>
       </div>
 
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(faqJsonLd(faqs)).replace(/</g, "\\u003c"),
-        }}
-      />
+      <JsonLd data={faqJsonLd(faqs)} />
     </section>
     </div>
   );

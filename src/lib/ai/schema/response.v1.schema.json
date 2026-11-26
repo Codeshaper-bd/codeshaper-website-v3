@@ -1,0 +1,363 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "codeshaper.ai.response/v1",
+  "title": "CodeShaper AI response, version 1",
+  "description": "The one authoritative shape of an answer. The website keeps a copy and checks the same cases (fixtures/response.v1.json). `text` is plain text, never HTML or Markdown to execute. Components and actions come from this closed list and are chosen by server code; content is named by slug and looked up in published content by whoever shows it. `request_id` is the caller's identifier and stays the same however often that request is delivered. Lengths count Unicode characters.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "contract",
+    "version",
+    "request_id",
+    "message_id",
+    "status",
+    "replayed",
+    "text",
+    "sources",
+    "actions",
+    "components",
+    "error",
+    "session"
+  ],
+  "properties": {
+    "contract": {
+      "const": "codeshaper.ai.response"
+    },
+    "version": {
+      "const": 1
+    },
+    "request_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 36
+    },
+    "message_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 40
+    },
+    "status": {
+      "enum": [
+        "completed",
+        "truncated",
+        "refused",
+        "error"
+      ]
+    },
+    "text": {
+      "type": "string",
+      "maxLength": 16000
+    },
+    "sources": {
+      "type": "array",
+      "maxItems": 5,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "title",
+          "path"
+        ],
+        "properties": {
+          "title": {
+            "type": "string",
+            "maxLength": 120
+          },
+          "path": {
+            "type": "string",
+            "pattern": "^/(?!/)[A-Za-z0-9/_-]*$"
+          }
+        }
+      }
+    },
+    "actions": {
+      "type": "array",
+      "maxItems": 4,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "type",
+          "label"
+        ],
+        "properties": {
+          "type": {
+            "enum": [
+              "suggest_reply",
+              "book_consultation",
+              "open_contact",
+              "review_brief"
+            ]
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          }
+        }
+      }
+    },
+    "components": {
+      "type": "array",
+      "maxItems": 3,
+      "items": {
+        "oneOf": [
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "type",
+              "slugs"
+            ],
+            "properties": {
+              "type": {
+                "enum": [
+                  "services",
+                  "case_studies",
+                  "engagement_models"
+                ]
+              },
+              "slugs": {
+                "type": "array",
+                "minItems": 1,
+                "maxItems": 3,
+                "items": {
+                  "type": "string",
+                  "pattern": "^[a-z0-9-]{1,120}$"
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "type",
+              "items"
+            ],
+            "properties": {
+              "type": {
+                "const": "technologies"
+              },
+              "items": {
+                "type": "array",
+                "minItems": 1,
+                "maxItems": 6,
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "name",
+                    "reason"
+                  ],
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "maxLength": 60
+                    },
+                    "reason": {
+                      "type": "string",
+                      "maxLength": 200
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "type",
+              "fields"
+            ],
+            "properties": {
+              "type": {
+                "const": "project_brief"
+              },
+              "fields": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "goal": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "maxLength": 600
+                  },
+                  "users": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "maxLength": 300
+                  },
+                  "features": {
+                    "type": "array",
+                    "maxItems": 12,
+                    "items": {
+                      "type": "string",
+                      "maxLength": 160
+                    }
+                  },
+                  "platforms": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "maxLength": 200
+                  },
+                  "integrations": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "maxLength": 300
+                  },
+                  "timeline": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "maxLength": 120
+                  },
+                  "budget": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "maxLength": 60
+                  },
+                  "constraints": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "maxLength": 300
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "type"
+            ],
+            "properties": {
+              "type": {
+                "enum": [
+                  "consultation",
+                  "contact_preview"
+                ]
+              }
+            }
+          }
+        ]
+      }
+    },
+    "error": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "additionalProperties": false,
+      "required": [
+        "code",
+        "retryable",
+        "retry"
+      ],
+      "properties": {
+        "code": {
+          "enum": [
+            "ai_disabled",
+            "invalid_request",
+            "too_large",
+            "conflict",
+            "duplicate",
+            "in_progress",
+            "rate_limited",
+            "session_limit",
+            "session_expired",
+            "forbidden",
+            "not_found",
+            "busy",
+            "budget_exhausted",
+            "cancelled",
+            "unavailable",
+            "invalid_response"
+          ]
+        },
+        "retryable": {
+          "type": "boolean"
+        },
+        "retry": {
+          "enum": [
+            "same_id",
+            "new_attempt",
+            "none"
+          ],
+          "description": "same_id: nothing was charged, send the same request again. new_attempt: only on the visitor's wish, with a new identifier and retry_of; it may be charged again."
+        },
+        "retry_after": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "replayed": {
+      "type": "boolean",
+      "description": "true when this is a saved answer sent again: nothing was processed or charged this time"
+    },
+    "session": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "additionalProperties": false,
+      "required": [
+        "expires_at",
+        "turns_left"
+      ],
+      "properties": {
+        "expires_at": {
+          "type": "string",
+          "maxLength": 25
+        },
+        "turns_left": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "error"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "error": {
+            "type": "object"
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "error": {
+            "type": "null"
+          }
+        }
+      }
+    }
+  ]
+}

@@ -2,6 +2,8 @@ import { randomUUID } from "node:crypto";
 import { NextResponse } from "next/server";
 import { SERVICE_GROUPS } from "@/data/services";
 import { isEmail, submit, text, tooMany } from "@/lib/intake";
+import { refuseJsonPost } from "@/lib/requestGuard";
+import { cleanPageUrl } from "@/lib/pageUrl";
 import { BUDGETS, CONTACT_REASONS, NEW_PROJECT } from "@/lib/contactOptions";
 
 export const runtime = "nodejs";
@@ -11,6 +13,9 @@ const fail = (error: string, status = 400) => NextResponse.json({ ok: false, err
 
 /** Contact form. The CMS saves the lead and emails the team (see lib/intake). */
 export async function POST(request: Request) {
+  // first, so a refused request uses up nobody's allowance
+  const refused = refuseJsonPost(request);
+  if (refused) return refused;
   if (tooMany(request, "contact")) return fail("Too many messages in a short time. Please try again in ten minutes.", 429);
 
   let body: Record<string, unknown>;
@@ -49,7 +54,8 @@ export async function POST(request: Request) {
     industry: text(body.industry, 120),
     timeline: text(body.timeline, 60),
     brief: text(body.brief, 5000),
-    page_url: text(request.headers.get("referer"), 500),
+    // never the query: it may hold something the visitor typed
+    page_url: cleanPageUrl(request.headers.get("referer")),
   };
   const result = await submit({
     kind: "leads",

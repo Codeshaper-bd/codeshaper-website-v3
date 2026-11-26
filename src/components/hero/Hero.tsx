@@ -5,7 +5,9 @@ import HeroAsk from "./HeroAsk";
 import HeroIntro from "./intro/HeroIntro";
 import HeroGlyphs from "./intro/HeroGlyphs";
 import { COUNTRIES_SERVED } from "@/lib/facts";
+import { bothFounders } from "@/lib/founders";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { getAnnouncement, KIND_STYLE } from "@/data/announcement";
 import { homeCopy, type CopyOf } from "@/lib/homeCopy";
 import { SiFiverr, SiFramer, SiUpwork, SiWebflow } from "react-icons/si";
@@ -84,6 +86,12 @@ function ProofText({ text }: { text: string }) {
  * prompt that hands off to /contact), HeroGlobe and the intro.
  */
 const ANNOUNCEMENT = getAnnouncement();
+
+// UX01 prototype (development only): the contact form takes the "Book a call" line's place
+const ContactLink =
+  process.env.NODE_ENV !== "production" && process.env.NEXT_PUBLIC_AI_PROTOTYPE === "1"
+    ? dynamic(() => import("./HeroContactLink"))
+    : null;
 
 /**
  * Intro footer figures. Years, brands and reviews: owner-supplied
@@ -336,7 +344,7 @@ export default function Hero({ copy }: { copy?: CopyOf<"hero"> }) {
 
           {/* project prompt: the one main action of the hero */}
           <div className="mt-8 flex w-full justify-center sm:mt-9" data-reveal>
-            <HeroAsk />
+            <HeroAsk founders={ContactLink ? bothFounders() : undefined} />
           </div>
 
           {/* proof at the point of decision, and a quiet way out for people
@@ -368,13 +376,17 @@ export default function Hero({ copy }: { copy?: CopyOf<"hero"> }) {
               </RatingWrap>
             )}
             <span aria-hidden className="hidden h-4 w-px bg-[#0b0f19]/12 sm:block" />
-            <Link href="/contact" className="group inline-flex items-center gap-1.5 text-[#4b5263] transition-colors duration-200 hover:text-[#0b0f19]">
-              {c.callText}
-              <span className="font-semibold text-[#0b0f19] underline decoration-[#0b0f19]/25 underline-offset-[5px] transition-[text-decoration-color] duration-200 group-hover:decoration-[#0b0f19]">{c.callLink}</span>
-              <svg aria-hidden viewBox="0 0 16 16" className="h-3.5 w-3.5 text-[#0b0f19] transition-transform duration-200 group-hover:translate-x-0.5" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M3 8h10M9 4l4 4-4 4" />
-              </svg>
-            </Link>
+            {ContactLink ? (
+              <ContactLink />
+            ) : (
+              <Link href="/contact" className="group inline-flex items-center gap-1.5 text-[#4b5263] transition-colors duration-200 hover:text-[#0b0f19]">
+                {c.callText}
+                <span className="font-semibold text-[#0b0f19] underline decoration-[#0b0f19]/25 underline-offset-[5px] transition-[text-decoration-color] duration-200 group-hover:decoration-[#0b0f19]">{c.callLink}</span>
+                <svg aria-hidden viewBox="0 0 16 16" className="h-3.5 w-3.5 text-[#0b0f19] transition-transform duration-200 group-hover:translate-x-0.5" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M3 8h10M9 4l4 4-4 4" />
+                </svg>
+              </Link>
+            )}
           </div>
         </div>
 

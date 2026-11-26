@@ -29,6 +29,7 @@ import {
 } from "@/lib/engagementContent";
 import { SITE_URL } from "@/lib/site";
 import HeroBackdrop from "@/components/system/HeroBackdrop";
+import JsonLd from "@/components/system/JsonLd";
 
 // the MVP Sprint model's SEO tab in the CMS on top (title, description, share image)
 export const metadata: Metadata = withSeo({
@@ -65,8 +66,8 @@ const MINI_TIMELINE = ["Week 1 — Kickoff", "Weekly Demos", "Launch"];
 export default function MvpSprintPage() {
   return (
     <SiteShell>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(BREADCRUMB_JSON_LD) }} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(FAQ_JSON_LD) }} />
+      <JsonLd data={BREADCRUMB_JSON_LD} />
+      <JsonLd data={FAQ_JSON_LD} />
 
       <div className="theme-light">
         {/* 1. Hero */}

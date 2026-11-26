@@ -49,7 +49,7 @@ export default function NewsletterForm() {
           You&apos;re in — we&apos;ll send the next one your way.
         </p>
       ) : (
-        <form onSubmit={onSubmit} className="relative mt-4 space-y-2.5">
+        <form action="/newsletter/subscribe" method="post" onSubmit={onSubmit} className="relative mt-4 space-y-2.5">
           <input name="company_website" type="text" tabIndex={-1} autoComplete="off" aria-hidden="true" className="absolute -left-[9999px] h-px w-px opacity-0" />
           <input
             required

@@ -10,4 +10,6 @@
 6. **Match the file's style** (existing line width ≈ 140, comments explain *why*). Don't reformat files you don't change.
 7. **Security:** validate input at API routes, honeypot on forms, never log personal data, never expose secrets to the client.
 8. **Performance:** images via `next/image` with honest `sizes`; no new heavy dependencies without a reason.
-9. **Shell editing pitfall (Windows):** backslashes in regexes get lost when edited through shell one-liners; use the editor tool for code with `\s`, `\d`, `\/`.
+9. **Checks:** website `pnpm check`; CMS `./dc php artisan test`, plus the MySQL tests (CMS README) when locks, races, dates or SQL change.
+10. **JSON-LD only through `components/system/JsonLd.tsx`.** Never put a visitor's words in a URL. A new website–CMS operation gets its own secret and its own rate limit (`../codeshaper-cms/deploy/credentials.md`).
+11. **Shell editing pitfall (Windows):** backslashes in regexes get lost when edited through shell one-liners; use the editor tool for code with `\s`, `\d`, `\/`.
