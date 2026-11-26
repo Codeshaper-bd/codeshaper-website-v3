@@ -2,6 +2,34 @@
 
 Standing decisions from the owner. They override general best practice. Add new ones at the top with a date; never delete. Mark replaced ones as superseded.
 
+## AI Studio (owner's Phase 00 brief)
+
+| Date | Decision |
+|---|---|
+| 2026-11-26 | **AI Studio constraints:** CMS stays the source of truth; reuse the existing Leads module (no separate AI CRM or duplicate leads); anonymous chats create no lead and identifiable submission needs explicit consent; AI Insights live inside lead details, aggregate dashboard deferred; AI API budget $10/month, configurable up to $25; one economical provider first behind a provider-independent interface; public AI never gets unrestricted database, shell, email, network or CMS write access. Phase 00 = audit and plan only; its recommendations are proposals until approved. |
+
+## Architecture, privacy and admin address (owner's Phase 01A.1 brief)
+
+| Date | Decision |
+|---|---|
+| 2026-11-26 | **Admin address: `admin.codeshaper.net`** for the signed-in CMS; `codeshaper.net` is the public website. **Supersedes** the same-domain `codeshaper.net/admin` target (and the 26 Nov "plan only" row below). Prepared and rehearsed locally only; live DNS, nginx and servers need a separate approval. |
+| 2026-11-26 | **"We got your message" email:** a fixed generic greeting; nothing the visitor typed, **including the name**, appears in its subject or body. Design unchanged. |
+| 2026-11-26 | **AI architecture:** continue with a modular Laravel subsystem and a thin Next.js gateway; keep the CMS and Leads. All AI stays **off by default**. |
+| 2026-11-26 | **External AI processing:** prepare for it, but **no real visitor data** may be processed until the privacy policy, notice, retention, provider review and legal approval are done. Development and tests use synthetic data. The 22 Nov lead-privacy rule stays in force until replaced. |
+| 2026-11-26 | **AI budget:** $10 a month, configurable up to $25. No provider is permanently chosen; no paid account, billing or paid API call yet. |
+| 2026-11-26 | **Next phases:** 01B AI core with a fake provider, flags, kill switch and budget ledger; 01C sessions, gateway and streaming; 01D live provider check and minimal admin controls. Each needs its own approval. |
+| 2026-11-26 | **Commits:** local commits are allowed for verified work; **no push, no deploy**; security-sensitive planning documents stay out of public commits. |
+
+## Stabilisation and security (owner's Phase 01A brief)
+
+| Date | Decision |
+|---|---|
+| 2026-11-26 | **"We got your message" email:** it must not repeat what the visitor typed (the quoted message is removed; the design stays). The team's alert and the CMS lead keep the whole enquiry. This changes the 24 Nov entry only in what the visitor's email shows. |
+| 2026-11-26 | **Hero box:** the visitor's words never go into the web address; the action is labelled as continuing to the contact form, not as sending. Hero design and prefill stay. |
+| 2026-11-26 | **Website ↔ CMS:** separate, least-privilege secrets for each operation, with a backward-compatible move and rotation. |
+| 2026-11-26 | **Admin on a separate origin (`admin.codeshaper.net`):** plan it only. The agreed same-domain arrangement stays until the owner explicitly approves the move. |
+| 2026-11-26 | **Phase 01A** is stabilisation only: no chatbot, voice, knowledge engine or live AI provider; no commit, push or deploy without permission. Countries served stays **60+**; supporting evidence is still unverified. |
+
 ## Design
 
 | Date | Decision |
