@@ -13,6 +13,12 @@ import type { Consultation, Problem, Reply } from "./useConsultation";
 import styles from "./ai.module.css";
 
 const PROBLEMS: Partial<Record<Problem, { title: string; text: string; retry?: string; human?: boolean }>> = {
+  busy: { title: "Another message is still being answered", text: "Wait a moment, then try again.", retry: "Try again" },
+  in_progress: { title: "This message is still being answered", text: "Wait a moment, then ask for it again.", retry: "Check again" },
+  duplicate: { title: "That saved reply is no longer kept", text: "Ask again to have it answered anew.", retry: "Ask again", human: true },
+  session_limit: { title: "This conversation has reached its limit", text: "Start a new conversation, or reach a person.", human: true },
+  conflict: { title: "That message could not be matched", text: "Please write it again." },
+  too_large: { title: "That message is too long", text: "Shorten it and send it again." },
   unavailable: { title: "The assistant isn't available right now", text: "Your message is still here. Try again, or reach a person.", retry: "Try again", human: true },
   ai_disabled: { title: "The assistant is switched off", text: "You can reach a person directly.", human: true },
   budget_exhausted: { title: "The assistant has reached its limit for now", text: "It will be back later. The team can take it from here.", human: true },
@@ -43,10 +49,13 @@ export function AssistantTurn({ working = false, children }: { working?: boolean
 }
 
 /** Which message currently holds each live card: there is only ever one of each on screen. */
+/** The cards of an answer: those the service sent, then any made here to design the screen. */
+const cardsOf = (m: Reply) => [...(m.response?.components ?? []), ...(m.simulated?.components ?? [])];
+
 export function holders(messages: Consultation["messages"]) {
   const last = (has: (m: Reply) => boolean) => messages.findLast((m): m is Reply => m.from === "assistant" && m.state === "done" && has(m))?.id;
   return {
-    brief: last((m) => !!m.response?.components.some((c) => c.type === "project_brief")),
+    brief: last((m) => cardsOf(m).some((c) => c.type === "project_brief")),
     contact: last((m) => !!m.proposals?.some((p) => p.type === "contact_capture")),
     booking: last((m) => !!m.proposals?.some((p) => p.type === "booking_calendar")),
   };
@@ -55,11 +64,12 @@ export type Holders = ReturnType<typeof holders>;
 
 /** The cards an answer carries. Used by the text conversation and, for the latest answer, by voice. */
 export function Steps({ reply, cards, actions, held }: { reply: Reply; cards: CardActions; actions: Actions; held: Holders }) {
-  const components = (reply.response?.components ?? []).filter((c) => c.type !== "project_brief" || reply.id === held.brief);
+  const components = cardsOf(reply).filter((c) => c.type !== "project_brief" || reply.id === held.brief);
   const proposals = (reply.proposals ?? []).filter((p) => (p.type !== "contact_capture" || reply.id === held.contact) && (p.type !== "booking_calendar" || reply.id === held.booking));
   if (!components.length && !proposals.length) return null;
   return (
     <div className={`mt-3.5 space-y-4 ${styles.rise}`}>
+      {reply.synthetic && <p className={`border-t border-dashed border-content/20 pt-2 ${META}`}>Below: simulated here in your browser, not sent by the AI service.</p>}
       {proposals.map((p) =>
         p.type === "brief_changes" ? (
           <ul key={p.type} aria-label="What changed in the draft" className="space-y-0.5 border-l-2 border-brand/60 pl-3">
@@ -139,11 +149,13 @@ type TurnProps = { reply: Reply; latest: boolean; chat: Consultation; cards: Car
 function Answer({ reply, latest, chat, cards, actions, held, onSend }: TurnProps) {
   const done = reply.state === "done";
   const problem = reply.problem ? (PROBLEMS[reply.problem] ?? FALLBACK) : null;
-  const components = done ? (reply.response?.components ?? []) : [];
+  // a retry is offered only where it makes sense and the server has not ruled it out
+  const canRetry = latest && !!problem?.retry && reply.retry !== "none";
+  const components = done ? cardsOf(reply) : [];
   const carries = components.length > 0 || (done && !!reply.proposals?.length);
   // with something to show, the question moves below it, where the visitor will answer it
   const { lead, question } = carries ? splitQuestion(reply.text) : { lead: reply.state === "streaming" ? visibleWhileStreaming(reply.text) : reply.text, question: null };
-  const offered = done ? (reply.response?.actions ?? []) : [];
+  const offered = done ? [...(reply.response?.actions ?? []), ...(reply.simulated?.actions ?? [])] : [];
   const suggestions = latest && !chat.busy ? offered.filter((a) => a.type === "suggest_reply") : [];
   // a button a card already offers is not offered twice
   const buttons = carries ? [] : offered.filter((a) => a.type === "book_consultation" || a.type === "open_contact");
@@ -168,10 +180,10 @@ function Answer({ reply, latest, chat, cards, actions, held, onSend }: TurnProps
       )}
       {reply.state === "cancelled" && (
         <div className="mt-2 flex flex-wrap items-center gap-3">
-          <span className="text-[13.5px] text-content-muted">Reply stopped.</span>
-          {latest && (
+          <span className="text-[13.5px] text-content-muted">{reply.requestId ? "Reply stopped. A call already made may still be charged." : "Reply stopped."}</span>
+          {latest && reply.retry !== "none" && (
             <button type="button" className={GHOST} onClick={() => chat.retry(reply.id)} disabled={chat.busy}>
-              <RotateCcw size={13} aria-hidden /> Try again
+              <RotateCcw size={13} aria-hidden /> {reply.retry === "new_attempt" ? "Try again (new attempt)" : "Try again"}
             </button>
           )}
         </div>
@@ -184,10 +196,10 @@ function Answer({ reply, latest, chat, cards, actions, held, onSend }: TurnProps
           </p>
           <p className="mt-0.5 text-[14px] leading-relaxed text-content-muted">{problem.text}</p>
           <div className="mt-2 flex flex-wrap gap-1.5">
-            {latest && problem.retry && <RetryButton label={problem.retry} wait={reply.retryAfter ?? 0} disabled={chat.busy} onClick={() => chat.retry(reply.id)} />}
+            {canRetry && <RetryButton label={reply.retry === "new_attempt" ? `${problem.retry} (new attempt)` : problem.retry!} wait={reply.retryAfter ?? 0} disabled={chat.busy} onClick={() => chat.retry(reply.id)} />}
             {problem.human && (
               <>
-                <button type="button" className={problem.retry ? GHOST : PRIMARY} onClick={cards.onBook}>
+                <button type="button" className={canRetry ? GHOST : PRIMARY} onClick={cards.onBook}>
                   Book a call
                 </button>
                 <button type="button" className={GHOST} onClick={cards.onContact}>
@@ -223,6 +235,8 @@ function Answer({ reply, latest, chat, cards, actions, held, onSend }: TurnProps
           ))}
         </div>
       )}
+      {reply.stopping && <p className={`mt-1 ${META}`}>Stopping. A call already made may still be charged.</p>}
+      {done && reply.synthetic && <p className={`mt-1 ${META}`}>Synthetic reply from the test service{reply.response?.replayed ? " (saved copy, not charged again)" : ""}.</p>}
       {done && !reply.local && (
         <div className="mt-1">
           <CopyButton text={reply.text} />

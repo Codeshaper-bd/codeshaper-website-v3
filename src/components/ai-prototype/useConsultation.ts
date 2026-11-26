@@ -1,7 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { parseResponse, type AssistantResponse, type BriefFields, type ClientIssue, type ErrorCode } from "@/lib/ai/contract";
+import { parseResponse, type Action, type AssistantResponse, type BriefFields, type ClientIssue, type Component, type ErrorCode } from "@/lib/ai/contract";
+import type { Clock } from "@/lib/ai/live";
 import { newSession, respond, type Scenario, type Session } from "@/lib/ai/mockConsultant";
 import { demoDays, separateContact, type Contact } from "@/lib/ai/actions";
 import { parseProposals, type Proposal } from "@/lib/ai/proposals";
@@ -26,6 +27,15 @@ export type Reply = {
   proposals?: Proposal[];
   /** opened by a button, not answered by the assistant */
   local?: boolean;
+  // ── only with the gateway connected ──
+  requestId?: string;
+  /** what the server says may be done about a failure */
+  retry?: "same_id" | "new_attempt" | "none";
+  /** the words came from the test service */
+  synthetic?: boolean;
+  /** cards made in the browser to design the screen: not from the service */
+  simulated?: { components: Component[]; actions: Action[] };
+  stopping?: boolean;
 };
 export type Said = { id: number; from: "visitor"; text: string; kept?: boolean };
 export type Message = Reply | Said;
@@ -162,6 +172,7 @@ export function useConsultation(announce: (text: string) => void, onContact: (de
   };
 
   return {
+    live: undefined as Live | undefined,
     messages,
     brief,
     confirmed,
@@ -178,4 +189,16 @@ export function useConsultation(announce: (text: string) => void, onContact: (de
     session: () => session.current,
   };
 }
+/** What exists only when a real service answers: the session and its end. */
+export type Live = {
+  /** starts the session after the note is accepted; the problem to show, or null */
+  accept: () => Promise<Problem | null>;
+  /** true when the server still holds a conversation for this browser (after a reload) */
+  restore: () => Promise<boolean>;
+  clock: Clock | null;
+  /** asks the server whether the session still lives, and returns its clock */
+  check: () => Promise<boolean>;
+  renew: () => Promise<boolean>;
+  startOver: () => Promise<boolean>;
+};
 export type Consultation = ReturnType<typeof useConsultation>;

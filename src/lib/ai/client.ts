@@ -5,7 +5,6 @@
  *  · a new identifier means a new, possibly charged, attempt, and happens only on the visitor's wish
  *
  * Nothing is kept in the browser; the session lives in a cookie this code cannot read.
- * Not yet used by a screen: the consultation window still runs on its scripted stand-in.
  */
 import { parseResponse, type AssistantResponse, type ErrorCode, type ResponseError } from "./contract.ts";
 import { readEvents } from "./sse.ts";
@@ -74,24 +73,33 @@ export function createAiClient(deps: Deps = {}) {
     return last ?? failure(body.request_id, "unavailable", "same_id");
   }
 
+  /** The server's own idea of now, from the answer's Date header. */
+  const serverTime = (r: Response) => {
+    const ms = Date.parse(r.headers.get("date") ?? "");
+    return Number.isFinite(ms) ? ms : null;
+  };
+
+  const session = async (r: Response) => {
+    const data = await r.json().catch(() => null);
+    return { ok: r.ok, session: data?.session ?? null, error: (data?.error ?? null) as ResponseError | null, serverNow: serverTime(r) };
+  };
+
   return {
     /** Starts (or keeps) a session after the visitor accepted that version of the notice. */
-    async start(noticeVersion: string, fresh = false) {
-      const r = await post("session", { notice_version: noticeVersion, ...(fresh ? { fresh } : {}) });
-      const data = await r.json().catch(() => null);
-      return { ok: r.ok, session: data?.session ?? null, error: (data?.error ?? null) as ResponseError | null };
-    },
+    start: async (noticeVersion: string, fresh = false) => session(await post("session", { notice_version: noticeVersion, ...(fresh ? { fresh } : {}) })),
+    /** A new token and a fresh idle period, never past the longest life. */
+    renew: async () => session(await post("session/renew", {})),
     /** The conversation the cookie belongs to, for a reloaded page. */
     async restore() {
       const r = await call("/api/ai/session", { credentials: "same-origin", cache: "no-store" });
-      return r.ok ? await r.json() : null;
+      return r.ok ? { ...(await r.json()), serverNow: serverTime(r) } : null;
     },
     end: () => call("/api/ai/session", { method: "DELETE", credentials: "same-origin" }),
     send: (text: string, onText: (t: string) => void = () => {}, options: { signal?: AbortSignal; requestId?: string } = {}) =>
       deliver({ request_id: options.requestId ?? uuid(), text, stream: true }, onText, options.signal),
     /** The visitor asked for another try at a request that failed. It may be charged. */
-    newAttempt: (retryOf: string, onText: (t: string) => void = () => {}, signal?: AbortSignal) =>
-      deliver({ request_id: uuid(), retry_of: retryOf, stream: true }, onText, signal),
+    newAttempt: (retryOf: string, onText: (t: string) => void = () => {}, signal?: AbortSignal, requestId?: string) =>
+      deliver({ request_id: requestId ?? uuid(), retry_of: retryOf, stream: true }, onText, signal),
     /** Asks the server to stop. A call already made may still be charged. */
     cancel: (requestId: string) => post(`messages/${requestId}/cancel`, {}),
   };

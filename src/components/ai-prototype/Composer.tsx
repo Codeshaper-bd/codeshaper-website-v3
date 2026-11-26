@@ -15,13 +15,15 @@ type Props = {
   busy: boolean;
   /** the first-use note has not been accepted: words only wait */
   waiting: boolean;
+  /** what is real here, in one line */
+  footnote: string;
   onSend: (text: string) => void;
   onStop: () => void;
   onVoice: () => void;
 };
 
 /** Writing, voice and send. Nothing else lives here. */
-export default function Composer({ inputRef, value, onChange, busy, waiting, onSend, onStop, onVoice }: Props) {
+export default function Composer({ inputRef, value, onChange, busy, waiting, footnote, onSend, onStop, onVoice }: Props) {
   const ready = value.trim().length > 0 && !busy;
 
   useLayoutEffect(() => {
@@ -80,7 +82,7 @@ export default function Composer({ inputRef, value, onChange, busy, waiting, onS
           )}
         </form>
         <p className="pt-1.5 text-center text-[11.5px] text-content-muted [@media(max-height:540px)]:hidden">
-          Prototype: scripted replies, simulated actions. Nothing is sent.
+          {footnote}
           {value.length > MESSAGE_MAX - 200 && ` ${value.length}/${MESSAGE_MAX}`}
         </p>
       </div>

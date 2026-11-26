@@ -14,7 +14,9 @@ import Conversation, { AssistantTurn, holders, Steps, VisitorTurn } from "./Conv
 import HeroBackdrop from "@/components/system/HeroBackdrop";
 import { useActions, type BookingResult, type InquiryResult } from "./useActions";
 import type { Reply } from "./useConsultation";
-import { useConsultation } from "./useConsultation";
+import { useConsultation, type Problem } from "./useConsultation";
+import { useLiveConsultation } from "./useLiveConsultation";
+import SessionNotice from "./SessionNotice";
 import { useDialog } from "./useDialog";
 import styles from "./ai.module.css";
 import VoiceView from "./VoiceView";
@@ -39,6 +41,9 @@ const SCENARIOS: [Scenario, string][] = [
   ["session_expired", "Session expired"],
   ["network", "Network failure"],
 ];
+// development only: connected to the website's gateway and the CMS's fake provider, or scripted
+const CONNECTED = process.env.NEXT_PUBLIC_AI_BACKEND === "gateway";
+const useChat = CONNECTED ? useLiveConsultation : useConsultation;
 const STARTERS = ["I want to build a SaaS product", "Automate a business process", "What services do you offer?", "Show me case studies"];
 const HEADER_BUTTON = `${ICON} !text-content`;
 const MENU_ITEM = "flex h-9 w-full items-center gap-2.5 rounded-[8px] px-2.5 text-left font-urbanist text-[13.5px] font-semibold text-content hover:bg-surface-soft max-sm:h-11 pointer-coarse:h-11";
@@ -53,7 +58,10 @@ export default function Workspace({ open, handoff, founders, onClose, onTaken }:
   const [announcement, setAnnouncement] = useState("");
   const announce = useCallback((t: string) => setAnnouncement(t), []);
   const actions = useActions(announce);
-  const chat = useConsultation(announce, actions.prefill);
+  const chat = useChat(announce, actions.prefill);
+  /** why the session could not start, shown under the note */
+  const [refused, setRefused] = useState<Problem | null>(null);
+  const [starting, setStarting] = useState(false);
   const [view, setView] = useState<"text" | "voice">("text");
   const [voice, dispatch] = useReducer(voiceReducer, initialVoice);
   const [draft, setDraft] = useState("");
@@ -91,7 +99,7 @@ export default function Workspace({ open, handoff, founders, onClose, onTaken }:
   /** The composer goes back to the hero's box while the canvas fades, and the homepage is there again. */
   const close = (animated = true) => {
     if (closing.current) return;
-    chat.stop();
+    if (!chat.live) chat.stop();
     leaveVoice();
     setMenu(false);
     const el = dialog.current;
@@ -112,6 +120,13 @@ export default function Workspace({ open, handoff, founders, onClose, onTaken }:
   useDialog(dialog, open, () => close());
   useDialog(menuBox, open && menu, () => setMenu(false));
 
+  const asked = useRef(false);
+  useEffect(() => {
+    if (!open || asked.current || !chat.live) return;
+    asked.current = true;
+    void chat.live.restore().then((held) => held && setAccepted(true));
+  }, [open, chat.live]);
+
   // what the hero handed over: a first message, or the wish to talk
   // eslint-disable-next-line react-hooks/exhaustive-deps -- checked after every render; the id makes it act once
   useEffect(() => {
@@ -127,7 +142,15 @@ export default function Workspace({ open, handoff, founders, onClose, onTaken }:
     } else setDraft(handoff.text);
   });
 
-  const accept = () => {
+  const accept = async () => {
+    if (chat.live) {
+      // the session starts only now: nothing reached the server before this
+      setStarting(true);
+      const problem = await chat.live.accept();
+      setStarting(false);
+      setRefused(problem);
+      if (problem) return announce("The assistant could not be started");
+    }
     setAccepted(true);
     if (waiting && chat.send(waiting)) {
       setWaiting("");
@@ -179,7 +202,7 @@ export default function Workspace({ open, handoff, founders, onClose, onTaken }:
   if (!open) return null;
 
   const toVoice = () => {
-    chat.stop();
+    if (!chat.live) chat.stop();
     setView("voice");
   };
   const send = (text: string) => {
@@ -228,10 +251,19 @@ export default function Workspace({ open, handoff, founders, onClose, onTaken }:
   const note = (
     <>
       <p className={BODY}>
-        Before I read anything: I&rsquo;m an <strong>AI consultant</strong>, not a person, and I can be wrong. In this prototype my replies are scripted and nothing you write or say leaves your browser. Please leave out anything confidential. I can&rsquo;t agree a price, a date or a contract.
+        Before I read anything: I&rsquo;m an <strong>AI consultant</strong>, not a person, and I can be wrong.{" "}
+        {chat.live
+          ? "In this development version your messages go to our own test service, which answers with test text; no AI provider receives them. Please use made-up details only."
+          : "In this prototype my replies are scripted and nothing you write or say leaves your browser. Please leave out anything confidential."}{" "}
+        I can&rsquo;t agree a price, a date or a contract.
       </p>
+      {refused && (
+        <p role="alert" data-refused={refused} className="mt-2 text-[14px] text-content">
+          {refused === "ai_disabled" ? "The assistant is switched off." : refused === "rate_limited" ? "Too many new conversations for now. Try again later." : "The assistant cannot be reached right now."} You can still contact the team.
+        </p>
+      )}
       <div className="mt-3 flex flex-wrap gap-1.5">
-        <button type="button" data-autofocus className={PRIMARY} onClick={accept}>
+        <button type="button" data-autofocus className={PRIMARY} onClick={() => void accept()} disabled={starting}>
           {waiting && view === "text" ? "Send my message" : view === "voice" ? "Agree and use voice" : "Agree and start"}
         </button>
         <button type="button" className={SECONDARY} onClick={() => step("contact")}>
@@ -331,7 +363,7 @@ export default function Workspace({ open, handoff, founders, onClose, onTaken }:
                 {(
                   [
                     ["Voice look", look, setLook, VOICE_STYLES],
-                    ["Next reply", chat.scenario, chat.setScenario, SCENARIOS],
+                    ...(chat.live ? [] : [["Next reply", chat.scenario, chat.setScenario, SCENARIOS]]),
                     ["Next inquiry", actions.inquiryResult, actions.setInquiryResult, [["ok", "Succeeds"], ["failed", "Fails"]] as [InquiryResult, string][]],
                     ["Next booking", actions.bookingResult, actions.setBookingResult, [["ok", "Succeeds"], ["slot_taken", "Time just taken"], ["failed", "Fails"]] as [BookingResult, string][]],
                   ] as [string, string, (v: never) => void, [string, string][]][]
@@ -399,9 +431,11 @@ export default function Workspace({ open, handoff, founders, onClose, onTaken }:
         </div>
 
         {/* the same box all the way: the hero's, now where the conversation is written */}
+        {chat.live && accepted && <SessionNotice live={chat.live} />}
+
         {view === "text" && (
           <div ref={composer} className={`shrink-0 origin-top ${styles.writer}`}>
-            <Composer inputRef={input} value={draft} onChange={setDraft} busy={chat.busy} waiting={!accepted} onSend={send} onStop={chat.stop} onVoice={toVoice} />
+            <Composer inputRef={input} value={draft} onChange={setDraft} busy={chat.busy} waiting={!accepted} footnote={chat.live ? "Test service: replies are synthetic. Brief, cards, contact, booking and voice are simulated." : "Prototype: scripted replies, simulated actions. Nothing is sent."} onSend={send} onStop={chat.stop} onVoice={toVoice} />
           </div>
         )}
 
